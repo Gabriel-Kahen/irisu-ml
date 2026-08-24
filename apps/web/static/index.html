@@ -4,8 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#070a0b">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; style-src 'self'; connect-src 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://www.googletagmanager.com; worker-src 'self' blob:; style-src 'self'; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; img-src 'self' https://*.google-analytics.com https://www.googletagmanager.com">
   <title>irisu</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DCS6EVRYKH"></script>
+  <script src="./analytics.js"></script>
   <link rel="stylesheet" href="./styles.css?v=20260809f">
   <link rel="preload" href="./exact-runtime/v86.wasm?v=20260809j" as="fetch" type="application/wasm" crossorigin>
   <link rel="preload" href="./exact-runtime/buildroot-bzimage68.bin?v=20260809j" as="fetch" crossorigin>
