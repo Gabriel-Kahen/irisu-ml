@@ -14,7 +14,7 @@ export const bonusPalette = [
 ];
 
 export const bonusColorIntervalMs = 400;
-export const activatedTrailAlphas = [.08, .13, .2, .3];
+export const activatedTrailAlphas = [.1, .16, .24, .34, .47, .62];
 
 function isActivatedBlock(body) {
   return body.kind === "piece" &&
