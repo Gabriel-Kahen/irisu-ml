@@ -6,8 +6,8 @@ Its open-bottom U-shaped well follows the measured v2.03 mode-0 geometry.
 - Left click or `W`: weak shot
 - Right click or `S`: strong shot
 - Shift + click: both shots
-- Mouse wheel down: fast-forward (wheel up stops)
-- Space: pause/resume
+- Mouse wheel down or hold Space: fast-forward (wheel up or releasing Space stops)
+- Enter: pause/resume
 - In replay mode, Left/Right: jump backward/forward five seconds without changing play state
 - Replay speed: 1x, 2x, 4x, or 8x
 - `R`: restart with a new random seed
