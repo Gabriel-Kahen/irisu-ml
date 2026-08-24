@@ -6,11 +6,13 @@ import {
   bonusPalette, colorFor, hasActivatedTrail, palette,
 } from "../static/colors.mjs";
 
-test("green and orange slots use the requested colors in both states", () => {
+test("custom block slots use their requested colors in both states", () => {
   assert.equal(palette[3], "#b227b5");
   assert.equal(activatedPalette[3], "#b227b5");
   assert.equal(palette[4], "#52aba7");
   assert.equal(activatedPalette[4], "#52aba7");
+  assert.equal(palette[5], "#5b729c");
+  assert.equal(activatedPalette[5], "#5b729c");
 });
 
 test("the bonus ball cycles through exactly five block colors", () => {
