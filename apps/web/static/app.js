@@ -1,7 +1,7 @@
 import {BrowserGame} from "./exact-runtime.js?v=20260824a";
 import {
   activatedTrailAlphas, colorFor, hasActivatedTrail,
-} from "./colors.mjs?v=20260824b";
+} from "./colors.mjs?v=20260824c";
 import {parseReplay, REPLAY_TICK_MS} from "./replay.mjs";
 
 const canvas = document.querySelector("#game");

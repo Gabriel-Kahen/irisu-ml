@@ -26,8 +26,8 @@ test("the bonus ball cycles through exactly five block colors", () => {
   );
 });
 
-test("only confirmed pieces receive four translucent motion echoes", () => {
-  assert.deepEqual(activatedTrailAlphas, [.08, .13, .2, .3]);
+test("only confirmed pieces receive six pronounced motion echoes", () => {
+  assert.deepEqual(activatedTrailAlphas, [.1, .16, .24, .34, .47, .62]);
   assert.equal(hasActivatedTrail({kind: "piece", lifecycle: "confirmed"}), true);
   assert.equal(hasActivatedTrail({kind: "piece", lifecycle: "dynamic_fresh"}), false);
   assert.equal(hasActivatedTrail({kind: "piece", lifecycle: "scripted_falling"}), false);
