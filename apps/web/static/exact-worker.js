@@ -21,7 +21,13 @@ let bootText = "";
 let protocolReady = false;
 let framingSynchronized = false;
 let nextRequestId = 1;
-const responseBytes = [];
+let syncOffset = 0;
+const responseHeader = new Uint8Array(16);
+let responseHeaderOffset = 0;
+let responsePayload = null;
+let responsePayloadOffset = 0;
+let responseOpcode = 0;
+let responseRequestId = 0;
 const requests = new Map();
 
 const progress = message => postMessage({type: "progress", message});
@@ -77,41 +83,52 @@ function sendBytes(bytes) {
   }
 }
 
-function drainResponses() {
+function beginResponsePayload() {
+  const view = new DataView(responseHeader.buffer);
+  const magic = view.getUint32(0, true);
+  const version = view.getUint16(4, true);
+  responseOpcode = view.getUint16(6, true);
+  responseRequestId = view.getUint32(8, true);
+  const size = view.getUint32(12, true);
+  if (magic !== MAGIC || version !== VERSION || size < 4 || size > 4 * 1024 * 1024) {
+    throw new Error(`invalid response header ${magic.toString(16)}/${version}/${size}`);
+  }
+  responsePayload = new Uint8Array(size);
+  responsePayloadOffset = 0;
+}
+
+function finishResponse() {
+  const status = new DataView(responsePayload.buffer).getInt32(0, true);
+  const request = requests.get(responseRequestId);
+  if (!request || request.opcode !== responseOpcode) {
+    throw new Error(`unexpected exact-worker response ${responseOpcode}/${responseRequestId}`);
+  }
+  requests.delete(responseRequestId);
+  const content = responsePayload.slice(4);
+  responsePayload = null;
+  responseHeaderOffset = 0;
+  if (status) request.reject(new Error(
+    `exact-worker status ${status}: ${new TextDecoder().decode(content)}`));
+  else request.resolve(content);
+}
+
+function receiveResponseByte(byte) {
   if (!framingSynchronized) {
-    while (responseBytes.length >= 4 &&
-      !(responseBytes[0] === 0x49 && responseBytes[1] === 0x52 &&
-        responseBytes[2] === 0x50 && responseBytes[3] === 0x43)) {
-      responseBytes.shift();
-    }
-    if (responseBytes.length < 4) return;
+    const magic = [0x49, 0x52, 0x50, 0x43];
+    syncOffset = byte === magic[syncOffset] ? syncOffset + 1 : Number(byte === magic[0]);
+    if (syncOffset < magic.length) return;
+    responseHeader.set(magic);
+    responseHeaderOffset = magic.length;
     framingSynchronized = true;
+    return;
   }
-  while (responseBytes.length >= 16) {
-    const header = Uint8Array.from(responseBytes.slice(0, 16));
-    const view = new DataView(header.buffer);
-    const magic = view.getUint32(0, true);
-    const version = view.getUint16(4, true);
-    const opcode = view.getUint16(6, true);
-    const requestId = view.getUint32(8, true);
-    const size = view.getUint32(12, true);
-    if (magic !== MAGIC || version !== VERSION || size < 4 || size > 4 * 1024 * 1024) {
-      throw new Error(`invalid response header ${magic.toString(16)}/${version}/${size}`);
-    }
-    if (responseBytes.length < 16 + size) return;
-    responseBytes.splice(0, 16);
-    const response = Uint8Array.from(responseBytes.splice(0, size));
-    const status = new DataView(response.buffer).getInt32(0, true);
-    const request = requests.get(requestId);
-    if (!request || request.opcode !== opcode) {
-      throw new Error(`unexpected exact-worker response ${opcode}/${requestId}`);
-    }
-    requests.delete(requestId);
-    const content = response.slice(4);
-    if (status) request.reject(new Error(
-      `exact-worker status ${status}: ${new TextDecoder().decode(content)}`));
-    else request.resolve(content);
+  if (!responsePayload) {
+    responseHeader[responseHeaderOffset++] = byte;
+    if (responseHeaderOffset === responseHeader.length) beginResponsePayload();
+    return;
   }
+  responsePayload[responsePayloadOffset++] = byte;
+  if (responsePayloadOffset === responsePayload.length) finishResponse();
 }
 
 function onSerialByte(byte) {
@@ -124,8 +141,7 @@ function onSerialByte(byte) {
     }
     return;
   }
-  responseBytes.push(byte);
-  try { drainResponses(); }
+  try { receiveResponseByte(byte); }
   catch (error) { fail(error); }
 }
 

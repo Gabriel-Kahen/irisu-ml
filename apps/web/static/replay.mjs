@@ -145,7 +145,14 @@ export class ReplayObservationCache {
   }
 
   append(value, minimumIndexToKeep = this.startIndex) {
-    const data = bytes(value);
+    return this._append(bytes(value), minimumIndexToKeep, true);
+  }
+
+  appendOwned(value, minimumIndexToKeep = this.startIndex) {
+    return this._append(bytes(value), minimumIndexToKeep, false);
+  }
+
+  _append(data, minimumIndexToKeep, copy) {
     while (this.byteLength + data.byteLength > this.maximumBytes &&
            this.startIndex < minimumIndexToKeep) {
       const removed = this.entries[this.startIndex];
@@ -156,7 +163,7 @@ export class ReplayObservationCache {
       this.startIndex++;
     }
     if (this.byteLength + data.byteLength > this.maximumBytes) return false;
-    this.entries[this.length] = data.slice();
+    this.entries[this.length] = copy ? data.slice() : data;
     this.length++;
     this.byteLength += data.byteLength;
     return true;

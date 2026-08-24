@@ -64,6 +64,10 @@ test("quantizes browser input before simulation and bounds replay cache memory",
   assert.equal(cache.append(Uint8Array.of(4, 5), 2), true);
   assert.equal(cache.get(0), null);
   assert.deepEqual([...cache.get(2)], [4, 5]);
+  const owned = Uint8Array.of(7, 8);
+  const ownedCache = new ReplayObservationCache({maximumBytes: 2});
+  assert.equal(ownedCache.appendOwned(owned), true);
+  assert.equal(ownedCache.get(0), owned);
 });
 
 test("clamps replay scrubbing to the latest buffered frame", () => {

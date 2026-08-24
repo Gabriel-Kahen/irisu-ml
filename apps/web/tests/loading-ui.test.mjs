@@ -46,6 +46,13 @@ test("exact worker downloads runtime in parallel and keeps a persistent fallback
   assert.match(guestList, /libstdc\+\+\.so\.6/);
 });
 
+test("exact worker parses each serial response with fixed buffers", () => {
+  const worker = readFileSync(path.join(web, "static/exact-worker.js"), "utf8");
+  assert.match(worker, /const responseHeader = new Uint8Array\(16\)/);
+  assert.match(worker, /responsePayload = new Uint8Array\(size\)/);
+  assert.doesNotMatch(worker, /responseBytes|\.shift\(|\.splice\(/);
+});
+
 test("runtime preloads use the exact immutable worker URLs", () => {
   const html = readFileSync(path.join(web, "static/index.html"), "utf8");
   const worker = readFileSync(path.join(web, "static/exact-worker.js"), "utf8");
@@ -66,6 +73,7 @@ test("browser module cache-bust chain stays aligned", () => {
   assert.match(app, new RegExp(`replay\\.mjs\\?v=${version}`));
   assert.match(runtime, new RegExp(`exact-codec\\.mjs\\?v=${version}`));
   assert.match(runtime, new RegExp(`replay\\.mjs\\?v=${version}`));
+  assert.match(runtime, new RegExp(`exact-worker\\.js\\?v=${version}`));
 });
 
 test("restart shows the emulator loading state and awaits the fresh worker", () => {

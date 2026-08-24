@@ -1,6 +1,8 @@
 export const MAGIC = 0x43505249;
 export const VERSION = 1;
-export const OPCODE = Object.freeze({hello: 1, reset: 2, step: 3});
+export const OPCODE = Object.freeze({
+  hello: 1, reset: 2, step: 3, stepPadded: 8, fetchEvents: 9,
+});
 export const BODY_CAPACITY = 196;
 export const CONTROL_WORD = 0x027f;
 export const EXACT_LIBRARY_SHA256 = "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5";
@@ -175,8 +177,7 @@ export function decodeReset(bytes) {
   return {observation: decoded.value, events: []};
 }
 
-export function decodeStep(bytes, decodedObservation = null) {
-  const observation = decodedObservation || decodeObservation(bytes);
+function decodeTransitionPrefix(bytes, observation) {
   const view = bytesView(bytes);
   let offset = observation.offset;
   if (bytes.byteLength - offset < 84) fail("truncated Step diagnostics");
@@ -204,7 +205,11 @@ export function decodeStep(bytes, decodedObservation = null) {
   if (diagnostics.config_hash !== EXACT_CONFIG_HASH) {
     fail("worker mechanics configuration does not match normal mode v2.03");
   }
-  offset += 84;
+  return {reward, eventCount, diagnostics, offset: offset + 84};
+}
+
+function decodeEventRecords(bytes, offset, eventCount) {
+  const view = bytesView(bytes);
   const events = [];
   for (let index = 0; index < eventCount; index++) {
     if (bytes.byteLength - offset < 36) fail("truncated event header");
@@ -224,8 +229,62 @@ export function decodeStep(bytes, decodedObservation = null) {
     });
     offset += 36 + detailSize;
   }
+  return {events, offset};
+}
+
+export function decodeStep(bytes, decodedObservation = null) {
+  const observation = decodedObservation || decodeObservation(bytes);
+  const transition = decodeTransitionPrefix(bytes, observation);
+  const decodedEvents = decodeEventRecords(bytes, transition.offset, transition.eventCount);
+  const {events, offset} = decodedEvents;
   if (offset !== bytes.byteLength) fail("Step payload has trailing bytes");
   return {
-    observation: observation.value, reward, terminated, truncated, events, diagnostics,
+    observation: observation.value, reward: transition.reward,
+    terminated: observation.value.terminated, truncated: observation.value.truncated,
+    events, diagnostics: transition.diagnostics,
   };
+}
+
+// Replay preparation only needs the observation byte range and transition
+// metadata. Avoid allocating a full object graph for every frame; the cached
+// observation is decoded later only when that frame is displayed.
+export function decodePaddedStepMetadata(bytes) {
+  if (bytes.byteLength < 112) fail("truncated observation header");
+  const view = bytesView(bytes);
+  const bodyCount = view.getUint32(104, true);
+  if (bodyCount > BODY_CAPACITY) fail(`body count ${bodyCount} exceeds capacity`);
+  const observationOffset = 112 + bodyCount * 100;
+  if (bytes.byteLength !== observationOffset + 84 + 8) {
+    fail("padded Step payload has an invalid size");
+  }
+  const observation = {
+    offset: observationOffset,
+    value: {
+      terminated: Boolean(view.getUint8(108)),
+      truncated: Boolean(view.getUint8(109)),
+    },
+  };
+  const transition = decodeTransitionPrefix(bytes, observation);
+  const eventGeneration = safeNumber(
+    view.getBigUint64(transition.offset, true), "event generation");
+  if (!eventGeneration) fail("padded event generation must be nonzero");
+  return {
+    observationOffset,
+    terminated: observation.value.terminated,
+    truncated: observation.value.truncated,
+    eventCount: transition.eventCount,
+    eventGeneration,
+    diagnostics: transition.diagnostics,
+  };
+}
+
+export function decodePaddedEvents(bytes, expectedCount) {
+  if (bytes.byteLength < 8) fail("truncated padded events payload");
+  const eventCount = safeNumber(bytesView(bytes).getBigUint64(0, true), "event count");
+  if (expectedCount !== undefined && eventCount !== expectedCount) {
+    fail("padded event count changed");
+  }
+  const decoded = decodeEventRecords(bytes, 8, eventCount);
+  if (decoded.offset !== bytes.byteLength) fail("padded events payload has trailing bytes");
+  return decoded.events;
 }

@@ -1,10 +1,11 @@
 import {
-  OPCODE, decodeHello, decodeObservation, decodeReset, decodeStep, encodeReset, encodeStep,
-} from "./exact-codec.mjs?v=20260824a";
+  OPCODE, decodeHello, decodeObservation, decodePaddedEvents, decodePaddedStepMetadata,
+  decodeReset, decodeStep, encodeReset, encodeStep,
+} from "./exact-codec.mjs?v=20260824b";
 import {
   ReplayObservationCache, decodeReplayWord, encodeReplayWord,
   quantizeReplayPoint, serializeReplay, REPLAY_TICK_MS,
-} from "./replay.mjs?v=20260824a";
+} from "./replay.mjs?v=20260824b";
 
 const kinds = {weak: 1, strong: 2, both: 3};
 const FAST_FORWARD_TICKS = 80;
@@ -15,7 +16,7 @@ export class ExactWorkerClient {
   static async create({WorkerClass = globalThis.Worker, timeoutMs = 60000,
     onProgress = () => {}} = {}) {
     if (!WorkerClass) throw new Error("Web Workers are unavailable");
-    const worker = new WorkerClass(new URL("./exact-worker.js?v=20260809j", import.meta.url));
+    const worker = new WorkerClass(new URL("./exact-worker.js?v=20260824b", import.meta.url));
     const client = new ExactWorkerClient(worker, timeoutMs, onProgress);
     let timer;
     try {
@@ -95,6 +96,19 @@ export class ExactWorkerClient {
   reset(seed) { return this.resetRaw(seed).then(decodeReset); }
   stepRaw(kind, x, y, suppressFreshEdges = false, waitTicks = 1) {
     return this.rpc(OPCODE.step, encodeStep(kind, x, y, suppressFreshEdges, waitTicks));
+  }
+  stepPaddedRaw(kind, x, y, suppressFreshEdges = false, waitTicks = 1) {
+    return this.rpc(OPCODE.stepPadded,
+      encodeStep(kind, x, y, suppressFreshEdges, waitTicks));
+  }
+  fetchEvents(generation, expectedCount) {
+    if (!Number.isSafeInteger(generation) || generation < 1) {
+      throw new RangeError("event generation must be a positive safe integer");
+    }
+    const payload = new Uint8Array(8);
+    new DataView(payload.buffer).setBigUint64(0, BigInt(generation), true);
+    return this.rpc(OPCODE.fetchEvents, payload)
+      .then(bytes => decodePaddedEvents(bytes, expectedCount));
   }
   step(kind, x, y, suppressFreshEdges = false, waitTicks = 1) {
     return this.stepRaw(kind, x, y, suppressFreshEdges, waitTicks).then(decodeStep);
@@ -537,21 +551,30 @@ export class BrowserGame {
       for (let index = 0; index < this.replayData.frameCount; index++) {
         if (this.closed || epoch !== this.epoch || this.mode !== "replay") return;
         const frame = decodeReplayWord(this.replayData.words[index]);
-        const raw = await this.client.stepRaw(frame.kind, frame.x, frame.y, index < 2);
+        const raw = await this.client.stepPaddedRaw(
+          frame.kind, frame.x, frame.y, index < 2);
         if (this.closed || epoch !== this.epoch || this.mode !== "replay") return;
-        const observation = decodeObservation(raw);
-        const state = decodeStep(raw, observation);
-        const cached = raw.subarray(0, observation.offset);
+        const metadata = decodePaddedStepMetadata(raw);
         while (true) {
           const protectedIndex = this.replayRequestedFrame === null ?
             Math.max(0, this.replayFrame - 1) :
             Math.max(0, this.replayRequestedFrame - 1);
-          if (this.replayCache.append(cached, protectedIndex)) break;
+          if (this.replayCache.appendOwned(raw, protectedIndex)) break;
           await new Promise(resolve => globalThis.setTimeout(resolve, 20));
           if (this.closed || epoch !== this.epoch || this.mode !== "replay") return;
         }
         this.replayComputed = index + 1;
-        finalState = state;
+        const terminal = metadata.terminated || metadata.truncated;
+        if (terminal || this.replayComputed === this.replayData.frameCount) {
+          const events = terminal && metadata.eventCount ?
+            await this.client.fetchEvents(metadata.eventGeneration, metadata.eventCount) : [];
+          if (this.closed || epoch !== this.epoch || this.mode !== "replay") return;
+          finalState = {
+            observation: decodeObservation(raw).value,
+            events,
+            diagnostics: metadata.diagnostics,
+          };
+        }
 
         if (this.replayRequestedFrame !== null &&
             this.replayComputed >= this.replayRequestedFrame) {
@@ -573,11 +596,11 @@ export class BrowserGame {
           this.emit();
         }
 
-        if (state.observation.terminated || state.observation.truncated) {
+        if (terminal) {
           this.replayEffectiveTotal = this.replayComputed;
-          const names = new Set(state.events.map(event => event.kind_name));
+          const names = new Set(finalState.events.map(event => event.kind_name));
           this.replayTerminalReason = names.has("level_completed") ? "level_completed" :
-            state.observation.truncated ? "time_limit" : "game_over";
+            metadata.truncated ? "time_limit" : "game_over";
           if (this.replayComputed < this.replayData.frameCount) {
             const warning = `Playback ended with ${this.replayData.frameCount - this.replayComputed} trailing records.`;
             this.replayWarning = this.replayWarning ? `${this.replayWarning} ${warning}` : warning;
