@@ -15,15 +15,15 @@ test("static build contains only the pinned exact backend", () => {
   assert.match(build, /prepare-exact-runtime\.sh/);
   assert.match(build, /IRISU_EXACT_RUNTIME_DIR/);
   assert.doesNotMatch(build, /emcmake|irisu-wasm|PHYSICS_BACKEND=portable/);
-  assert.match(fetch, /web-exact-runtime-lowlatency-v2-20260809/);
-  assert.match(fetch, /2761932073e3be9a8663c1aa497b2bea8f81b5381c19196c8bccb71b8ace73d3/);
+  assert.match(fetch, /web-exact-runtime-virtio-v1-20260824/);
+  assert.match(fetch, /0340660c5e5ccd1bbc47bd75eb60ec96349a0d046fa9cf1e5923ff78ee77838f/);
   assert.match(prepare, /4faa4508a89df3e1e62b80e2871b6a35b5913f220d53fe5de43408ad6512c261/);
   assert.match(prepare, /812b4876d588ae9539ac164d27d2ca5efd96d423428e4367f6145d36b79e9bba/);
   assert.match(prepare, /442aefadd8b65f65ccc036e93047f7181458d384ff07eb280ca0c92ecc194c6e/);
   assert.match(prepare, /8ef81521e81a5b2a764c305ac48dad997b28476bcd2fccbd1c9aed9603322854/);
   assert.match(prepare, /ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5/);
   assert.match(prepare, /73d1023eba1729d6aa6a9a3d3d52122c88e8f05b775caaa0557e042f68c34403/);
-  assert.match(prepare, /d0317109d9cec024f5d01bac9cfd7399d699bcd48816e2373195ac2ee336949c/);
+  assert.match(prepare, /c745fcde490cb8e4db59e5b4e1ce5e00bfdae3bcb6bf34048d16dcb15e3dfe30/);
   assert.match(prepare, /IRISU_GUEST_BZIMAGE/);
   assert.match(prepare, /apps\/web\/guest\/build\.sh/);
   assert.match(prepare, /relink-exact-worker\.sh/);

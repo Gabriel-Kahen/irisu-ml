@@ -9,7 +9,7 @@ Pinned components:
 - v86 npm package 0.5.432 (`f3d4472a9c934b9ad78a311f5849ba711a296d23`), BSD-2-Clause, with the bounded CORE-MATH x87 trigonometry patch using CORE-MATH commit `07cf01e12a42b82cc478341982936cad7f3f9bdc` under MIT. Its license is distributed as `LICENSE.v86`; the exact patched CORE-MATH source and MIT notice are distributed as `SOURCE.core_math_sincosf.c`.
 - The project-owned Linux 6.8.12 i386/initramfs guest, built reproducibly with
   Buildroot 2024.02.13 and pinned as SHA-256
-  `d0317109d9cec024f5d01bac9cfd7399d699bcd48816e2373195ac2ee336949c`.
+  `c745fcde490cb8e4db59e5b4e1ce5e00bfdae3bcb6bf34048d16dcb15e3dfe30`.
   Its reduced kernel omits IP networking, block devices, high memory, ACPI,
   input, virtual terminals, power management, and other subsystems that the
   worker does not use. The dedicated

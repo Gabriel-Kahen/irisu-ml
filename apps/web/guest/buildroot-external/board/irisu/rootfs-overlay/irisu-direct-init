@@ -16,6 +16,8 @@ for file in irisu-exact-worker libirisu_box2d_msvc_exact_multiworld.so \
 done
 chmod +x /mnt/irisu-exact-worker
 cd /
-stty raw -echo
+[ -c /dev/hvc0 ] || mknod /dev/hvc0 c 229 0 || fail create-hvc0
+exec 3<>/dev/hvc0 || fail open-hvc0
+stty raw -echo <&3 || fail configure-hvc0
 printf '\137\137IRISU\137RPC\137READY\137\137'
-IRISU_EXACT_CW=0x27f exec /mnt/irisu-exact-worker
+IRISU_EXACT_CW=0x27f exec /mnt/irisu-exact-worker <&3 >&3 3>&-

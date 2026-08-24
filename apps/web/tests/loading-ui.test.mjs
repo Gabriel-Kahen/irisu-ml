@@ -46,11 +46,19 @@ test("exact worker downloads runtime in parallel and keeps a persistent fallback
   assert.match(guestList, /libstdc\+\+\.so\.6/);
 });
 
-test("exact worker parses each serial response with fixed buffers", () => {
+test("exact worker parses transport responses with fixed buffers", () => {
   const worker = readFileSync(path.join(web, "static/exact-worker.js"), "utf8");
   assert.match(worker, /const responseHeader = new Uint8Array\(16\)/);
   assert.match(worker, /responsePayload = new Uint8Array\(size\)/);
   assert.doesNotMatch(worker, /responseBytes|\.shift\(|\.splice\(/);
+});
+
+test("exact worker carries RPC traffic over virtio console", () => {
+  const worker = readFileSync(path.join(web, "static/exact-worker.js"), "utf8");
+  assert.match(worker, /virtio_console: true/);
+  assert.match(worker, /virtio-console0-output-bytes/);
+  assert.match(worker, /virtio-console0-input-bytes/);
+  assert.doesNotMatch(worker, /serial0_send/);
 });
 
 test("runtime preloads use the exact immutable worker URLs", () => {
@@ -124,6 +132,10 @@ test("browser guest uses a minimal executable direct init", () => {
   assert.match(init, /mount -t proc proc \/proc/);
   assert.match(init, /mount -t 9p .* host9p \/mnt/);
   assert.match(init, /exec \/mnt\/irisu-exact-worker/);
+  assert.match(init, /mknod \/dev\/hvc0 c 229 0/);
+  assert.match(init, /exec 3<>\/dev\/hvc0/);
+  assert.match(init, /<&3 >&3 3>&-/);
+  assert.match(config, /CONFIG_VIRTIO_CONSOLE=y/);
   assert.doesNotMatch(init, /\/mnt\/(?:ld-linux|libc\.so)/);
   assert.doesNotMatch(init, /mount -t (?:devtmpfs|sysfs)|exec \/bin\/sh/);
   for (const option of ["ACPI", "INET", "WIRELESS", "INPUT", "VT", "DEVTMPFS", "SYSFS", "TMPFS"]) {

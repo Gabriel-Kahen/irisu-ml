@@ -1,11 +1,11 @@
 /* global V86 */
 "use strict";
 
-importScripts("./exact-runtime/libv86.js?v=20260809j");
+importScripts("./exact-runtime/libv86.js?v=20260824k");
 
 const MAGIC = 0x43505249;
 const VERSION = 1;
-const RUNTIME_VERSION = "20260809j";
+const RUNTIME_VERSION = "20260824k";
 const RUNTIME_CACHE_PREFIX = "irisu-exact-runtime-";
 const RUNTIME_CACHE = `${RUNTIME_CACHE_PREFIX}${RUNTIME_VERSION}`;
 const READY_MARKER = "__IRISU_RPC_READY__";
@@ -22,6 +22,7 @@ let protocolReady = false;
 let framingSynchronized = false;
 let nextRequestId = 1;
 let syncOffset = 0;
+const responseMagic = new Uint8Array([0x49, 0x52, 0x50, 0x43]);
 const responseHeader = new Uint8Array(16);
 let responseHeaderOffset = 0;
 let responsePayload = null;
@@ -75,12 +76,7 @@ function fail(error) {
 }
 
 function sendBytes(bytes) {
-  for (let offset = 0; offset < bytes.length; offset += 4096) {
-    const chunk = bytes.subarray(offset, offset + 4096);
-    let encoded = "";
-    for (const byte of chunk) encoded += String.fromCharCode(byte);
-    emulator.serial0_send(encoded);
-  }
+  emulator.bus.send("virtio-console0-input-bytes", bytes);
 }
 
 function beginResponsePayload() {
@@ -112,23 +108,36 @@ function finishResponse() {
   else request.resolve(content);
 }
 
-function receiveResponseByte(byte) {
-  if (!framingSynchronized) {
-    const magic = [0x49, 0x52, 0x50, 0x43];
-    syncOffset = byte === magic[syncOffset] ? syncOffset + 1 : Number(byte === magic[0]);
-    if (syncOffset < magic.length) return;
-    responseHeader.set(magic);
-    responseHeaderOffset = magic.length;
-    framingSynchronized = true;
-    return;
+function receiveResponseBytes(bytes) {
+  let offset = 0;
+  while (offset < bytes.length) {
+    if (!framingSynchronized) {
+      const byte = bytes[offset++];
+      syncOffset = byte === responseMagic[syncOffset] ? syncOffset + 1 :
+        Number(byte === responseMagic[0]);
+      if (syncOffset === responseMagic.length) {
+        responseHeader.set(responseMagic);
+        responseHeaderOffset = responseMagic.length;
+        framingSynchronized = true;
+      }
+      continue;
+    }
+    if (!responsePayload) {
+      const count = Math.min(responseHeader.length - responseHeaderOffset,
+        bytes.length - offset);
+      responseHeader.set(bytes.subarray(offset, offset + count), responseHeaderOffset);
+      responseHeaderOffset += count;
+      offset += count;
+      if (responseHeaderOffset === responseHeader.length) beginResponsePayload();
+      continue;
+    }
+    const count = Math.min(responsePayload.length - responsePayloadOffset,
+      bytes.length - offset);
+    responsePayload.set(bytes.subarray(offset, offset + count), responsePayloadOffset);
+    responsePayloadOffset += count;
+    offset += count;
+    if (responsePayloadOffset === responsePayload.length) finishResponse();
   }
-  if (!responsePayload) {
-    responseHeader[responseHeaderOffset++] = byte;
-    if (responseHeaderOffset === responseHeader.length) beginResponsePayload();
-    return;
-  }
-  responsePayload[responsePayloadOffset++] = byte;
-  if (responsePayloadOffset === responsePayload.length) finishResponse();
 }
 
 function onSerialByte(byte) {
@@ -141,7 +150,11 @@ function onSerialByte(byte) {
     }
     return;
   }
-  try { receiveResponseByte(byte); }
+}
+
+function onVirtioBytes(bytes) {
+  if (!protocolReady) return;
+  try { receiveResponseBytes(bytes); }
   catch (error) { fail(error); }
 }
 
@@ -220,8 +233,10 @@ async function start() {
     disable_keyboard: true,
     disable_mouse: true,
     disable_speaker: true,
+    virtio_console: true,
   });
   emulator.add_listener("serial0-output-byte", onSerialByte);
+  emulator.add_listener("virtio-console0-output-bytes", onVirtioBytes);
   const emulatorReady = new Promise(resolve => emulator.add_listener("emulator-ready", resolve));
   await emulatorReady;
   progress("Preparing exact game engine…");
