@@ -72,7 +72,7 @@ test("replay transport exposes keyboard stepping and playback speeds", () => {
   assert.match(html, /id="replaySpeed"[\s\S]*value="1"[\s\S]*value="2"[\s\S]*value="4"[\s\S]*value="8"/);
   assert.match(html, /aria-label="Jump back 5 seconds">−5s/);
   assert.match(html, /aria-label="Jump forward 5 seconds">\+5s/);
-  assert.match(app, /\["Space", "ArrowLeft", "ArrowRight"\]/);
+  assert.match(app, /\["Enter", "ArrowLeft", "ArrowRight"\]/);
   assert.match(app, /const replaySkipFrames = 5_000 \/ REPLAY_TICK_MS/);
   assert.match(app, /stepReplay\(-replaySkipFrames\)/);
   assert.match(app, /stepReplay\(replaySkipFrames\)/);
@@ -81,6 +81,16 @@ test("replay transport exposes keyboard stepping and playback speeds", () => {
   assert.match(app, /if \(!replayScrubbing && replayScrubTarget === null\)/);
   assert.match(app, /seekReplay\(frame, \{preserveRunning: true\}\)/);
   assert.match(css, /\.replay-speed select/);
+});
+
+test("gameplay keyboard controls use Enter to pause and hold Space to fast-forward", () => {
+  const html = readFileSync(path.join(web, "static/index.html"), "utf8");
+  const app = readFileSync(path.join(web, "static/app.js"), "utf8");
+  assert.match(html, /id="pauseButton">pause <kbd>enter<\/kbd>/);
+  assert.doesNotMatch(html, /id="pauseButton">pause <kbd>space<\/kbd>/);
+  assert.match(app, /event\.code === "Enter"\) \{ event\.preventDefault\(\); setRunning/);
+  assert.match(app, /event\.code === "Space"[\s\S]*startFastForward\(\)/);
+  assert.match(app, /addEventListener\("keyup"[\s\S]*event\.code === "Space"[\s\S]*stopFastForward\(\)/);
 });
 
 test("browser guest uses a minimal executable direct init", () => {

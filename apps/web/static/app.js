@@ -1,4 +1,4 @@
-import {BrowserGame} from "./exact-runtime.js?v=20260809n";
+import {BrowserGame} from "./exact-runtime.js?v=20260824a";
 import {
   activatedTrailAlphas, colorFor, hasActivatedTrail,
 } from "./colors.mjs?v=20260723d";
@@ -50,10 +50,15 @@ function stopFastForward() {
   game?.setFastForward(false);
 }
 
-function continueFastForward() {
+function startFastForward() {
   if (!snapshot?.running) return;
-  game?.setFastForward(true);
   clearTimeout(fastForwardTimer);
+  fastForwardTimer = 0;
+  game?.setFastForward(true);
+}
+
+function continueFastForward() {
+  startFastForward();
   fastForwardTimer = setTimeout(stopFastForward, fastForwardIdleMs);
 }
 
@@ -502,21 +507,28 @@ ui.replayScrubber.addEventListener("change", () => {
 });
 ui.exitReplay.addEventListener("click", restart);
 window.addEventListener("keydown", (event) => {
+  if (event.target instanceof HTMLInputElement || event.target instanceof HTMLButtonElement ||
+      event.target instanceof HTMLSelectElement || event.target?.isContentEditable) return;
   if (snapshot?.mode === "replay" &&
-      ["Space", "ArrowLeft", "ArrowRight"].includes(event.code)) {
+      ["Enter", "ArrowLeft", "ArrowRight"].includes(event.code)) {
     event.preventDefault();
-    if (event.repeat && event.code === "Space") return;
-    if (event.code === "Space") setRunning(!snapshot.running);
+    if (event.repeat && event.code === "Enter") return;
+    if (event.code === "Enter") setRunning(!snapshot.running);
     else game?.stepReplay(event.code === "ArrowLeft" ?
       -replaySkipFrames : replaySkipFrames);
     return;
   }
-  if (event.target instanceof HTMLInputElement || event.target instanceof HTMLButtonElement ||
-      event.target?.isContentEditable) return;
-  if (event.code === "Space") { event.preventDefault(); setRunning(!snapshot?.running); }
+  if (event.code === "Enter") { event.preventDefault(); setRunning(!snapshot?.running); }
+  if (event.code === "Space") {
+    event.preventDefault();
+    if (!event.repeat && snapshot?.mode !== "replay") startFastForward();
+  }
   if (event.key.toLowerCase() === "r") restart();
   if (snapshot?.mode !== "replay" && event.key.toLowerCase() === "w") shoot("weak");
   if (snapshot?.mode !== "replay" && event.key.toLowerCase() === "s") shoot("strong");
+});
+window.addEventListener("keyup", (event) => {
+  if (event.code === "Space") stopFastForward();
 });
 window.addEventListener("blur", stopFastForward);
 
