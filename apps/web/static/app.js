@@ -1,11 +1,11 @@
-import {BrowserGame} from "./exact-runtime.js?v=20260824e";
+import {BrowserGame} from "./exact-runtime.js?v=20260825a";
 import {
   activatedTrailAlphas, colorFor, hasActivatedTrail,
 } from "./colors.mjs?v=20260824c";
 import {
   clampReplayScrubFrame, parseReplay, REPLAY_TICK_MS,
-} from "./replay.mjs?v=20260824e";
-import {RestartGate} from "./restart-gate.mjs?v=20260824e";
+} from "./replay.mjs?v=20260825a";
+import {RestartGate} from "./restart-gate.mjs?v=20260825a";
 
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
@@ -43,6 +43,9 @@ let lastReplayAnnouncement = "";
 let replayScrubbing = false;
 let replayScrubTarget = null;
 const bodyTrails = new Map();
+const bodyPositions = new Map();
+const pendingScores = [];
+const scorePopups = [];
 
 const restartGate = new RestartGate((pending) => {
   if (ui.runtimeLoading) ui.runtimeLoading.hidden = !pending;
@@ -99,11 +102,15 @@ function acceptSnapshot(next, force = false) {
   if (force || !snapshot || next.seed !== snapshot.seed ||
       next.observation.tick < trailTick) {
     bodyTrails.clear();
+    bodyPositions.clear();
+    pendingScores.length = 0;
+    scorePopups.length = 0;
     trailTick = -1;
   }
   if (next.observation.tick !== trailTick) {
     const active = new Set();
     for (const body of next.observation.bodies) {
+      bodyPositions.set(body.id, {x: body.x, y: body.y});
       if (!hasActivatedTrail(body)) continue;
       active.add(body.id);
       const trail = bodyTrails.get(body.id) || [];
@@ -307,6 +314,30 @@ function drawHud(state) {
   ctx.restore();
 }
 
+function drawScorePopups(now) {
+  for (let index = scorePopups.length - 1; index >= 0; index--) {
+    const popup = scorePopups[index];
+    const progress = Math.min(1, (now - popup.startedAt) / 900);
+    if (progress >= 1) {
+      scorePopups.splice(index, 1);
+      continue;
+    }
+    const rise = 42 * (1 - (1 - progress) ** 2);
+    ctx.save();
+    ctx.globalAlpha = 1 - progress;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = "900 26px Georgia, serif";
+    ctx.strokeStyle = "#681a38";
+    ctx.lineWidth = 5;
+    ctx.lineJoin = "round";
+    ctx.strokeText(`+${popup.value}`, popup.x, popup.y - rise);
+    ctx.fillStyle = "#eee0a4";
+    ctx.fillText(`+${popup.value}`, popup.x, popup.y - rise);
+    ctx.restore();
+  }
+}
+
 function drawWalls(state) {
   const f = state.field;
   const thick = 16;
@@ -349,6 +380,7 @@ function draw(now) {
     drawWalls(state);
     [...interpolatedBodies(now)].sort((a, b) => a.id - b.id)
       .forEach((body) => drawBody(body, now));
+    drawScorePopups(now);
     drawHud(state);
   }
   if (aim.visible) {
@@ -371,6 +403,17 @@ function processEvents(events) {
   for (const event of events) {
     if (event.sequence <= lastEvent) continue;
     lastEvent = event.sequence;
+    if (event.kind_name === "score_changed" && event.value > 0) {
+      pendingScores.push(event);
+    } else if (event.kind_name === "cleared" &&
+               event.detail === "normal burst actor teardown") {
+      const index = pendingScores.findIndex(score => score.tick === event.tick);
+      if (index >= 0) {
+        const [score] = pendingScores.splice(index, 1);
+        const position = bodyPositions.get(event.a) || {x: 320, y: 240};
+        scorePopups.push({...position, value: score.value, startedAt: performance.now()});
+      }
+    }
     if (event.kind_name === "level_changed") showToast(`LEVEL ${event.value}`);
   }
 }
