@@ -1,11 +1,11 @@
-import {BrowserGame} from "./exact-runtime.js?v=20260825a";
+import {BrowserGame} from "./exact-runtime.js?v=20260825b";
 import {
   activatedTrailAlphas, colorFor, hasActivatedTrail,
 } from "./colors.mjs?v=20260824c";
 import {
   clampReplayScrubFrame, parseReplay, REPLAY_TICK_MS,
-} from "./replay.mjs?v=20260825a";
-import {RestartGate} from "./restart-gate.mjs?v=20260825a";
+} from "./replay.mjs?v=20260825b";
+import {RestartGate} from "./restart-gate.mjs?v=20260825b";
 
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
@@ -331,9 +331,9 @@ function drawScorePopups(now) {
     ctx.strokeStyle = "#681a38";
     ctx.lineWidth = 5;
     ctx.lineJoin = "round";
-    ctx.strokeText(`+${popup.value}`, popup.x, popup.y - rise);
+    ctx.strokeText(String(popup.value), popup.x, popup.y - rise);
     ctx.fillStyle = "#eee0a4";
-    ctx.fillText(`+${popup.value}`, popup.x, popup.y - rise);
+    ctx.fillText(String(popup.value), popup.x, popup.y - rise);
     ctx.restore();
   }
 }
