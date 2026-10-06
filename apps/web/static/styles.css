@@ -29,6 +29,9 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 13px; }
 .brand { font: 700 24px ui-sans-serif, system-ui, sans-serif; letter-spacing: -.04em; line-height: 1; }
 .header-actions { display: flex; align-items: center; gap: 8px; }
+.github-link { display: grid; place-items: center; flex: 0 0 32px; width: 32px; height: 32px; color: var(--muted); border-radius: 4px; }
+.github-link:hover, .github-link:focus-visible { color: var(--paper); }
+.github-link:focus-visible { outline: 2px solid var(--rose); outline-offset: 2px; }
 .header-actions > button { padding: 6px 9px; border: 1px solid #303838; background: #101617aa; color: #b4b8b5; font-size: 9px; text-transform: uppercase; }
 
 .layout { display: flex; flex-direction: column; gap: 9px; }
