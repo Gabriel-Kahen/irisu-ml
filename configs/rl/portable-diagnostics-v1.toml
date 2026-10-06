@@ -26,21 +26,22 @@ legacy_portable = [
   "benchmarks/rl_r3g_analytic_solvency.py",
   "benchmarks/rl_r3g_conservative_offline.py",
   "benchmarks/rl_r3g_event_mpc.py",
-  "benchmarks/rl_r3k_sustainable.py",
-  "benchmarks/rl_r3k_sustainable_v2.py",
   "benchmarks/rl_r3k_sustainable_v3.py",
-  "benchmarks/rl_r3l_current_model_10k.py",
-  "benchmarks/rl_r3l_current_model_10k_v2.py",
   "benchmarks/rl_sequence_replay.py",
   "python/irisu_env/padded.py",
   "python/irisu_pointer/conservative_offline.py",
 ]
 
-# Development checks and rendering utilities which do not emit promotable
-# training or selection artifacts.
+# Development checks, distillation, and rendering utilities which do not emit
+# promotable training or selection artifacts.
 diagnostic_only = [
   "benchmarks/joint-planner-dev-checks.py",
-  "benchmarks/render_r3l_website_video.py",
+  "benchmarks/rl_expert_iteration_dagger.py",
+  "benchmarks/rl_portable_checkpoint_eval.py",
+  "benchmarks/rl_portable_gate_distill.py",
+  "benchmarks/rl_portable_multiseed_teacher_probe.py",
+  "benchmarks/rl_portable_pair_rank_distill.py",
+  "benchmarks/rl_portable_strength_distill.py",
   "benchmarks/rl_r3e_reserve_band_checks.py",
   "benchmarks/throughput.py",
   "tools/generate-controlled-rpy.py",

@@ -1,11 +1,18 @@
-# v86 exact-worker browser proof of concept
+# v86 exact-worker replay diagnostics
 
-This experiment runs the existing i386 `irisu-exact-worker` entirely in a
-browser Web Worker. v86 boots a small Buildroot kernel, exposes the worker and
-its libraries over virtio-9p, and carries the existing binary IPC protocol over
-a raw emulated serial port.
+These retained diagnostics run the existing i386 `irisu-exact-worker` in v86
+under Node.js. v86 boots a small Buildroot kernel, exposes the worker and its
+libraries over virtio-9p, and carries the existing binary IPC protocol over a
+raw emulated serial port.
 
-It is deliberately isolated from the production web build. Stock v86 does not
+The original browser demo and its server have been removed. Use the
+[production web app](../../apps/web/README.md) and its
+[exact runtime packaging](../../apps/web/EXACT_RUNTIME.md) for browser execution.
+The replay harness remains available for differential checks and the
+`tools/x87-trig-differential` probes; [PROVENANCE.md](PROVENANCE.md) preserves
+the original packaging review.
+
+These diagnostics are isolated from the production web build. Stock v86 does not
 implement bit-exact x87 transcendental instructions, so successful execution
 here proves browser integration and gives a performance baseline; it does not
 by itself prove gameplay parity.
@@ -16,15 +23,6 @@ Prepare pinned dependencies and local exact artifacts:
 ./prepare.sh
 ```
 
-Then serve this directory and open the printed URL:
-
-```sh
-./serve.sh
-```
-
-The page performs a Hello, Reset, Observe benchmark, and a short Step
-benchmark. It also checks the complete final Step response against the SHA-256
-produced by the native exact worker for the same seed and 20 no-op inputs.
 Generated/downloaded files live in `runtime/` and are ignored.
 
 `prepare.sh` pins v86, the project-owned Linux guest, its BIOS images, and
@@ -35,7 +33,7 @@ loader requires ISA levels above v86's advertised Pentium III-compatible CPU.
 The staged launcher has only its over-declared `.note.gnu.property` removed;
 its executable code and the MSVC9 physics host remain unchanged.
 
-The same guest path can be checked without a browser UI, which is useful in CI:
+Check the guest's Hello, Reset, Observe, and short Step path with:
 
 ```sh
 node ./node-smoke.mjs
@@ -89,11 +87,11 @@ ticks/second. The checked result artifacts are in `../../benchmarks/results/`.
 `virtio-console-smoke.mjs` is the bounded binary round-trip prerequisite for
 the virtio path.
 
-### Final production guest kernel
+### Historical final guest-kernel gate
 
-The final project-owned kernel
+The project-owned kernel used by the final proof-of-concept gate,
 `389fb6e37c9f9f101232ad68b7177bced98caee9f7a531e99ea00b836833ea33`
 passed all four corpus replays and the full 47,019-tick UART interactive gate.
 UART sustained 232.9 ticks/second with seven responses above the 16.67 ms
 deadline. This kernel does not expose `/dev/hvc0`, so virtio-console is recorded
-as unavailable rather than tested; the deployed browser worker uses UART.
+as unavailable rather than tested. These rates describe that historical gate.

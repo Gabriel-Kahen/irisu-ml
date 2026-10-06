@@ -38,3 +38,5 @@ Failure output is always shown, all scheduled jobs are allowed to finish, and
 the runner exits nonzero if the build or any native, Python, or web test fails.
 Web tests are included recursively below `apps/web/tests` when files matching
 `*.test.mjs` exist.
+Python modules with plain `test_*` functions run through pytest, including
+modules that do not import pytest; unittest modules retain their own runner.

@@ -151,4 +151,3 @@ def test_rejects_empty_duplicate_and_out_of_horizon_candidates() -> None:
         MODULE.choose_candidate([candidate(0), candidate(0)], CONFIG)
     with pytest.raises(ValueError, match="exceeds"):
         MODULE.rank_candidate(candidate(0, survival_ticks=257), CONFIG)
-

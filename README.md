@@ -24,6 +24,12 @@ original game.
 - [`docs/exact-training.md`](docs/exact-training.md): exact-only target-training,
   provenance, promotion, and artifact-regeneration policy
 
+Generated builds, search artifacts, scratch exports in `outputs/`, and rendered
+replay videos stay untracked. Preserve verified replays, verification reports,
+and the exact worker's shared-library dependencies when pruning completed runs.
+Historical experiment findings remain documented; retired prototypes are
+available in Git history.
+
 ## Simulator details
 
 The simulator targets IriSu Syndrome v2.03 normal puzzle mode.

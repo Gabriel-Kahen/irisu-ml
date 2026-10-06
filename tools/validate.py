@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import concurrent.futures
 import dataclasses
 import math
@@ -105,9 +106,15 @@ def discover_python_tasks(
     tasks = []
     for path in paths:
         relative = str(path.relative_to(root))
+        source = path.read_text(encoding="utf-8")
+        uses_pytest = "import pytest" in source or any(
+            isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and node.name.startswith("test_")
+            for node in ast.parse(source).body
+        )
         runner = (
             (python, "-m", "pytest", "-q", relative)
-            if "import pytest" in path.read_text(encoding="utf-8")
+            if uses_pytest
             else (python, "-m", "unittest", "-v", relative)
         )
         tasks.append(

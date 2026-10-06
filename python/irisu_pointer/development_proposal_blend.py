@@ -324,7 +324,7 @@ class FailClosedProposalBlendPlanner(FastMultiActionPlanner):
         """Evaluate base first; a residual worker failure discards only residuals."""
 
         probe_mode, horizon_ticks = self._select_probe_horizon(
-            int(observation.get("gauge", 0))
+            int(observation.get("gauge", 0)), int(observation.get("tick", 0))
         )
         candidates = self.candidates(
             observation, policy_before, policy_after_prediction, prediction

@@ -80,6 +80,19 @@ class ValidateRunnerTests(unittest.TestCase):
             ("python", "-m", "pytest", "-q", "tests/test_native_pytest.py"),
         )
 
+    def test_python_discovery_runs_plain_test_functions_with_pytest(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            tests = root / "tests"
+            tests.mkdir()
+            (tests / "test_plain.py").write_text(
+                "def test_example():\n    assert True\n", encoding="utf-8"
+            )
+            task = validate.discover_python_tasks(root, "python")[0]
+        self.assertEqual(
+            task.command, ("python", "-m", "pytest", "-q", "tests/test_plain.py")
+        )
+
     def test_web_discovery_is_recursive(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

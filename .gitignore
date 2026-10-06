@@ -11,11 +11,15 @@
 /reference/**/*.log
 /reference/**/*.tmp
 /artifacts/
+/outputs/
+/irisu-*-replay-*.mp4
+/irisu-*-replay-*.mkv
 
 # Python tooling caches.
 __pycache__/
 *.py[cod]
 .pytest_cache/
+.ruff_cache/
 .coverage
 coverage.xml
 htmlcov/

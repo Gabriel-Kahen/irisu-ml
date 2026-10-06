@@ -15,4 +15,3 @@ unit = "artifacts/r3/development/exact-50k-evo-20260810-001/units/mutant-96x16-g
 trace = "artifacts/r3/development/exact-50k-evo-20260810-001/traces/mutant-96x16-g8.u32le"
 replay = "artifacts/r3/development/exact-50k-evo-20260810-001/mutant-96x16-g8.rpy"
 acceptance = "artifacts/r3/development/exact-50k-evo-20260810-001/mutant-96x16-g8.exact-evaluation.json"
-

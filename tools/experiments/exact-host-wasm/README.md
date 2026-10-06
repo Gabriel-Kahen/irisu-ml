@@ -1,34 +1,33 @@
 # Exact-host WebAssembly translation experiment
 
-This experiment packages the fixed 32-bit MSVC9 Box2D host as a zero-based
-guest image and inventories its complete ELF boundary and decoded instruction
-surface. It does not redistribute the generated host.
+This archived experiment packaged the fixed 32-bit MSVC9 Box2D host as a
+zero-based guest image and inventoried its ELF boundary and decoded instruction
+surface. The isolated packager and smoke interpreter have been removed; their
+source remains in Git history. The [findings](FINDINGS.md) preserve the inventory,
+host identity, deterministic smoke hash, and proposed translation architecture.
 
-The first executable slice interprets the extracted bytes of the private
+The supported browser implementation runs the exact worker in v86. See the
+[production web app](../../../apps/web/README.md) and its
+[exact runtime packaging](../../../apps/web/EXACT_RUNTIME.md).
+
+The first executable slice interpreted the extracted bytes of the private
 `msvc_b2d_world_test` wrapper in WebAssembly. The path exercises the MSVC
 `stdcall` stack, ownership branches, an absolute `.rdata` reference, and x87
-`FLD`/`FSTP`. Both the owned and rejected-body branches run; the smoke test
-expects the original raw `3.14159265f` word, `0x40490fdb`.
+`FLD`/`FSTP`. Both the owned and rejected-body branches ran; the smoke test
+expected the original raw `3.14159265f` word, `0x40490fdb`.
 
-```sh
-tools/experiments/exact-host-wasm/build-smoke.sh \
-  /path/to/libirisu_box2d_msvc_exact_multiworld.so \
-  /new/output/directory
-```
-
-The output contains:
+The historical output contained:
 
 - `manifest.json`: imports, exports, ABI, relocations, and mnemonic counts;
 - `exact-host.image.bin`: page-aligned `PT_LOAD` image at guest base zero;
 - `exact_host_image.inc`: deterministic C initializer used by the smoke slice;
 - `exact-host-smoke.wasm`: freestanding browser-compatible module.
 
-No timestamp or absolute source path enters the package. Rebuilding the same
-host with the same binutils/Clang versions produces byte-identical outputs.
-The packager pins the currently attested host SHA-256 by default; a deliberate
-new host must pass its new hash through `--expected-sha256`.
+No timestamp or absolute source path entered the package. Rebuilding the same
+host with the same binutils/Clang versions produced byte-identical outputs.
+The packager pinned the attested host SHA-256 by default.
 
-## Narrow production route
+## Historical translation proposal
 
 Keep the existing mechanics and UI compiled normally to WebAssembly. Translate
 only this fixed guest image ahead of time, one recovered basic block per Wasm

@@ -15,6 +15,11 @@ from types import SimpleNamespace
 
 import pytest
 
+from tests.g4_import_fixtures import (
+    assert_omitted_preload_captures_foreign_owner,
+    install_verified_module_closure,
+)
+
 
 REPOSITORY = Path("/home/gabe/Documents/irisu")
 SOURCE = (
@@ -3513,85 +3518,18 @@ def test_verifier_rejects_old_worktree_irisu_env_preload(
 
 
 def test_omitted_env_preload_reproduces_old_worktree_owner(
-    runner,
+    runner, tmp_path: Path,
 ) -> None:
-    script = f"""
-import importlib, importlib.util, sys
-from pathlib import Path
-p = Path({str(SOURCE)!r})
-s = importlib.util.spec_from_file_location("_r3j_omitted_preload", p)
-m = importlib.util.module_from_spec(s)
-sys.modules[s.name] = m
-s.loader.exec_module(m)
-m.enforce_cpu0()
-m.enforce_isolated_science()
-m._preclosure_import_manifest()
-importlib.import_module("irisu_pointer.resolution_proposal_g4")
-m._load_module(
-    "campaign_metrics",
-    m.B_PATHS["campaign_metrics"],
-    m.B_SHA256["campaign_metrics"],
-)
-m._load_module("barrier_core", m.B_PATHS["barrier_core"], m.B_SHA256["barrier_core"])
-print(Path(sys.modules["irisu_env"].__file__).resolve())
-"""
-    completed = subprocess.run(
-        [
-            str(runner.PRIVATE_VENV_PYTHON),
-            "-I",
-            "-S",
-            "-B",
-            "-X",
-            f"pycache_prefix={runner.PYTHON_CACHE_PREFIX}",
-            "-c",
-            script,
-        ],
-        check=True,
-        capture_output=True,
-        text=True,
-        env={
-            **os.environ,
-            "PYTHONDONTWRITEBYTECODE": "1",
-            "OMP_NUM_THREADS": "1",
-            "OPENBLAS_NUM_THREADS": "1",
-            "MKL_NUM_THREADS": "1",
-            "NUMEXPR_NUM_THREADS": "1",
-            "VECLIB_MAXIMUM_THREADS": "1",
-            "BLIS_NUM_THREADS": "1",
-        },
-    )
-    assert completed.stdout.strip() == str(
-        runner.JOINT_SOURCE.parents[1] / "irisu_env/__init__.py"
-    )
+    assert_omitted_preload_captures_foreign_owner(runner, tmp_path)
 
 
 @pytest.mark.parametrize("foreign_name", ["irisu_env", "irisu_pointer", "irisu_rl"])
 def test_verifier_full_closure_rejects_foreign_package_owner(
     verifier, tmp_path: Path, monkeypatch, foreign_name: str
 ) -> None:
-    live_sha = hashlib.sha256(verifier.LIVE_TAU2_SOURCE.read_bytes()).hexdigest()
-    expected = {
-        **verifier.TRANSITIVE_MODULES,
-        "barrier_core": (
-            verifier.B_PATHS["barrier_core"],
-            verifier.B_SHA256["barrier_core"],
-        ),
-        "campaign_metrics": (
-            verifier.B_PATHS["campaign_metrics"],
-            verifier.B_SHA256["campaign_metrics"],
-        ),
-        "campaign": (
-            verifier.B_PATHS["campaign"],
-            verifier.B_SHA256["campaign"],
-        ),
-        "r3j_live_tau2_lease": (verifier.LIVE_TAU2_SOURCE, live_sha),
-    }
-    for name, (path, _digest) in expected.items():
-        monkeypatch.setitem(
-            sys.modules,
-            name,
-            SimpleNamespace(__file__=str(path)),
-        )
+    expected, live_sha = install_verified_module_closure(
+        verifier, tmp_path, monkeypatch
+    )
     expected_path = expected[foreign_name][0]
     foreign = tmp_path / foreign_name / expected_path.name
     foreign.parent.mkdir()
@@ -3601,7 +3539,7 @@ def test_verifier_full_closure_rejects_foreign_package_owner(
         foreign_name,
         SimpleNamespace(__file__=str(foreign)),
     )
-    with pytest.raises(
+    with verifier.VerificationLease(tmp_path), pytest.raises(
         verifier.VerificationError,
         match=f"module identity differs: {foreign_name}",
     ):

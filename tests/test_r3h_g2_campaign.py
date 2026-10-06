@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 import hashlib
+import ast
 import importlib
+import importlib.util
 import json
 import io
 import os
@@ -21,12 +23,55 @@ for _path in (ROOT / "benchmarks", ROOT / "python"):
     if str(_path) not in sys.path:
         sys.path.insert(0, str(_path))
 
-os.environ["IRISU_G2_UNFROZEN_AUDIT"] = "1"
-try:
-    import r3h_g2_exact_collect as collector  # noqa: E402
-    import rl_r3h_g2 as campaign  # noqa: E402
-finally:
-    os.environ.pop("IRISU_G2_UNFROZEN_AUDIT", None)
+class _HelpersLoader:
+    """Load unit-test helpers without launching the frozen campaign bootstrap.
+
+    The validators remain intact and are tested below. Real imports still require
+    the isolated interpreter and the historical frozen runtime identities.
+    """
+
+    def create_module(self, spec):
+        return None
+
+    def exec_module(self, module):
+        path = Path(module.__file__)
+        tree = ast.parse(path.read_text(), filename=str(path))
+        bootstrap = {"_validate_pycache_boundary", "_bootstrap_frozen_environment"}
+        tree.body = [
+            node for node in tree.body
+            if not (
+                isinstance(node, ast.Expr) and isinstance(node.value, ast.Call)
+                and isinstance(node.value.func, ast.Name)
+                and node.value.func.id in bootstrap
+            )
+        ]
+        with mock.patch.object(sys, "dont_write_bytecode", True):
+            exec(compile(tree, str(path), "exec"), module.__dict__)
+
+
+_SOURCE_SPEC = importlib.util.spec_from_file_location
+
+
+def _helper_spec(name, path, *args, **kwargs):
+    if Path(path).resolve() in {
+        ROOT / "benchmarks/r3h_g2_exact_collect.py",
+        ROOT / "benchmarks/rl_r3h_g2.py",
+    }:
+        kwargs["loader"] = _HelpersLoader()
+    return _SOURCE_SPEC(name, path, *args, **kwargs)
+
+
+def _load_helpers(name: str):
+    spec = _helper_spec(name, ROOT / "benchmarks" / f"{name}.py")
+    assert spec is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+collector = _load_helpers("r3h_g2_exact_collect")
+campaign = _load_helpers("rl_r3h_g2")
 
 
 def _write(path: Path, value: object) -> None:
@@ -283,6 +328,29 @@ class G2CampaignTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.root = Path(self.temporary.name)
         self.chain = AuthorizationFixture(self.root)
+        self.fixtures = ExitStack()
+        self.addCleanup(self.fixtures.close)
+        self.fixtures.enter_context(mock.patch.object(
+            importlib.util, "spec_from_file_location", side_effect=_helper_spec
+        ))
+        if self._testMethodName not in {
+            "test_runtime_requires_absent_startup_cache_prefix",
+            "test_runtime_rejects_existing_cache_prefix",
+        }:
+            for module in (collector, campaign):
+                self.fixtures.enter_context(mock.patch.object(
+                    module, "_validate_pycache_boundary"
+                ))
+        self.fixtures.enter_context(mock.patch.object(
+            campaign, "_RUNTIME_IDENTITY_BYTES", None
+        ))
+        self.fixtures.enter_context(mock.patch.object(
+            campaign, "_build_runtime_identity", return_value={
+                "schema": "irisu-r3h-g2-numerical-runtime-v4",
+                "numpy_version": "unit-test-runtime",
+            }
+        ))
+        self.fixtures.enter_context(mock.patch.object(campaign, "validate_loaded_runtime"))
 
     def tearDown(self) -> None:
         self.temporary.cleanup()
@@ -965,6 +1033,10 @@ class G2CampaignTests(unittest.TestCase):
             mock.patch.object(
                 collector, "_validate_all_incomplete", return_value=campaign
             ),
+            mock.patch.object(
+                collector.subprocess, "run",
+                return_value=SimpleNamespace(stdout=collector.SOURCE_REVISION),
+            ),
         ):
             collector._verify_source_identity()
             original_sha = collector._sha256_file
@@ -1129,6 +1201,17 @@ class G2CampaignTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "PYTHONPYCACHEPREFIX"):
                 collector._validate_pycache_boundary()
 
+    def test_real_import_requires_isolated_interpreter(self) -> None:
+        for module in (collector, campaign):
+            result = collector.subprocess.run(
+                [sys.executable, "-c",
+                 "import runpy, sys; runpy.run_path(sys.argv[1])", module.__file__],
+                capture_output=True, text=True,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("R3H G2 requires -I -S -B", result.stderr)
+
+    def test_runtime_rejects_existing_cache_prefix(self) -> None:
         blocked = self.root / "blocked-pycache"
         blocked.mkdir()
         with (

@@ -64,4 +64,3 @@ def test_audit_rejects_nonexact_empty_and_invalid_target() -> None:
         MODULE.analyze(
             {"physics_backend": "exact", "episodes": [{}]}, target_score=0
         )
-
