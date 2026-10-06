@@ -1,12 +1,12 @@
-import {BrowserGame} from "./exact-runtime.js?v=20261006d";
+import {BrowserGame} from "./exact-runtime.js?v=20261006e";
 import {
   activatedTrailAlphas, colorFor, hasActivatedTrail,
 } from "./colors.mjs?v=20260824c";
 import {
   clampReplayScrubFrame, parseReplay, REPLAY_TICK_MS,
-} from "./replay.mjs?v=20261006d";
-import {RestartGate} from "./restart-gate.mjs?v=20261006d";
-import {createSoundtrack} from "./music.mjs?v=20261006d";
+} from "./replay.mjs?v=20261006e";
+import {RestartGate} from "./restart-gate.mjs?v=20261006e";
+import {createSoundtrack} from "./music.mjs?v=20261006e";
 
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
@@ -26,7 +26,6 @@ const ui = {
   exitReplay: $("#exitReplayButton"),
   runtimeLoading: $("#runtimeLoading"),
   appError: $("#appError"),
-  startScreen: $("#startScreen"), play: $("#playButton"),
   toast: $("#toast"),
 };
 
@@ -440,7 +439,6 @@ function syncUi() {
   const replay = snapshot.replay;
   const replayMode = snapshot.mode === "replay";
   started ||= snapshot.running || state.tick > 0;
-  ui.startScreen.hidden = started || replayMode;
   ui.pause.firstChild.textContent = snapshot.running ? "pause " : "resume ";
   ui.pause.disabled = replayMode && replay.frame >= replay.total_frames;
   ui.paused.hidden = !started || snapshot.running || state.terminated || state.truncated;
@@ -540,10 +538,6 @@ canvas.addEventListener("wheel", (event) => {
   if (event.deltaY > 0) continueFastForward();
   else if (event.deltaY < 0) stopFastForward();
 }, {passive: false});
-ui.play.addEventListener("click", () => {
-  setRunning(true);
-  canvas.focus({preventScroll: true});
-});
 ui.pause.addEventListener("click", () => setRunning(!snapshot?.running));
 ui.restart.addEventListener("click", () => { void restart(); });
 ui.again.addEventListener("click", () => { void restart(); });
@@ -606,12 +600,11 @@ window.addEventListener("keyup", (event) => {
 window.addEventListener("blur", stopFastForward);
 
 draw();
-BrowserGame.create(receiveSnapshot, {startRunning: false}).then((instance) => {
+BrowserGame.create(receiveSnapshot).then((instance) => {
   game = instance;
   game.setAim(aim.x, aim.y);
   document.documentElement.dataset.backend = "exact-v86";
   document.documentElement.dataset.ready = "true";
   ui.openReplay.disabled = false;
-  ui.play.disabled = false;
 })
   .catch((error) => receiveSnapshot(null, error));

@@ -10,7 +10,7 @@ const observation = tick => ({
   terminated: false, truncated: false, bodies: [], field: {}, difficulty: {},
 });
 
-test("the initial play screen keeps the run at tick zero until Play", async () => {
+test("an explicitly paused run stays at tick zero until resumed", async () => {
   const snapshots = [];
   const game = await BrowserGame.create(state => snapshots.push(state), {
     client: {async reset() { return {observation: observation(0), events: []}; }, close() {}},

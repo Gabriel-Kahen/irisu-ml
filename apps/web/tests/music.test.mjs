@@ -14,7 +14,7 @@ test("gameplay starts with the first song; only a loss interrupts the automatic 
   assert.deepEqual(soundtrackFor({observation: {score: 0}}), {uri: DEFAULT_GAME_TRACK, cycle: true});
 });
 
-function setup() {
+function setup(random = () => 0) {
   const sent = [], events = {};
   const frame = {contentWindow: {postMessage: (...args) => sent.push(args)}};
   const status = {hidden: true};
@@ -22,7 +22,7 @@ function setup() {
     location: {origin: "https://irisu.online"},
     addEventListener: (name, callback) => { events[name] = callback; },
   };
-  const music = createSoundtrack({querySelector: id => id === "#spotifyPlayer" ? frame : status}, window);
+  const music = createSoundtrack({querySelector: id => id === "#spotifyPlayer" ? frame : status}, window, random);
   const message = data => events.message({origin: window.location.origin, source: frame.contentWindow, data});
   return {sent, events, frame, status, window, music, message};
 }
@@ -88,4 +88,25 @@ test("only the trusted player can report errors; normal status occupies no space
   assert.equal(status.hidden, false);
   message({type: "irisu:music-status", message: ""});
   assert.equal(status.hidden, true);
+});
+
+
+test("each run chooses among the first three songs without rerolling on snapshots or handshake", () => {
+  for (const [index, sample] of [0, 0.5, 0.999999].entries()) {
+    let choices = 0;
+    const {music, sent, message} = setup(() => { choices++; return sample; });
+    assert.equal(sent[0][0].uri, GAME_TRACKS[index]);
+    const running = {seed: 1, mode: "live", running: true, observation: {tick: 0}};
+    music.update(running);
+    music.update({...running, observation: {tick: 100}});
+    message({type: "irisu:music-ready"});
+    assert.equal(choices, 1);
+    assert.equal(sent.at(-1)[0].uri, GAME_TRACKS[index]);
+    music.update({...running, ...loss, running: false});
+    assert.equal(sent.at(-1)[0].uri, GAME_OVER_TRACK);
+    music.update({...running, seed: 2});
+    assert.equal(choices, 2);
+    assert.equal(sent.at(-1)[0].uri, GAME_TRACKS[index]);
+    assert.equal(sent.at(-1)[0].autoplay, true);
+  }
 });

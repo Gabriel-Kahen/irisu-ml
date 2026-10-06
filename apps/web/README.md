@@ -20,13 +20,13 @@ strong shot.
 ## Spotify soundtrack
 
 A compact 80-pixel Spotify player is centered directly below the game. The first three original
-soundtrack songs play in album order and repeat automatically; a loss interrupts
-them with **Game Over 1**. Restarting after a loss returns to the first gameplay song. There is
+soundtrack songs play in album order and repeat automatically, starting with a random
+one of the three on each new run. A loss interrupts them with **Game Over 1**. There is
 no song selector or full-album mode. Score changes, game pauses, replay exhaustion,
 and level completion do not trigger the loss cue.
 
-The first run waits at tick zero for **Play** (or Enter/W/S). That user gesture
-starts gameplay and requests Spotify playback together. Selecting the loss cue
+Gameplay starts immediately and requests Spotify playback automatically. Browsers
+may block sound until the first gameplay click or keypress. Selecting the loss cue
 always requests playback even if the previous song has stopped. If the browser
 blocks a playback request, subsequent gameplay interactions can retry; Spotify's play
 button remains available. Manual pauses persist until the next run or loss cue.

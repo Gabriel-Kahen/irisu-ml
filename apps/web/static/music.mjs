@@ -7,14 +7,16 @@ export const GAME_OVER_TRACK = "spotify:track:4DDJ7CfXUhSDf2Gpp06szh";
 export const DEFAULT_GAME_TRACK = GAME_TRACKS[0];
 
 // The web soundtrack cycles the three gameplay songs; only a loss interrupts it.
-export function soundtrackFor(snapshot) {
+export function soundtrackFor(snapshot, gameTrack = DEFAULT_GAME_TRACK) {
   const lost = snapshot?.observation?.terminated && snapshot.terminal_reason === "game_over";
-  return {uri: lost ? GAME_OVER_TRACK : DEFAULT_GAME_TRACK, cycle: !lost};
+  return {uri: lost ? GAME_OVER_TRACK : gameTrack, cycle: !lost};
 }
 
-export function createSoundtrack(document, window) {
+export function createSoundtrack(document, window, random = Math.random) {
   const frame = document.querySelector("#spotifyPlayer");
   const status = document.querySelector("#musicStatus");
+  const chooseTrack = () => GAME_TRACKS[Math.floor(random() * GAME_TRACKS.length)];
+  let gameTrack = chooseTrack();
   let snapshot = null;
   let current = null;
   let startRequested = false;
@@ -27,11 +29,14 @@ export function createSoundtrack(document, window) {
 
   function update(next = snapshot, force = false) {
     const newRun = next && (!snapshot || next.seed !== snapshot.seed || next.mode !== snapshot.mode);
-    if (newRun) runStarted = false;
+    if (newRun) {
+      if (snapshot) gameTrack = chooseTrack();
+      runStarted = false;
+    }
     const gameStarting = Boolean(next?.running && !runStarted);
     if (gameStarting) runStarted = true;
     snapshot = next;
-    const track = soundtrackFor(snapshot);
+    const track = soundtrackFor(snapshot, gameTrack);
     if (!force && !gameStarting && current?.uri === track.uri && current.cycle === track.cycle) return;
     current = track;
     const autoplay = Boolean(snapshot && (snapshot.running || !track.cycle));
