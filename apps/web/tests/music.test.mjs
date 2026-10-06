@@ -42,11 +42,11 @@ test("snapshots don't reset the ongoing playlist; terminal changes and handshake
   assert.equal(sent[3][0].uri, DEFAULT_GAME_TRACK);
 });
 
-test("first gameplay interaction requests play once, including before the bridge loads", () => {
+test("gameplay interactions can retry playback, including before the bridge loads", () => {
   const {music, sent, message} = setup();
   music.start();
   music.start();
-  assert.equal(sent.filter(([data]) => data.type === "irisu:music-start").length, 1);
+  assert.equal(sent.filter(([data]) => data.type === "irisu:music-start").length, 2);
   message({type: "irisu:music-ready"});
   assert.equal(sent.at(-1)[0].type, "irisu:music-start");
 });

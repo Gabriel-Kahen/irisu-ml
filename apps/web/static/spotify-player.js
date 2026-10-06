@@ -21,7 +21,6 @@
   let playing = false;
   let endedPlaying = false;
   let resume = false;
-  let startRequested = false;
   let hasPlayed = false;
   let timer;
   const send = data => parent.postMessage(data, location.origin);
@@ -85,8 +84,7 @@
     if (event.source !== parent || event.origin !== location.origin) return;
     const data = event.data;
     if (data?.type === "irisu:music-start") {
-      if (fallback || startRequested || hasPlayed) return;
-      startRequested = true;
+      if (fallback || hasPlayed) return;
       if (!ready) resume = true;
       else {
         try { controller.play(); } catch { useFallback(); }
@@ -122,7 +120,7 @@
           if (typeof data.isPaused !== "boolean") return;
           const wasPlaying = playing;
           playing = !data.isPaused;
-          hasPlayed ||= playing;
+          hasPlayed ||= playing && !data.isBuffering && Number.isFinite(data.position) && data.position > 0;
           const duration = durations.get(uri);
           const fullTrack = duration && Number.isFinite(data.duration) && Math.abs(data.duration - duration) < 1000;
           const completed = fullTrack && data.isPaused && !data.isBuffering &&

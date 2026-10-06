@@ -139,10 +139,28 @@ test("an early interaction queues playback until ready; a later interaction play
     player.emit("ready");
     if (!early) player.start();
     assert.equal(player.plays, 1);
-    player.start(); // Parent may resend after the bridge handshake.
-    assert.equal(player.plays, 1);
+    player.start(); // A request is not proof of playback; a subsequent gesture can retry.
+    assert.equal(player.plays, 2);
     assert.equal(player.messages.at(-1).message.message, "");
   }
+});
+
+test("buffering at zero does not consume first-play retries", () => {
+  const player = setup();
+  player.start();
+  player.init();
+  player.emit("ready");
+  player.update(first, {isPaused: false, isBuffering: true, position: 0});
+  player.update(first, {isPaused: true, isBuffering: false, position: 0});
+  player.start();
+  assert.equal(player.plays, 2);
+  player.update(first, {isPaused: false, isBuffering: false, position: 0});
+  player.start();
+  assert.equal(player.plays, 3);
+  player.update(first, {isPaused: false, isBuffering: false, position: 1000});
+  player.update(first, {isPaused: true, isBuffering: false, position: 1000});
+  player.start();
+  assert.equal(player.plays, 3); // A deliberate pause after audible playback stays paused.
 });
 
 test("first game interaction respects music already played and manually paused", () => {

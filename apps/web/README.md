@@ -25,9 +25,10 @@ them with **Game Over 1**. Restarting after a loss returns to the first gameplay
 no song selector or full-album mode. Score changes, game pauses, replay exhaustion,
 and level completion do not trigger the loss cue.
 
-Starting a run requests music playback immediately, and selecting the loss cue
+The first run waits at tick zero for **Play** (or Enter/W/S). That user gesture
+starts gameplay and requests Spotify playback together. Selecting the loss cue
 always requests playback even if the previous song has stopped. If the browser
-blocks initial autoplay, the first gameplay interaction retries; Spotify's play
+blocks a playback request, subsequent gameplay interactions can retry; Spotify's play
 button remains available. Manual pauses persist until the next run or loss cue.
 All audio stays in Spotify's official embed; full-track availability depends on
 Spotify and the browser. Restricted previews do not automatically cycle or loop.

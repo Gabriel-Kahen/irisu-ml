@@ -17,12 +17,11 @@ export function createSoundtrack(document, window) {
   const status = document.querySelector("#musicStatus");
   let snapshot = null;
   let current = null;
-  let started = false;
+  let startRequested = false;
   let runStarted = false;
 
   function start() {
-    if (started) return;
-    started = true;
+    startRequested = true;
     frame.contentWindow?.postMessage({type: "irisu:music-start"}, window.location.origin);
   }
 
@@ -43,7 +42,7 @@ export function createSoundtrack(document, window) {
     if (event.origin !== window.location.origin || event.source !== frame.contentWindow) return;
     if (event.data?.type === "irisu:music-ready") {
       update(snapshot, true);
-      if (started) frame.contentWindow?.postMessage({type: "irisu:music-start"}, window.location.origin);
+      if (startRequested) frame.contentWindow?.postMessage({type: "irisu:music-start"}, window.location.origin);
     }
     if (event.data?.type === "irisu:music-status" && typeof event.data.message === "string") {
       status.textContent = event.data.message;

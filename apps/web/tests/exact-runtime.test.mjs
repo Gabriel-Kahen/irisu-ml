@@ -10,6 +10,21 @@ const observation = tick => ({
   terminated: false, truncated: false, bodies: [], field: {}, difficulty: {},
 });
 
+test("the initial play screen keeps the run at tick zero until Play", async () => {
+  const snapshots = [];
+  const game = await BrowserGame.create(state => snapshots.push(state), {
+    client: {async reset() { return {observation: observation(0), events: []}; }, close() {}},
+    seed: 7, startRunning: false, now: () => 1000,
+    clock: {setTimeout: () => 1, clearTimeout() {}},
+  });
+  assert.equal(game.running, false);
+  assert.equal(game.pendingTicks, 0);
+  assert.equal(snapshots.at(-1).observation.tick, 0);
+  game.setRunning(true);
+  assert.equal(snapshots.at(-1).running, true);
+  game.close();
+});
+
 test("forwards worker startup progress without coupling it to RPC state", () => {
   const updates = [];
   const worker = {};
