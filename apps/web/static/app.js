@@ -1,8 +1,11 @@
-import {BrowserGame} from "./exact-runtime.js?v=20260824b";
+import {BrowserGame} from "./exact-runtime.js?v=20260825b";
 import {
   activatedTrailAlphas, colorFor, hasActivatedTrail,
 } from "./colors.mjs?v=20260824c";
-import {parseReplay, REPLAY_TICK_MS} from "./replay.mjs";
+import {
+  clampReplayScrubFrame, parseReplay, REPLAY_TICK_MS,
+} from "./replay.mjs?v=20260825b";
+import {RestartGate} from "./restart-gate.mjs?v=20260825b";
 
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
@@ -43,6 +46,13 @@ const bodyTrails = new Map();
 const bodyPositions = new Map();
 const pendingScores = [];
 const scorePopups = [];
+
+const restartGate = new RestartGate((pending) => {
+  if (ui.runtimeLoading) ui.runtimeLoading.hidden = !pending;
+  ui.restart.disabled = pending;
+  ui.again.disabled = pending;
+  ui.openReplay.disabled = pending || !game;
+});
 
 const fastForwardIdleMs = 160;
 const replaySkipFrames = 5_000 / REPLAY_TICK_MS;
@@ -141,19 +151,23 @@ function setRunning(running) {
   syncUi();
 }
 
-function restart() {
-  if (!game) return;
-  replayLoadEpoch++;
-  replayScrubbing = false;
-  replayScrubTarget = null;
-  stopFastForward();
-  ui.replayError.hidden = true;
-  showPersistentError();
-  const seed = crypto.getRandomValues(new Uint32Array(1))[0];
-  game.restart(seed);
-  started = true;
-  lastEvent = -1;
-  syncUi();
+async function restart() {
+  if (!game) return false;
+  return restartGate.run(async () => {
+    replayLoadEpoch++;
+    replayScrubbing = false;
+    replayScrubTarget = null;
+    stopFastForward();
+    ui.replayError.hidden = true;
+    showPersistentError();
+    const seed = crypto.getRandomValues(new Uint32Array(1))[0];
+    const restarted = await game.restart(seed);
+    if (restarted) {
+      started = true;
+      lastEvent = -1;
+    }
+    return restarted;
+  });
 }
 
 function replayFilename(state) {
@@ -317,9 +331,9 @@ function drawScorePopups(now) {
     ctx.strokeStyle = "#681a38";
     ctx.lineWidth = 5;
     ctx.lineJoin = "round";
-    ctx.strokeText(`+${popup.value}`, popup.x, popup.y - rise);
+    ctx.strokeText(String(popup.value), popup.x, popup.y - rise);
     ctx.fillStyle = "#eee0a4";
-    ctx.fillText(`+${popup.value}`, popup.x, popup.y - rise);
+    ctx.fillText(String(popup.value), popup.x, popup.y - rise);
     ctx.restore();
   }
 }
@@ -519,8 +533,8 @@ canvas.addEventListener("wheel", (event) => {
   else if (event.deltaY < 0) stopFastForward();
 }, {passive: false});
 ui.pause.addEventListener("click", () => setRunning(!snapshot?.running));
-ui.restart.addEventListener("click", restart);
-ui.again.addEventListener("click", restart);
+ui.restart.addEventListener("click", () => { void restart(); });
+ui.again.addEventListener("click", () => { void restart(); });
 ui.saveReplay.addEventListener("click", saveReplay);
 ui.openReplay.addEventListener("click", () => {
   if (ui.replayFile.showPicker) ui.replayFile.showPicker();
@@ -543,12 +557,16 @@ ui.replayScrubber.addEventListener("input", () => {
   showReplayPosition(frame, Number(ui.replayScrubber.max));
 });
 ui.replayScrubber.addEventListener("change", () => {
-  const frame = Number(ui.replayScrubber.value);
+  const frame = clampReplayScrubFrame(
+    ui.replayScrubber.value, snapshot?.replay?.buffered_frames,
+  );
   replayScrubbing = false;
   replayScrubTarget = frame;
+  ui.replayScrubber.value = String(frame);
+  showReplayPosition(frame, Number(ui.replayScrubber.max));
   game?.seekReplay(frame, {preserveRunning: true});
 });
-ui.exitReplay.addEventListener("click", restart);
+ui.exitReplay.addEventListener("click", () => { void restart(); });
 window.addEventListener("keydown", (event) => {
   if (event.target instanceof HTMLInputElement || event.target instanceof HTMLButtonElement ||
       event.target instanceof HTMLSelectElement || event.target?.isContentEditable) return;
@@ -566,7 +584,7 @@ window.addEventListener("keydown", (event) => {
     event.preventDefault();
     if (!event.repeat && snapshot?.mode !== "replay") startFastForward();
   }
-  if (event.key.toLowerCase() === "r") restart();
+  if (event.key.toLowerCase() === "r") void restart();
   if (snapshot?.mode !== "replay" && event.key.toLowerCase() === "w") shoot("weak");
   if (snapshot?.mode !== "replay" && event.key.toLowerCase() === "s") shoot("strong");
 });

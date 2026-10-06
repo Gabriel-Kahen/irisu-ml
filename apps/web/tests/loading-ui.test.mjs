@@ -46,11 +46,19 @@ test("exact worker downloads runtime in parallel and keeps a persistent fallback
   assert.match(guestList, /libstdc\+\+\.so\.6/);
 });
 
-test("exact worker parses each serial response with fixed buffers", () => {
+test("exact worker parses transport responses with fixed buffers", () => {
   const worker = readFileSync(path.join(web, "static/exact-worker.js"), "utf8");
   assert.match(worker, /const responseHeader = new Uint8Array\(16\)/);
   assert.match(worker, /responsePayload = new Uint8Array\(size\)/);
   assert.doesNotMatch(worker, /responseBytes|\.shift\(|\.splice\(/);
+});
+
+test("exact worker carries RPC traffic over virtio console", () => {
+  const worker = readFileSync(path.join(web, "static/exact-worker.js"), "utf8");
+  assert.match(worker, /virtio_console: true/);
+  assert.match(worker, /virtio-console0-output-bytes/);
+  assert.match(worker, /virtio-console0-input-bytes/);
+  assert.doesNotMatch(worker, /serial0_send/);
 });
 
 test("runtime preloads use the exact immutable worker URLs", () => {
@@ -69,8 +77,21 @@ test("browser module cache-bust chain stays aligned", () => {
   const version = html.match(/app\.js\?v=([0-9a-z]+)/)?.[1];
   assert.ok(version);
   assert.match(app, new RegExp(`exact-runtime\\.js\\?v=${version}`));
+  assert.match(app, new RegExp(`restart-gate\\.mjs\\?v=${version}`));
+  assert.match(app, new RegExp(`replay\\.mjs\\?v=${version}`));
   assert.match(runtime, new RegExp(`exact-codec\\.mjs\\?v=${version}`));
+  assert.match(runtime, new RegExp(`replay\\.mjs\\?v=${version}`));
   assert.match(runtime, new RegExp(`exact-worker\\.js\\?v=${version}`));
+});
+
+test("restart shows the emulator loading state and awaits the fresh worker", () => {
+  const app = readFileSync(path.join(web, "static/app.js"), "utf8");
+  assert.match(app, /new RestartGate\(\(pending\) => \{/);
+  assert.match(app, /runtimeLoading\) ui\.runtimeLoading\.hidden = !pending/);
+  assert.match(app, /ui\.restart\.disabled = pending/);
+  assert.match(app, /ui\.again\.disabled = pending/);
+  assert.match(app, /const restarted = await game\.restart\(seed\)/);
+  assert.doesNotMatch(app, /game\.restart\(seed\);[\s\S]{0,120}syncUi\(\)/);
 });
 
 test("replay transport exposes keyboard stepping and playback speeds", () => {
@@ -87,6 +108,7 @@ test("replay transport exposes keyboard stepping and playback speeds", () => {
   assert.match(app, /let replayScrubbing = false/);
   assert.match(app, /let replayScrubTarget = null/);
   assert.match(app, /if \(!replayScrubbing && replayScrubTarget === null\)/);
+  assert.match(app, /clampReplayScrubFrame\([\s\S]*buffered_frames/);
   assert.match(app, /seekReplay\(frame, \{preserveRunning: true\}\)/);
   assert.match(css, /\.replay-speed select/);
 });
@@ -110,6 +132,10 @@ test("browser guest uses a minimal executable direct init", () => {
   assert.match(init, /mount -t proc proc \/proc/);
   assert.match(init, /mount -t 9p .* host9p \/mnt/);
   assert.match(init, /exec \/mnt\/irisu-exact-worker/);
+  assert.match(init, /mknod \/dev\/hvc0 c 229 0/);
+  assert.match(init, /exec 3<>\/dev\/hvc0/);
+  assert.match(init, /<&3 >&3 3>&-/);
+  assert.match(config, /CONFIG_VIRTIO_CONSOLE=y/);
   assert.doesNotMatch(init, /\/mnt\/(?:ld-linux|libc\.so)/);
   assert.doesNotMatch(init, /mount -t (?:devtmpfs|sysfs)|exec \/bin\/sh/);
   for (const option of ["ACPI", "INET", "WIRELESS", "INPUT", "VT", "DEVTMPFS", "SYSFS", "TMPFS"]) {

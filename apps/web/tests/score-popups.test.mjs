@@ -14,5 +14,6 @@ test("score events rise and fade from the cleared block", () => {
   assert.match(app, /ctx\.globalAlpha = 1 - progress/);
   assert.match(app, /popup\.y - rise/);
   assert.match(app, /ctx\.font = "900 26px Georgia, serif"/);
-  assert.match(app, /`\+\$\{popup\.value\}`/);
+  assert.match(app, /String\(popup\.value\)/);
+  assert.doesNotMatch(app, /`\+\$\{popup\.value\}`/);
 });

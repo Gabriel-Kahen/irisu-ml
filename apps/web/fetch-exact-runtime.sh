@@ -9,10 +9,10 @@ if [[ "$output" == / || "$output" == "$root" ]]; then
   exit 1
 fi
 
-tag=web-exact-runtime-lowlatency-v2-20260809
-asset=irisu-exact-runtime-lowlatency-v2-20260809.tar.gz
-archive_sha=2761932073e3be9a8663c1aa497b2bea8f81b5381c19196c8bccb71b8ace73d3
-url="https://github.com/Gabriel-Kahen/irisu-rl/releases/download/$tag/$asset"
+tag=web-exact-runtime-virtio-v1-20260824
+asset=irisu-exact-runtime-virtio-v1-20260824.tar.gz
+archive_sha=0340660c5e5ccd1bbc47bd75eb60ec96349a0d046fa9cf1e5923ff78ee77838f
+url="https://github.com/Gabriel-Kahen/irisu-ml/releases/download/$tag/$asset"
 archive=$(mktemp "${output}.archive.XXXXXX")
 stage=$(mktemp -d "${output}.stage.XXXXXX")
 cleanup() { rm -rf -- "$archive" "$stage"; }

@@ -5,8 +5,8 @@ import test from "node:test";
 import {fileURLToPath} from "node:url";
 
 import {
-  ReplayObservationCache, decodeReplayWord, encodeReplayWord, parseReplay,
-  quantizeReplayPoint, serializeReplay,
+  ReplayObservationCache, clampReplayScrubFrame, decodeReplayWord,
+  encodeReplayWord, parseReplay, quantizeReplayPoint, serializeReplay,
 } from "../static/replay.mjs";
 
 const root = fileURLToPath(new URL("../../..", import.meta.url));
@@ -68,6 +68,15 @@ test("quantizes browser input before simulation and bounds replay cache memory",
   const ownedCache = new ReplayObservationCache({maximumBytes: 2});
   assert.equal(ownedCache.appendOwned(owned), true);
   assert.equal(ownedCache.get(0), owned);
+});
+
+test("clamps replay scrubbing to the latest buffered frame", () => {
+  assert.equal(clampReplayScrubFrame(80, 35), 35);
+  assert.equal(clampReplayScrubFrame(20, 35), 20);
+  assert.equal(clampReplayScrubFrame(-4, 35), 0);
+  assert.equal(clampReplayScrubFrame(10, 0), 0);
+  assert.equal(clampReplayScrubFrame("12", "35"), 12);
+  assert.equal(clampReplayScrubFrame(NaN, 35), 0);
 });
 
 test("rejects replay words instead of silently coercing them", () => {
