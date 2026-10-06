@@ -1,12 +1,12 @@
-import {BrowserGame} from "./exact-runtime.js?v=20261006b";
+import {BrowserGame} from "./exact-runtime.js?v=20261006c";
 import {
   activatedTrailAlphas, colorFor, hasActivatedTrail,
 } from "./colors.mjs?v=20260824c";
 import {
   clampReplayScrubFrame, parseReplay, REPLAY_TICK_MS,
-} from "./replay.mjs?v=20261006b";
-import {RestartGate} from "./restart-gate.mjs?v=20261006b";
-import {createSoundtrack} from "./music.mjs?v=20261006b";
+} from "./replay.mjs?v=20261006c";
+import {RestartGate} from "./restart-gate.mjs?v=20261006c";
+import {createSoundtrack} from "./music.mjs?v=20261006c";
 
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");

@@ -18,6 +18,7 @@ export function createSoundtrack(document, window) {
   let snapshot = null;
   let current = null;
   let started = false;
+  let runStarted = false;
 
   function start() {
     if (started) return;
@@ -26,11 +27,16 @@ export function createSoundtrack(document, window) {
   }
 
   function update(next = snapshot, force = false) {
+    const newRun = next && (!snapshot || next.seed !== snapshot.seed || next.mode !== snapshot.mode);
+    if (newRun) runStarted = false;
+    const gameStarting = Boolean(next?.running && !runStarted);
+    if (gameStarting) runStarted = true;
     snapshot = next;
     const track = soundtrackFor(snapshot);
-    if (!force && current?.uri === track.uri && current.cycle === track.cycle) return;
+    if (!force && !gameStarting && current?.uri === track.uri && current.cycle === track.cycle) return;
     current = track;
-    frame.contentWindow?.postMessage({type: "irisu:music", ...track}, window.location.origin);
+    const autoplay = Boolean(snapshot && (snapshot.running || !track.cycle));
+    frame.contentWindow?.postMessage({type: "irisu:music", ...track, autoplay}, window.location.origin);
   }
 
   window.addEventListener("message", (event) => {

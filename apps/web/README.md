@@ -19,14 +19,16 @@ strong shot.
 
 ## Spotify soundtrack
 
-A compact 80-pixel Spotify player sits below the game. The first three original
+A compact 80-pixel Spotify player is centered directly below the game. The first three original
 soundtrack songs play in album order and repeat automatically; a loss interrupts
 them with **Game Over 1**. Restarting after a loss returns to the first gameplay song. There is
 no song selector or full-album mode. Score changes, game pauses, replay exhaustion,
 and level completion do not trigger the loss cue.
 
-The first gameplay interaction requests music playback. If the browser blocks
-that request, use Spotify's play button. Pausing music in the embed is respected.
+Starting a run requests music playback immediately, and selecting the loss cue
+always requests playback even if the previous song has stopped. If the browser
+blocks initial autoplay, the first gameplay interaction retries; Spotify's play
+button remains available. Manual pauses persist until the next run or loss cue.
 All audio stays in Spotify's official embed; full-track availability depends on
 Spotify and the browser. Restricted previews do not automatically cycle or loop.
 The isolated iFrame API falls back to a plain Spotify embed if unavailable.

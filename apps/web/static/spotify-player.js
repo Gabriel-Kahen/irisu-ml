@@ -54,11 +54,19 @@
     timer = setTimeout(useFallback, 15000);
   }
 
-  function select(nextUri, nextCycle) {
+  function select(nextUri, nextCycle, autoplay = false) {
     cycle = nextCycle;
-    if (nextUri === uri) return;
+    if (nextUri === uri) {
+      if (autoplay && !fallback) {
+        if (!ready) resume = true;
+        else {
+          try { controller.play(); } catch { useFallback(); }
+        }
+      }
+      return;
+    }
     uri = nextUri;
-    resume = playing || endedPlaying || resume;
+    resume = autoplay || playing || endedPlaying || resume;
     playing = false;
     endedPlaying = false;
     ready = false;
@@ -85,8 +93,9 @@
       }
       return;
     }
-    if (data?.type !== "irisu:music" || !validUri(data.uri) || typeof data.cycle !== "boolean") return;
-    select(data.uri, data.cycle);
+    if (data?.type !== "irisu:music" || !validUri(data.uri) || typeof data.cycle !== "boolean" ||
+        (data.autoplay !== undefined && typeof data.autoplay !== "boolean")) return;
+    select(data.uri, data.cycle, data.autoplay === true);
   });
 
   window.onSpotifyIframeApiReady = api => {

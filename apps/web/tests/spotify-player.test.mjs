@@ -58,8 +58,8 @@ function setup(search = `?uri=${first}&cycle=1`) {
         duration: 216367, position: 1000, ...extra,
       }});
     },
-    select(uri, cycle = true, overrides = {}) {
-      listener({source: parent, origin: "https://irisu.test", data: {type: "irisu:music", uri, cycle}, ...overrides});
+    select(uri, cycle = true, overrides = {}, autoplay = false) {
+      listener({source: parent, origin: "https://irisu.test", data: {type: "irisu:music", uri, cycle, autoplay}, ...overrides});
     },
     timeout() { for (const callback of [...timers.values()]) callback(); },
   };
@@ -74,6 +74,43 @@ test("handshake accepts the latest mode before API startup, without autoplay", (
   player.emit("ready");
   assert.deepEqual(player.loads, [second]);
   assert.equal(player.plays, 0);
+});
+
+test("game startup autoplays the preloaded track before or after player readiness", () => {
+  for (const early of [true, false]) {
+    const player = setup();
+    if (early) player.select(first, true, {}, true);
+    player.init();
+    player.emit("ready");
+    if (!early) player.select(first, true, {}, true);
+    assert.equal(player.plays, 1);
+    assert.deepEqual(player.loads, [first]);
+  }
+});
+
+test("loss cue autoplays even after a paused song or an exhausted preview", () => {
+  for (const previewEnded of [true, false]) {
+    const player = setup();
+    player.init();
+    player.emit("ready");
+    player.update();
+    player.update(first, {isPaused: true, duration: 30000, position: previewEnded ? 30000 : 1000});
+    player.select(gameOver, false, {}, true);
+    assert.equal(player.plays, 0);
+    player.emit("ready");
+    assert.equal(player.plays, 1);
+    assert.equal(player.loads.at(-1), gameOver);
+  }
+});
+
+test("a blocked startup autoplay can retry on the first gameplay gesture", () => {
+  const player = setup();
+  player.init();
+  player.emit("ready");
+  player.select(first, true, {}, true);
+  player.update(first, {isPaused: true, position: 0});
+  player.start();
+  assert.equal(player.plays, 2);
 });
 
 test("only the same-origin parent may change mode or request playback", () => {

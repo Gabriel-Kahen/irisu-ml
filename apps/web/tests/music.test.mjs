@@ -51,6 +51,32 @@ test("first gameplay interaction requests play once, including before the bridge
   assert.equal(sent.at(-1)[0].type, "irisu:music-start");
 });
 
+test("game startup requests autoplay without interaction, once per run", () => {
+  const {music, sent, message} = setup();
+  assert.equal(sent[0][0].autoplay, false);
+  const running = {seed: 1, mode: "live", running: true, observation: {tick: 0}};
+  music.update(running);
+  assert.equal(sent.at(-1)[0].autoplay, true);
+  const count = sent.length;
+  music.update({...running, observation: {tick: 10}});
+  music.update({...running, running: false});
+  music.update(running);
+  assert.equal(sent.length, count); // Do not override a manual music pause every frame/resume.
+  music.update({...running, seed: 2});
+  assert.equal(sent.length, count + 1);
+  assert.equal(sent.at(-1)[0].autoplay, true);
+  message({type: "irisu:music-ready"});
+  assert.equal(sent.at(-1)[0].autoplay, true); // Late player initialization gets the start request.
+});
+
+test("loss always selects the ending with autoplay even though the game has stopped", () => {
+  const {music, sent} = setup();
+  music.update({...loss, running: false});
+  assert.deepEqual(sent.at(-1)[0], {
+    type: "irisu:music", uri: GAME_OVER_TRACK, cycle: false, autoplay: true,
+  });
+});
+
 test("only the trusted player can report errors; normal status occupies no space", () => {
   const {events, frame, status, message} = setup();
   const data = {type: "irisu:music-status", message: "Spotify unavailable"};
