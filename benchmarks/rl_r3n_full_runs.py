@@ -25,23 +25,33 @@ for path in (ROOT / "python", ROOT / "benchmarks"):
 
 import rl_r3m_shot_restraint as r3m
 from irisu_pointer.shot_necessity import ExactWaitDominanceGate
+from irisu_rl.exact_training_runtime import ExactTrainingRuntime
 
 
-RUN_ID = "r3n-wait-dominance-full-episodes-20260808-001"
+RUN_ID = "r3n-exact-wait-dominance-full-episodes-20260809-001"
 DEFAULT_RUN_ROOT = ROOT / "artifacts/r3/development" / RUN_ID
+EXACT_WORKER = r3m.EXACT_WORKER
 EPISODE_COUNT = 10
 MAX_TICKS = 100_000
-SEEDS = tuple(
-    int.from_bytes(
-        hashlib.sha256(f"{RUN_ID}|full-development|{index}".encode()).digest()[:4],
-        "big",
-    )
-    for index in range(EPISODE_COUNT)
-)
+REPLAY_WARMUP_TICKS = 2
 TEST_SOURCE = ROOT / "tests/test_r3n_full_runs.py"
 ADOPTION_SUMMARY = r3m.DEFAULT_RUN_ROOT / "summary.json"
 ADOPTION_VERIFICATION = r3m.DEFAULT_RUN_ROOT / "verification.json"
 ACTION_WORD = struct.Struct("<I")
+REPLAY_HEADER = struct.Struct("<I4i")
+
+
+def seeds_for_run_id(run_id: str) -> tuple[int, ...]:
+    return tuple(
+        int.from_bytes(
+            hashlib.sha256(f"{run_id}|full-development|{index}".encode()).digest()[:4],
+            "big",
+        )
+        for index in range(EPISODE_COUNT)
+    )
+
+
+SEEDS = seeds_for_run_id(RUN_ID)
 
 
 def source_identity() -> dict[str, object]:
@@ -49,8 +59,15 @@ def source_identity() -> dict[str, object]:
     verification = r3m.read_json(ADOPTION_VERIFICATION)
     r3m.verify_self_hash(summary, "R3M adoption summary")
     r3m.verify_self_hash(verification, "R3M adoption verification")
-    if summary.get("promising") is not True or verification.get("verified") is not True:
-        raise RuntimeError("R3M controller lacks verified adoption evidence")
+    if (
+        summary.get("promising") is not True
+        or verification.get("verified") is not True
+        or summary.get("physics_backend") != "exact"
+        or summary.get("promotion_eligible") is not True
+    ):
+        raise RuntimeError(
+            "R3M controller lacks promotable exact-backend adoption evidence"
+        )
     return r3m.with_sha(
         {
             "schema": "irisu-r3n-full-run-source-v1",
@@ -66,7 +83,8 @@ def source_identity() -> dict[str, object]:
                 for path in (
                     Path(__file__).resolve(), TEST_SOURCE,
                     Path(r3m.__file__).resolve(), r3m.GATE_SOURCE,
-                    r3m.screen.RUNTIME, r3m.screen.BASE_CHECKPOINT,
+                    ROOT / "python/irisu_rl/exact_training_runtime.py",
+                    EXACT_WORKER, r3m.screen.BASE_CHECKPOINT,
                     ADOPTION_SUMMARY, ADOPTION_VERIFICATION,
                 )
             },
@@ -85,11 +103,13 @@ def initialize(run_root: Path) -> dict[str, object]:
             "development_only": True,
             "sealed_test_allowed": False,
             "source_identity_sha256": identity["sha256"],
-            "controller": "verified R3M exact wait-dominance over unchanged frozen-v5",
+            "controller": "promotable exact-trained R3M wait-dominance controller",
+            "physics_backend": "exact",
             "episode_count": EPISODE_COUNT,
-            "seeds": list(SEEDS),
+            "seeds": list(seeds_for_run_id(run_root.name)),
             "seed_derivation": "sha256(run_id|full-development|i) first uint32 big-endian",
             "play_until": "GAME_OVER",
+            "replay_warmup_ticks": REPLAY_WARMUP_TICKS,
             "operational_ceiling_ticks": MAX_TICKS,
             "ceiling_rule": "alive at ceiling is censored, never called a full episode",
             "gate": r3m.GATE_CONFIG.manifest(),
@@ -125,7 +145,7 @@ def run_unit(run_root: Path, index: int) -> dict[str, object]:
         result = r3m.read_json(path)
         r3m.verify_self_hash(result, "R3N unit")
         return result
-    seed = SEEDS[index]
+    seed = int(plan["seeds"][index])
     intent = r3m.with_sha(
         {
             "schema": "irisu-r3n-full-run-intent-v1",
@@ -160,15 +180,23 @@ def run_unit(run_root: Path, index: int) -> dict[str, object]:
     started = time.monotonic()
     terminated = truncated = False
 
-    with campaign.IrisuEnv(
-        library_path=r3m.screen.RUNTIME,
-        physics_backend="portable",
-        config={"max_episode_ticks": MAX_TICKS + r3m.GATE_CONFIG.probe_ticks},
-    ) as env:
+    with ExactTrainingRuntime(EXACT_WORKER).open_env(
+        simulation_config={"max_episode_ticks": MAX_TICKS + r3m.GATE_CONFIG.probe_ticks},
+    ) as exact_session:
+        env = exact_session.environment
+        exact_runtime = exact_session.provenance_manifest
         observation, info = env.reset(seed=seed)
         if int(info.get("seed", -1)) != seed:
             raise RuntimeError("R3N reset seed differs")
         checkpoints.append(r3m.checkpoint(env, observation))
+        for _ in range(REPLAY_WARMUP_TICKS):
+            actions.append(r3m.encode_action(core.JOINT.Action.wait(1)))
+            observation, _reward, terminated, truncated, _info = env.step(
+                core.JOINT.Action.wait(1)
+            )
+            gauge = int(observation["gauge"])
+            minimum_gauge = min(minimum_gauge, gauge)
+            gauge_auc += gauge
         while int(observation["tick"]) < MAX_TICKS and not (terminated or truncated):
             before = copy.deepcopy(policy)
             decision = policy.predict(observation)
@@ -239,6 +267,8 @@ def run_unit(run_root: Path, index: int) -> dict[str, object]:
             "intent_sha256": intent["sha256"],
             "index": index,
             "seed": seed,
+            "physics_backend": "exact",
+            "exact_runtime": exact_runtime,
             "terminal": bool(final["terminated"]),
             "censored": censored,
             "survival_ticks": int(final["tick"]),
@@ -299,6 +329,8 @@ def summarize(run_root: Path) -> dict[str, object]:
             "schema": "irisu-r3n-full-run-summary-v1",
             "development_only": True,
             "sealed_test_allowed": False,
+            "physics_backend": "exact",
+            "promotion_eligible": True,
             "source_identity_sha256": identity["sha256"],
             "plan_sha256": plan["sha256"],
             "unit_sha256s": [row["sha256"] for row in rows],
@@ -328,6 +360,27 @@ def summarize(run_root: Path) -> dict[str, object]:
     return result
 
 
+def export_best_replay(run_root: Path, output: Path | None = None) -> dict[str, object]:
+    summary = summarize(run_root)
+    index = int(summary["best"]["index"])
+    row = r3m.read_json(unit_path(run_root, index))
+    trace = (run_root / str(row["trace_file"])).read_bytes()
+    data = REPLAY_HEADER.pack(
+        int(row["seed"]), int(row["level"]), int(row["score"]),
+        int(row["highest_chain"]), 0,
+    ) + bytes(32) + trace
+    path = output or run_root / f"best-game-{index:02d}.rpy"
+    r3m.write_bytes_new(path, data)
+    return {
+        "index": index,
+        "seed": row["seed"],
+        "score": row["score"],
+        "ticks": row["survival_ticks"],
+        "replay": str(path),
+        "replay_sha256": hashlib.sha256(data).hexdigest(),
+    }
+
+
 def verify(run_root: Path) -> dict[str, object]:
     identity, plan = validate(run_root)
     rows = load_units(run_root)
@@ -340,11 +393,10 @@ def verify(run_root: Path) -> dict[str, object]:
             raise RuntimeError("R3N trace hash differs")
         words = [word for (word,) in struct.iter_unpack("<I", trace)]
         expected = {int(item["tick"]): item for item in row["checkpoints"]}
-        with campaign.IrisuEnv(
-            library_path=r3m.screen.RUNTIME,
-            physics_backend="portable",
-            config={"max_episode_ticks": MAX_TICKS + r3m.GATE_CONFIG.probe_ticks},
-        ) as env:
+        with ExactTrainingRuntime(EXACT_WORKER).open_env(
+            simulation_config={"max_episode_ticks": MAX_TICKS + r3m.GATE_CONFIG.probe_ticks},
+        ) as exact_session:
+            env = exact_session.environment
             observation, _ = env.reset(seed=int(row["seed"]))
             if r3m.checkpoint(env, observation) != expected[0]:
                 raise RuntimeError("R3N initial replay differs")
@@ -388,11 +440,12 @@ def status(run_root: Path) -> dict[str, object]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("init", "run-unit", "run-shard", "summary", "verify", "status"))
+    parser.add_argument("command", choices=("init", "run-unit", "run-shard", "summary", "export-best", "verify", "status"))
     parser.add_argument("--run-root", type=Path, default=DEFAULT_RUN_ROOT)
     parser.add_argument("--index", type=int)
     parser.add_argument("--shard", type=int, default=0)
     parser.add_argument("--shards", type=int, default=1)
+    parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     if args.command == "init":
         value: object = initialize(args.run_root)
@@ -405,6 +458,8 @@ def main() -> None:
         value = status(args.run_root)
     elif args.command == "summary":
         value = summarize(args.run_root)
+    elif args.command == "export-best":
+        value = export_best_replay(args.run_root, args.output)
     elif args.command == "verify":
         value = verify(args.run_root)
     else:

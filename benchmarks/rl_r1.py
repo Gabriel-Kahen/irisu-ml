@@ -8,6 +8,7 @@ import hashlib
 import json
 import platform
 import time
+from contextlib import ExitStack
 from datetime import date
 from pathlib import Path
 
@@ -15,7 +16,6 @@ import numpy as np
 
 from irisu_env import PaddedVectorEnv
 from irisu_rl import (
-    ACCEPTED_EXACT_RUNTIME_2026_07_21,
     ACTOR_VISION_V1,
     MacroVectorAdapter,
     RolloutBuffer,
@@ -24,29 +24,57 @@ from irisu_rl import (
     TeacherStateEncoder,
     TEACHER_V1,
 )
+from irisu_rl.exact_training_runtime import ExactTrainingRuntime
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--lanes", type=int, default=16)
     parser.add_argument("--iterations", type=int, default=300)
-    parser.add_argument("--library")
-    parser.add_argument("--backend", choices=("portable", "exact"), default="portable")
     parser.add_argument("--worker")
+    parser.add_argument("--library")
+    parser.add_argument(
+        "--diagnostic-portable",
+        action="store_true",
+        help="use approximate portable physics for throughput diagnostics only",
+    )
     args = parser.parse_args()
-    identity = None
-    if args.backend == "exact":
-        if not args.worker:
-            parser.error("--backend exact requires an absolute --worker path")
-        identity = ACCEPTED_EXACT_RUNTIME_2026_07_21.attest(args.worker)
+    backend = "portable" if args.diagnostic_portable else "exact"
+    exact_runtime = None
+    if backend == "exact":
+        if args.library is not None:
+            parser.error("--library is only valid with --diagnostic-portable")
+        if not args.worker or not Path(args.worker).is_absolute():
+            parser.error("exact collection requires an explicit absolute --worker path")
+        exact_runtime = ExactTrainingRuntime(args.worker)
+    else:
+        if args.worker is not None:
+            parser.error("--worker cannot be combined with --diagnostic-portable")
+        if args.library is None or not Path(args.library).is_absolute():
+            parser.error(
+                "--diagnostic-portable requires an explicit absolute --library path"
+            )
     rng = np.random.default_rng(20260722)
-    with PaddedVectorEnv(
-        args.lanes,
-        library_path=args.library if args.backend == "portable" else None,
-        physics_backend=args.backend,
-        worker_path=args.worker if args.backend == "exact" else None,
-        config={"max_episode_ticks": 100_000},
-    ) as vector:
+    exact_training_provenance = None
+    with ExitStack() as stack:
+        if exact_runtime is not None:
+            exact_session = stack.enter_context(
+                exact_runtime.open_vector(
+                    args.lanes,
+                    simulation_config={"max_episode_ticks": 100_000},
+                )
+            )
+            vector = exact_session.environment
+            exact_training_provenance = exact_session.provenance_manifest
+        else:
+            vector = stack.enter_context(
+                PaddedVectorEnv(
+                    args.lanes,
+                    library_path=args.library,
+                    physics_backend="portable",
+                    config={"max_episode_ticks": 100_000},
+                )
+            )
         adapter = MacroVectorAdapter(
             vector,
             encoder=TeacherStateEncoder(),
@@ -87,7 +115,8 @@ def main() -> None:
         "recorded_at": date.today().isoformat(),
         "host": {"platform": platform.platform(), "python": platform.python_version()},
         "parameters": {
-            "backend": args.backend,
+            "backend": backend,
+            "diagnostic_portable": args.diagnostic_portable,
             "lanes": args.lanes,
             "iterations": args.iterations,
             "seed": 20260722,
@@ -105,16 +134,7 @@ def main() -> None:
             "unique_initial_and_autoreset_seeds": adapter.seed_allocator.cursor,
         },
         "identity": {
-            "worker_sha256": (
-                ACCEPTED_EXACT_RUNTIME_2026_07_21.worker_sha256
-                if identity is not None
-                else None
-            ),
-            "exact_library_sha256": (
-                ACCEPTED_EXACT_RUNTIME_2026_07_21.exact_library_sha256
-                if identity is not None
-                else None
-            ),
+            "exact_training_provenance": exact_training_provenance,
             "actor_schema_sha256": ACTOR_VISION_V1.sha256,
             "teacher_schema_sha256": TEACHER_V1.sha256,
             "config_hashes": sorted(config_hashes),
@@ -122,7 +142,7 @@ def main() -> None:
                 (Path(__file__).resolve().parents[1] / "uv.lock").read_bytes()
             ).hexdigest(),
         },
-        "scope": f"{args.backend} padded vector + semantic macros + vectorized teacher encoding + owned rollout writes",
+        "scope": f"{backend} padded vector + semantic macros + vectorized teacher encoding + owned rollout writes",
         "interpretation": "R1 teacher-state engineering throughput only; excludes actor tracking and model inference and is not evidence of policy quality or sim-to-game fidelity",
     }
     print(json.dumps(result, indent=2, sort_keys=True))

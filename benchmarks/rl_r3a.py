@@ -8,6 +8,7 @@ import hashlib
 import json
 import time
 import tomllib
+from contextlib import ExitStack
 from pathlib import Path
 
 import torch
@@ -19,6 +20,7 @@ from irisu_rl.collector import (
     ScoreTaskContract,
 )
 from irisu_rl.encoding import TeacherStateEncoder
+from irisu_rl.exact_training_runtime import ExactTrainingRuntime
 from irisu_rl.models import RecurrentActorCritic, RecurrentModelConfig
 from irisu_rl.ppo import PPOConfig, PPOTrainer
 from irisu_rl.vector_adapter import MacroVectorAdapter
@@ -30,7 +32,11 @@ DEFAULT_CONFIG = ROOT / "configs/rl/experiments/r3a-multistep-v1.toml"
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description=__doc__)
     result.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
-    result.add_argument("--backend", choices=("portable", "exact"), required=True)
+    result.add_argument(
+        "--diagnostic-portable",
+        action="store_true",
+        help="use approximate portable physics for a non-promotable diagnostic run",
+    )
     result.add_argument("--runtime", type=Path, required=True)
     result.add_argument("--lanes", type=int)
     result.add_argument("--updates", type=int)
@@ -84,20 +90,36 @@ def main() -> int:
     if updates > ppo_config["total_updates"]:
         raise SystemExit("smoke updates exceed the checked PPO update budget")
     runtime = args.runtime.resolve(strict=True)
+    backend = "portable" if args.diagnostic_portable else "exact"
+    exact_runtime = None
+    if backend == "exact":
+        if not args.runtime.is_absolute():
+            raise SystemExit("exact training requires an explicit absolute --runtime")
+        exact_runtime = ExactTrainingRuntime(runtime)
+    elif not args.runtime.is_absolute():
+        raise SystemExit(
+            "portable diagnostics require an explicit absolute --runtime"
+        )
     torch.set_num_threads(torch_threads)
     torch.manual_seed(seed)
     model = RecurrentActorCritic(
         TeacherStateEncoder().schema,
         config=RecurrentModelConfig(32, 32, 64, 64, 1),
     )
-    vector_kwargs = (
-        {"physics_backend": "exact", "worker_path": runtime}
-        if args.backend == "exact"
-        else {"physics_backend": "portable", "library_path": runtime}
-    )
     started = time.perf_counter()
     reports = []
-    with PaddedVectorEnv(lanes, **vector_kwargs) as vector:
+    exact_training_provenance = None
+    with ExitStack() as stack:
+        if exact_runtime is not None:
+            exact_session = stack.enter_context(exact_runtime.open_vector(lanes))
+            vector = exact_session.environment
+            exact_training_provenance = exact_session.provenance_manifest
+        else:
+            vector = stack.enter_context(
+                PaddedVectorEnv(
+                    lanes, physics_backend="portable", library_path=runtime
+                )
+            )
         adapter = MacroVectorAdapter(vector, encoder=TeacherStateEncoder())
         task = ScoreTaskContract(lanes, reward_scale=checked["reward"]["scale"])
         collector = RecurrentCollector(
@@ -182,7 +204,10 @@ def main() -> int:
         "version": "rl-r3a-throughput-v1",
         "deployable": False,
         "observation_provenance": "privileged_simulator",
-        "backend": args.backend,
+        "backend": backend,
+        "diagnostic_portable": args.diagnostic_portable,
+        "promotion_eligible": backend == "exact",
+        "exact_training_provenance": exact_training_provenance,
         "runtime": str(runtime),
         "runtime_sha256": hashlib.sha256(runtime.read_bytes()).hexdigest(),
         "config": str(config_path),

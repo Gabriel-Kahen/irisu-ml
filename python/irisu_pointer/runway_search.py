@@ -4,8 +4,8 @@ Unlike causal geometry search, this teacher deliberately crosses future spawn
 boundaries.  It is suitable for development labels and diagnostics only: it is
 not a deployable policy and its outcomes are not canonical or sealed evidence.
 Candidate policy inputs remain the initial public observation and incumbent
-pair decision; every future is generated from the same restored portable
-snapshot, including identical RNG state.
+pair decision; every future is generated from the same exact fork/COW or
+portable restored state, including identical RNG state.
 """
 
 from __future__ import annotations
@@ -18,6 +18,7 @@ from typing import Any
 
 from irisu_rl.actions import ActionSpec
 
+from .branching import TransactionalBranches
 from .geometry_search import (
     GeometryBranchOutcome,
     GeometryCandidate,
@@ -67,7 +68,7 @@ class RunwaySearchConfig:
             "candidate_config": self.candidate_config.manifest(),
             "candidate_slot_count": self.candidate_config.slot_count,
             "branch_protocol": (
-                "restore the identical portable snapshot and RNG, execute one "
+                "branch the identical simulator state and RNG, execute one "
                 "candidate, then no-action coast for the complete runway"
             ),
             "spawn_policy": "deliberately cross cadence spawns",
@@ -173,7 +174,7 @@ class RunwayGeometrySearch:
             ],
             "teacher_only_future": (
                 "public observations/events produced after restoring the same "
-                "portable snapshot for each fixed candidate"
+                "simulator state for each fixed candidate"
             ),
             "hidden_policy_inputs": [],
             "evidence_scope": "development-teacher-only",
@@ -191,19 +192,14 @@ class RunwayGeometrySearch:
         observation: Mapping[str, Any],
         incumbent: SteeringDecision,
     ) -> RunwaySearchResult:
-        if getattr(env, "physics_backend", None) != "portable":
-            raise ValueError("runway geometry search requires portable backend")
+        if getattr(env, "physics_backend", None) not in {"portable", "exact"}:
+            raise ValueError("runway geometry search requires a supported backend")
         if not isinstance(observation, Mapping):
             raise TypeError("runway observation must be a public mapping")
         if bool(observation.get("terminated", False)) or bool(
             observation.get("truncated", False)
         ):
             raise ValueError("cannot runway-search a terminal observation")
-        clone = getattr(env, "clone_state", None)
-        restore = getattr(env, "restore_state", None)
-        if not callable(clone) or not callable(restore):
-            raise TypeError("portable runway environment lacks clone/restore")
-
         candidate_set = enumerate_geometry_candidates(
             observation,
             incumbent,
@@ -211,28 +207,23 @@ class RunwayGeometrySearch:
             action_spec=self.action_spec,
         )
         expected = _public_state_signature(observation)
-        snapshot = clone()
         outcomes: list[GeometryBranchOutcome] = []
-        try:
+        with TransactionalBranches(env, observation) as branches:
             for candidate in candidate_set.candidates:
-                restored = restore(snapshot)
-                if not isinstance(restored, Mapping):
-                    raise TypeError("portable restore must return a public mapping")
-                if _public_state_signature(restored) != expected:
-                    raise RuntimeError(
-                        "portable restore disagrees with the supplied public state"
+                with branches.branch() as (branch_env, restored):
+                    if _public_state_signature(restored) != expected:
+                        raise RuntimeError(
+                            "branch restore disagrees with the supplied public state"
+                        )
+                    outcomes.append(
+                        evaluate_geometry_candidate(
+                            branch_env,
+                            restored,
+                            candidate,
+                            horizon_ticks=self.config.runway_ticks,
+                            action_spec=self.action_spec,
+                        )
                     )
-                outcomes.append(
-                    evaluate_geometry_candidate(
-                        env,
-                        restored,
-                        candidate,
-                        horizon_ticks=self.config.runway_ticks,
-                        action_spec=self.action_spec,
-                    )
-                )
-        finally:
-            restore(snapshot)
 
         incumbent_outcome = outcomes[0]
         if not incumbent_outcome.selectable:

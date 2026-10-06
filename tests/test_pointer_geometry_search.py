@@ -336,7 +336,8 @@ class GeometryCandidateTests(unittest.TestCase):
         self.assertEqual(first.sha256, second.sha256)
         self.assertNotEqual(first.sha256, changed.sha256)
         self.assertEqual(
-            first.identity_manifest()["backend"], "portable-clone-only"
+            first.identity_manifest()["backend"],
+            "exact-fork-cow-or-portable-clone",
         )
 
 
@@ -538,14 +539,14 @@ class GeometrySearchTests(unittest.TestCase):
             DirectedPairGeometrySearch().search(env, observation, incumbent)
         self.assertEqual(env.clone_state(), before)
 
-    def test_nonportable_backend_fails_before_cloning(self) -> None:
+    def test_exact_backend_uses_transactional_clone_restore_fallback(self) -> None:
         env = _PortableGeometryEnv(_observation())
         env.physics_backend = "exact"
-        with self.assertRaisesRegex(ValueError, "portable"):
-            DirectedPairGeometrySearch().search(
-                env, _observation(), _incumbent()
-            )
-        self.assertEqual(env.clones, 0)
+        result = DirectedPairGeometrySearch().search(
+            env, _observation(), _incumbent()
+        )
+        self.assertTrue(result.outcomes)
+        self.assertGreater(env.clones, 0)
 
     def test_too_short_causal_boundary_returns_incumbent_without_mutation(
         self,

@@ -67,9 +67,13 @@ Install the optional dependency group and run the end-to-end benchmark:
 ```bash
 uv sync --extra training
 uv run --extra training python benchmarks/rl_r1.py \
-  --backend exact --worker /absolute/path/to/irisu-exact-worker
+  --worker /absolute/path/to/irisu-exact-worker
 ```
 
 Exact training must also attest the absolute worker path against
 `configs/rl/runtime/exact-worker-2026-07-21.json`. Automatic build-directory
 discovery is not an accepted training identity.
+
+Portable collection is retained only for explicit throughput diagnosis via
+`--diagnostic-portable --library /absolute/path/to/libirisu_clone.so`; its
+output is not training or model-selection evidence.

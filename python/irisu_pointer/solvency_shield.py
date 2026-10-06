@@ -1136,7 +1136,7 @@ class CandidateLocalSolvencySearch:
             before = current
             current, _reward, terminated, truncated, info = env.step(action)
             if not isinstance(current, Mapping) or not isinstance(info, Mapping):
-                raise TypeError("portable branch transition is malformed")
+                raise TypeError("branch transition is malformed")
             events = tuple(
                 event
                 for event in info.get("events", ())
@@ -1321,8 +1321,8 @@ class CandidateLocalSolvencySearch:
         *,
         teacher_score_selection: bool = True,
     ) -> SolvencySearchResult:
-        if getattr(env, "physics_backend", None) != "portable":
-            raise ValueError("R3G shield requires the portable backend")
+        if getattr(env, "physics_backend", None) not in {"portable", "exact"}:
+            raise ValueError("R3G shield requires a supported backend")
         if not incumbent.is_shot:
             raise ValueError("R3G shield requires an incumbent shot")
         candidates = self.generator._candidates(observation, incumbent)
@@ -1336,6 +1336,10 @@ class CandidateLocalSolvencySearch:
             and _primitive_action_key(candidate.decision, self.action_spec)
             == incumbent_action_key
         }
+        # FrozenPolicyState is restored alongside the simulator after every
+        # candidate. Exact clone/restore remains functional here; unlike the
+        # source-only branch teachers, this coupled transaction cannot safely
+        # use the common fork/COW helper without transferring policy ownership.
         snapshot = env.clone_state()
         snapshot_sha256 = hashlib.sha256(snapshot).hexdigest()
         expected_signature = _public_signature(observation)

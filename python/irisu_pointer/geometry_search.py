@@ -1,8 +1,9 @@
 """Development-only geometry search for one public directed steering pair.
 
 The pair choice is held fixed.  Search varies only shot strength and cursor
-geometry, rolls every branch to the same next-spawn-censored horizon in the
-portable clone, and restores the source environment transactionally.
+geometry, rolls every branch to the same next-spawn-censored horizon, and
+restores the source environment transactionally. Exact workers use fork/COW
+branches; portable diagnostics retain clone/restore.
 """
 
 from __future__ import annotations
@@ -22,6 +23,7 @@ from irisu_rl.actions import (
     SemanticActionKind,
 )
 
+from .branching import TransactionalBranches
 from .steering import SteeringDecision
 
 
@@ -1045,7 +1047,7 @@ def evaluate_geometry_candidate(
         )
         current, _reward, terminated, truncated, info = env.step(action)
         if not isinstance(current, Mapping) or not isinstance(info, Mapping):
-            raise TypeError("portable branch transition must expose public mappings")
+            raise TypeError("branch transition must expose public mappings")
         advanced = _plain_int(
             current.get("tick"), "public observation tick"
         ) - previous_tick
@@ -1082,7 +1084,7 @@ def evaluate_geometry_candidate(
         )
         current, _reward, terminated, truncated, info = env.step(wait)
         if not isinstance(current, Mapping) or not isinstance(info, Mapping):
-            raise TypeError("portable branch transition must expose public mappings")
+            raise TypeError("branch transition must expose public mappings")
         advanced = _plain_int(
             current.get("tick"), "public observation tick"
         ) - previous_tick
@@ -1194,7 +1196,7 @@ def evaluate_geometry_candidate(
 
 
 class DirectedPairGeometrySearch:
-    """Transactional portable search over one directed pair's shot geometry."""
+    """Transactional search over one directed pair's shot geometry."""
 
     def __init__(
         self,
@@ -1219,7 +1221,7 @@ class DirectedPairGeometrySearch:
                 "tick and spawn interval",
                 "public transition observations and events",
             ],
-            "backend": "portable-clone-only",
+            "backend": "exact-fork-cow-or-portable-clone",
         }
 
     @property
@@ -1232,8 +1234,8 @@ class DirectedPairGeometrySearch:
         observation: Mapping[str, Any],
         incumbent: SteeringDecision,
     ) -> GeometrySearchResult:
-        if getattr(env, "physics_backend", None) != "portable":
-            raise ValueError("directed-pair geometry search requires portable backend")
+        if getattr(env, "physics_backend", None) not in {"portable", "exact"}:
+            raise ValueError("directed-pair geometry search requires a supported backend")
         if bool(observation.get("terminated", False)) or bool(
             observation.get("truncated", False)
         ):
@@ -1254,33 +1256,24 @@ class DirectedPairGeometrySearch:
                 False,
                 (),
             )
-        clone = getattr(env, "clone_state", None)
-        restore = getattr(env, "restore_state", None)
-        if not callable(clone) or not callable(restore):
-            raise TypeError("portable geometry environment lacks clone/restore")
         expected = _public_state_signature(observation)
-        snapshot = clone()
         outcomes: list[GeometryBranchOutcome] = []
-        try:
+        with TransactionalBranches(env, observation) as branches:
             for candidate in candidates.candidates:
-                restored = restore(snapshot)
-                if not isinstance(restored, Mapping):
-                    raise TypeError("portable restore must return a public mapping")
-                if _public_state_signature(restored) != expected:
-                    raise RuntimeError(
-                        "portable restore disagrees with the supplied public state"
+                with branches.branch() as (branch_env, restored):
+                    if _public_state_signature(restored) != expected:
+                        raise RuntimeError(
+                            "branch restore disagrees with the supplied public state"
+                        )
+                    outcomes.append(
+                        evaluate_geometry_candidate(
+                            branch_env,
+                            restored,
+                            candidate,
+                            horizon_ticks=horizon,
+                            action_spec=self.action_spec,
+                        )
                     )
-                outcomes.append(
-                    evaluate_geometry_candidate(
-                        env,
-                        restored,
-                        candidate,
-                        horizon_ticks=horizon,
-                        action_spec=self.action_spec,
-                    )
-                )
-        finally:
-            restore(snapshot)
 
         incumbent_outcome = outcomes[0]
         if not incumbent_outcome.selectable:

@@ -1,0 +1,33 @@
+{
+  "schema": "irisu-development-seed-manifest-v1",
+  "purpose": "Frozen 20-seed exact confirmation for the selected 100k development configuration",
+  "source_manifest": "development-100k-v1.json",
+  "selection": {
+    "start_index": 6,
+    "count": 20,
+    "selected_before_evaluation": true
+  },
+  "evaluation_seeds": [
+    1289325533,
+    1326027142,
+    1094293295,
+    1130994904,
+    1167696513,
+    1204398122,
+    1241099731,
+    1277801340,
+    1314502949,
+    1082769102,
+    1119470711,
+    1156172320,
+    1192873929,
+    1229575538,
+    1266277147,
+    1302978756,
+    1339680365,
+    1107946518,
+    1144648127,
+    1181349736
+  ],
+  "evaluation_seeds_sha256": "d9fc60ad6360ce640bd3e95caafb54de64bad90e71abcf66f1ea8dcf0da60a86"
+}

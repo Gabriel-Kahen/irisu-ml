@@ -7,6 +7,14 @@ observation_provenance = "privileged_simulator"
 transfer_gate = "R4 causal tracker and real input calibration pending"
 diagnostic_scope = "coordinate BC and one-step PPO only"
 
+[simulator]
+training_backend = "exact"
+calibration_backend = "exact"
+validation_backend = "exact"
+test_backend = "exact"
+worker_path_policy = "explicit_absolute_attested_path_required"
+portable_mode = "explicit_diagnostic_only_non_promotable"
+
 [runtime]
 torch_threads = 8
 torch_interop_threads = 1

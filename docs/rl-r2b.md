@@ -13,6 +13,13 @@ Every R2b model uses privileged `teacher-v1` simulator state and is stamped
 `deployable=false`. The real-game gate remains the R4 causal tracker, capture
 timing model, coordinate calibration, and input bridge.
 
+Current R2b training is exact end-to-end: train, calibration, validation/LR
+selection, and final test all use the explicitly supplied worker after the
+shared exact-training runtime contract attests its executable, mapped legacy
+library, runner identity, and lanes. Portable physics is available only with
+`--diagnostic-portable --library /absolute/path/to/libirisu_clone.so`; that
+mode is stamped non-promotable and cannot pass acceptance.
+
 ## Task contract
 
 `one-body-direct-hit-v1` is an intentionally noncanonical diagnostic:
@@ -99,7 +106,9 @@ does not establish a generally optimal learning rate for later curricula.
 ## Acceptance evidence
 
 The checked [result artifact](../benchmarks/results/rl-r2b-one-body-2026-07-22.json)
-is the direct `--summary` output of the recorded reproduction command. It binds
+is retained as historical pre-migration evidence. Its policy training and
+selection used portable physics before the exact end-to-end requirement, so it
+is not accepted by the current configuration and must not be promoted. It binds
 the clean source commit, dependency lock, runtime, portable library, exact
 worker/build, mechanics configs, task, model/action/schema, allocator keys, and
 seed identities. Acceptance is recomputed in tests rather than trusting a

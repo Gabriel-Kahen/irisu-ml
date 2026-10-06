@@ -1,0 +1,11 @@
+{
+  "schema": "irisu-onpolicy-pair-dagger-seed-plan-v1",
+  "namespace": "irisu-g5-hazard-scheduler-shadow-v1",
+  "namespace_sha256": "c54e6f9e7ef5f1b881a0be01e0df49ff7c2007fb8b57ca77a0ff945e8a624441",
+  "allocator_key": 14217423800180797880,
+  "allocator_manifest_sha256": "34ca46e7101c6533681b16e4829ada97153aacbd10b6763f6331fb0d6e9e5aa4",
+  "split": "train",
+  "cursor": 0,
+  "count": 2,
+  "seeds": [756487650, 529074683]
+}

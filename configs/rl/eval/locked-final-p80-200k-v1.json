@@ -1,0 +1,38 @@
+{
+  "schema": "irisu-locked-evaluation-seed-manifest-v1",
+  "purpose": "One-shot exact final gate: 16/20 at or above 100k, median at or above 100k, linear p80 and nearest-rank p80 at or above 200k, zero live invalid actions",
+  "promotion_contract": "irisu-exact-p80-200k-contract-v1",
+  "promotion_contract_sha256": "d8d45f92047dea077fb6dd3735177fba88545fbe5d98557abb4627b7aa345a17",
+  "allocator": {
+    "version": "seed-allocator-v1",
+    "split": "test",
+    "key": 16914260519726548681,
+    "cursor": 0,
+    "count": 20,
+    "selected_before_evaluation": true,
+    "maximum_promotion_attempts": 1
+  },
+  "evaluation_seeds": [
+    1678853214,
+    1937256155,
+    1658788184,
+    1917191125,
+    1638723154,
+    1897126095,
+    1618658124,
+    1877061065,
+    2135464006,
+    1856996035,
+    2115398976,
+    1836931005,
+    2095333946,
+    1816865975,
+    2075268916,
+    1796800945,
+    2055203886,
+    1776735915,
+    2035138856,
+    1756670885
+  ],
+  "evaluation_seeds_sha256": "bbec88640edadafa590346a7d1304a8e72499e39f820923c6b6247caafc7b9d4"
+}

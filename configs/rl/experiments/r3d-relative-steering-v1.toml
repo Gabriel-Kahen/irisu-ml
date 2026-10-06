@@ -4,8 +4,8 @@ deployable = false
 canonical_r3_evidence = false
 sealed_evaluation_allowed = false
 objective = "learn_public_source_to_destination_steering_then_raw_score"
-selection_backend = "portable"
-trusted_runtime = "artifacts/r3/runtime/main-0c48dba-20260723/portable-build/libirisu_clone.so"
+selection_backend = "exact"
+trusted_runtime = "configs/rl/runtime/exact-worker-2026-07-21.json"
 
 [profiles.fast]
 demonstration_seeds = 8

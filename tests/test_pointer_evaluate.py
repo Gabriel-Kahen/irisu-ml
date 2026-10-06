@@ -57,8 +57,11 @@ class _FakeEnv:
         runner_identity: dict[str, Any],
         *,
         terminal: bool = True,
+        backend: str = "portable",
     ) -> None:
-        self.library_path = str(runtime)
+        self.physics_backend = backend
+        self.library_path = str(runtime) if backend == "portable" else None
+        self.worker_path = str(runtime) if backend == "exact" else None
         self.config = config
         self.identity = runner_identity
         self.make_terminal = terminal
@@ -204,7 +207,7 @@ class FullGameEvaluatorTests(unittest.TestCase):
             ),
             env_factory=self._factory(),
         )
-        self.assertTrue(report.promoted)
+        self.assertFalse(report.promoted)
         self.assertEqual([value.raw_score for value in report.episodes], [10, 20, 30])
         for outcome in report.episodes:
             self.assertEqual(outcome.survival_ticks, 3)
@@ -225,7 +228,33 @@ class FullGameEvaluatorTests(unittest.TestCase):
         self.assertEqual(report.aggregate["total_unique_projectile_hit_pairs"], 6)
         manifest = report.manifest()
         self.assertFalse(manifest["sealed_test_material_used"])
-        self.assertTrue(manifest["gates"]["all_passed"])
+        self.assertFalse(manifest["gates"]["all_passed"])
+        self.assertFalse(manifest["gates"]["exact_training_backend"])
+
+    def test_exact_custom_factory_is_accepted_when_identity_is_bound(self) -> None:
+        exact_identity = {
+            "version": "fake-runner-v1",
+            "physics_backend": "exact",
+            "config_hash": 123,
+        }
+        binding = ArtifactBinding(
+            "exact-development-candidate-v1",
+            self.policy_path,
+            _sha256(self.policy_path),
+            self.runtime_path,
+            _sha256(self.runtime_path),
+            identity_sha256(exact_identity),
+        )
+        report = evaluate_full_games(
+            lambda: _Policy(binding.policy_sha256),
+            binding,
+            suite=self.suite,
+            env_factory=lambda runtime, config: _FakeEnv(
+                runtime, dict(config), exact_identity, backend="exact"
+            ),
+            physics_backend="exact",
+        )
+        self.assertEqual(len(report.episodes), len(self.suite.seeds))
 
     def test_actor_style_primitive_macro_is_executed_in_order(self) -> None:
         report = evaluate_full_games(
@@ -400,8 +429,10 @@ class RealPortableSmokeTests(unittest.TestCase):
                     minimum_completion_rate=1,
                     maximum_invalid_actions=0,
                 ),
+                physics_backend="portable",
             )
-        self.assertTrue(report.promoted)
+        self.assertFalse(report.promoted)
+        self.assertFalse(report.gates["pinned_exact_runtime_attested"])
         self.assertEqual(report.episodes[0].survival_ticks, 5)
         self.assertEqual(report.episodes[0].invalid_actions, 0)
 

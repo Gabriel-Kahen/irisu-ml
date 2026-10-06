@@ -17,6 +17,8 @@ _EXPORTS = {
     "ConditionalActionDistribution": ("actions", "ConditionalActionDistribution"),
     "EncodedBatch": ("encoding", "EncodedBatch"),
     "ExactRuntimeIdentity": ("runtime_identity", "ExactRuntimeIdentity"),
+    "ExactTrainingRuntime": ("exact_training_runtime", "ExactTrainingRuntime"),
+    "ExactTrainingSession": ("exact_training_runtime", "ExactTrainingSession"),
     "MacroTransition": ("vector_adapter", "MacroTransition"),
     "MacroVectorAdapter": ("vector_adapter", "MacroVectorAdapter"),
     "ObservationInput": ("vector_adapter", "ObservationInput"),
@@ -35,6 +37,10 @@ _EXPORTS = {
     "TeacherStateEncoder": ("encoding", "TeacherStateEncoder"),
     "TensorSchema": ("schema", "TensorSchema"),
     "attest_simulator_runtime": ("runtime_identity", "attest_simulator_runtime"),
+    "validate_exact_promotion_metadata": (
+        "exact_training_runtime",
+        "validate_exact_promotion_metadata",
+    ),
 }
 
 __all__ = list(_EXPORTS)

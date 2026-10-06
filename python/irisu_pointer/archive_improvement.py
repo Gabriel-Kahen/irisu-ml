@@ -1,4 +1,4 @@
-"""Evidence-bound branch improvement from portable strategic archive states."""
+"""Evidence-bound branch improvement from strategic archive states."""
 
 from __future__ import annotations
 
@@ -16,6 +16,7 @@ from irisu_rl.encoding import TeacherStateEncoder
 
 from .action import PointerActionSpec
 from .archive import ArchiveElite, StrategicArchive, archive_cell_key
+from .branching import TransactionalBranches
 from .steering import (
     ClosedLoopSteeringExpert,
     SteeringDecision,
@@ -66,10 +67,15 @@ def _verify_environment_identity(
         raise ValueError("archive environment config identity mismatch")
     runtime_sha256 = getattr(env, "runtime_sha256", None)
     if runtime_sha256 is None:
-        library_path = getattr(env, "library_path", None)
-        if not isinstance(library_path, (str, Path)):
+        backend = getattr(env, "physics_backend", None)
+        runtime_path = (
+            getattr(env, "worker_path", None)
+            if backend == "exact"
+            else getattr(env, "library_path", None)
+        )
+        if not isinstance(runtime_path, (str, Path)):
             raise ValueError("archive environment lacks a runtime identity")
-        runtime_sha256 = _file_sha256(Path(library_path).resolve(strict=True))
+        runtime_sha256 = _file_sha256(Path(runtime_path).resolve(strict=True))
     if runtime_sha256 != binding.runtime_sha256:
         raise ValueError("archive environment runtime identity mismatch")
 
@@ -628,11 +634,11 @@ def collect_archive_improvement(
                 "archive elite was not captured at a pre-shot safe boundary"
             )
         env = env_factory()
-        if getattr(env, "physics_backend", None) != "portable":
+        if getattr(env, "physics_backend", None) not in {"portable", "exact"}:
             close = getattr(env, "close", None)
             if callable(close):
                 close()
-            raise ValueError("archive improvement requires the portable backend")
+            raise ValueError("archive improvement requires a supported backend")
         try:
             _verify_environment_identity(env, binding)
         except Exception:
@@ -646,50 +652,45 @@ def collect_archive_improvement(
         try:
             initial = env.restore_state(elite.snapshot)
             if not isinstance(initial, Mapping):
-                raise TypeError("portable restore_state must return a public mapping")
+                raise TypeError("restore_state must return a public mapping")
             before = _verify_restored_elite(archive, elite, initial)
             label_observation = copy.deepcopy(initial)
-            for ordinal, (name, decision) in enumerate(
-                _candidate_decisions(initial, resolved, resolved_action)
-            ):
-                restored = env.restore_state(elite.snapshot)
-                if not isinstance(restored, Mapping):
-                    raise TypeError(
-                        "portable restore_state must return a public mapping"
-                    )
-                _verify_restored_elite(archive, elite, restored)
-                final, invalid = _rollout(
-                    env,
-                    restored,
-                    decision,
-                    horizon_ticks=resolved.horizon_ticks,
-                    continuation_config=resolved.continuation_config,
-                    action_spec=resolved_action,
-                )
-                after = extract_strategic_features(final)
-                elapsed = after.tick - before.tick
-                outcomes.append(
-                    ArchiveBranchOutcome(
-                        name,
-                        ordinal,
-                        decision,
-                        after.raw_score - before.raw_score,
-                        after.alive,
-                        elapsed,
-                        after.gauge,
-                        after.qualifying_clears - before.qualifying_clears,
-                        after.highest_chain - before.highest_chain,
-                        invalid,
-                    )
-                )
+            with TransactionalBranches(
+                env, initial, snapshot=elite.snapshot
+            ) as branches:
+                for ordinal, (name, decision) in enumerate(
+                    _candidate_decisions(initial, resolved, resolved_action)
+                ):
+                    with branches.branch() as (branch_env, restored):
+                        _verify_restored_elite(archive, elite, restored)
+                        final, invalid = _rollout(
+                            branch_env,
+                            restored,
+                            decision,
+                            horizon_ticks=resolved.horizon_ticks,
+                            continuation_config=resolved.continuation_config,
+                            action_spec=resolved_action,
+                        )
+                        after = extract_strategic_features(final)
+                        elapsed = after.tick - before.tick
+                        outcomes.append(
+                            ArchiveBranchOutcome(
+                                name,
+                                ordinal,
+                                decision,
+                                after.raw_score - before.raw_score,
+                                after.alive,
+                                elapsed,
+                                after.gauge,
+                                after.qualifying_clears - before.qualifying_clears,
+                                after.highest_chain - before.highest_chain,
+                                invalid,
+                            )
+                        )
         finally:
-            try:
-                if initial is not None:
-                    env.restore_state(elite.snapshot)
-            finally:
-                close = getattr(env, "close", None)
-                if callable(close):
-                    close()
+            close = getattr(env, "close", None)
+            if callable(close):
+                close()
 
         selectable = tuple(value for value in outcomes if value.selectable)
         incumbent = next(

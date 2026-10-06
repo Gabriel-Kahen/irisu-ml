@@ -1,0 +1,35 @@
+{
+  "schema": "irisu-development-seed-manifest-v1",
+  "purpose": "Fresh 20-seed exact confirmation for the fixed-512 100k development configuration",
+  "allocator": {
+    "version": "seed-allocator-v1",
+    "split": "validation",
+    "key": 5203119036443872838,
+    "cursor": 0,
+    "count": 20,
+    "selected_before_evaluation": true
+  },
+  "evaluation_seeds": [
+    1212206460,
+    1105731899,
+    1267692794,
+    1161218233,
+    1323179128,
+    1216704567,
+    1110230006,
+    1272190901,
+    1165716340,
+    1327677235,
+    1221202674,
+    1114728113,
+    1276689008,
+    1170214447,
+    1332175342,
+    1225700781,
+    1119226220,
+    1281187115,
+    1174712554,
+    1336673449
+  ],
+  "evaluation_seeds_sha256": "4030c4803a71787f813d9e82ac56295caa6f45d23d3f56947ef36b6c1f1ef152"
+}

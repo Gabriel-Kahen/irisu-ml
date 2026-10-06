@@ -1,0 +1,34 @@
+{
+  "schema": "irisu-locked-evaluation-seed-manifest-v1",
+  "purpose": "One-shot exact-runtime promotion gate: 16/20 scores >=100000, median >=100000, zero invalid actions",
+  "allocator": {
+    "version": "seed-allocator-v1",
+    "split": "calibration",
+    "key": 5283339395897447985,
+    "cursor": 0,
+    "count": 20
+  },
+  "evaluation_seeds": [
+    1540347755,
+    1491576176,
+    1442804597,
+    1394033018,
+    1345261439,
+    1564925316,
+    1516153737,
+    1467382158,
+    1418610579,
+    1369839000,
+    1589502877,
+    1540731298,
+    1491959719,
+    1443188140,
+    1394416561,
+    1345644982,
+    1565308859,
+    1516537280,
+    1467765701,
+    1418994122
+  ],
+  "evaluation_seeds_sha256": "3d1d791d67f52b7f7251770a62e0d01ec255dcc2c3e98a7613cd5659918fd9ff"
+}

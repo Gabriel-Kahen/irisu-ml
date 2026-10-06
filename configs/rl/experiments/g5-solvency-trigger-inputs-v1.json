@@ -1,0 +1,18 @@
+{
+  "schema": "irisu-g5-training-input-manifest-v1",
+  "purpose": "g5-compute-trigger-development-training-only",
+  "expected_base_checkpoint_sha256": "3af10587ad6a0faf1488ac7acc12d8d7fe10225144c593e36d8c60bcc65d67ad",
+  "expected_base_model_sha256": "c56d171283b365d5342cf903eebabf6d4e695ff1d033d1d758f9ec48ce4ba0a5",
+  "artifacts": [
+    {
+      "path": "/home/gabe/Documents/irisu/artifacts/r3/development/exact-phase0-oracle-pilot-train4-20260813-001/oracle-pilot.json",
+      "sha256": "88976935c12720b321533d3ba93296a4ef923dc764e3a354a09f7d0e3293bc94",
+      "content_sha256": "9ee175f0e1c796c2f7caf2d4821d800e4581d97f86bfe0dda472668791895abe"
+    },
+    {
+      "path": "/home/gabe/Documents/irisu/artifacts/r3/development/exact-phase0-g5-expansion-train2-20260813-001/oracle-pilot.json",
+      "sha256": "4e7c7a32579dca7f16d6250782cff397125f9f2c31d56b4fa822de12d8b38ac3",
+      "content_sha256": "3e6cdf600bcce3ea459b9069192a303c5d997a328405bf9b03b88ce2bbb68542"
+    }
+  ]
+}

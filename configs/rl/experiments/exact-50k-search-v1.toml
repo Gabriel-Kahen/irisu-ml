@@ -1,0 +1,41 @@
+version = "exact-50k-search-v1"
+objective = "exact_full_game_score_at_least_50000"
+physics_backend = "exact"
+state_producing_backends = ["exact"]
+promotion_eligible = true
+
+[runtime]
+worker_path = "/home/gabe/Documents/irisu/artifacts/r3/runtime/main-0c48dba-20260723/exact-runtime-backup/irisu-exact-worker"
+worker_sha256 = "4faa4508a89df3e1e62b80e2871b6a35b5913f220d53fe5de43408ad6512c261"
+exact_library_sha256 = "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5"
+
+[warm_start]
+checkpoint = "/home/gabe/Documents/irisu/artifacts/r3/development/r3d-survival-v5-20260729/long-development.pt"
+role = "frozen_nonpromotable_proposal_prior"
+checkpoint_sha256 = "31c9bc5e10b0ad021eecedf0c0037de6b24bd4d74e0cfbe9b4922b77dc53da1d"
+
+[teacher]
+seed = 3708052126
+horizon_ticks = 5000
+query_stride_shots = 8
+maximum_queries = 24
+pair_cap = 3
+geometry_cap = 4
+rollout_horizons = [48, 160]
+cooldown_ticks = 16
+
+[imitation]
+hidden_width = 32
+epochs = 800
+learning_rate = 0.01
+weight_decay = 0.0001
+student_top_k = 3
+
+[full_game]
+seed = 3939967453
+maximum_ticks = 100000
+query_stride_shots = 16
+maximum_queries = 64
+replay_warmup_ticks = 2
+target_score = 50000
+checkpoint_stride_ticks = 5000

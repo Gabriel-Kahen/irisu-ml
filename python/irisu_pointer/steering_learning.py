@@ -1176,6 +1176,7 @@ class GoalConditionedSteeringPolicy:
         source_velocity_lead_ticks: float = 1.0,
         ticks_per_second: float = 50.0,
         act_logit_bias: float = 0.0,
+        use_kind_head: bool = False,
         artifact_sha256: str | None = None,
     ) -> None:
         self.model = model
@@ -1235,6 +1236,9 @@ class GoalConditionedSteeringPolicy:
         ):
             raise ValueError("steering act-logit bias must be finite")
         self.act_logit_bias = float(act_logit_bias)
+        if type(use_kind_head) is not bool:
+            raise TypeError("steering kind-head inference switch must be boolean")
+        self.use_kind_head = use_kind_head
         self.artifact_sha256 = artifact_sha256
         self.schema_sha256 = self.encoder.schema.sha256
         self.pointer_action_sha256 = self.pointer_spec.sha256
@@ -1263,6 +1267,8 @@ class GoalConditionedSteeringPolicy:
         self,
         source: Mapping[str, Any],
         destination: Mapping[str, Any],
+        *,
+        use_strong: bool = True,
     ) -> tuple[SemanticAction, float, float] | None:
         source_x = float(source.get("effect_x", source.get("x", 0.0)))
         source_y = float(source.get("effect_y", source.get("y", 0.0)))
@@ -1302,7 +1308,11 @@ class GoalConditionedSteeringPolicy:
             return None
         return (
             self.action_spec.validate(
-                SemanticAction.strong(
+                (
+                    SemanticAction.strong
+                    if use_strong
+                    else SemanticAction.weak
+                )(
                     raw_x / self.action_spec.client_width,
                     raw_y / self.action_spec.client_height,
                 )
@@ -1404,7 +1414,20 @@ class GoalConditionedSteeringPolicy:
                         source.get("kind") == "bonus"
                         or source.get("color") == destination.get("color")
                     )
-                    analytic = self._analytic_action(source, destination)
+                    kind_index = (
+                        int(
+                            output.kind_logits[
+                                0, source_index, destination_index
+                            ].argmax()
+                        )
+                        if self.use_kind_head
+                        else 1
+                    )
+                    analytic = self._analytic_action(
+                        source,
+                        destination,
+                        use_strong=kind_index == 1,
+                    )
                     stalled = self._progress.is_stalled(
                         observation, source_id, destination_id
                     )

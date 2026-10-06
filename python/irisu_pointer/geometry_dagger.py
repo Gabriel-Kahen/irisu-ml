@@ -233,8 +233,8 @@ class LearnerVisitedGeometryDaggerPolicy:
         runtime_sha256: str,
         config: GeometryDaggerConfig | None = None,
     ) -> None:
-        if getattr(env, "physics_backend", None) != "portable":
-            raise ValueError("geometry DAgger requires a portable environment")
+        if getattr(env, "physics_backend", None) not in {"portable", "exact"}:
+            raise ValueError("geometry DAgger requires a supported environment")
         if not callable(getattr(env, "clone_state", None)) or not callable(
             getattr(env, "restore_state", None)
         ):
@@ -335,7 +335,7 @@ class LearnerVisitedGeometryDaggerPolicy:
             ),
             "policy_inputs": ["current public observation"],
             "teacher_only_future": (
-                "public branch observations/events after exact portable restore"
+                "public branch observations/events after exact branch restore"
             ),
             "hidden_policy_inputs": [],
             "evidence_scope": "development-teacher-only",

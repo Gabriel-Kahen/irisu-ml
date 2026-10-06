@@ -1,0 +1,18 @@
+version = "exact-adaptive-controller-v1"
+physics_backend = "exact"
+seed = 3939967453
+max_ticks = 100000
+replay_warmup_ticks = 2
+target_score = 50000
+enter_survival_gauge = 12000
+exit_survival_gauge = 20000
+
+[score_mode]
+probe_ticks = 96
+wait_ticks = 16
+gauge_advantage = 8
+
+[survival_mode]
+probe_ticks = 128
+wait_ticks = 16
+gauge_advantage = 16

@@ -1,0 +1,11 @@
+{
+  "schema": "irisu-onpolicy-pair-dagger-seed-plan-v1",
+  "namespace": "irisu-onpolicy-exact-pair-dagger-train-v1",
+  "namespace_sha256": "f1d932a5323078f9b72cdeae56d52367ec25a3b9250f7cb0decf106f8f476c67",
+  "allocator_key": 17427015918179875065,
+  "allocator_manifest_sha256": "34ca46e7101c6533681b16e4829ada97153aacbd10b6763f6331fb0d6e9e5aa4",
+  "split": "train",
+  "cursor": 0,
+  "count": 2,
+  "seeds": [94547060, 489632993]
+}

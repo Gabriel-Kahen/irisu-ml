@@ -1,6 +1,10 @@
 version = "r3c-policy-iteration-v1"
 status = "development_only_not_canonical_evidence"
 deployable = false
+runtime_role = "legacy_portable_diagnostic"
+target_training_allowed = false
+promotion_eligible = false
+fresh_exact_lineage_required = true
 objective = "complete_game_undiscounted_raw_score"
 selection_backend = "portable"
 confirmation_backend = "exact"

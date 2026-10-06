@@ -624,8 +624,10 @@ class EventMPCDebtLedgerTests(unittest.TestCase):
                     patch.object(planner, "_evaluate", return_value=bad),
                     self.assertRaisesRegex(RuntimeError, "exactly once"),
                 ):
+                    env = _RestoreEnv()
+                    env.physics_backend = "exact"
                     planner.search(
-                        _RestoreEnv(),
+                        env,
                         _observation(),
                         incumbent,
                         query_id=f"bad-{field}",

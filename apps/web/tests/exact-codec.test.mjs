@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
-  CONTROL_WORD, EXACT_CONFIG_HASH, EXACT_LIBRARY_SHA256, decodeHello, decodeReset, decodeStep,
-  encodeReset, encodeStep,
+  CONTROL_WORD, EXACT_CONFIG_HASH, EXACT_LIBRARY_SHA256, decodeHello,
+  decodePaddedEvents, decodePaddedStepMetadata, decodeReset, decodeStep, encodeReset, encodeStep,
 } from "../static/exact-codec.mjs";
 
 const view = bytes => new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
@@ -135,4 +135,46 @@ test("decodes Step diagnostics and variable-length events", () => {
     tick: 7, sequence: 10, kind: 13, kind_name: "level_changed",
     a: 11, b: 12, value: 2, detail: "next level",
   }]);
+});
+
+test("decodes allocation-light padded replay metadata and lazy events", () => {
+  const bytes = observationFixture(84 + 8);
+  const data = view(bytes);
+  const transition = 212;
+  data.setBigUint64(transition + 8, 1n, true);
+  data.setBigUint64(transition + 16, BigInt(EXACT_CONFIG_HASH), true);
+  data.setBigUint64(transition + 84, 17n, true);
+  assert.deepEqual(decodePaddedStepMetadata(bytes), {
+    observationOffset: 212,
+    terminated: false,
+    truncated: false,
+    eventCount: 1,
+    eventGeneration: 17,
+    diagnostics: {
+      config_hash: EXACT_CONFIG_HASH,
+      finish_call_count: 0,
+      terminal_metadata_recorded: false,
+      recorded_final_score: 0,
+      recorded_final_highest_chain: 0,
+      recorded_final_level: 0,
+      recorded_final_clears: 0,
+      latest_final_score: 0,
+      latest_final_highest_chain: 0,
+      latest_final_level: 0,
+      latest_final_clears: 0,
+      invalid_action: false,
+    },
+  });
+
+  const detail = new TextEncoder().encode("finished");
+  const events = new Uint8Array(8 + 36 + detail.length);
+  const eventData = view(events);
+  eventData.setBigUint64(0, 1n, true);
+  eventData.setBigUint64(8, 7n, true);
+  eventData.setBigUint64(16, 10n, true);
+  eventData.setUint16(8 + 32, detail.length, true);
+  eventData.setUint8(8 + 34, 18);
+  events.set(detail, 8 + 36);
+  assert.equal(decodePaddedEvents(events, 1)[0].kind_name, "level_completed");
+  assert.throws(() => decodePaddedEvents(events, 2), /event count changed/);
 });

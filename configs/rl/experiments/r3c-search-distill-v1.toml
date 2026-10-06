@@ -1,6 +1,10 @@
 version = "r3c-search-distill-v1"
 status = "exploratory_not_r3_evidence"
 deployable = false
+runtime_role = "legacy_portable_diagnostic"
+target_training_allowed = false
+promotion_eligible = false
+fresh_exact_lineage_required = true
 objective = "search_distillation_then_undiscounted_raw_score"
 
 [actions]

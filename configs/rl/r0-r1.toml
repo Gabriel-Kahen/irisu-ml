@@ -5,6 +5,13 @@ action_schema = "deployment-v1"
 seed_manifest = "seed-splits-v1"
 exact_runtime = "exact-runtime-identity-v1"
 
+[simulator]
+training_backend = "exact"
+model_selection_backend = "exact"
+replay_verification_backend = "exact"
+worker_path_policy = "explicit_absolute_attested_path_required"
+portable_mode = "explicit_diagnostic_only_non_promotable"
+
 [reward]
 raw = "score_after - score_before"
 raw_dtype = "int64"

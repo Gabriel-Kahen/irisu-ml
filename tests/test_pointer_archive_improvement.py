@@ -381,7 +381,7 @@ class ArchiveImprovementTests(unittest.TestCase):
         self.assertTrue(environments[0].closed)
         self.assertEqual(environments[0].observation, environments[0].initial)
 
-    def test_archive_binding_and_portable_backend_fail_closed(self) -> None:
+    def test_archive_binding_and_exact_backend_are_supported(self) -> None:
         archive = _archive()
         bad = replace(_binding(archive), archive_sha256="f" * 64)
         called = False
@@ -404,13 +404,13 @@ class ArchiveImprovementTests(unittest.TestCase):
             environments.append(value)
             return value
 
-        with self.assertRaisesRegex(ValueError, "portable"):
-            collect_archive_improvement(
-                archive,
-                exact_factory,
-                binding=_binding(archive),
-                config=_shot_config(),
-            )
+        result = collect_archive_improvement(
+            archive,
+            exact_factory,
+            binding=_binding(archive),
+            config=_shot_config(),
+        )
+        self.assertEqual(len(result.report.selections), 1)
         self.assertTrue(environments[0].closed)
 
         unsafe = StrategicArchive(source_identity=_sha("unsafe-source"))

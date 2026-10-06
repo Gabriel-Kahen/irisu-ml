@@ -17,6 +17,7 @@ from irisu_env import EventKind, PaddedVectorEnv
 
 from .actions import ActionSpec, SemanticAction, SemanticActionKind
 from .encoding import EncodedBatch, TeacherStateEncoder
+from .exact_training_runtime import ExactTrainingRuntime, ExactTrainingSession
 from .models import RecurrentActorCritic
 from .ppo import RecurrentTrainingBatch
 from .torch_distribution import (
@@ -223,20 +224,56 @@ class OneBodyTask:
         *,
         library_path: str | Path | None = None,
         worker_path: str | Path | None = None,
-        physics_backend: str = "portable",
+        physics_backend: str = "exact",
+        diagnostic_portable: bool = False,
         spec: OneBodySpec | None = None,
     ) -> None:
+        if physics_backend not in {"exact", "portable"}:
+            raise ValueError("one-body physics backend must be exact or portable")
+        if physics_backend == "exact":
+            if diagnostic_portable:
+                raise ValueError(
+                    "diagnostic_portable is only valid with the portable backend"
+                )
+            if worker_path is None:
+                raise ValueError(
+                    "exact one-body training requires an explicit worker_path"
+                )
+            if library_path is not None:
+                raise ValueError("exact one-body training does not accept library_path")
+            supplied_worker = Path(worker_path).expanduser()
+            if not supplied_worker.is_absolute():
+                raise ValueError("exact one-body worker_path must be absolute")
+        else:
+            if not diagnostic_portable:
+                raise ValueError(
+                    "portable one-body physics is diagnostic-only; set "
+                    "diagnostic_portable=True explicitly"
+                )
+            if library_path is None:
+                raise ValueError(
+                    "portable one-body diagnostics require an explicit library_path"
+                )
+            if worker_path is not None:
+                raise ValueError("portable one-body diagnostics do not accept worker_path")
         self.spec = spec or OneBodySpec()
         self.action_spec = ActionSpec()
         self.encoder = TeacherStateEncoder()
         self.height = float(height)
-        self.env = PaddedVectorEnv(
-            lanes,
-            library_path=library_path,
-            worker_path=worker_path,
-            physics_backend=physics_backend,
-            config=self.spec.mechanics_config(height),
-        )
+        self._exact_session: ExactTrainingSession[PaddedVectorEnv] | None = None
+        if physics_backend == "exact":
+            self._exact_session = ExactTrainingRuntime(worker_path).open_vector(
+                lanes,
+                simulation_config=self.spec.mechanics_config(height),
+            )
+            self.env = self._exact_session.environment
+        else:
+            self.env = PaddedVectorEnv(
+                lanes,
+                library_path=library_path,
+                physics_backend="portable",
+                config=self.spec.mechanics_config(height),
+            )
         self.lanes = lanes
         hashes = {int(env.config_hash()) for env in self.env.envs}
         if len(hashes) != 1:
@@ -250,7 +287,18 @@ class OneBodyTask:
         self._poisoned = False
 
     def close(self) -> None:
-        self.env.close()
+        if self._exact_session is not None:
+            self._exact_session.close()
+        else:
+            self.env.close()
+
+    @property
+    def exact_runtime_provenance(self) -> dict[str, object] | None:
+        """Attested runtime evidence, absent for explicit portable diagnostics."""
+
+        if self._exact_session is None:
+            return None
+        return self._exact_session.provenance_manifest
 
     def __enter__(self) -> OneBodyTask:
         return self

@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any, Protocol
 
 from irisu_env import Action, EventKind, IrisuEnv
+from irisu_rl.exact_training_runtime import ExactTrainingRuntime
 from irisu_rl.schema import ACTOR_VISION_V1, TEACHER_V1
 
 from .action import PointerActionSpec
@@ -508,7 +509,13 @@ def _run_episode(
     )
 
 
-def _default_env_factory(runtime: Path, config: Mapping[str, Any]) -> IrisuEnv:
+def _default_env_factory(
+    runtime: Path, config: Mapping[str, Any], physics_backend: str
+) -> IrisuEnv:
+    if physics_backend == "exact":
+        return ExactTrainingRuntime(runtime).open_env(
+            simulation_config=config or None
+        ).environment
     return IrisuEnv(
         library_path=runtime,
         physics_backend="portable",
@@ -524,13 +531,21 @@ def evaluate_full_games(
     criteria: PromotionCriteria | None = None,
     pointer_spec: PointerActionSpec | None = None,
     env_factory: Callable[[Path, Mapping[str, Any]], Any] | None = None,
+    physics_backend: str | None = None,
 ) -> FullGameEvaluationReport:
-    """Evaluate complete games without accepting sealed identities or paths."""
+    """Evaluate complete games without accepting sealed identities or paths.
+
+    The production default is the exact worker. Portable evaluation remains an
+    explicit diagnostic via ``physics_backend="portable"``. Custom factories
+    may omit the selector because their runner identity is independently bound.
+    """
 
     if not isinstance(binding, ArtifactBinding):
         raise TypeError("binding must be an ArtifactBinding")
     if not isinstance(suite, DevelopmentSuite):
         raise TypeError("suite must be a DevelopmentSuite")
+    if physics_backend not in {None, "portable", "exact"}:
+        raise ValueError("physics_backend must be 'portable', 'exact', or None")
     resolved_criteria = criteria or PromotionCriteria()
     resolved_pointer = pointer_spec or PointerActionSpec()
     if resolved_pointer.sha256 != binding.pointer_action_sha256:
@@ -539,14 +554,27 @@ def evaluate_full_games(
         binding.policy_path, binding.policy_sha256, name="policy artifact"
     )
     runtime_file = _snapshot_file(
-        binding.runtime_path, binding.runtime_sha256, name="portable runtime"
+        binding.runtime_path, binding.runtime_sha256, name="simulator runtime"
     )
-    factory = env_factory or _default_env_factory
+    expected_backend = (
+        ("exact" if physics_backend is None else physics_backend)
+        if env_factory is None
+        else physics_backend
+    )
+    factory = env_factory or (
+        lambda runtime, config: _default_env_factory(
+            runtime, config, expected_backend or "exact"
+        )
+    )
     outcomes: list[EpisodeOutcome] = []
     with factory(runtime_file.path, dict(suite.config)) as env:
-        if getattr(env, "physics_backend", None) != "portable":
-            raise DevelopmentEvaluationError("development evaluator requires portable")
-        loaded_runtime = Path(getattr(env, "library_path", "")).resolve()
+        backend = getattr(env, "physics_backend", None)
+        if backend not in {"portable", "exact"}:
+            raise DevelopmentEvaluationError("development evaluator backend is unsupported")
+        if expected_backend is not None and backend != expected_backend:
+            raise DevelopmentEvaluationError("development evaluator backend differs")
+        runtime_attribute = "worker_path" if backend == "exact" else "library_path"
+        loaded_runtime = Path(getattr(env, runtime_attribute, "")).resolve()
         if loaded_runtime != runtime_file.path:
             raise DevelopmentEvaluationError("environment loaded a different runtime")
         runner_identity = dict(env.runner_identity_manifest())
@@ -569,7 +597,7 @@ def evaluate_full_games(
                 )
             )
     _verify_unchanged(policy_file, name="policy artifact")
-    _verify_unchanged(runtime_file, name="portable runtime")
+    _verify_unchanged(runtime_file, name="simulator runtime")
     scores = [outcome.raw_score for outcome in outcomes]
     ticks = [outcome.survival_ticks for outcome in outcomes]
     unique_hits = [outcome.unique_projectile_hit_pairs for outcome in outcomes]
@@ -639,6 +667,8 @@ def evaluate_full_games(
             and suite.manifest()["development_only"] is True
         ),
         "artifact_and_runtime_reverified": True,
+        "exact_training_backend": backend == "exact",
+        "pinned_exact_runtime_attested": env_factory is None and backend == "exact",
     }
     gates["all_passed"] = all(gates.values())
     return FullGameEvaluationReport(

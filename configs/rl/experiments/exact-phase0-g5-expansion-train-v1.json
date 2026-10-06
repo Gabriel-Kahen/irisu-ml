@@ -1,0 +1,11 @@
+{
+  "schema": "irisu-onpolicy-pair-dagger-seed-plan-v1",
+  "namespace": "irisu-g5-solvency-trigger-expansion-v1",
+  "namespace_sha256": "5f6a4b2f1c0fba972d6dd9a339e67d5a01bf8644f2b32a0159b8619e904c8da0",
+  "allocator_key": 6875390446840822423,
+  "allocator_manifest_sha256": "34ca46e7101c6533681b16e4829ada97153aacbd10b6763f6331fb0d6e9e5aa4",
+  "split": "train",
+  "cursor": 0,
+  "count": 2,
+  "seeds": [406796264, 479242827]
+}

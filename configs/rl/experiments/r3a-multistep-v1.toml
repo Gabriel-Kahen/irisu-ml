@@ -6,6 +6,13 @@ observation_provenance = "privileged_simulator"
 transfer_gate = "R4 causal tracker and input calibration pending"
 diagnostic_scope = "same-environment-pool recurrent collector and curriculum coordinator"
 
+[simulator]
+training_backend = "exact"
+model_selection_backend = "exact"
+replay_verification_backend = "exact"
+worker_path_policy = "explicit_absolute_attested_path_required"
+portable_mode = "explicit_diagnostic_only_non_promotable"
+
 [smoke_run]
 lanes = 16
 updates = 4

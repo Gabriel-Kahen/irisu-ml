@@ -365,12 +365,14 @@ class MacroBeamTests(unittest.TestCase):
             teacher.search(env, observation)
         self.assertEqual(env.clone_state(), before)
 
-    def test_nonportable_backend_fails_closed(self) -> None:
+    def test_exact_backend_uses_clone_restore_compatibility_path(self) -> None:
         observation = _observation()
         env = _MacroEnv(observation)
         env.physics_backend = "exact"
-        with self.assertRaisesRegex(ValueError, "portable"):
-            SpawnCensoredMacroBeamTeacher().search(env, observation)
+        before = env.clone_state()
+        result = SpawnCensoredMacroBeamTeacher().search(env, observation)
+        self.assertTrue(result.evaluations)
+        self.assertEqual(env.clone_state(), before)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,39 @@
+version = "exact-50k-ppo-v1"
+physics_backend = "exact"
+teacher_source = "live exact closed-loop controller warm start"
+teacher_gate = false
+teacher_seeds = [3939967453, 1554819123, 1073741824, 1073741825]
+maximum_episode_ticks = 100000
+
+[model]
+global_hidden = 64
+body_hidden = 64
+fused_hidden = 128
+recurrent_hidden = 128
+recurrent_layers = 1
+
+[behavioral_cloning]
+steps = 160
+learning_rate = 0.0003
+sequence_length = 48
+batch_size = 8
+shot_kind_weight = 8.0
+wait_loss_weight = 0.5
+coordinate_mse_weight = 300.0
+
+[ppo]
+updates = 24
+lanes = 16
+max_decisions = 256
+target_simulated_ticks = 8192
+reward_scale = 1000.0
+learning_rate = 0.00005
+epochs = 2
+lane_minibatch_size = 8
+entropy_coefficient = 0.001
+target_kl = 0.02
+
+[evaluation]
+seeds = [3939967453, 1554819123, 1073741824, 1073741825]
+deterministic = true
+checkpoint_interval_ticks = 1000

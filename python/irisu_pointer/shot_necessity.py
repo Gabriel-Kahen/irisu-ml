@@ -42,6 +42,7 @@ class ProbeOutcome:
     minimum_gauge: int
     terminated: bool
     truncated: bool
+    highest_chain: int = 0
 
     def manifest(self) -> dict[str, int | bool]:
         return asdict(self)
@@ -92,7 +93,13 @@ def choose_shot(
 
 
 class ExactWaitDominanceGate:
-    """Transactional exact probe around an environment and learned policy."""
+    """Transactional probe around an environment and learned policy.
+
+    Exact-worker environments use Linux-local fork/COW checkpoints so the two
+    counterfactuals start from identical MSVC9 physics state without replaying
+    the episode's durable action log. Portable environments retain the legacy
+    byte-snapshot path for explicitly diagnostic runs.
+    """
 
     def __init__(
         self,
@@ -161,6 +168,7 @@ class ExactWaitDominanceGate:
             minimum_gauge,
             bool(terminated or current.get("terminated", False)),
             bool(truncated or current.get("truncated", False)),
+            int(current.get("highest_chain", 0)),
         )
 
     def evaluate(
@@ -173,6 +181,14 @@ class ExactWaitDominanceGate:
     ) -> GateVerdict:
         if not shot_decision.is_shot:
             raise ValueError("wait-dominance gate requires a proposed shot")
+        if getattr(env, "physics_backend", None) == "exact":
+            return self._evaluate_fast_exact(
+                env,
+                observation,
+                policy_before,
+                policy_after_shot,
+                shot_decision,
+            )
         snapshot = env.clone_state()
         expected_hash = env.state_hash()
         restore_checks = 0
@@ -206,6 +222,49 @@ class ExactWaitDominanceGate:
             gauge_advantage=self.config.gauge_advantage,
         )
         return GateVerdict(execute, reason, shot, wait, restore_checks)
+
+    def _evaluate_fast_exact(
+        self,
+        env: object,
+        observation: Mapping[str, Any],
+        policy_before: object,
+        policy_after_shot: object,
+        shot_decision: SteeringDecision,
+    ) -> GateVerdict:
+        """Evaluate exact branches without mutating or replay-restoring live state."""
+
+        expected_hash = env.state_hash()
+        checks = 0
+        with env.fast_checkpoint() as checkpoint:
+            with checkpoint.branch() as shot_env:
+                if shot_env.state_hash() != expected_hash:
+                    raise RuntimeError("wait-dominance exact shot branch mismatch")
+                checks += 1
+                shot = self._advance(
+                    shot_env,
+                    observation,
+                    copy.deepcopy(policy_after_shot),
+                    shot_decision,
+                )
+            with checkpoint.branch() as wait_env:
+                if wait_env.state_hash() != expected_hash:
+                    raise RuntimeError("wait-dominance exact wait branch mismatch")
+                checks += 1
+                wait = self._advance(
+                    wait_env,
+                    observation,
+                    copy.deepcopy(policy_before),
+                    self.wait_decision("counterfactual restraint probe"),
+                )
+        if env.state_hash() != expected_hash:
+            raise RuntimeError("wait-dominance exact live state changed")
+        checks += 1
+        execute, reason = choose_shot(
+            shot,
+            wait,
+            gauge_advantage=self.config.gauge_advantage,
+        )
+        return GateVerdict(execute, reason, shot, wait, checks)
 
 
 __all__ = [

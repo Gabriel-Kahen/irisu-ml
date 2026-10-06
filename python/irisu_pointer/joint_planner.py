@@ -1,6 +1,6 @@
 """Bounded development-only joint pair and shot-geometry planning.
 
-The planner consumes public observations and opaque portable snapshots.  It
+The planner consumes public observations and opaque simulator snapshots. It
 never exposes snapshot bytes or future RNG state to a policy or learner.
 """
 
@@ -801,7 +801,7 @@ class JointPairGeometrySearch:
             "continuation_identity_bound": (
                 self.continuation_identity_sha256 is not None
             ),
-            "backend": "trusted-portable-clone-only",
+            "backend": "exact-or-portable-clone-restore",
             "snapshot_rng": (
                 "opaque identical snapshot bytes restored per branch; "
                 "never exposed to policy"
@@ -899,7 +899,7 @@ class JointPairGeometrySearch:
             nonlocal current, terminated, truncated, first_phase
             current, _reward, terminated, truncated, info = env.step(action)
             if not isinstance(current, Mapping) or not isinstance(info, Mapping):
-                raise TypeError("joint portable transition is malformed")
+                raise TypeError("joint branch transition is malformed")
             supplied = tuple(
                 value
                 for value in info.get("events", ())
@@ -1062,11 +1062,14 @@ class JointPairGeometrySearch:
         observation: Mapping[str, Any],
         incumbent: SteeringDecision,
     ) -> JointSearchResult:
-        if getattr(env, "physics_backend", None) != "portable":
-            raise ValueError("joint search requires the portable backend")
+        if getattr(env, "physics_backend", None) not in {"portable", "exact"}:
+            raise ValueError("joint search requires a supported backend")
         if not incumbent.is_shot:
             raise ValueError("joint search requires an incumbent shot")
         candidates = self._candidates(observation, incumbent)
+        # Candidate continuation mutates shared controller state and verifies
+        # byte-identical snapshots after every restore. Keep clone/restore for
+        # both backends; exact restoration is correct but replays action logs.
         snapshot = env.clone_state()
         snapshot_sha256 = hashlib.sha256(snapshot).hexdigest()
         expected_signature = _public_signature(observation)
@@ -1088,7 +1091,7 @@ class JointPairGeometrySearch:
                     )
                 ):
                     raise RuntimeError(
-                        "joint branch did not receive the identical portable state"
+                        "joint branch did not receive the identical source state"
                     )
                 outcomes.append(self._evaluate(env, restored, candidate))
         finally:

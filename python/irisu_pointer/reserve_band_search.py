@@ -1,8 +1,8 @@
 """Development-only renewable-reserve runway teacher.
 
-The teacher branches only the fixed R3e geometry vocabulary on the trusted
-portable simulator.  It is intentionally nondeployable: future public states
-from cloned branches are labels, never policy inputs.
+The teacher branches only the fixed R3e geometry vocabulary. Exact target runs
+use fork/COW worker checkpoints; portable simulator runs remain diagnostics.
+Future public states from branches are labels, never policy inputs.
 """
 
 from __future__ import annotations
@@ -16,6 +16,7 @@ from typing import Any, Literal
 from irisu_env import EventKind
 from irisu_rl.actions import ActionSpec
 
+from .branching import TransactionalBranches
 from .geometry_search import (
     GeometryBranchOutcome,
     GeometrySearchConfig,
@@ -386,8 +387,8 @@ class ReserveBandGeometrySearch:
                 "incumbent public directed-pair decision",
             ],
             "teacher_only_future": (
-                "public observations/events from identical restored portable "
-                "snapshots for the fixed candidate vocabulary"
+                "public observations/events from identical simulator branches "
+                "for the fixed candidate vocabulary"
             ),
             "hidden_policy_inputs": [],
             "evidence_scope": "development-teacher-only",
@@ -406,19 +407,14 @@ class ReserveBandGeometrySearch:
         observation: Mapping[str, Any],
         incumbent: SteeringDecision,
     ) -> RunwaySearchResult:
-        if getattr(env, "physics_backend", None) != "portable":
-            raise ValueError("reserve-band search requires portable backend")
+        if getattr(env, "physics_backend", None) not in {"portable", "exact"}:
+            raise ValueError("reserve-band search requires a supported backend")
         if not isinstance(observation, Mapping):
             raise TypeError("reserve-band observation must be a public mapping")
         if bool(observation.get("terminated", False)) or bool(
             observation.get("truncated", False)
         ):
             raise ValueError("cannot reserve-band search a terminal observation")
-        clone = getattr(env, "clone_state", None)
-        restore = getattr(env, "restore_state", None)
-        if not callable(clone) or not callable(restore):
-            raise TypeError("portable reserve-band environment lacks clone/restore")
-
         gauge_max = int(observation.get("gauge_max", 0))
         gauge = int(observation.get("gauge", -1))
         if gauge_max <= 0 or not 0 <= gauge <= gauge_max:
@@ -445,43 +441,38 @@ class ReserveBandGeometrySearch:
             action_spec=self.action_spec,
         )
         expected = _public_state_signature(observation)
-        snapshot = clone()
         base_outcomes: list[
             tuple[
                 GeometryBranchOutcome,
                 tuple[int, int, int, int, int, int, int],
             ]
         ] = []
-        try:
+        with TransactionalBranches(env, observation) as branches:
             for candidate in candidate_set.candidates:
-                restored = restore(snapshot)
-                if not isinstance(restored, Mapping):
-                    raise TypeError("portable restore must return a public mapping")
-                if _public_state_signature(restored) != expected:
-                    raise RuntimeError(
-                        "reserve-band restore disagrees with supplied public state"
+                with branches.branch() as (branch_env, restored):
+                    if _public_state_signature(restored) != expected:
+                        raise RuntimeError(
+                            "reserve-band restore disagrees with supplied public state"
+                        )
+                    tracing = _TracingEnvironment(branch_env)
+                    outcome = evaluate_geometry_candidate(
+                        tracing,
+                        restored,
+                        candidate,
+                        horizon_ticks=self.config.runway_ticks,
+                        action_spec=self.action_spec,
                     )
-                tracing = _TracingEnvironment(env)
-                outcome = evaluate_geometry_candidate(
-                    tracing,
-                    restored,
-                    candidate,
-                    horizon_ticks=self.config.runway_ticks,
-                    action_spec=self.action_spec,
-                )
-                metrics = _trace_metrics(
-                    initial_gauge=int(restored.get("gauge", -1)),
-                    start_tick=int(restored.get("tick", -1)),
-                    final_gauge=outcome.final_gauge,
-                    final_tick=(
-                        int(restored.get("tick", -1)) + outcome.survival_ticks
-                    ),
-                    runway_ticks=self.config.runway_ticks,
-                    events=tracing.events,
-                )
-                base_outcomes.append((outcome, metrics))
-        finally:
-            restore(snapshot)
+                    metrics = _trace_metrics(
+                        initial_gauge=int(restored.get("gauge", -1)),
+                        start_tick=int(restored.get("tick", -1)),
+                        final_gauge=outcome.final_gauge,
+                        final_tick=(
+                            int(restored.get("tick", -1)) + outcome.survival_ticks
+                        ),
+                        runway_ticks=self.config.runway_ticks,
+                        events=tracing.events,
+                    )
+                    base_outcomes.append((outcome, metrics))
 
         incumbent_outcome = base_outcomes[0][0]
         if not incumbent_outcome.selectable:

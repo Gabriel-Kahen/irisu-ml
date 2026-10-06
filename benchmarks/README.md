@@ -9,7 +9,7 @@ validated semantic click macros, active-lane releases, privileged numeric
 encoding, autoreset seed ownership, and preallocated smoke-buffer writes. It
 does not include actor-side capture/tracking or model inference, and the R2 PPO
 buffer will add training-specific tensors. Run with `uv run --extra training
-python benchmarks/rl_r1.py`.
+python benchmarks/rl_r1.py --worker /absolute/path/to/irisu-exact-worker`.
 
 `rl_r2a.py` measures the deterministic CPU model path separately from
 environment collection. It covers the schema-bound masked set encoder and GRU
@@ -18,12 +18,14 @@ The checked result is engineering throughput only: it excludes environment
 collection and is not evidence of learning quality or transfer.
 
 `rl_r2b.py` runs the preregistered one-body behavioral-cloning and PPO proof.
-It compares three learning rates over three model seeds, selects on disjoint
-validation heights, and opens the exact-backend test family only after
-selection. See `docs/rl-r2b.md`; its result is curriculum-specific and remains
-`deployable=false`.
+Training, calibration, validation, and test families all use the explicitly
+supplied, attested exact worker. It compares three learning rates over three
+model seeds and selects on disjoint validation heights. See `docs/rl-r2b.md`;
+its result is curriculum-specific and remains `deployable=false`.
 The checked evidence is `results/rl-r2b-one-body-2026-07-22.json`.
-The three accepted weights-only policy checkpoints and their immutable
+That pre-migration artifact used portable training/selection and is retained as
+historical evidence only; it cannot pass the current exact acceptance contract.
+The three historically accepted weights-only policy checkpoints and their immutable
 manifests are in `results/rl-r2b-one-body-models/`.
 
 Build and run the default benchmark from the repository root:
@@ -434,10 +436,12 @@ selected by workspace fallback.
 
 ```bash
 uv run --extra training python benchmarks/rl_r3a.py \
-  --backend exact \
   --runtime /absolute/path/to/irisu-exact-worker \
   --lanes 16 --updates 4 --decisions 32
 ```
+
+Portable R3a collection remains available only with
+`--diagnostic-portable`; those outputs are marked non-promotable.
 
 Use `--optimizer-torch-threads N` to profile PPO intra-op scaling separately
 while retaining `--torch-threads` for collection inference. The result records

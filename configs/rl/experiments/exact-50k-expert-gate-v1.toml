@@ -1,0 +1,27 @@
+version = "exact-50k-expert-gate-v1"
+physics_backend = "exact"
+state_producing_backends = ["exact"]
+seed = 3939967453
+maximum_ticks = 100000
+replay_warmup_ticks = 2
+target_score = 50000
+
+[gate]
+probe_ticks = 96
+wait_ticks = 16
+gauge_advantage = 8
+
+[expert]
+observe_ticks = 16
+resolution_wait_ticks = 4
+abandon_ticks = 32
+impact_side_sizes = 0.50
+impact_below_sizes = 0.75
+source_velocity_lead_ticks = 1.0
+minimum_pair_closure_sizes = 0.05
+ticks_per_second = 50.0
+hazard_remaining_ticks = 48
+enable_bonus = false
+enable_rotten_matching = true
+enable_hazard_ejection = false
+enable_edge_ejection = false

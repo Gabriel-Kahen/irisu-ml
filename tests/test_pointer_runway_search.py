@@ -373,15 +373,15 @@ class RunwaySearchTests(unittest.TestCase):
             )
         self.assertEqual(env.clone_state(), before)
 
-    def test_nonportable_backend_fails_before_snapshotting(self) -> None:
+    def test_exact_backend_uses_transactional_clone_restore_fallback(self) -> None:
         observation = _observation()
         env = _RunwayEnv(observation, runway_ticks=8)
         env.physics_backend = "exact"
-        with self.assertRaisesRegex(ValueError, "portable"):
-            RunwayGeometrySearch(
-                config=RunwaySearchConfig(runway_ticks=8)
-            ).search(env, observation, _incumbent())
-        self.assertEqual(env.clones, 0)
+        result = RunwayGeometrySearch(
+            config=RunwaySearchConfig(runway_ticks=8)
+        ).search(env, observation, _incumbent())
+        self.assertTrue(result.outcomes)
+        self.assertGreater(env.clones, 0)
 
     def test_result_identity_retains_all_branch_outcomes_and_winner(self) -> None:
         observation = _observation()

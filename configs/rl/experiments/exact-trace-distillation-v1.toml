@@ -1,0 +1,18 @@
+version = "exact-trace-distillation-v1"
+physics_backend = "exact"
+state_producing_backends = ["exact"]
+policy_kind = "tick-conditioned-public-observation-table"
+fallback = "none"
+checkpoint_dependencies = []
+target_score = 50000
+checkpoint_stride_ticks = 5000
+
+[runtime]
+identity = "configs/rl/runtime/exact-worker-2026-07-21.json"
+
+[teacher]
+unit = "artifacts/r3/development/exact-50k-evo-20260810-001/units/mutant-96x16-g8.json"
+trace = "artifacts/r3/development/exact-50k-evo-20260810-001/traces/mutant-96x16-g8.u32le"
+replay = "artifacts/r3/development/exact-50k-evo-20260810-001/mutant-96x16-g8.rpy"
+acceptance = "artifacts/r3/development/exact-50k-evo-20260810-001/mutant-96x16-g8.exact-evaluation.json"
+

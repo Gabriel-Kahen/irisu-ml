@@ -144,12 +144,29 @@ def acceptance_predicates(result: dict[str, object]) -> dict[str, bool]:
         and result["exact_runtime_attestation"]["provenance"]["sha256"]
         == accepted_runtime["exact_library_sha256"]
     )
+    runtime_provenance = result.get("exact_training_provenance")
+    exact_end_to_end = (
+        result.get("physics_backend") == "exact"
+        and isinstance(runtime_provenance, dict)
+        and set(runtime_provenance) == {"train", "calibration", "validation", "test"}
+        and all(
+            isinstance(family, dict)
+            and family
+            and all(
+                isinstance(provenance, dict)
+                and provenance.get("physics_backend") == "exact"
+                for provenance in family.values()
+            )
+            for family in runtime_provenance.values()
+        )
+    )
     return {
         "clean_source_tree": result["source"]["dirty"] is False,
         "checked_experiment_is_canonical": result["experiment"]["resolved"]
         == EXPERIMENT
         and result["budgets"] == CANONICAL_BUDGETS,
         "accepted_exact_runtime_attested": exact_runtime_matches,
+        "all_training_and_selection_families_are_exact": exact_end_to_end,
         "exact_worker_hash_matches_runtime": result["exact_runtime_build_info"][
             "worker_executable_sha256"
         ]
@@ -194,8 +211,12 @@ def summarize_result(result: dict[str, object]) -> dict[str, object]:
         "runtime_files": result["runtime_files"],
         "experiment": result["experiment"],
         "reproduction": result["reproduction"],
-        "exact_runtime_build_info": result["exact_runtime_build_info"],
+        "exact_runtime_build_info": result.get("exact_runtime_build_info"),
         "exact_runtime_attestation": result["exact_runtime_attestation"],
+        "exact_training_provenance": result.get("exact_training_provenance"),
+        "physics_backend": result["physics_backend"],
+        "diagnostic_portable": result["diagnostic_portable"],
+        "promotion_eligible": result["promotion_eligible"],
         "seed_manifest_sha256": result["seed_manifest_sha256"],
         "task": result["task"],
         "model": result["model"],
@@ -224,6 +245,7 @@ class TaskFamily:
         library: Path | None,
         worker: Path | None,
         backend: str,
+        diagnostic_portable: bool = False,
         spec: OneBodySpec,
     ) -> None:
         stack = ExitStack()
@@ -236,6 +258,7 @@ class TaskFamily:
                     library_path=library,
                     worker_path=worker,
                     physics_backend=backend,
+                    diagnostic_portable=diagnostic_portable,
                     spec=spec,
                 )
             )
@@ -245,6 +268,11 @@ class TaskFamily:
 
     def config_hashes(self) -> dict[str, int]:
         return {str(task.height): task.config_hash for task in self.tasks}
+
+    def exact_runtime_provenance(self) -> dict[str, object]:
+        return {
+            str(task.height): task.exact_runtime_provenance for task in self.tasks
+        }
 
     def close(self) -> None:
         self._stack.close()
@@ -506,17 +534,12 @@ def train_ppo(
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--exact-worker", type=Path)
+    parser.add_argument("--library", type=Path)
     parser.add_argument(
-        "--library",
-        type=Path,
-        default=ROOT / "build-physics-integration-portable" / "libirisu_clone.so",
-    )
-    parser.add_argument(
-        "--exact-worker",
-        type=Path,
-        default=ROOT
-        / "build-physics-integration-exact-multiworld-2"
-        / "irisu-exact-worker",
+        "--diagnostic-portable",
+        action="store_true",
+        help="run approximate portable physics as a non-promotable diagnostic",
     )
     parser.add_argument("--updates", type=int, default=CANONICAL_BUDGETS["updates"])
     parser.add_argument("--lanes", type=int, default=CANONICAL_BUDGETS["lanes"])
@@ -535,22 +558,46 @@ def main() -> None:
     args = parser.parse_args()
     if min(args.updates, args.lanes, args.evaluation_rounds, args.bc_steps) <= 0:
         parser.error("all budgets must be positive")
-    if not args.library.is_file():
-        parser.error("portable training library does not exist")
-    if not args.exact_worker.is_file():
-        parser.error("the attested exact worker is required for R2b evidence")
+    backend = "portable" if args.diagnostic_portable else "exact"
+    if backend == "exact":
+        if args.library is not None:
+            parser.error("--library is only valid with --diagnostic-portable")
+        if (
+            args.exact_worker is None
+            or not args.exact_worker.is_absolute()
+            or not args.exact_worker.is_file()
+        ):
+            parser.error(
+                "exact training requires an explicit absolute --exact-worker path"
+            )
+        runtime_path = args.exact_worker.resolve(strict=True)
+    else:
+        if args.exact_worker is not None:
+            parser.error("--exact-worker cannot be combined with --diagnostic-portable")
+        if (
+            args.library is None
+            or not args.library.is_absolute()
+            or not args.library.is_file()
+        ):
+            parser.error(
+                "--diagnostic-portable requires an explicit absolute --library path"
+            )
+        runtime_path = args.library.resolve(strict=True)
     if args.checkpoint_root.exists():
         parser.error("checkpoint root must not already exist")
-    attestation = ACCEPTED_EXACT_RUNTIME_2026_07_21.attest(args.exact_worker.resolve())
-    attestation["build_info"].pop("worker_pid", None)
-    attestation["build_info"].pop("config_hash", None)
-    attestation = {
-        "accepted_identity": asdict(ACCEPTED_EXACT_RUNTIME_2026_07_21),
-        "build_info": attestation["build_info"],
-        "provenance": {
-            key: attestation["provenance"][key] for key in ("status", "bytes", "sha256")
-        },
-    }
+    attestation = None
+    if backend == "exact":
+        attestation = ACCEPTED_EXACT_RUNTIME_2026_07_21.attest(runtime_path)
+        attestation["build_info"].pop("worker_pid", None)
+        attestation["build_info"].pop("config_hash", None)
+        attestation = {
+            "accepted_identity": asdict(ACCEPTED_EXACT_RUNTIME_2026_07_21),
+            "build_info": attestation["build_info"],
+            "provenance": {
+                key: attestation["provenance"][key]
+                for key in ("status", "bytes", "sha256")
+            },
+        }
     runtime = EXPERIMENT["runtime"]
     torch.set_num_threads(runtime["torch_threads"])
     torch.set_num_interop_threads(runtime["torch_interop_threads"])
@@ -573,6 +620,9 @@ def main() -> None:
             "resolved": EXPERIMENT,
         },
         "exact_runtime_attestation": attestation,
+        "physics_backend": backend,
+        "diagnostic_portable": args.diagnostic_portable,
+        "promotion_eligible": backend == "exact",
         "task": {**spec.manifest(), "sha256": spec.sha256},
         "model": RecurrentActorCritic(TEACHER_V1, config=MODEL_CONFIG).manifest(),
         "budgets": {
@@ -585,19 +635,22 @@ def main() -> None:
         "learning_rate_candidates": LEARNING_RATES,
         "seed_manifest_sha256": SeedAllocator().manifest_sha256,
         "runtime_files": {
-            "portable_library_sha256": hashlib.sha256(
-                args.library.read_bytes()
-            ).hexdigest(),
+            "portable_library_sha256": (
+                hashlib.sha256(runtime_path.read_bytes()).hexdigest()
+                if backend == "portable"
+                else None
+            ),
             "exact_worker_sha256": (
-                hashlib.sha256(args.exact_worker.read_bytes()).hexdigest()
-                if args.exact_worker.is_file()
+                hashlib.sha256(runtime_path.read_bytes()).hexdigest()
+                if backend == "exact"
                 else None
             ),
         },
         "reproduction": {
             "command": (
                 "PYTHONPATH=python uv run --extra training python "
-                "benchmarks/rl_r2b.py --summary"
+                "benchmarks/rl_r2b.py --exact-worker "
+                "/absolute/path/to/irisu-exact-worker --summary"
             ),
             "output": "benchmarks/results/rl-r2b-one-body-2026-07-22.json",
         },
@@ -613,27 +666,30 @@ def main() -> None:
         train = TaskFamily(
             spec.train_heights,
             args.lanes,
-            library=args.library,
-            worker=None,
-            backend="portable",
+            library=runtime_path if backend == "portable" else None,
+            worker=runtime_path if backend == "exact" else None,
+            backend=backend,
+            diagnostic_portable=args.diagnostic_portable,
             spec=spec,
         )
         stack.callback(train.close)
         calibration = TaskFamily(
             spec.calibration_heights,
             args.lanes,
-            library=args.library,
-            worker=None,
-            backend="portable",
+            library=runtime_path if backend == "portable" else None,
+            worker=runtime_path if backend == "exact" else None,
+            backend=backend,
+            diagnostic_portable=args.diagnostic_portable,
             spec=spec,
         )
         stack.callback(calibration.close)
         validation = TaskFamily(
             spec.validation_heights,
             args.lanes,
-            library=args.library,
-            worker=None,
-            backend="portable",
+            library=runtime_path if backend == "portable" else None,
+            worker=runtime_path if backend == "exact" else None,
+            backend=backend,
+            diagnostic_portable=args.diagnostic_portable,
             spec=spec,
         )
         stack.callback(validation.close)
@@ -641,6 +697,11 @@ def main() -> None:
             "train": train.config_hashes(),
             "calibration": calibration.config_hashes(),
             "validation": validation.config_hashes(),
+        }
+        result["exact_training_provenance"] = {
+            "train": train.exact_runtime_provenance(),
+            "calibration": calibration.exact_runtime_provenance(),
+            "validation": validation.exact_runtime_provenance(),
         }
 
         bc_model, bc_training = train_bc(train, steps=args.bc_steps, seed=BC_SEED)
@@ -723,20 +784,23 @@ def main() -> None:
         )
         result["selected_learning_rate"] = selected
 
-        test_backend = "exact"
+        test_backend = backend
         test = TaskFamily(
             spec.test_heights,
             args.lanes,
-            library=None,
-            worker=args.exact_worker,
+            library=runtime_path if backend == "portable" else None,
+            worker=runtime_path if backend == "exact" else None,
             backend=test_backend,
+            diagnostic_portable=args.diagnostic_portable,
             spec=spec,
         )
         stack.callback(test.close)
-        exact_build_info = test.tasks[0].env.envs[0].build_info()
-        exact_build_info.pop("worker_pid", None)
-        result["exact_runtime_build_info"] = exact_build_info
+        if backend == "exact":
+            exact_build_info = test.tasks[0].env.envs[0].build_info()
+            exact_build_info.pop("worker_pid", None)
+            result["exact_runtime_build_info"] = exact_build_info
         result["task"]["mechanics_config_hashes"]["test"] = test.config_hashes()
+        result["exact_training_provenance"]["test"] = test.exact_runtime_provenance()
         test_runs = []
         for model_seed, state in zip(MODEL_SEEDS, states[selected]):
             model = RecurrentActorCritic(TEACHER_V1, config=MODEL_CONFIG)
@@ -782,9 +846,14 @@ def main() -> None:
                 "model_seed": model_seed,
                 "selected_learning_rate": selected,
                 "held_out_test": test_metrics,
-                "exact_runtime": result["exact_runtime_attestation"][
-                    "accepted_identity"
-                ],
+                "exact_runtime": (
+                    result["exact_runtime_attestation"]["accepted_identity"]
+                    if backend == "exact"
+                    else None
+                ),
+                "exact_training_provenance": result["exact_training_provenance"],
+                "physics_backend": backend,
+                "diagnostic_portable": args.diagnostic_portable,
                 "seed_manifest_sha256": result["seed_manifest_sha256"],
                 "observation_provenance": "privileged_simulator",
                 "deployable": False,
@@ -814,11 +883,18 @@ def main() -> None:
                 }
             )
         result["selected_policy_checkpoints"] = selected_checkpoints
-        predicates = acceptance_predicates(result)
-        result["acceptance"] = {
-            "predicates": predicates,
-            "pass": all(predicates.values()),
-        }
+        if backend == "exact":
+            predicates = acceptance_predicates(result)
+            result["acceptance"] = {
+                "predicates": predicates,
+                "pass": all(predicates.values()),
+            }
+        else:
+            result["acceptance"] = {
+                "predicates": {"exact_backend": False},
+                "pass": False,
+                "reason": "portable physics is diagnostic-only and non-promotable",
+            }
     payload = summarize_result(result) if args.summary else result
     print(json.dumps(payload, indent=2, sort_keys=True, default=str, allow_nan=False))
 

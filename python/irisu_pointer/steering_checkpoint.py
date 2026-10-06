@@ -165,6 +165,7 @@ def load_goal_conditioned_steering_policy(
     source_velocity_lead_ticks: float = 1.0,
     ticks_per_second: float = 50.0,
     act_logit_bias: float = 0.0,
+    use_kind_head: bool = False,
 ) -> GoalConditionedSteeringPolicy:
     checkpoint = load_steering_checkpoint(
         path, expected_sha256=expected_sha256, device=device
@@ -181,6 +182,7 @@ def load_goal_conditioned_steering_policy(
         source_velocity_lead_ticks=source_velocity_lead_ticks,
         ticks_per_second=ticks_per_second,
         act_logit_bias=act_logit_bias,
+        use_kind_head=use_kind_head,
         artifact_sha256=checkpoint.sha256,
     )
 

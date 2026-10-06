@@ -579,6 +579,10 @@ def _load_config(path: Path) -> dict[str, Any]:
         "deployable",
         "canonical_r3_evidence",
         "sealed_evaluation_allowed",
+        "runtime_role",
+        "target_training_allowed",
+        "promotion_eligible",
+        "fresh_exact_lineage_required",
         "objective",
         "inputs",
         "frozen_v5",
@@ -596,6 +600,10 @@ def _load_config(path: Path) -> dict[str, Any]:
         or config["deployable"] is not False
         or config["canonical_r3_evidence"] is not False
         or config["sealed_evaluation_allowed"] is not False
+        or config["runtime_role"] != "legacy_portable_diagnostic"
+        or config["target_training_allowed"] is not False
+        or config["promotion_eligible"] is not False
+        or config["fresh_exact_lineage_required"] is not True
         or config["training"].get("development_seed_label")
         == config["evaluation"].get("suite_label")
         or config["evaluation"].get("training_seed_overlap_allowed") is not False

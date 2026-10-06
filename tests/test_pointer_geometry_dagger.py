@@ -321,6 +321,7 @@ class GeometryDaggerTests(unittest.TestCase):
         self,
     ) -> None:
         observation, env, base, student, teacher, preferred = _fixture()
+        env.physics_backend = "exact"
         policy = _dagger(
             env,
             base,

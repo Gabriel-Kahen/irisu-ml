@@ -26,16 +26,23 @@ for path in (ROOT / "python", ROOT / "benchmarks"):
 
 import rl_r3k_sustainable_v3 as screen
 from irisu_pointer.shot_necessity import ExactWaitDominanceGate, WaitDominanceConfig
+from irisu_rl.exact_training_runtime import ExactTrainingRuntime
 
 
-RUN_ID = "r3m-shot-restraint-screen-20260808-001"
+RUN_ID = "r3m-exact-shot-restraint-screen-20260809-001"
 DEFAULT_RUN_ROOT = ROOT / "artifacts/r3/development" / RUN_ID
+EXACT_WORKER = (
+    ROOT
+    / "artifacts/r3/runtime/main-0c48dba-20260723/exact-runtime-backup/"
+    "irisu-exact-worker"
+)
 HORIZON = 10_000
-SEEDS = (
-    3405020912, 1910994543, 387705732, 3798228772,
-    2734710297, 2135580340, 778094569, 3424948582,
-    3661315511, 1948608776, 3377435210, 873217288,
-    3767418846, 726539816, 373307278, 3417238592,
+SEEDS = tuple(
+    int.from_bytes(
+        hashlib.sha256(f"{RUN_ID}|matched-development|{index}".encode()).digest()[:4],
+        "big",
+    )
+    for index in range(16)
 )
 ARMS = ("baseline", "wait-dominance")
 GATE_CONFIG = WaitDominanceConfig(probe_ticks=128, wait_ticks=16, gauge_advantage=16)
@@ -115,6 +122,9 @@ def source_identity() -> dict[str, object]:
             "schema": "irisu-r3m-shot-restraint-source-v1",
             "development_only": True,
             "sealed_test_allowed": False,
+            "physics_backend": "exact",
+            "model_lineage": "portable-frozen-v5-warm-start",
+            "promotion_eligible": False,
             "git_head": subprocess.check_output(
                 ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
             ).strip(),
@@ -123,7 +133,9 @@ def source_identity() -> dict[str, object]:
                 str(path): sha256_file(path)
                 for path in (
                     Path(__file__).resolve(), TEST_SOURCE, GATE_SOURCE,
-                    screen.RUNTIME, screen.BASE_CHECKPOINT, screen.CAMPAIGN_SOURCE,
+                    ROOT / "python/irisu_rl/exact_training_runtime.py",
+                    ROOT / "configs/rl/runtime/exact-worker-2026-07-21.json",
+                    EXACT_WORKER, screen.BASE_CHECKPOINT, screen.CAMPAIGN_SOURCE,
                 )
             },
         }
@@ -151,6 +163,9 @@ def initialize(run_root: Path) -> dict[str, object]:
             "horizon_ticks": HORIZON,
             "gate": GATE_CONFIG.manifest(),
             "model": "unchanged frozen-v5 checkpoint and learned steering geometry",
+            "physics_backend": "exact",
+            "model_lineage": "portable-frozen-v5-warm-start",
+            "promotion_eligible": False,
             "planner_scope": "base learned policy only; sparse R3K query macros excluded",
             "primary_metrics": ["score", "survival_ticks", "clears", "gauge_auc", "shots"],
             "promising_gate": {
@@ -264,11 +279,11 @@ def run_unit(run_root: Path, index: int, arm: str) -> dict[str, object]:
     started = time.monotonic()
     terminated = truncated = False
 
-    with campaign.IrisuEnv(
-        library_path=screen.RUNTIME,
-        physics_backend="portable",
-        config={"max_episode_ticks": HORIZON + GATE_CONFIG.probe_ticks},
-    ) as env:
+    with ExactTrainingRuntime(EXACT_WORKER).open_env(
+        simulation_config={"max_episode_ticks": HORIZON + GATE_CONFIG.probe_ticks},
+    ) as exact_session:
+        env = exact_session.environment
+        exact_runtime = exact_session.provenance_manifest
         observation, info = env.reset(seed=seed)
         if int(info.get("seed", -1)) != seed:
             raise RuntimeError("reset seed differs")
@@ -338,6 +353,10 @@ def run_unit(run_root: Path, index: int, arm: str) -> dict[str, object]:
             "intent_sha256": intent["sha256"],
             "index": index,
             "arm": arm,
+            "physics_backend": "exact",
+            "model_lineage": "portable-frozen-v5-warm-start",
+            "promotion_eligible": False,
+            "exact_runtime": exact_runtime,
             "seed": seed,
             "horizon_ticks": HORIZON,
             "survival_ticks": survival,
@@ -439,6 +458,9 @@ def summarize(run_root: Path) -> dict[str, object]:
             "schema": "irisu-r3m-shot-restraint-summary-v1",
             "development_only": True,
             "sealed_test_allowed": False,
+            "physics_backend": "exact",
+            "model_lineage": "portable-frozen-v5-warm-start",
+            "promotion_eligible": False,
             "source_identity_sha256": identity["sha256"],
             "preregistration_sha256": prereg["sha256"],
             "unit_sha256s": [row["sha256"] for row in units],
@@ -475,11 +497,10 @@ def verify(run_root: Path) -> dict[str, object]:
             raise RuntimeError("trace hash differs")
         words = [word for (word,) in struct.iter_unpack("<I", trace)]
         expected = {int(item["tick"]): item for item in row["checkpoints"]}
-        with campaign.IrisuEnv(
-            library_path=screen.RUNTIME,
-            physics_backend="portable",
-            config={"max_episode_ticks": HORIZON + GATE_CONFIG.probe_ticks},
-        ) as env:
+        with ExactTrainingRuntime(EXACT_WORKER).open_env(
+            simulation_config={"max_episode_ticks": HORIZON + GATE_CONFIG.probe_ticks},
+        ) as exact_session:
+            env = exact_session.environment
             observation, _ = env.reset(seed=int(row["seed"]))
             if checkpoint(env, observation) != expected[0]:
                 raise RuntimeError("initial replay checkpoint differs")

@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import struct
 import sys
 import unittest
+from contextlib import redirect_stderr
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -186,6 +189,31 @@ class TimelineEnv(FakeEnv):
         }
 
 
+class PromotionEnv(TimelineEnv):
+    def step(
+        self, action: object
+    ) -> tuple[dict[str, object], int, bool, bool, dict[str, object]]:
+        observation, reward, _, _, info = super().step(action)
+        observation["terminated"] = True
+        info["diagnostics"] = {
+            "finish_call_count": 1,
+            "terminal_metadata_recorded": True,
+            "recorded_final_score": self.score,
+            "recorded_final_level": self.level,
+            "recorded_final_highest_chain": self.highest_chain,
+        }
+        return observation, reward, True, False, info
+
+
+class PortableDiagnosticEnv(FakeEnv):
+    last_kwargs: dict[str, object] = {}
+
+    def __init__(self, **kwargs: object) -> None:
+        super().__init__()
+        type(self).last_kwargs = kwargs
+        self.physics_backend = "portable"
+
+
 class ReplayEvaluatorTests(unittest.TestCase):
     def setUp(self) -> None:
         self.frames = (
@@ -356,6 +384,109 @@ class ReplayEvaluatorTests(unittest.TestCase):
                 worker_path="exact-worker",
                 env_factory=FakeEnv,
             )
+
+    def test_promotion_requires_explicit_exact_worker_and_matching_terminal(self) -> None:
+        data = struct.pack("<5i", 1, 2, 8, 2, 0) + bytes(32)
+        data += struct.pack(
+            "<I", evaluate_rpy.INSPECT_RPY.encode_frame(x=1, y=2)
+        )
+
+        with self.assertRaisesRegex(ValueError, "explicit absolute exact worker"):
+            evaluate_rpy.evaluate_bytes(
+                data,
+                layout="padded",
+                purpose="promotion",
+                library_path="portable.so",
+                env_factory=PortableDiagnosticEnv,
+            )
+
+        report = evaluate_rpy.evaluate_bytes(
+            data,
+            layout="padded",
+            purpose="promotion",
+            worker_path="/tmp/exact-worker",
+            env_factory=PromotionEnv,
+            support_both_shots=False,
+        )
+        self.assertTrue(report["status"]["accepted"])
+        self.assertEqual(report["status"]["golden_fidelity_verdict"], "pass")
+        self.assertTrue(report["status"]["mismatches_are_failures"])
+
+    def test_promotion_mismatch_raises_and_cli_converts_it_to_nonzero(self) -> None:
+        data = struct.pack("<5i", 1, 2, 9, 2, 0) + bytes(32)
+        data += struct.pack(
+            "<I", evaluate_rpy.INSPECT_RPY.encode_frame(x=1, y=2)
+        )
+        with self.assertRaises(evaluate_rpy.ReplayAcceptanceError) as raised:
+            evaluate_rpy.evaluate_bytes(
+                data,
+                layout="padded",
+                purpose="target",
+                worker_path="/tmp/exact-worker",
+                env_factory=PromotionEnv,
+                support_both_shots=False,
+            )
+        self.assertIn("replay header score metadata mismatch", raised.exception.failures)
+        self.assertFalse(raised.exception.report["status"]["accepted"])
+        self.assertEqual(
+            raised.exception.report["status"]["golden_fidelity_verdict"], "fail"
+        )
+
+        matching_header = struct.pack("<5i", 1, 2, 8, 2, 0) + bytes(32)
+        matching_header += struct.pack(
+            "<I", evaluate_rpy.INSPECT_RPY.encode_frame(x=1, y=2)
+        )
+        with self.assertRaises(evaluate_rpy.ReplayAcceptanceError) as nonterminal:
+            evaluate_rpy.evaluate_bytes(
+                matching_header,
+                layout="padded",
+                purpose="promotion",
+                worker_path="/tmp/exact-worker",
+                env_factory=TimelineEnv,
+                support_both_shots=False,
+            )
+        self.assertIn(
+            "replay did not reach exact terminal game over",
+            nonterminal.exception.failures,
+        )
+        self.assertIn(
+            "exact terminal metadata was not recorded",
+            nonterminal.exception.failures,
+        )
+
+        argv = [
+            "evaluate-rpy.py",
+            "replay.rpy",
+            "--worker",
+            "/tmp/exact-worker",
+            "--purpose",
+            "promotion",
+        ]
+        with patch.object(sys, "argv", argv), patch.object(
+            evaluate_rpy,
+            "evaluate_path",
+            side_effect=raised.exception,
+        ), redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as exited:
+            evaluate_rpy.main()
+        self.assertNotEqual(exited.exception.code, 0)
+
+    def test_explicit_portable_backend_remains_available_for_diagnostics(self) -> None:
+        data = struct.pack("<5i", 1, 1, 0, 0, 0) + bytes(32)
+        report = evaluate_rpy.evaluate_bytes(
+            data,
+            layout="padded",
+            purpose="diagnostic",
+            library_path="/tmp/libirisu_clone.so",
+            env_factory=PortableDiagnosticEnv,
+            support_both_shots=False,
+        )
+
+        self.assertEqual(
+            PortableDiagnosticEnv.last_kwargs,
+            {"library_path": "/tmp/libirisu_clone.so"},
+        )
+        self.assertFalse(report["status"]["mismatches_are_failures"])
+        self.assertIsNone(report["status"]["golden_fidelity_verdict"])
 
 
 if __name__ == "__main__":

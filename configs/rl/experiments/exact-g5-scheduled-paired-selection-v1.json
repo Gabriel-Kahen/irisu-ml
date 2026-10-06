@@ -1,0 +1,37 @@
+{
+  "schema": "irisu-g5-scheduled-paired-selection-config-v1",
+  "development_only": true,
+  "promotion_eligible": false,
+  "maximum_ticks": 80000,
+  "target_score": 100000,
+  "base_checkpoint": "/home/gabe/Documents/irisu/artifacts/r3/development/expert-iteration-refit-act150-lineage-20260810/expert-iteration-refit.pt",
+  "base_checkpoint_sha256": "3af10587ad6a0faf1488ac7acc12d8d7fe10225144c593e36d8c60bcc65d67ad",
+  "scheduler_checkpoint": "/home/gabe/Documents/irisu/artifacts/r3/development/g5-hazard-scheduler-motion-size-train6-20260814-001/checkpoint.json",
+  "scheduler_checkpoint_file_sha256": "3d3f666f0b54ceb112ebcd0865b97e806a1ba322b274c6beb9377a252084e2ae",
+  "scheduler_checkpoint_content_sha256": "8527b0e40ae3d85cd7defa98a082aa01c65254b368ff863d2e9d87f2bf857a42",
+  "base_planner": {
+    "probe_ticks": 512,
+    "long_probe_ticks": 512,
+    "top_k_pairs": 0,
+    "maximum_gauge_debt": 1000,
+    "rescue_score_margin": 500
+  },
+  "scheduled_planner": {
+    "short_horizon": 2048,
+    "long_horizons": [8192, 12288],
+    "top_k_pairs": 2,
+    "maximum_gauge_debt": 1000,
+    "rescue_score_margin": 500,
+    "compute_trigger_only": true,
+    "exact_rule_only": true
+  },
+  "hard_reject": {
+    "minimum_score_delta_per_seed": 0,
+    "minimum_survival_tick_delta_per_seed": 0,
+    "maximum_final_gauge_regression_per_seed": 1000,
+    "maximum_invalid_actions": 0,
+    "maximum_exact_stage_failures": 0,
+    "preserve_target_success_per_seed": true,
+    "require_any_strict_improvement": true
+  }
+}

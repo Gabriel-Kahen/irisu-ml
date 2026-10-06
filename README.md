@@ -21,6 +21,8 @@ original game.
 - [`RL.md`](RL.md), [`docs/rl-r0-r1.md`](docs/rl-r0-r1.md), and
   [`docs/rl-r3a.md`](docs/rl-r3a.md): transfer roadmap and implemented RL
   contracts through the multi-step collector/curriculum foundation
+- [`docs/exact-training.md`](docs/exact-training.md): exact-only target-training,
+  provenance, promotion, and artifact-regeneration policy
 
 ## Simulator details
 

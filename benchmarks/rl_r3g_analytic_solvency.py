@@ -76,7 +76,7 @@ CHECKPOINT_SHA256 = (
     "31c9bc5e10b0ad021eecedf0c0037de6b24bd4d74e0cfbe9b4922b77dc53da1d"
 )
 JOINT_SOURCE_SHA256 = (
-    "dc7009fc18a322eca5dace55b9baf982b6ced26c18517af752aab0f6365d362e"
+    "a99fef2c7ec6e598f0aebb89565e986d53eaaa2b134355ee0a9bc126e59e99bf"
 )
 BASE_REVISION = "de701b36355d5ec582df30f4223aabde7bc537df"
 SEED_ROOT = "r3g-solvency-barrier-tournament-20260729"

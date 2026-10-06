@@ -1,0 +1,27 @@
+version = "exact-50k-search-gate-v1"
+objective = "exact_full_game_score_at_least_50000"
+physics_backend = "exact"
+state_producing_backends = ["exact"]
+promotion_eligible = true
+
+[runtime]
+worker_path = "/home/gabe/Documents/irisu/artifacts/r3/runtime/main-0c48dba-20260723/exact-runtime-backup/irisu-exact-worker"
+worker_sha256 = "4faa4508a89df3e1e62b80e2871b6a35b5913f220d53fe5de43408ad6512c261"
+
+[teacher]
+unit = "/home/gabe/Documents/irisu/artifacts/r3/development/exact-50k-baseline-20260810-001/units/00-wait-dominance.json"
+trace = "/home/gabe/Documents/irisu/artifacts/r3/development/exact-50k-baseline-20260810-001/traces/00-wait-dominance.u32le"
+seed = 3064785194
+horizon_ticks = 10000
+probe_ticks = 128
+wait_ticks = 16
+gauge_advantage = 16
+
+[full_game]
+seed = 3064785194
+maximum_ticks = 100000
+replay_warmup_ticks = 0
+checkpoint_stride_ticks = 5000
+target_score = 50000
+exact_match_tolerance = 0.000000001
+post_teacher_policy = "exact_wait_dominance_search"

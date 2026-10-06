@@ -870,7 +870,7 @@ class ExactEventPlanner:
             ],
             "continuation_rebind_required": True,
             "branching": (
-                "byte-identical portable snapshot, public signature, and native "
+                "byte-identical simulator snapshot, public signature, and native "
                 "state hash verified before every branch and in finally; live "
                 "frozen-v5 controller state cloned and candidate-rebound"
             ),
@@ -1154,8 +1154,8 @@ class ExactEventPlanner:
         continuation_policy: object | None = None,
         query_id: str,
     ) -> ExactSearchResult:
-        if getattr(env, "physics_backend", None) != "portable":
-            raise ValueError("event MPC requires the portable backend")
+        if getattr(env, "physics_backend", None) not in {"portable", "exact"}:
+            raise ValueError("event MPC requires a supported backend")
         if not incumbent.is_shot:
             raise ValueError("event MPC requires an incumbent shot")
         candidates = tuple(self.candidate_provider(observation, incumbent))
@@ -1173,6 +1173,9 @@ class ExactEventPlanner:
             raise RuntimeError(
                 "live frozen-v5 controller does not own the incumbent decision"
             )
+        # Each branch also clones and rebinds continuation-controller state.
+        # Keep the coupled clone/restore transaction; exact workers replay the
+        # action log here, which is slower than source-only fork/COW branches.
         snapshot = env.clone_state()
         snapshot_sha256 = hashlib.sha256(snapshot).hexdigest()
         signature = _public_signature(observation)

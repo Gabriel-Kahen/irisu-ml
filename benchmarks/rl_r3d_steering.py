@@ -64,16 +64,17 @@ from irisu_pointer.strategic import (
     strategic_potential,
 )
 from irisu_rl.schema import TEACHER_V1
+from irisu_rl.exact_training_runtime import (
+    DEFAULT_IDENTITY_PATH,
+    ExactTrainingRuntime,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = (
     ROOT / "configs/rl/experiments/r3d-relative-steering-v1.toml"
 )
-TRUSTED_PORTABLE = (
-    ROOT
-    / "artifacts/r3/runtime/main-0c48dba-20260723/portable-build/libirisu_clone.so"
-)
+EXACT_RUNTIME_IDENTITY = DEFAULT_IDENTITY_PATH
 DEMONSTRATION_SEEDS = (
     0x0D3A0001,
     0x0D3A0002,
@@ -207,8 +208,8 @@ def _output_path(path: Path, name: str, suffix: str) -> Path:
     )
     if any(root == resolved or root in resolved.parents for root in protected):
         raise ValueError(f"{name} must not overwrite repository source")
-    if resolved == TRUSTED_PORTABLE.resolve():
-        raise ValueError(f"{name} must not overwrite the portable runtime")
+    if resolved == EXACT_RUNTIME_IDENTITY.resolve():
+        raise ValueError(f"{name} must not overwrite the exact runtime identity")
     return resolved
 
 
@@ -251,7 +252,10 @@ def _source_identity(config_path: Path) -> dict[str, object]:
         ROOT / "python/irisu_rl/__init__.py",
         ROOT / "python/irisu_rl/actions.py",
         ROOT / "python/irisu_rl/encoding.py",
+        ROOT / "python/irisu_rl/exact_training_runtime.py",
+        ROOT / "python/irisu_rl/runtime_identity.py",
         ROOT / "python/irisu_rl/schema.py",
+        EXACT_RUNTIME_IDENTITY,
         ROOT / "pyproject.toml",
         ROOT / "uv.lock",
     )
@@ -287,13 +291,13 @@ def _load_config(snapshot: _FileSnapshot) -> dict[str, Any]:
         "deployable": False,
         "canonical_r3_evidence": False,
         "sealed_evaluation_allowed": False,
-        "selection_backend": "portable",
+        "selection_backend": "exact",
     }
     if any(value.get(key) != expected for key, expected in required.items()):
         raise ValueError("R3d config weakens development-only evidence boundaries")
     trusted = (ROOT / str(value.get("trusted_runtime", ""))).resolve()
-    if trusted != TRUSTED_PORTABLE.resolve():
-        raise ValueError("R3d config does not bind the trusted portable runtime")
+    if trusted != EXACT_RUNTIME_IDENTITY.resolve():
+        raise ValueError("R3d config does not bind the pinned exact runtime")
     return value
 
 
@@ -633,7 +637,12 @@ def _resolved_count(
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
-    parser.add_argument("--library", type=Path, default=TRUSTED_PORTABLE)
+    parser.add_argument(
+        "--worker",
+        type=Path,
+        required=True,
+        help="absolute pinned exact-worker executable",
+    )
     parser.add_argument("--profile", choices=("fast", "long"), default="fast")
     parser.add_argument("--demonstration-seeds", type=int)
     parser.add_argument("--demonstration-ticks", type=int)
@@ -689,14 +698,13 @@ def main() -> None:
         seeds=evaluation_seeds,
         config=(
             ("max_episode_ticks", eval_ticks),
-            ("physics_backend", "portable"),
+            ("physics_backend", "exact"),
         ),
         max_decisions_per_episode=MAX_DECISIONS_PER_EPISODE,
     )
 
-    runtime_snapshot = _snapshot_file(args.library, "portable runtime")
-    if runtime_snapshot.path != TRUSTED_PORTABLE.resolve():
-        raise ValueError("R3d benchmark requires the trusted portable runtime")
+    exact_runtime = ExactTrainingRuntime(args.worker)
+    runtime_snapshot = _snapshot_file(exact_runtime.worker_path, "exact worker")
     policy_out = _output_path(
         args.policy_out, "steering checkpoint output", ".pt"
     )
@@ -736,13 +744,11 @@ def main() -> None:
     model_managed_cooldown_waits = 0
     demonstration_episodes: list[EpisodeResult] = []
 
-    with IrisuEnv(
-        library_path=runtime_snapshot.path,
-        physics_backend="portable",
-        config=demonstration_config,
-    ) as env:
-        if Path(env.library_path).resolve() != runtime_snapshot.path:
-            raise RuntimeError("R3d demonstration loaded a foreign runtime")
+    with exact_runtime.open_env(
+        simulation_config=demonstration_config,
+    ) as demonstration_session:
+        env = demonstration_session.environment
+        demonstration_runtime = demonstration_session.provenance_manifest
         demonstration_runner = env.runner_identity_manifest()
         demonstration_environment_config = env.config
         config_hash = int(demonstration_runner["config_hash"])
@@ -877,11 +883,9 @@ def main() -> None:
     )
     improvement = collect_archive_improvement(
         archive,
-        lambda: IrisuEnv(
-            library_path=runtime_snapshot.path,
-            physics_backend="portable",
-            config=demonstration_config,
-        ),
+        lambda: exact_runtime.open_env(
+            simulation_config=demonstration_config,
+        ).environment,
         binding=improvement_binding,
         config=improvement_config,
         pointer_spec=pointer_spec,
@@ -907,6 +911,8 @@ def main() -> None:
             "development_only": True,
             "canonical_r3_evidence": False,
             "sealed_test_material_used": False,
+            "physics_backend": "exact",
+            "exact_runtime": demonstration_runtime,
             "source_identity": source_identity,
             "runtime_sha256": runtime_snapshot.sha256,
             "config_sha256": config_sha256,
@@ -962,13 +968,11 @@ def main() -> None:
     evaluations: dict[str, list[EpisodeResult]] = {
         label: [] for label, _ in policies
     }
-    with IrisuEnv(
-        library_path=runtime_snapshot.path,
-        physics_backend="portable",
-        config=evaluation_config,
-    ) as env:
-        if Path(env.library_path).resolve() != runtime_snapshot.path:
-            raise RuntimeError("R3d evaluation loaded a foreign runtime")
+    with exact_runtime.open_env(
+        simulation_config=evaluation_config,
+    ) as evaluation_session:
+        env = evaluation_session.environment
+        evaluation_runtime = evaluation_session.provenance_manifest
         evaluation_runner = env.runner_identity_manifest()
         config_hash = int(evaluation_runner["config_hash"])
         for label, factory in policies:
@@ -1010,7 +1014,7 @@ def main() -> None:
     assert isinstance(learned_score, Mapping)
     assert isinstance(legacy_score, Mapping)
     _require_source_identity(source_identity, config_snapshot.path)
-    _require_unchanged(runtime_snapshot, "portable runtime")
+    _require_unchanged(runtime_snapshot, "exact worker")
     _require_unchanged(config_snapshot, "R3d config")
     learned_policy_identity = _canonical_sha256(
         {
@@ -1048,7 +1052,10 @@ def main() -> None:
         "runtime": {
             "path": str(runtime_snapshot.path),
             "sha256": runtime_snapshot.sha256,
-            "backend": "portable",
+            "backend": "exact",
+            "identity": exact_runtime.identity.manifest(),
+            "demonstration_attestation": demonstration_runtime,
+            "evaluation_attestation": evaluation_runtime,
             "demonstration_runner": demonstration_runner,
             "evaluation_runner": evaluation_runner,
         },

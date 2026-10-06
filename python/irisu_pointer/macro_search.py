@@ -422,8 +422,8 @@ class SpawnCensoredMacroBeamTeacher:
     def search(
         self, env: Any, observation: Mapping[str, Any]
     ) -> MacroSearchResult:
-        if getattr(env, "physics_backend", None) != "portable":
-            raise ValueError("macro beam search currently requires the portable backend")
+        if getattr(env, "physics_backend", None) not in {"portable", "exact"}:
+            raise ValueError("macro beam search requires a supported backend")
         safe_ticks = ticks_before_next_spawn(observation)
         budget = min(safe_ticks, self.max_rollout_ticks)
         if budget == 0:
@@ -435,6 +435,9 @@ class SpawnCensoredMacroBeamTeacher:
                 0,
                 0,
             )
+        # Beam nodes need checkpoints at multiple depths, so the common
+        # source-only fork/COW helper cannot own them. Exact workers retain the
+        # correct clone/restore path here, at the cost of replaying action logs.
         source_snapshot = env.clone_state()
         branches = 0
         ordinal = 0

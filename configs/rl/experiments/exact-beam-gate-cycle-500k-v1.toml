@@ -1,0 +1,28 @@
+version = "exact-beam-gate-cycle-v1"
+physics_backend = "exact"
+target_score = 500000
+max_ticks = 300000
+parallelism = 2
+
+# Cutoffs are intentionally explicit and must be regenerated around each
+# natural teacher's strongest healthy preterminal checkpoints.
+[[arms]]
+name = "early-p384"
+cutoff = 95000
+probe = 384
+wait = 16
+gauge_advantage = 8
+
+[[arms]]
+name = "late-p384"
+cutoff = 96000
+probe = 384
+wait = 16
+gauge_advantage = 8
+
+[[arms]]
+name = "early-p256"
+cutoff = 95000
+probe = 256
+wait = 16
+gauge_advantage = 8

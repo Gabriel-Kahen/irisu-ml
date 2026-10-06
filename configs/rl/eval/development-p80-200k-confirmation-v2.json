@@ -1,0 +1,37 @@
+{
+  "schema": "irisu-development-seed-manifest-v1",
+  "purpose": "Fresh development-only exact confirmation after checkpoint selection for the predeclared 200k linear-p80 objective",
+  "promotion_contract": "irisu-exact-p80-200k-contract-v1",
+  "promotion_contract_sha256": "d8d45f92047dea077fb6dd3735177fba88545fbe5d98557abb4627b7aa345a17",
+  "allocator": {
+    "version": "seed-allocator-v1",
+    "split": "validation",
+    "key": 6342426784305351267,
+    "cursor": 20,
+    "count": 20,
+    "selected_before_evaluation": true
+  },
+  "evaluation_seeds": [
+    1120842363,
+    1287979162,
+    1186680505,
+    1085381848,
+    1252518647,
+    1151219990,
+    1318356789,
+    1217058132,
+    1115759475,
+    1282896274,
+    1181597617,
+    1080298960,
+    1247435759,
+    1146137102,
+    1313273901,
+    1211975244,
+    1110676587,
+    1277813386,
+    1176514729,
+    1075216072
+  ],
+  "evaluation_seeds_sha256": "d791706d98a5eea5f06bf7e74196bc6c03bfc5485e70752c0e766599af10eed9"
+}

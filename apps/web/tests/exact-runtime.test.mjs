@@ -336,8 +336,8 @@ test("writes the accepted terminal tick with first-finish replay metadata", asyn
   assert.deepEqual([...replay.words], [encodeReplayWord(3, 13, 479)]);
 });
 
-function stepBytes(tick, {terminated = false} = {}) {
-  const bytes = new Uint8Array(112 + 84);
+function stepBytes(tick, {terminated = false, eventCount = 0} = {}) {
+  const bytes = new Uint8Array(112 + 84 + 8);
   const view = new DataView(bytes.buffer);
   view.setBigUint64(0, BigInt(tick), true);
   view.setBigInt64(8, 0n, true);
@@ -350,11 +350,41 @@ function stepBytes(tick, {terminated = false} = {}) {
   view.setUint32(104, 0, true);
   view.setUint8(108, Number(terminated));
   const diagnostics = 112;
-  view.setBigUint64(diagnostics + 8, 0n, true);
+  view.setBigUint64(diagnostics + 8, BigInt(eventCount), true);
   view.setBigUint64(diagnostics + 16, BigInt(EXACT_CONFIG_HASH), true);
   view.setUint8(diagnostics + 80, Number(terminated));
+  view.setBigUint64(diagnostics + 84, BigInt(tick), true);
   return bytes;
 }
+
+test("replay preparation fetches lazy events only for the terminal frame", async () => {
+  const fetched = [];
+  const client = {
+    async reset() { return {observation: observation(0), events: []}; },
+    async stepPaddedRaw() {
+      return stepBytes(1, {terminated: true, eventCount: 1});
+    },
+    async fetchEvents(generation, count) {
+      fetched.push({generation, count});
+      return [{kind_name: "level_completed"}];
+    },
+    close() {},
+  };
+  const game = new BrowserGame(client, () => {}, {
+    seed: 1, now: () => 0, clock: {setTimeout: () => 1, clearTimeout() {}},
+  });
+  const replay = parseReplay(serializeReplay({
+    seed: 1, highestLevel: 0, finalScore: 0, highestChain: 0,
+    words: [encodeReplayWord(0, 10, 20)],
+  }));
+  assert.equal(await game.loadReplay(replay), true);
+  for (let tries = 0; !game.replayComplete && tries < 20; tries++) {
+    await new Promise(resolve => setImmediate(resolve));
+  }
+  assert.equal(game.replayComplete, true);
+  assert.equal(game.replayTerminalReason, "level_completed");
+  assert.deepEqual(fetched, [{generation: 1, count: 1}]);
+});
 
 test("precomputes imported levels exactly and scrubs cached observations without new steps", async () => {
   const calls = [];
@@ -363,7 +393,7 @@ test("precomputes imported levels exactly and scrubs cached observations without
     let tick = 0;
     const client = {
       async reset() { tick = 0; return {observation: observation(0), events: []}; },
-      async stepRaw(kind, x, y, suppressFreshEdges) {
+      async stepPaddedRaw(kind, x, y, suppressFreshEdges) {
         calls.push({kind, x, y, suppressFreshEdges});
         return stepBytes(++tick);
       },

@@ -1,0 +1,81 @@
+version = "portable-diagnostics-v1"
+
+[policy]
+target_training_backend = "exact"
+legacy_runtime_role = "legacy_portable_diagnostic"
+target_training_allowed = false
+promotion_eligible = false
+fresh_exact_lineage_required = true
+
+[entrypoints]
+# Frozen development lineages. These may be inspected or reproduced, but their
+# outputs cannot select, certify, or promote a target policy.
+legacy_portable = [
+  "benchmarks/hierarchical-options/run.py",
+  "benchmarks/r3h_exact_collect.py",
+  "benchmarks/r3h_g2_exact_collect.py",
+  "benchmarks/r3k_v3_prelaunch.py",
+  "benchmarks/rl_joint_planner.py",
+  "benchmarks/rl_r3c_phase2.py",
+  "benchmarks/rl_r3c_pointer.py",
+  "benchmarks/rl_r3e_dagger_ensemble.py",
+  "benchmarks/rl_r3e_reserve_band.py",
+  "benchmarks/rl_r3e_reserve_band_distill.py",
+  "benchmarks/rl_r3e_reserve_band_prefix.py",
+  "benchmarks/rl_r3e_sustainable.py",
+  "benchmarks/rl_r3g_analytic_solvency.py",
+  "benchmarks/rl_r3g_conservative_offline.py",
+  "benchmarks/rl_r3g_event_mpc.py",
+  "benchmarks/rl_r3k_sustainable.py",
+  "benchmarks/rl_r3k_sustainable_v2.py",
+  "benchmarks/rl_r3k_sustainable_v3.py",
+  "benchmarks/rl_r3l_current_model_10k.py",
+  "benchmarks/rl_r3l_current_model_10k_v2.py",
+  "benchmarks/rl_sequence_replay.py",
+  "python/irisu_env/padded.py",
+  "python/irisu_pointer/conservative_offline.py",
+]
+
+# Development checks and rendering utilities which do not emit promotable
+# training or selection artifacts.
+diagnostic_only = [
+  "benchmarks/joint-planner-dev-checks.py",
+  "benchmarks/render_r3l_website_video.py",
+  "benchmarks/rl_r3e_reserve_band_checks.py",
+  "benchmarks/throughput.py",
+  "tools/generate-controlled-rpy.py",
+]
+
+# Exact-primary entrypoints with a deliberately explicit portable comparison
+# or diagnostic mode. Their portable outputs inherit this policy's ban.
+exact_primary_with_portable_diagnostic = [
+  "benchmarks/rl_r1.py",
+  "benchmarks/rl_r3a.py",
+  "python/irisu_pointer/evaluate.py",
+  "python/irisu_rl/one_body.py",
+  "python/irisu_rl/r3b_baselines.py",
+  "python/irisu_rl/r3b_cli.py",
+  "python/irisu_rl/r3b_parallel_evaluation.py",
+  "python/irisu_rl/r3b_supervisor.py",
+]
+
+[configs]
+legacy_portable = [
+  "configs/rl/experiments/hierarchical-options-v1.toml",
+  "configs/rl/experiments/r3c-policy-iteration-v1.toml",
+  "configs/rl/experiments/r3c-search-distill-v1.toml",
+  "configs/rl/experiments/r3e-dagger-ensemble-v1.toml",
+  "configs/rl/experiments/r3e-reserve-band-debt-mpc-v2.toml",
+  "configs/rl/experiments/r3e-reserve-band-mpc-v1.toml",
+  "configs/rl/experiments/r3e-sustainable-v1.toml",
+  "configs/rl/experiments/r3g-event-world-model-mpc-v1.toml",
+  "configs/rl/experiments/sequence-replay-v1.toml",
+]
+
+exact_primary_with_portable_diagnostic = [
+  "configs/rl/r0-r1.toml",
+  "configs/rl/experiments/r2a-smoke-v1.toml",
+  "configs/rl/experiments/r2b-one-body-v1.toml",
+  "configs/rl/experiments/r3a-multistep-v1.toml",
+  "configs/rl/snapshots/r3b-source-plan-v1.toml",
+]

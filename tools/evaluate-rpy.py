@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Run a conservatively parsed normal-mode replay against the headless clone.
+"""Evaluate a conservatively parsed normal-mode replay against the clone.
 
-This is a diagnostic bridge, not a replay-fidelity oracle. The recovered game
-loop proves that each record advances one 0.020-second gameplay update; fast
+Diagnostic mode permits an explicitly selected backend. Target and promotion
+modes use the pinned exact worker and fail closed on terminal or metadata
+disagreement. Each record advances one 0.020-second gameplay update; fast
 forward skips rendering rather than multiplying simulation time.
 """
 
@@ -26,6 +27,7 @@ if str(PYTHON_ROOT) not in sys.path:
 
 from irisu_env import Action, ActionKind, IrisuEnv  # noqa: E402
 from irisu_env.native import NativeError  # noqa: E402
+from irisu_rl.exact_training_runtime import ExactTrainingRuntime  # noqa: E402
 
 
 def _load_replay_parser() -> Any:
@@ -44,6 +46,16 @@ def _load_replay_parser() -> Any:
 
 INSPECT_RPY = _load_replay_parser()
 MappedKind = Literal["wait", "weak_shot", "strong_shot", "both_shots"]
+EvaluationPurpose = Literal["diagnostic", "target", "promotion"]
+
+
+class ReplayAcceptanceError(RuntimeError):
+    """A target/promotion replay disagreed with its exact terminal result."""
+
+    def __init__(self, failures: Iterable[str], report: dict[str, object]) -> None:
+        self.failures = tuple(failures)
+        self.report = report
+        super().__init__("exact replay acceptance failed: " + "; ".join(self.failures))
 
 
 @dataclass(frozen=True, slots=True)
@@ -185,6 +197,7 @@ def evaluate_bytes(
     library_path: str | None = None,
     worker_path: str | None = None,
     include_timelines: bool = False,
+    purpose: EvaluationPurpose = "diagnostic",
     env_factory: Callable[..., Any] = IrisuEnv,
     support_both_shots: bool | None = None,
 ) -> dict[str, object]:
@@ -192,6 +205,17 @@ def evaluate_bytes(
 
     if library_path is not None and worker_path is not None:
         raise ValueError("library_path and worker_path are mutually exclusive")
+    if purpose not in {"diagnostic", "target", "promotion"}:
+        raise ValueError("purpose must be diagnostic, target, or promotion")
+    acceptance_run = purpose in {"target", "promotion"}
+    if acceptance_run and (
+        not isinstance(worker_path, str)
+        or not worker_path
+        or not Path(worker_path).is_absolute()
+    ):
+        raise ValueError(
+            "target/promotion replay evaluation requires an explicit absolute exact worker"
+        )
 
     replay = INSPECT_RPY.parse_replay(data, layout)
     if replay.header.mode != 0:
@@ -217,6 +241,7 @@ def evaluate_bytes(
     level_checkpoints: list[list[int]] = []
     confirmed = 0
     runtime_provenance: dict[str, Any] | None = None
+    training_runtime_provenance: dict[str, Any] | None = None
 
     if worker_path is not None:
         kwargs = {"physics_backend": "exact", "worker_path": worker_path}
@@ -224,7 +249,16 @@ def evaluate_bytes(
         kwargs = {"library_path": library_path}
     else:
         kwargs = {}
-    with env_factory(**kwargs) as env:
+    production_acceptance = acceptance_run and env_factory is IrisuEnv
+    env_context = (
+        ExactTrainingRuntime(worker_path).open_env()
+        if production_acceptance
+        else env_factory(**kwargs)
+    )
+    if production_acceptance:
+        training_runtime_provenance = env_context.provenance_manifest
+    with env_context as opened:
+        env = opened.environment if production_acceptance else opened
         if worker_path is not None:
             if getattr(env, "physics_backend", None) != "exact":
                 raise RuntimeError("worker evaluation did not create an exact backend")
@@ -404,9 +438,13 @@ def evaluate_bytes(
     report: dict[str, object] = {
         "schema_version": 1,
         "status": {
-            "purpose": "diagnostic replay-to-clone comparison",
+            "purpose": (
+                "diagnostic replay-to-clone comparison"
+                if not acceptance_run
+                else f"exact {purpose} replay acceptance"
+            ),
             "golden_fidelity_verdict": None,
-            "mismatches_are_failures": False,
+            "mismatches_are_failures": acceptance_run,
         },
         "assumptions": {
             "cadence": "PROVEN: one replay record is exactly one 0.020-second gameplay update",
@@ -522,6 +560,8 @@ def evaluate_bytes(
     }
     if runtime_provenance is not None:
         report["exact_runtime_provenance"] = runtime_provenance
+    if training_runtime_provenance is not None:
+        report["exact_training_runtime"] = training_runtime_provenance
     if include_timelines:
         report["oracle_output"] = {
             "tick": final_tick,
@@ -542,6 +582,38 @@ def evaluate_bytes(
             "clear_checkpoints": clear_checkpoints,
             "level_checkpoints": level_checkpoints,
         }
+    if acceptance_run:
+        failures: list[str] = []
+        outcome = report["outcome"]
+        assert isinstance(outcome, dict)
+        for name in ("score", "level", "highest_chain"):
+            comparison = outcome[name]
+            assert isinstance(comparison, dict)
+            if comparison["matches"] is not True:
+                failures.append(f"replay header {name} metadata mismatch")
+        clone = outcome["clone"]
+        assert isinstance(clone, dict)
+        if terminal_frame is None or clone["terminated"] is not True:
+            failures.append("replay did not reach exact terminal game over")
+        if clone["truncated"] is True:
+            failures.append("exact replay terminated by truncation")
+        if clone["terminal_metadata_recorded"] is not True:
+            failures.append("exact terminal metadata was not recorded")
+        if int(clone["finish_call_count"]) < 1:
+            failures.append("exact terminal finish hook was not observed")
+        if final_tick - initial_tick != len(mapped):
+            failures.append("exact replay cadence mismatch")
+        if invalid_action_frames:
+            failures.append("exact replay contained invalid clone actions")
+        if unrepresented:
+            failures.append("exact replay omitted simultaneous shot edges")
+        status = report["status"]
+        assert isinstance(status, dict)
+        status["accepted"] = not failures
+        status["failure_reasons"] = failures
+        status["golden_fidelity_verdict"] = "pass" if not failures else "fail"
+        if failures:
+            raise ReplayAcceptanceError(failures, report)
     return report
 
 
@@ -552,6 +624,7 @@ def evaluate_path(
     library_path: str | None = None,
     worker_path: str | None = None,
     include_timelines: bool = False,
+    purpose: EvaluationPurpose = "diagnostic",
 ) -> dict[str, object]:
     return evaluate_bytes(
         path.read_bytes(),
@@ -560,22 +633,32 @@ def evaluate_path(
         library_path=library_path,
         worker_path=worker_path,
         include_timelines=include_timelines,
+        purpose=purpose,
     )
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="diagnostically run a normal .rpy input trace against the headless clone"
+        description="evaluate a normal .rpy trace diagnostically or with exact acceptance"
     )
     parser.add_argument("replay", type=Path)
     parser.add_argument("--layout", choices=("auto", "legacy", "padded"), default="auto")
-    backend = parser.add_mutually_exclusive_group()
+    backend = parser.add_mutually_exclusive_group(required=True)
     backend.add_argument("--library", help="explicit portable libirisu_clone path")
     backend.add_argument("--worker", help="explicit exact-physics worker executable")
     parser.add_argument(
         "--timelines",
         action="store_true",
         help="include runner-compatible score and gauge event timelines",
+    )
+    parser.add_argument(
+        "--purpose",
+        choices=("diagnostic", "target", "promotion"),
+        default="diagnostic",
+        help=(
+            "diagnostic permits either explicit backend; target/promotion requires "
+            "--worker and fails on replay-header or exact-terminal mismatch"
+        ),
     )
     parser.add_argument("--compact", action="store_true", help="emit compact JSON")
     args = parser.parse_args()
@@ -587,6 +670,7 @@ def main() -> None:
             library_path=args.library,
             worker_path=args.worker,
             include_timelines=args.timelines,
+            purpose=args.purpose,
         )
     except (OSError, ValueError, RuntimeError, NativeError) as exc:
         parser.error(str(exc))

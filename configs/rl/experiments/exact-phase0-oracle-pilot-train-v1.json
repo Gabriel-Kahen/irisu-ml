@@ -1,0 +1,11 @@
+{
+  "schema": "irisu-onpolicy-pair-dagger-seed-plan-v1",
+  "namespace": "irisu-phase0-delayed-horizon-oracle-pilot-v1",
+  "namespace_sha256": "49550ce42c329e80aa5ed4037ea96c61700e9c8275dbbf69cc0e75c2d8865e76",
+  "allocator_key": 5284143911922736768,
+  "allocator_manifest_sha256": "34ca46e7101c6533681b16e4829ada97153aacbd10b6763f6331fb0d6e9e5aa4",
+  "split": "train",
+  "cursor": 0,
+  "count": 4,
+  "seeds": [832116684, 663099469, 494082254, 325065039]
+}

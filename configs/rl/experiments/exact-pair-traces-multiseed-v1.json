@@ -1,0 +1,45 @@
+{
+  "schema": "irisu-exact-pair-trace-training-manifest-v1",
+  "traces": [
+    {
+      "label": "development-169014-seed4000000008-independent-promotion",
+      "seed": 4000000008,
+      "trace": "../../../artifacts/r3/development/seed-lane-c-300k-seed4000000008-replay-native-capture-promote-20260812-001/source.u32le",
+      "trace_sha256": "9fcd6424f98a85fa9d98e8b4aa7b5a69dc776d60549a41198f428111989d3a06",
+      "source_metadata": "../../../artifacts/r3/development/seed-lane-c-300k-seed4000000008-replay-native-capture-promote-20260812-001/capture-summary.json",
+      "source_metadata_sha256": "cc3fefa3277d4c10d2646d49cb5d7da81ca89ed9265df6cbf4d60f2309bba4e6",
+      "expected_score": 169014,
+      "expected_ticks": 84221
+    },
+    {
+      "label": "development-229023-seed4000000005-canonical-exact-no-independent-promotion",
+      "seed": 4000000005,
+      "trace": "../../../artifacts/r3/development/seed-lane-b-300k-seed4000000005-replay-native-20260812-001/output/source.u32le",
+      "trace_sha256": "a15aa1b08cce9725ef9470cb3e6a8d4ab1fbb477bb5b093350c22c6ed437d7d1",
+      "source_metadata": "../../../artifacts/r3/development/seed-lane-b-300k-seed4000000005-replay-native-20260812-001/output/capture-summary.json",
+      "source_metadata_sha256": "5283d7658b2ab1ce52a572a9cc3d5137eb99e0a2df27febc13aadd0f4af5528c",
+      "expected_score": 229023,
+      "expected_ticks": 100000
+    },
+    {
+      "label": "development-180799-seed4000000009",
+      "seed": 4000000009,
+      "trace": "../../../artifacts/r3/development/seed-lane-b-300k-seed4000000009-replay-native-capture-promote-20260812-001/source.u32le",
+      "trace_sha256": "57a4619a2ec1ed6de2c837a95948ff675b1ae9f3d27b768182ec6a7edba1f759",
+      "source_metadata": "../../../artifacts/r3/development/seed-lane-b-300k-seed4000000009-replay-native-capture-promote-20260812-001/capture-summary.json",
+      "source_metadata_sha256": "f7255aa593e683f88fa7bfc9ae491d49b40481a932454f22cff6caf9aeaa8d69",
+      "expected_score": 180799,
+      "expected_ticks": 88029
+    },
+    {
+      "label": "development-171695-seed4000000002",
+      "seed": 4000000002,
+      "trace": "../../../artifacts/r3/development/seed-lane-c-300k-seed4000000002-replay-native-capture-promote-20260812-001/source.u32le",
+      "trace_sha256": "ac554b1f673a38d4ff091c43d7b48b19afdf0af42b72af43ee5625fabaad658d",
+      "source_metadata": "../../../artifacts/r3/development/seed-lane-c-300k-seed4000000002-replay-native-capture-promote-20260812-001/capture-summary.json",
+      "source_metadata_sha256": "e6984351ea5fc1790839b88c3c7e38bae09224383d6165481d5fb94fd5f230d7",
+      "expected_score": 171695,
+      "expected_ticks": 83143
+    }
+  ]
+}
