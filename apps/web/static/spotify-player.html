@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Spotify currently ships an eval-based API bundle; keep its policy off the game page. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://open.spotify.com https://embed-cdn.spotifycdn.com; frame-src https://open.spotify.com; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'">
+  <title>Irisu soundtrack · Spotify</title>
+  <link rel="stylesheet" href="./spotify-player.css?v=20261006a">
+  <script src="./spotify-player.js?v=20261006a" defer></script>
+</head>
+<body>
+  <div id="spotify-player" role="status">Loading Spotify…</div>
+  <noscript>Enable JavaScript to use the Spotify player.</noscript>
+</body>
+</html>

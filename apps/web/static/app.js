@@ -1,11 +1,12 @@
-import {BrowserGame} from "./exact-runtime.js?v=20260825b";
+import {BrowserGame} from "./exact-runtime.js?v=20261006a";
 import {
   activatedTrailAlphas, colorFor, hasActivatedTrail,
 } from "./colors.mjs?v=20260824c";
 import {
   clampReplayScrubFrame, parseReplay, REPLAY_TICK_MS,
-} from "./replay.mjs?v=20260825b";
-import {RestartGate} from "./restart-gate.mjs?v=20260825b";
+} from "./replay.mjs?v=20261006a";
+import {RestartGate} from "./restart-gate.mjs?v=20261006a";
+import {createSoundtrack} from "./music.mjs?v=20261006a";
 
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
@@ -46,6 +47,7 @@ const bodyTrails = new Map();
 const bodyPositions = new Map();
 const pendingScores = [];
 const scorePopups = [];
+const soundtrack = createSoundtrack(document, window);
 
 const restartGate = new RestartGate((pending) => {
   if (ui.runtimeLoading) ui.runtimeLoading.hidden = !pending;
@@ -430,6 +432,7 @@ function showReplayPosition(frame, totalFrames) {
 
 function syncUi() {
   if (!snapshot) return;
+  soundtrack.update(snapshot);
   const state = snapshot.observation;
   const replay = snapshot.replay;
   const replayMode = snapshot.mode === "replay";
@@ -520,6 +523,7 @@ canvas.addEventListener("pointerleave", () => {
 });
 canvas.addEventListener("pointerdown", (event) => {
   event.preventDefault();
+  canvas.focus({preventScroll: true});
   if (snapshot?.mode === "replay") return;
   aim = {...canvasPoint(event), visible: true};
   game?.setAim(aim.x, aim.y);

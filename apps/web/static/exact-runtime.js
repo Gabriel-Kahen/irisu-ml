@@ -1,11 +1,11 @@
 import {
   OPCODE, decodeHello, decodeObservation, decodePaddedEvents, decodePaddedStepMetadata,
   decodeReset, decodeStep, encodeReset, encodeStep,
-} from "./exact-codec.mjs?v=20260825b";
+} from "./exact-codec.mjs?v=20261006a";
 import {
   ReplayObservationCache, decodeReplayWord, encodeReplayWord,
   quantizeReplayPoint, serializeReplay, REPLAY_TICK_MS,
-} from "./replay.mjs?v=20260825b";
+} from "./replay.mjs?v=20261006a";
 
 const kinds = {weak: 1, strong: 2, both: 3};
 const FAST_FORWARD_TICKS = 80;
@@ -16,7 +16,7 @@ export class ExactWorkerClient {
   static async create({WorkerClass = globalThis.Worker, timeoutMs = 60000,
     onProgress = () => {}} = {}) {
     if (!WorkerClass) throw new Error("Web Workers are unavailable");
-    const worker = new WorkerClass(new URL("./exact-worker.js?v=20260825b", import.meta.url));
+    const worker = new WorkerClass(new URL("./exact-worker.js?v=20261006a", import.meta.url));
     const client = new ExactWorkerClient(worker, timeoutMs, onProgress);
     let timer;
     try {

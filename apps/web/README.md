@@ -17,6 +17,25 @@ Its open-bottom U-shaped well follows the measured v2.03 mode-0 geometry.
 Touch taps fire weak shots; desktop players can right-click or press `S` for a
 strong shot.
 
+## Spotify soundtrack
+
+The visible Spotify embed plays watson's official **Irisu Syndrome! Original
+Soundtrack**. Press play in the embed, then choose a normal-mode gameplay song
+or browse all 20 tracks with **Full soundtrack**. Like the original v2.03 game,
+the default is **Zero Communication**; the selected gameplay song stays the
+same at every score and switches to **Game Over 1** when a run terminates.
+Your music selection is remembered in this browser when storage is available.
+Restarting or seeking a replay back into gameplay restores the selected song.
+Pausing the game leaves music playing; the Spotify player has its own pause.
+Replay exhaustion and simulator time limits do not invent an original ending.
+See [music research](../../reference/music-rules.md) for evidence and sources.
+
+All audio stays inside Spotify's official player. Full-song availability and
+autoplay depend on Spotify and the browser; restricted previews are not looped.
+The iFrame API lives in a separate local frame so its script requirements do
+not weaken the game's Content Security Policy. If that API is unavailable, a
+plain Spotify embed remains usable, with manual play after song changes.
+
 ## Build the static exact app
 
 Build the existing 32-bit exact worker and provide its MSVC9 r58 host, then run:
