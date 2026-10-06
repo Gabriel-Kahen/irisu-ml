@@ -1,40 +1,38 @@
 (() => {
   "use strict";
 
-  const album = "spotify:album:72x9BgVuSuOGqmeGgTbAOV";
-  // Official album durations (milliseconds), also used to avoid looping restricted previews.
-  const durations = new Map(Object.entries({
-    "69Syxg5Ujwse0b2Cbn7zw4": 216367, "6eoGq11wAa2DXTs5Qenszg": 219481,
-    "69ocfwfs4udHqebi4e2ouO": 231038, "0dnz5asD7Hw6XMfDY4POHH": 77142,
-    "4AfzYBClNpA56oxLt3t3jF": 17706, "1JPd2pBFL4FrTSo0kie8oJ": 196320,
-    "2OLorxEZPSFnqyjAho1Myh": 246577, "6Cq6P6KrTEwCnHURQoOnqZ": 141773,
-    "0LI9qyuCQfWTd1d5bMwxmO": 153669, "4DDJ7CfXUhSDf2Gpp06szh": 12000,
-    "7fZKm6CdYTpQxskbIc6YBN": 12005, "02EOHQWJKcElhq01dG6chM": 9724,
-    "0M3Z7PHTyjdkfJJaaiCYlO": 11619, "2PBbGnPwSAlCJi2zJoAZbt": 10018,
-    "7IsiZa1n5orY0H6DhpdZQm": 23250, "717W41hhLpf4pbPwNyvydH": 135306,
-    "4RF8mnbbath89EmF8h7YmP": 226253, "4G2Cno8LLVDhsJAMwJ2Z8D": 237353,
-    "41hPcp8oADmP90nIE3v6x8": 305218, "1tiEzW7dOGPbPueYQDH97L": 247449,
-  }).map(([id, duration]) => [`spotify:track:${id}`, duration]));
-  const validUri = uri => typeof uri === "string" && (uri === album || durations.has(uri));
+  const tracks = [
+    "spotify:track:69Syxg5Ujwse0b2Cbn7zw4",
+    "spotify:track:6eoGq11wAa2DXTs5Qenszg",
+    "spotify:track:69ocfwfs4udHqebi4e2ouO",
+  ];
+  // Official full-track durations distinguish completion from restricted previews.
+  const durations = new Map([
+    [tracks[0], 216367], [tracks[1], 219481], [tracks[2], 231038],
+    ["spotify:track:4DDJ7CfXUhSDf2Gpp06szh", 12000],
+  ]);
+  const validUri = uri => typeof uri === "string" && durations.has(uri);
   const params = new URLSearchParams(location.search);
-  let uri = validUri(params.get("uri")) ? params.get("uri") : album;
-  let loop = params.get("loop") === "1";
+  let uri = validUri(params.get("uri")) ? params.get("uri") : tracks[0];
+  let cycle = params.get("cycle") !== "0";
   let controller = null;
   let fallback = false;
   let ready = false;
   let playing = false;
   let endedPlaying = false;
   let resume = false;
-  let loopPending = false;
+  let startRequested = false;
+  let hasPlayed = false;
   let timer;
   const send = data => parent.postMessage(data, location.origin);
   const status = message => send({type: "irisu:music-status", message});
-  const height = () => uri === album ? 352 : 152;
   const nativeUrl = () => `https://open.spotify.com/embed/${uri.split(":").slice(1).join("/")}?theme=0`;
 
   function nativeEmbed() {
     const frame = document.createElement("iframe");
     frame.src = nativeUrl();
+    frame.width = "100%";
+    frame.height = "80";
     frame.title = "Irisu Syndrome! Original Soundtrack by watson on Spotify";
     frame.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
     frame.setAttribute("allowfullscreen", "");
@@ -48,7 +46,7 @@
     try { controller?.destroy(); } catch { /* The native embed still works without the API. */ }
     controller = null;
     nativeEmbed();
-    status("Spotify automatic control is unavailable. Use play in the embed; song changes may need another click.");
+    status("Spotify controls unavailable; press play in Spotify.");
   }
 
   function watchReady() {
@@ -56,21 +54,20 @@
     timer = setTimeout(useFallback, 15000);
   }
 
-  function select(nextUri, nextLoop) {
-    loop = nextLoop;
+  function select(nextUri, nextCycle) {
+    cycle = nextCycle;
     if (nextUri === uri) return;
     uri = nextUri;
     resume = playing || endedPlaying || resume;
     playing = false;
     endedPlaying = false;
     ready = false;
-    loopPending = false;
     if (fallback) {
       nativeEmbed();
     } else if (controller) {
       try {
         watchReady();
-        controller.setIframeDimensions("100%", height());
+        controller.setIframeDimensions("100%", 80);
         (controller.loadEntity || controller.loadUri).call(controller, uri);
       } catch { useFallback(); }
     }
@@ -79,15 +76,24 @@
   window.addEventListener("message", event => {
     if (event.source !== parent || event.origin !== location.origin) return;
     const data = event.data;
-    if (data?.type !== "irisu:music" || !validUri(data.uri) || typeof data.loop !== "boolean") return;
-    select(data.uri, data.loop);
+    if (data?.type === "irisu:music-start") {
+      if (fallback || startRequested || hasPlayed) return;
+      startRequested = true;
+      if (!ready) resume = true;
+      else {
+        try { controller.play(); } catch { useFallback(); }
+      }
+      return;
+    }
+    if (data?.type !== "irisu:music" || !validUri(data.uri) || typeof data.cycle !== "boolean") return;
+    select(data.uri, data.cycle);
   });
 
   window.onSpotifyIframeApiReady = api => {
     if (fallback || controller) return;
     try {
       api.createController(document.getElementById("spotify-player"), {
-        uri, width: "100%", height: height(), theme: "dark",
+        uri, width: "100%", height: 80, theme: "dark",
       }, {events: {onError: useFallback}, onCreateCallback: created => {
         if (fallback) { created.destroy(); return; }
         controller = created;
@@ -95,7 +101,7 @@
           if (fallback) return;
           clearTimeout(timer);
           ready = true;
-          status("Use Spotify’s play button to start. Playback availability is controlled by Spotify.");
+          status("");
           if (resume) {
             resume = false;
             try { controller.play(); } catch { useFallback(); }
@@ -103,20 +109,19 @@
         });
         controller.addListener("playback_update", event => {
           const data = event.data;
-          if (fallback || !ready || !data || (uri !== album && data.playingURI !== uri)) return;
+          if (fallback || !ready || !data || data.playingURI !== uri) return;
           if (typeof data.isPaused !== "boolean") return;
           const wasPlaying = playing;
           playing = !data.isPaused;
+          hasPlayed ||= playing;
           const duration = durations.get(uri);
           const fullTrack = duration && Number.isFinite(data.duration) && Math.abs(data.duration - duration) < 1000;
           const completed = fullTrack && data.isPaused && !data.isBuffering &&
             data.position >= data.duration - 100;
           endedPlaying = Boolean(completed && (wasPlaying || endedPlaying));
-          if (data.position < data.duration - 1000) loopPending = false;
-          // Only a completed full track can loop; never restart a 30-second preview.
-          if (loop && completed && wasPlaying && !loopPending) {
-            loopPending = true;
-            try { controller.restart(); } catch { useFallback(); }
+          // Advance full songs only; never loop or advance Spotify's restricted previews.
+          if (cycle && completed && wasPlaying && tracks.includes(uri)) {
+            select(tracks[(tracks.indexOf(uri) + 1) % tracks.length], true);
           }
         });
       }});

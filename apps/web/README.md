@@ -19,22 +19,21 @@ strong shot.
 
 ## Spotify soundtrack
 
-The visible Spotify embed plays watson's official **Irisu Syndrome! Original
-Soundtrack**. Press play in the embed, then choose a normal-mode gameplay song
-or browse all 20 tracks with **Full soundtrack**. Like the original v2.03 game,
-the default is **Zero Communication**; the selected gameplay song stays the
-same at every score and switches to **Game Over 1** when a run terminates.
-Your music selection is remembered in this browser when storage is available.
-Restarting or seeking a replay back into gameplay restores the selected song.
-Pausing the game leaves music playing; the Spotify player has its own pause.
-Replay exhaustion and simulator time limits do not invent an original ending.
-See [music research](../../reference/music-rules.md) for evidence and sources.
+A compact 80-pixel Spotify player sits below the game. The first three original
+soundtrack songs play in album order and repeat automatically; a loss interrupts
+them with **Game Over 1**. Restarting after a loss returns to the first gameplay song. There is
+no song selector or full-album mode. Score changes, game pauses, replay exhaustion,
+and level completion do not trigger the loss cue.
 
-All audio stays inside Spotify's official player. Full-song availability and
-autoplay depend on Spotify and the browser; restricted previews are not looped.
-The iFrame API lives in a separate local frame so its script requirements do
-not weaken the game's Content Security Policy. If that API is unavailable, a
-plain Spotify embed remains usable, with manual play after song changes.
+The first gameplay interaction requests music playback. If the browser blocks
+that request, use Spotify's play button. Pausing music in the embed is respected.
+All audio stays in Spotify's official embed; full-track availability depends on
+Spotify and the browser. Restricted previews do not automatically cycle or loop.
+The isolated iFrame API falls back to a plain Spotify embed if unavailable.
+
+See [music research](../../reference/music-rules.md) for the original game's
+rules and track mappings. This site's automatic three-song rotation is an
+intentional convenience; the original game uses a manually selected song.
 
 ## Build the static exact app
 

@@ -1,12 +1,12 @@
-import {BrowserGame} from "./exact-runtime.js?v=20261006a";
+import {BrowserGame} from "./exact-runtime.js?v=20261006b";
 import {
   activatedTrailAlphas, colorFor, hasActivatedTrail,
 } from "./colors.mjs?v=20260824c";
 import {
   clampReplayScrubFrame, parseReplay, REPLAY_TICK_MS,
-} from "./replay.mjs?v=20261006a";
-import {RestartGate} from "./restart-gate.mjs?v=20261006a";
-import {createSoundtrack} from "./music.mjs?v=20261006a";
+} from "./replay.mjs?v=20261006b";
+import {RestartGate} from "./restart-gate.mjs?v=20261006b";
+import {createSoundtrack} from "./music.mjs?v=20261006b";
 
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
@@ -140,6 +140,7 @@ function canvasPoint(event) {
 
 function shoot(kind = "weak") {
   if (!snapshot || snapshot.observation.terminated || snapshot.observation.truncated) return;
+  soundtrack.start();
   started = true;
   try { game?.shoot(kind, aim.x, aim.y); }
   catch (error) { showToast(error.message); }
@@ -147,6 +148,7 @@ function shoot(kind = "weak") {
 
 function setRunning(running) {
   if (!game) return;
+  if (running) soundtrack.start();
   if (!running) stopFastForward();
   game.setRunning(running);
   started ||= running;

@@ -8,7 +8,7 @@
   <title>irisu</title>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DCS6EVRYKH"></script>
   <script src="./analytics.js"></script>
-  <link rel="stylesheet" href="./styles.css?v=20261006a">
+  <link rel="stylesheet" href="./styles.css?v=20261006b">
   <link rel="preload" href="./exact-runtime/v86.wasm?v=20260824k" as="fetch" type="application/wasm" crossorigin>
   <link rel="preload" href="./exact-runtime/buildroot-bzimage68.bin?v=20260824k" as="fetch" crossorigin>
 </head>
@@ -70,28 +70,15 @@
       </section>
 
     </div>
-    <section class="soundtrack" aria-label="Game soundtrack by watson">
-      <div class="soundtrack-heading">
-        <label for="musicSelection">soundtrack <span>watson</span></label>
-        <select id="musicSelection">
-          <optgroup label="Follow the original game">
-            <option value="spotify:track:69Syxg5Ujwse0b2Cbn7zw4">Staring at the Ceiling for About Ten Hours</option>
-            <option value="spotify:track:6eoGq11wAa2DXTs5Qenszg">I Didn't Talk to Anyone Today, Either</option>
-            <option value="spotify:track:69ocfwfs4udHqebi4e2ouO" selected>Zero Communication</option>
-          </optgroup>
-          <option value="spotify:album:72x9BgVuSuOGqmeGgTbAOV">Full soundtrack · 20 tracks</option>
-        </select>
-      </div>
+    <section class="soundtrack" aria-label="Game music">
       <iframe id="spotifyPlayer" title="Spotify soundtrack player"
-        src="./spotify-player.html?uri=spotify:track:69ocfwfs4udHqebi4e2ouO&amp;loop=1"
-        width="100%" height="152" allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>
-      <p id="musicStatus" role="status">Press play in Spotify to begin. Spotify may offer previews depending on your session and browser.</p>
-      <p class="soundtrack-rule">Like the original, your chosen song stays at every score and changes at game over.
-        Choose the full soundtrack to listen freely.</p>
+        src="./spotify-player.html?v=20261006b"
+        width="100%" height="80" allow="autoplay; encrypted-media; fullscreen; picture-in-picture"></iframe>
+      <p id="musicStatus" role="status" hidden></p>
     </section>
     <div id="appError" class="app-error" role="alert" hidden></div>
   </main>
   <div id="toast" class="toast"></div>
-  <script type="module" src="./app.js?v=20261006a"></script>
+  <script type="module" src="./app.js?v=20261006b"></script>
 </body>
 </html>

@@ -71,8 +71,9 @@ supports selecting a track, play/pause, seeking, and playback events. Browser
 autoplay restrictions and Spotify account/content availability still apply;
 the player may require the listener to press Play and may provide previews.
 
-Keep the chosen gameplay cue through score changes and pauses; do not advance
-through album tracks as a substitute for original game progression. The game
+The website intentionally cycles the first three gameplay tracks automatically,
+as requested on 2026-10-06. This is a convenience, not an original score-based
+progression rule. Only a loss interrupts that rotation with Game Over 1. The game
 loops its music, but a Spotify embed is not a sample-accurate game-audio loop
 engine. Any repeat behavior must use supported player controls and respect
 pauses; it must not present preview playback as full-track playback. A game-over

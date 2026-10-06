@@ -7,9 +7,9 @@ const source = readFileSync(new URL("../static/spotify-player.js", import.meta.u
 const first = "spotify:track:69Syxg5Ujwse0b2Cbn7zw4";
 const second = "spotify:track:6eoGq11wAa2DXTs5Qenszg";
 const third = "spotify:track:69ocfwfs4udHqebi4e2ouO";
-const album = "spotify:album:72x9BgVuSuOGqmeGgTbAOV";
+const gameOver = "spotify:track:4DDJ7CfXUhSDf2Gpp06szh";
 
-function setup(search = `?uri=${first}&loop=1`) {
+function setup(search = `?uri=${first}&cycle=1`) {
   const messages = [], loads = [], frames = [], timers = new Map(), events = {};
   let timerId = 0, plays = 0, restarts = 0, destroyed = 0, listener;
   const parent = {postMessage: (message, origin) => messages.push({message, origin})};
@@ -35,11 +35,15 @@ function setup(search = `?uri=${first}&loop=1`) {
   });
   return {
     messages, loads, frames,
+    start(overrides = {}) {
+      listener({source: parent, origin: "https://irisu.test", data: {type: "irisu:music-start"}, ...overrides});
+    },
     get plays() { return plays; },
     get restarts() { return restarts; },
     get destroyed() { return destroyed; },
     init() {
       window.onSpotifyIframeApiReady({createController: (_, options, handlers) => {
+        assert.equal(options.height, 80);
         loads.push(options.uri);
         // The SDK adds a throwing default error listener unless onError is supplied here.
         assert.equal(typeof handlers.events.onError, "function");
@@ -54,14 +58,14 @@ function setup(search = `?uri=${first}&loop=1`) {
         duration: 216367, position: 1000, ...extra,
       }});
     },
-    select(uri, loop = true, overrides = {}) {
-      listener({source: parent, origin: "https://irisu.test", data: {type: "irisu:music", uri, loop}, ...overrides});
+    select(uri, cycle = true, overrides = {}) {
+      listener({source: parent, origin: "https://irisu.test", data: {type: "irisu:music", uri, cycle}, ...overrides});
     },
     timeout() { for (const callback of [...timers.values()]) callback(); },
   };
 }
 
-test("handshake accepts the latest selection before API startup, without autoplay", () => {
+test("handshake accepts the latest mode before API startup, without autoplay", () => {
   const player = setup();
   assert.equal(player.messages[0].message.type, "irisu:music-ready");
   assert.equal(player.messages[0].origin, "https://irisu.test");
@@ -72,16 +76,49 @@ test("handshake accepts the latest selection before API startup, without autopla
   assert.equal(player.plays, 0);
 });
 
-test("only the same-origin parent may choose a whitelisted soundtrack URI", () => {
+test("only the same-origin parent may change mode or request playback", () => {
   const player = setup("?uri=javascript:alert(1)");
   player.init();
-  player.select(first, true, {origin: "https://evil.test"});
-  player.select(first, true, {source: {}});
+  player.emit("ready");
+  player.select(second, true, {origin: "https://evil.test"});
+  player.select(second, true, {source: {}});
   player.select("spotify:track:0000000000000000000000");
-  player.select(first, "true");
-  assert.deepEqual(player.loads, [album]);
-  player.select(first);
-  assert.deepEqual(player.loads, [album, first]);
+  player.select("spotify:album:72x9BgVuSuOGqmeGgTbAOV");
+  player.select(second, "true");
+  player.start({origin: "https://evil.test"});
+  player.start({source: {}});
+  assert.deepEqual(player.loads, [first]);
+  assert.equal(player.plays, 0);
+  player.select(second);
+  assert.deepEqual(player.loads, [first, second]);
+});
+
+test("an early interaction queues playback until ready; a later interaction plays immediately", () => {
+  for (const early of [true, false]) {
+    const player = setup();
+    if (early) player.start();
+    player.init();
+    assert.equal(player.plays, 0);
+    player.emit("ready");
+    if (!early) player.start();
+    assert.equal(player.plays, 1);
+    player.start(); // Parent may resend after the bridge handshake.
+    assert.equal(player.plays, 1);
+    assert.equal(player.messages.at(-1).message.message, "");
+  }
+});
+
+test("first game interaction respects music already played and manually paused", () => {
+  const player = setup();
+  player.init();
+  player.emit("ready");
+  player.update();
+  player.update(first, {isPaused: true});
+  player.start();
+  assert.equal(player.plays, 0);
+  player.select(gameOver, false);
+  player.emit("ready");
+  assert.equal(player.plays, 0);
 });
 
 test("rapid song changes preserve playback intent, while manual pause is respected", () => {
@@ -101,59 +138,63 @@ test("rapid song changes preserve playback intent, while manual pause is respect
   assert.equal(player.plays, 1);
 });
 
-test("completed full tracks loop once, but manual pauses and previews never loop", () => {
+test("completed full gameplay songs advance through the first three and wrap once", () => {
   const player = setup();
   player.init();
   player.emit("ready");
-  player.update();
-  player.update(first, {isPaused: true, position: 216367});
-  player.update(first, {isPaused: true, position: 216367});
-  assert.equal(player.restarts, 1);
+  for (const [uri, duration] of [[first, 216367], [second, 219481], [third, 231038]]) {
+    player.update(uri, {duration});
+    player.update(uri, {duration, isPaused: true, position: duration});
+    player.update(uri, {duration, isPaused: true, position: duration}); // Duplicate old-song event.
+    player.emit("ready");
+  }
+  assert.deepEqual(player.loads, [first, second, third, first]);
+  assert.equal(player.plays, 3);
+  assert.equal(player.restarts, 0);
+});
+
+test("manual pauses, buffering, and completed previews never advance or restart", () => {
+  const player = setup();
+  player.init();
+  player.emit("ready");
   player.update();
   player.update(first, {isPaused: true, position: 200000});
-  assert.equal(player.restarts, 1);
+  player.update();
+  player.update(first, {isPaused: true, isBuffering: true, position: 216367});
   player.update(first, {duration: 30000});
   player.update(first, {duration: 30000, position: 30000, isPaused: true});
-  assert.equal(player.restarts, 1);
+  assert.deepEqual(player.loads, [first]);
+  assert.equal(player.restarts, 0);
+  player.select(gameOver, false);
+  player.emit("ready");
+  assert.equal(player.plays, 0);
 });
 
-test("non-looping game-over songs and album playback never restart", () => {
+test("a completed game-over jingle plays once and retains intent for the next run", () => {
   const player = setup();
   player.init();
   player.emit("ready");
-  player.select(first, false);
   player.update();
-  player.update(first, {isPaused: true, position: 216367});
-  assert.equal(player.restarts, 0);
-  player.select(album, true);
+  player.select(gameOver, false);
   player.emit("ready");
-  player.update();
-  player.update(first, {isPaused: true, position: 216367});
+  assert.equal(player.plays, 1);
+  player.update(gameOver, {duration: 12000});
+  player.update(gameOver, {duration: 12000, position: 12000, isPaused: true});
+  player.update(gameOver, {duration: 12000, position: 12000, isPaused: true});
+  assert.deepEqual(player.loads, [first, gameOver]);
   assert.equal(player.restarts, 0);
-});
-
-test("a completed game-over jingle retains intent for the next run, but a preview does not", () => {
-  for (const duration of [216367, 30000]) {
-    const player = setup();
-    player.init();
-    player.emit("ready");
-    player.select(first, false);
-    player.update(first, {duration});
-    player.update(first, {duration, position: duration, isPaused: true});
-    player.update(first, {duration, position: duration, isPaused: true});
-    player.select(second);
-    player.emit("ready");
-    assert.equal(player.plays, duration === 216367 ? 1 : 0);
-  }
+  player.select(first);
+  player.emit("ready");
+  assert.equal(player.plays, 2);
 });
 
 test("blocked API falls back to a usable native Spotify iframe and follows selections", () => {
   const player = setup();
   player.timeout();
   assert.equal(player.frames[0].src, "https://open.spotify.com/embed/track/69Syxg5Ujwse0b2Cbn7zw4?theme=0");
-  assert.match(player.messages.at(-1).message.message, /automatic control is unavailable/);
-  player.select(album, false);
-  assert.equal(player.frames.at(-1).src, "https://open.spotify.com/embed/album/72x9BgVuSuOGqmeGgTbAOV?theme=0");
+  assert.match(player.messages.at(-1).message.message, /controls unavailable/);
+  player.select(gameOver, false);
+  assert.equal(player.frames.at(-1).src, "https://open.spotify.com/embed/track/4DDJ7CfXUhSDf2Gpp06szh?theme=0");
   player.init(); // A late API callback must not replace a player the user may already be using.
   assert.deepEqual(player.loads, []);
 });
