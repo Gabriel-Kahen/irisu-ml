@@ -92,21 +92,3 @@ GitHub Pages downloads the hash-pinned runtime from the
 release with `fetch-exact-runtime.sh`, verifies both the archive and its embedded
 runtime manifest, and passes the prepared directory through
 `IRISU_EXACT_RUNTIME_DIR`.
-
-## Legacy native API server
-
-`apps/web/server.py` and the Dockerfile are retained for native API diagnostics.
-They use the portable shared library and are not the exact browser app or its
-deployment path. The static app above does not call their JSON API.
-
-```bash
-docker build -f apps/web/Dockerfile -t irisu-web .
-docker run --rm -p 8000:8000 irisu-web
-```
-
-`IRISU_SEED` sets the initial seed and `IRISU_CLONE_LIBRARY` selects a custom
-native build. `GET /healthz` is available for health checks.
-
-The diagnostic server owns one shared in-memory game. Before exposing its API
-as a multi-user service, add per-session game instances or isolate each player
-in a separate process.

@@ -1,11 +1,19 @@
 # irisu-ml
 
-This is the complete project repository for IriSu mechanics research and
-reinforcement-learning work. It includes a deterministic, asset-free C++20
-normal-mode simulator, a dependency-free Python environment, validation and
-benchmark tooling. It is intended for policy
-search and eventual transfer testing against an authorized local copy of the
-original game.
+This is the completed IriSu mechanics research and playable browser project.
+It includes a deterministic, asset-free C++20 normal-mode simulator, a
+dependency-free Python environment, validation, and benchmark tooling.
+
+## Final replay
+
+The final independently verified run scored **4,393,101** in normal mode,
+reached level **100**, and had a highest chain of **70**. Its seed is
+`1298144938`. Download [the replay](irisu-high-score-4393101.rpy) and open it
+with **play replay** in the browser app or with the original v2.03 game.
+The replay's SHA-256 is
+`81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79`.
+The score is the canonical score stored in the replay header and accepted by
+the independent exact-runtime verifier.
 
 ## Project map
 
@@ -25,8 +33,9 @@ original game.
   provenance, promotion, and artifact-regeneration policy
 
 Generated builds, search artifacts, scratch exports in `outputs/`, and rendered
-replay videos stay untracked. Preserve verified replays, verification reports,
-and the exact worker's shared-library dependencies when pruning completed runs.
+replay videos stay untracked. The published final replay is the one exception.
+Preserve verified replays, verification reports, and the exact worker's
+shared-library dependencies when pruning completed runs.
 Historical experiment findings remain documented; retired prototypes are
 available in Git history.
 
