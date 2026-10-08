@@ -11,7 +11,7 @@ test("exact startup has an accessible animated loading state", () => {
   const css = readFileSync(path.join(web, "static/styles.css"), "utf8");
   const app = readFileSync(path.join(web, "static/app.js"), "utf8");
   assert.match(html, /id="runtimeLoading"[^>]*role="status"[^>]*aria-live="polite"/);
-  assert.match(html, /<strong>LOADING EMULATOR\.\.\.<\/strong>/);
+  assert.match(html, /<strong>loading<\/strong>/);
   assert.doesNotMatch(html, /runtimeLoadingStatus|runtime-loading-meter/);
   assert.match(css, /@keyframes runtime-spin/);
   assert.match(css, /\.runtime-loading[\s\S]*background: #000/);
