@@ -8,7 +8,7 @@ The Japanese readme inside the pristine v2.03 archive records:
 |---|---|---|
 | 1.00 | 2008-09-27 | Initial release. |
 | 1.01 | 2008-10-05 | Changed clear conditions; fixed text and bugs; added the 100,000-point feature. |
-| 2.00 | 2009-12-30 | C77 release of IriSu Syndrome Metsu. |
+| 2.00 | 2009-12-30 | C77 release of Irisu Syndrome Metsu. |
 | 2.01 | 2010-01-16 | Fixed replay selection failure for filenames containing Japanese characters. |
 | 2.02 | 2010-01-31 | Fixed a progress-reset bug introduced in 2.01. |
 | 2.03 | 2010-02-08 | Minor fixes. |
@@ -42,7 +42,7 @@ Speedrun records optimize threshold time rather than maximum score, but their vi
 
 - [`jako`'s 49-second normal 40k run](https://www.speedrun.com/irisu_syndrome/runs/yw122g2z), with [video](https://youtu.be/A_TClovAoPE); cached locally with metadata;
 - [`Jubileus`'s 58:18 100% run](https://www.speedrun.com/irisu_syndrome/runs/y2q6x0wy), with [video](https://www.youtube.com/watch?v=q7vfyXTwbk8);
-- the [IriSu Syndrome speedrun board](https://www.speedrun.com/irisu_syndrome), including moderators and additional submitted runs;
+- the [Irisu Syndrome speedrun board](https://www.speedrun.com/irisu_syndrome), including moderators and additional submitted runs;
 - Nico uploader [`kenshin`](https://www.nicovideo.jp/user/1632727), source of the v2.03 330k recording;
 - Nico uploader and strategy author [`loveinch`](https://www.nicovideo.jp/user/3204226), source of the 214k recording/replay.
 

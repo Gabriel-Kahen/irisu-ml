@@ -1,6 +1,6 @@
 # Reference-Game Computer Use Protocol
 
-This protocol is for agents measuring the authorized local IriSu Syndrome copy. Use the `same-session-computer-use` skill and its broker tools; do not invent a second input mechanism.
+This protocol is for agents measuring the authorized local Irisu Syndrome copy. Use the `same-session-computer-use` skill and its broker tools; do not invent a second input mechanism.
 
 The native Hyprland target-pointer component was built and loaded on 2026-07-17. At verification time, `session_status` reported exact background capture, targeted shortcuts, targeted Wayland and XWayland pointer input, and `native_input_currently_safe: true`. Its loaded state is compositor-session-specific. Every agent must check current status rather than relying on this historical result.
 
@@ -11,9 +11,9 @@ If `session_status` reports `native_plugin_loaded: false` while all native build
 1. Read the installed `same-session-computer-use` skill in full for the current turn.
 2. Call `session_status`, `list_window_claims`, and every page of `list_session_windows` with a page size of at most 20.
 3. For a replay probe, run `tools/prepare-reference-capture.py <experiment-id> <input.rpy> --layout padded` (or explicitly select `legacy`) and use the exact launch command it prints. The tool stages the disposable tree and non-golden capture skeleton, then publishes each with an atomic no-clobber rename; ambiguous layout is rejected rather than guessed. For a no-replay probe, create a disposable tree with `tools/create-reference-run.sh <experiment-id>`. Never experiment in the preserved source installation.
-4. Find the exact IriSu window by address or exact-capture ID. Claim it with `claim_session_window`; use a lease long enough for the immediate probe and renew it during longer work. Treat the claim token as a secret.
+4. Find the exact Irisu window by address or exact-capture ID. Claim it with `claim_session_window`; use a lease long enough for the immediate probe and renew it during longer work. Treat the claim token as a secret.
 5. Capture the exact window before sending input. Record the returned window geometry and pixel-to-window scale. Derive window-local input coordinates from that capture and bounds-check them.
-6. Use `send_window_shortcut` for discrete keys. Use `targeted_pointer_click`, `targeted_pointer_drag`, or `targeted_pointer_scroll` for game coordinates. IriSu runs through Wine/XWayland, which is supported. Do not move the physical pointer or focus the window just to automate it.
+6. Use `send_window_shortcut` for discrete keys. Use `targeted_pointer_click`, `targeted_pointer_drag`, or `targeted_pointer_scroll` for game coordinates. Irisu runs through Wine/XWayland, which is supported. Do not move the physical pointer or focus the window just to automate it.
 7. Send one causal action or deliberately specified short sequence, then recapture and verify the result. Start a new setup with a harmless capture and single-input smoke test.
 8. Renew the claim before it expires. Release it in cleanup even after an error.
 

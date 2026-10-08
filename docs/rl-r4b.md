@@ -17,7 +17,7 @@ The checked deployment contract therefore stays
 
 ## Why a separate broker is required
 
-IriSu runs through Wine/XWayland and polls mouse-button levels on its native
+Irisu runs through Wine/XWayland and polls mouse-button levels on its native
 20 ms update path. Two caller-side operations, a drag, raw `xdotool`, or a
 Python watchdog cannot substitute for one authoritative input broker. If the
 caller stalls or dies after button-down, that broker must still:
@@ -152,7 +152,7 @@ terminal states; a crash leaves an unmatched intent. Either condition
 permanently taints that no-replace journal and prevents finalization, so an
 attempted action cannot disappear from the qualifying record.
 
-The copied `replay/new.rpy` is the authoritative IriSu-side input check. Each
+The copied `replay/new.rpy` is the authoritative Irisu-side input check. Each
 confirmed command must produce exactly one new edge for the correct button and
 quantized coordinate, never `BOTH`, with a sampled neutral record before the
 same button is fired again. Visual projectile-birth association supplies the
@@ -167,7 +167,7 @@ remain private and require operator review before promotion.
 
 Every experiment retains one immutable process attestation. Launch nonces and
 PID/start generations must be unique across experiment IDs; relabeling one
-long-lived IriSu process as several fresh runs is rejected before the next
+long-lived Irisu process as several fresh runs is rejected before the next
 input and again during journal verification. The measurement provenance is
 derived from the runner's observed installed `original_game` source bundle and
 the observer's role-bound, owner-controlled artifact files. The runner hashes

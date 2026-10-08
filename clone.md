@@ -1,8 +1,8 @@
-# Headless IriSu Puzzle Clone Specification
+# Headless Irisu Puzzle Clone Specification
 
 ## Goal
 
-Create a fast, deterministic, testable, clean-room clone of the **normal puzzle mode** of IriSu Syndrome. Its purpose is to train and search for policies that transfer to the original game.
+Create a fast, deterministic, testable, clean-room clone of the **normal puzzle mode** of Irisu Syndrome. Its purpose is to train and search for policies that transfer to the original game.
 
 The clone is not a visual remake and does not include story progression, original art, music, menus, endings, file-changing behavior, or Metsu mode. It is a physics-and-rules simulator plus optional diagnostic rendering.
 
@@ -328,7 +328,7 @@ Read [`reference/README.md`](./reference/README.md), [`reference/computer-use.md
 
 Use `tools/launch-reference-game.sh` to start the workspace copy, `tools/create-reference-run.sh` to create a disposable experiment tree, and `tools/inspect-rpy.py` for an initial replay report.
 
-Agents controlling the original game must follow `reference/computer-use.md`: claim only the exact IriSu window, use background capture and targeted input, preserve a complete experiment bundle, and release the claim in cleanup. Do not improvise global desktop automation.
+Agents controlling the original game must follow `reference/computer-use.md`: claim only the exact Irisu window, use background capture and targeted input, preserve a complete experiment bundle, and release the claim in cleanup. Do not improvise global desktop automation.
 
 The original developer states that replays store the gameplay RNG seed plus input state and that Box2D replay behavior can diverge between computers. Replays are therefore high-value input traces and metadata, but playback agreement on this Wine environment must be measured rather than assumed.
 

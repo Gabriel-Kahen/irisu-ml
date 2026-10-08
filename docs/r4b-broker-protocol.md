@@ -85,7 +85,7 @@ lineage/environment and return exactly one matching disposable process:
 
 Title/class matching is insufficient. PID start ticks prevent reuse; capture ID
 prevents a recreated window at the same address; the nonce prevents selecting a
-different IriSu process; hashes reject the preserved tree, trace proxy, and
+different Irisu process; hashes reject the preserved tree, trace proxy, and
 mutated data or prefix state.
 
 ## Claims

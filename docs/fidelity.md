@@ -3,7 +3,7 @@
 ## Current status
 
 The repository contains an end-to-end, asset-free headless implementation of
-IriSu Syndrome v2.03 normal mode. The rule layer is no longer the earlier
+Irisu Syndrome v2.03 normal mode. The rule layer is no longer the earlier
 placeholder vertical slice: its RNG, update cadence, input edges, spawn order,
 seeded 20-block reset prefill, level formulas, native-order contact dispatcher,
 grouping, burst scoring, special/direct-hit behavior, gauge ordering, lifetimes,
@@ -439,7 +439,7 @@ probe, but it is inadmissible as replay-fidelity evidence for mode 0.
 
 ### 2026-07-19 corrected-reset diagnostics
 
-An active compositor output and exact IriSu window capture worked. A fresh
+An active compositor output and exact Irisu window capture worked. A fresh
 seed-123 one-record replay and images under
 `reference/captures/probe-reset1-20260719-001/` visually corroborate the
 corrected 10-rotten/10-scripted initial layout. A separate seed-41, 520-record

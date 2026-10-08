@@ -67,7 +67,7 @@ several separated bodies, its 100-way wait head made passive behavior easy,
 and its single shallow snapshot stage supplied almost no chain or late-game
 experience.
 
-IriSu is a relational control problem. A useful decision names a body, a
+Irisu is a relational control problem. A useful decision names a body, a
 same-color partner or hazard intent, a collision offset, a shot strength, and a
 time. R3c represents that structure directly.
 

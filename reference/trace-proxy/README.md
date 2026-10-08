@@ -1,7 +1,7 @@
 # Original-game Box2D trace proxy
 
 This directory contains a redistributable, freestanding PE32 forwarding DLL.
-It exposes the exact 16-function `stdcall` ABI of IriSu v2.03's shipped
+It exposes the exact 16-function `stdcall` ABI of Irisu v2.03's shipped
 `Box2D.dll`, loads the authentic DLL as `Box2D.real.dll`, and records the calls
 that decide body creation, first-step contacts, and destruction. It contains no
 bytes from the original DLL and is an observation tool, not a clone dependency.

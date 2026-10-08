@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "irisu-env"
 version = "0.1.0"
-description = "Thin Python interface to the separately built deterministic headless IriSu clone"
+description = "Thin Python interface to the separately built deterministic headless Irisu clone"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []

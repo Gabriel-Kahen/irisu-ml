@@ -1,6 +1,6 @@
 # v2.03 normal-mode mechanics
 
-This document describes the implemented headless target: IriSu Syndrome v2.03,
+This document describes the implemented headless target: Irisu Syndrome v2.03,
 normal mode, one gameplay update per 0.020 seconds. The detailed clean-room
 evidence and recovered addresses live in
 [`reference/game-rules-analysis.md`](../reference/game-rules-analysis.md).

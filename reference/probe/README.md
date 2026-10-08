@@ -1,7 +1,7 @@
 # Shipped Box2D DLL oracle
 
 This directory contains a clean-room measurement tool for the exact
-`Box2D.dll` shipped with IriSu Syndrome v2.03. It is an oracle for calibration,
+`Box2D.dll` shipped with Irisu Syndrome v2.03. It is an oracle for calibration,
 not a dependency of the clone. The original DLL remains under the ignored
 `reference/game/` tree and must never be copied into source distributions.
 

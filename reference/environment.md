@@ -6,7 +6,7 @@ Recorded 2026-07-17. Re-record these values inside every experiment bundle; this
 
 | Component | Value |
 |---|---|
-| Game | IriSu Syndrome v2.03, English-patched data |
+| Game | Irisu Syndrome v2.03, English-patched data |
 | Executable SHA-256 | `0636d3e44439d88807d0c00aeb1bb072316c69fc13a21f79d67e53affad28255` |
 | `data/dat.dxa` SHA-256 | `b36ef6864bf2d0e626d5087edb5b571ef548ebd5dde9fbc9b87f7b4ac3e89d4a` |
 | `data/img.dxa` SHA-256 | `7ffdf24de7d9465296e14cbee086ed04927c5e8a7e442d6be597984a71e03c50` |

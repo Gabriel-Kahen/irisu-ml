@@ -1,6 +1,6 @@
 # Expert-human evaluation preregistration (draft)
 
-Status: R0 draft, not locked. Target: authorized IriSu Syndrome v2.03 normal
+Status: R0 draft, not locked. Target: authorized Irisu Syndrome v2.03 normal
 mode at normal speed. This draft cannot authorize a final claim until every
 provisional item below has measured evidence and the document is frozen before
 evaluation.

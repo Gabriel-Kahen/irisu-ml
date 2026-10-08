@@ -1,6 +1,6 @@
 # Local Reference Lab
 
-This directory supports clean-room measurement of IriSu Syndrome. The tracked files document provenance and usage; third-party binaries, assets, recordings, and raw replays are intentionally ignored by Git.
+This directory supports clean-room measurement of Irisu Syndrome. The tracked files document provenance and usage; third-party binaries, assets, recordings, and raw replays are intentionally ignored by Git.
 
 ## Local inventory
 
@@ -55,7 +55,7 @@ Run:
 tools/launch-reference-game.sh
 ```
 
-The launcher uses the isolated Wine 11.13 runtime and prefix already installed for IriSu. It starts the workspace copy, so generated saves and `replay/new.rpy` changes do not modify `/home/gabe/Games/Irisu Syndrome`.
+The launcher uses the isolated Wine 11.13 runtime and prefix already installed for Irisu. It starts the workspace copy, so generated saves and `replay/new.rpy` changes do not modify `/home/gabe/Games/Irisu Syndrome`.
 
 The game overwrites `replay/new.rpy` after a run. Preserve useful replays under `reference/replays/raw/local/` with a descriptive filename before starting another run.
 
@@ -113,7 +113,7 @@ If a fresh compositor session reports that the native target-pointer component i
 
 The July 18 zero-display attempts for the imported padded 40- and 56-point
 traces remain historical. On 2026-07-19 an active output was available and
-exact IriSu window capture worked. A fresh seed-123 one-record reset under
+exact Irisu window capture worked. A fresh seed-123 one-record reset under
 `captures/probe-reset1-20260719-001/` visually corroborates the corrected
 10-rotten/10-scripted layout. The seed-41, 520-record diagnostic under
 `captures/probe-b-match-chain-20260719-001/` initially showed original HUD 16
@@ -142,7 +142,7 @@ the golden manifest until its capture directory satisfies the full schema.
 
 For each experiment:
 
-1. Claim the exact IriSu window before capture or input.
+1. Claim the exact Irisu window before capture or input.
 2. Record game hash/version, window geometry, timestamps, and every input.
 3. Capture the puzzle region before and after the action.
 4. Use controlled weak/strong clicks at known window-local coordinates.
@@ -150,7 +150,7 @@ For each experiment:
 6. Copy `new.rpy` before it is overwritten.
 7. Release the window claim after verification.
 
-Do not inspect unrelated windows, use global physical input, or interrupt the user's active workspace. The native Hyprland target-pointer component was built, loaded, and verified safe on 2026-07-17, but agents must re-check `session_status` at the start of every operating turn. IriSu runs through Wine/XWayland, which is supported, and every automated sequence should begin with a harmless capture/input smoke test.
+Do not inspect unrelated windows, use global physical input, or interrupt the user's active workspace. The native Hyprland target-pointer component was built, loaded, and verified safe on 2026-07-17, but agents must re-check `session_status` at the start of every operating turn. Irisu runs through Wine/XWayland, which is supported, and every automated sequence should begin with a harmless capture/input smoke test.
 
 ## Evidence policy
 

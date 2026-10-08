@@ -1,7 +1,7 @@
-# IriSu ML
+# Irisu ML
 
 A headless simulator, ML environment, and
-[playable web client](https://irisu.online/) for **IriSu Syndrome! v2.03
+[playable web client](https://irisu.online/) for **Irisu Syndrome! v2.03
 normal mode**. The project is complete; its final verified run scored
 **4,393,101** points.
 
@@ -88,7 +88,7 @@ general policy transfer.
 
 ## Playable web client
 
-[**Play IriSu online**](https://irisu.online/) in the static browser client at
+[**Play Irisu online**](https://irisu.online/) in the static browser client at
 [`apps/web/`](apps/web). It runs the exact i386 worker locally under v86 inside
 a Web Worker. GitHub Pages serves the files; gameplay and physics run in the
 browser. The client supports keyboard, mouse, and touch controls, replay

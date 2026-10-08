@@ -6,7 +6,7 @@ Last reviewed: 2026-07-22.
 
 This is the implementation plan for building an RL system that learns primarily
 in the headless clone and can actually control an authorized local copy of
-IriSu Syndrome v2.03 normal mode.
+Irisu Syndrome v2.03 normal mode.
 
 This document is deliberately stricter than “make PPO run.” A simulator score is
 useful research evidence, but it is not the project outcome. The outcome is a
@@ -1856,7 +1856,7 @@ projectile birth centers. Report median, p95, and worst residual.
 
 The executor must:
 
-- target only the claimed IriSu window;
+- target only the claimed Irisu window;
 - convert client to current window-local coordinates;
 - validate bounds and transform age;
 - implement measured press and release duration;
