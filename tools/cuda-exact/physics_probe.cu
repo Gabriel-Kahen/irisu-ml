@@ -92,11 +92,13 @@ int main(int argc,char** argv) {
     {g.memory=memory.data()+std::size_t(i)*capacity;std::memcpy(g.memory,image.data(),image.size());}
   }
   double kernel_ms=0;
+  unsigned registers=0;std::size_t local_bytes=0,shared_bytes=0;
   const auto scenario_begin=std::chrono::steady_clock::now();
 #ifdef __CUDACC__
   if(gpu) {
     cudaEvent_t start,stop;check(cudaEventCreate(&start));check(cudaEventCreate(&stop));
     cudaFuncAttributes attributes{};check(cudaFuncGetAttributes(&attributes,run_guest));
+    registers=attributes.numRegs;local_bytes=attributes.localSizeBytes;shared_bytes=attributes.sharedSizeBytes;
     check(cudaMemcpy(device_guests,guests.data(),guests.size()*sizeof(guests[0]),cudaMemcpyHostToDevice));
     check(cudaEventRecord(start));
     run_guest<<<(lanes+31)/32,32>>>(device_guests,device_output,steps,mutations,lanes);
@@ -116,6 +118,6 @@ int main(int argc,char** argv) {
     if(g.heap>max_heap)max_heap=g.heap;dispatches+=g.instructions;
     if(g.error) {std::fprintf(stderr,"lane=%u error=%u pc=0x%x heap=%u fpdepth=%u dispatches=%llu st=%.17g\n",i,g.error,g.fault_pc,g.heap,g.depth,(unsigned long long)g.instructions,g.fault_value);return 1;}
   }
-  std::fprintf(stderr,"{\"backend\":\"%s\",\"lanes\":%u,\"steps\":%u,\"mutations\":%s,\"kernel_ms\":%.6f,\"elapsed_ms\":%.6f,\"bytesperlane\":%u,\"maxheapbytes\":%u,\"dispatches\":%llu,\"failures\":0}\n",gpu?"cuda":"translated-host",lanes,steps,mutations?"true":"false",kernel_ms,elapsed_ms,capacity,max_heap,dispatches);
+  std::fprintf(stderr,"{\"backend\":\"%s\",\"lanes\":%u,\"steps\":%u,\"mutations\":%s,\"kernel_ms\":%.6f,\"elapsed_ms\":%.6f,\"bytesperlane\":%u,\"maxheapbytes\":%u,\"dispatches\":%llu,\"registers_per_thread\":%u,\"local_bytes_per_thread\":%zu,\"shared_bytes_per_block\":%zu,\"failures\":0}\n",gpu?"cuda":"translated-host",lanes,steps,mutations?"true":"false",kernel_ms,elapsed_ms,capacity,max_heap,dispatches,registers,local_bytes,shared_bytes);
   return std::fwrite(output.data(),4,output.size(),stdout)==output.size()?0:1;
 }

@@ -19,5 +19,15 @@ int main(){
  for(unsigned n=1;n<1000;n+=13){auto a=g.alloc(n),b=clone.alloc(n);if(a!=b||g.error!=clone.error)return 4;if(g.error)break;}
  if(arena!=copied||!g.allocation_reuses)return 5;
  Guest bad=g;bad.error=0;bad.release(1);if(!bad.error)return 6;
- std::printf("50000 recycled allocation transitions and cloned allocator parity passed; heap=%u reuses=%u\n",g.heap,g.allocation_reuses);
+ for(unsigned n:{0xffffffffu,0xfffffff1u,0xfffffff0u}){
+  bad=g;bad.error=0;if(bad.alloc(n)||bad.error!=irisu::cuda_guest::out_of_memory)return 7;
+ }
+ std::vector<unsigned char> negative(4096);Guest ng;ng.memory=negative.data();ng.capacity=negative.size();ng.heap=1024;ng.heap_limit=4000;
+ auto allocation=ng.alloc(32);ng.release(allocation);ng.release(allocation);
+ if(ng.error!=irisu::cuda_guest::bad_address)return 8;
+ ng.error=0;ng.free_head=0;allocation=ng.alloc(32);ng.release(allocation+1);
+ if(ng.error!=irisu::cuda_guest::bad_address)return 9;
+ ng.error=0;ng.release(allocation);ng.store(ng.free_head+8,0u);ng.alloc(16);
+ if(ng.error!=irisu::cuda_guest::bad_address)return 10;
+ std::printf("50000 recycled allocation transitions and cloned allocator parity plus overflow/corrupt-header/invalid-free rejection passed; heap=%u reuses=%u\n",g.heap,g.allocation_reuses);
 }
