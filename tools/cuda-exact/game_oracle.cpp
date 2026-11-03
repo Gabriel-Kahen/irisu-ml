@@ -72,15 +72,15 @@ int main(int argc, char** argv) {
     }
     if (steps == available &&
         (!result.terminated || result.truncated || !result.diagnostics.terminal_metadata_recorded ||
-         result.diagnostics.latest_final_score != word(data, 8) ||
-         result.diagnostics.latest_final_level != word(data, 4) ||
-         result.diagnostics.latest_final_highest_chain != word(data, 12)))
+         result.diagnostics.recorded_final_score != word(data, 8) ||
+         result.diagnostics.recorded_final_level != word(data, 4) ||
+         result.diagnostics.recorded_final_highest_chain != word(data, 12)))
       throw std::runtime_error("full replay canonical terminal disagrees with header");
     std::fprintf(stderr,
-      "{\"backend\":\"native-msvc-cpu-oracle\",\"format\":\"game-digest-v1\",\"rows\":%llu,\"steps\":%llu,\"events\":%llu,\"tick\":%llu,\"live_score\":%lld,\"canonical_score\":%lld,\"level\":%u,\"highest_chain\":%u,\"config_hash\":%llu,\"elapsed_seconds\":%.9f}\n",
+      "{\"backend\":\"native-msvc-cpu-oracle\",\"format\":\"game-digest-v1\",\"rows\":%llu,\"steps\":%llu,\"events\":%llu,\"tick\":%llu,\"live_score\":%lld,\"canonical_score\":%lld,\"latest_final_score\":%lld,\"level\":%u,\"highest_chain\":%u,\"config_hash\":%llu,\"elapsed_seconds\":%.9f}\n",
       static_cast<unsigned long long>(steps+1), static_cast<unsigned long long>(steps),
       static_cast<unsigned long long>(events), static_cast<unsigned long long>(observation.tick),
-      static_cast<long long>(observation.score), static_cast<long long>(result.diagnostics.latest_final_score),
+      static_cast<long long>(observation.score), static_cast<long long>(result.diagnostics.recorded_final_score), static_cast<long long>(result.diagnostics.latest_final_score),
       observation.level, observation.highest_chain, static_cast<unsigned long long>(simulator.config_hash()),
       std::chrono::duration<double>(std::chrono::steady_clock::now()-begin).count());
     if(dump_file)std::fclose(dump_file);

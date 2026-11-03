@@ -50,7 +50,7 @@ std::uint64_t word64(const unsigned char* bytes) {
 void equal_frame(const Frame& actual,const Frame& expected,unsigned row,const char* backend) {
   const auto* a=reinterpret_cast<const unsigned char*>(&actual);
   const auto* b=reinterpret_cast<const unsigned char*>(&expected);
-  const char* fields[]={"tick","bodies","observation","events","event_count","transition","body_count","score","gauge","level","highest_chain","canonical_score"};
+  const char* fields[]={"tick","bodies","observation","events","event_count","transition","body_count","score","gauge","level","highest_chain","latest_final_score"};
   for(unsigned i=0;i<12;++i)if(word64(a+i*8)!=word64(b+i*8)) {
     std::fprintf(stderr,"%s row%u field%s expected%llx actual%llx\n",backend,row,fields[i],
       (unsigned long long)word64(b+i*8),(unsigned long long)word64(a+i*8));
@@ -124,9 +124,9 @@ int main(int argc,char** argv) {
   }
   for(unsigned row=0;row<=steps;++row)equal_frame(actual[row],reference[row],row,"cuda");
   check(cudaFree(device_endpoints));check(cudaFree(device_frames));check(cudaFree(device_words));check(cudaFree(device_arenas));check(cudaFree(device_worlds));check(cudaEventDestroy(begin));check(cudaEventDestroy(end));
-  std::printf("{\"schema\":\"irisu-cuda-game-segments-v1\",\"status\":\"passed\",\"scope\":\"checkpoint-segmented GPU replay; every frame plus canonical hidden/complete arena endpoint hashes\",\"continuous_gpu_replay_observed\":false,\"exact_training_admitted\":false,\"replay_words\":%u,\"rows\":%u,\"segments\":%u,\"segment_ticks\":%u,\"arena_bytes\":%u,\"threads_per_block\":%u,\"host_checkpoint_seconds\":%.9f,\"gpu_kernel_ms\":%.6f,\"elapsed_seconds\":%.9f,\"final_tick\":%llu,\"canonical_score\":%lld,\"live_score\":%lld,\"level\":%u,\"chain\":%u}\n",
+  std::printf("{\"schema\":\"irisu-cuda-game-segments-v1\",\"status\":\"passed\",\"scope\":\"checkpoint-segmented GPU replay; every frame plus canonical hidden/complete arena endpoint hashes\",\"continuous_gpu_replay_observed\":false,\"exact_training_admitted\":false,\"replay_words\":%u,\"rows\":%u,\"segments\":%u,\"segment_ticks\":%u,\"arena_bytes\":%u,\"threads_per_block\":%u,\"host_checkpoint_seconds\":%.9f,\"gpu_kernel_ms\":%.6f,\"elapsed_seconds\":%.9f,\"final_tick\":%llu,\"canonical_score\":%lld,\"latest_final_score\":%lld,\"live_score\":%lld,\"level\":%u,\"chain\":%u}\n",
     steps,steps+1,count,stride,capacity,threads,host_seconds,kernel_ms,std::chrono::duration<double>(std::chrono::steady_clock::now()-start).count(),
-    (unsigned long long)host->simulator.tick_,(long long)host->simulator.latest_final_score_,(long long)host->simulator.score_,host->simulator.level_,host->simulator.highest_chain_);
+    (unsigned long long)host->simulator.tick_,(long long)host->simulator.recorded_final_score_,(long long)host->simulator.latest_final_score_,(long long)host->simulator.score_,host->simulator.level_,host->simulator.highest_chain_);
   return 0;
  }catch(const std::exception& error){std::fprintf(stderr,"game-segments: %s\n",error.what());return 1;}
 }

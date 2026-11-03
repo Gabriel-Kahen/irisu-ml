@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 import struct
 
-FIELDS = "tick body_hash observation_hash event_hash event_count transition_hash body_count score gauge level highest_chain canonical_score".split()
+FIELDS = "tick body_hash observation_hash event_hash event_count transition_hash body_count score gauge level highest_chain latest_final_score".split()
 ROW = struct.Struct("<12Q")
 
 

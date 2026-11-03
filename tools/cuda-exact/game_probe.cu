@@ -128,9 +128,9 @@ int main(int argc,char** argv) {
   }
   if(clone_at!=~0U && (gpu||!clone_verified))throw std::runtime_error("clone gate requires host and 0<clone-at<=steps");
   const auto& sim=world->simulator;
-  std::fprintf(stderr,"{\"backend\":\"%s\",\"experimental\":true,\"clone_verified\":%s,\"rows\":%u,\"requested_steps\":%u,\"tick\":%llu,\"guest_error\":%u,\"fault_pc\":%u,\"guest_heap\":%u,\"game_failed\":%s,\"config_hash\":%llu,\"score\":%lld,\"canonical_score\":%lld,\"level\":%u,\"chain\":%u,\"kernel_ms\":%.6f,\"elapsed_seconds\":%.9f,\"world_bytes\":%zu,\"arena_bytes\":%u}\n",
+  std::fprintf(stderr,"{\"backend\":\"%s\",\"experimental\":true,\"clone_verified\":%s,\"rows\":%u,\"requested_steps\":%u,\"tick\":%llu,\"guest_error\":%u,\"fault_pc\":%u,\"guest_heap\":%u,\"game_failed\":%s,\"config_hash\":%llu,\"score\":%lld,\"canonical_score\":%lld,\"latest_final_score\":%lld,\"level\":%u,\"chain\":%u,\"kernel_ms\":%.6f,\"elapsed_seconds\":%.9f,\"world_bytes\":%zu,\"arena_bytes\":%u}\n",
      gpu?"cuda-translated-full-game":"host-translated-full-game",clone_verified?"true":"false",steps+1,steps,(unsigned long long)sim.tick_,world->guest.error,world->guest.fault_pc,world->guest.heap,
-     sim.failed_?"true":"false",(unsigned long long)sim.config_hash(),(long long)sim.score_,(long long)sim.latest_final_score_,sim.level_,sim.highest_chain_,kernel_ms,
+     sim.failed_?"true":"false",(unsigned long long)sim.config_hash(),(long long)sim.score_,(long long)sim.recorded_final_score_,(long long)sim.latest_final_score_,sim.level_,sim.highest_chain_,kernel_ms,
      std::chrono::duration<double>(std::chrono::steady_clock::now()-begin).count(),sizeof(game::World),capacity);
   // Device pointer bindings are invalid on host after download. Check only the
   // copied scalar failure state; do not dereference simulator.physics_.guest_.

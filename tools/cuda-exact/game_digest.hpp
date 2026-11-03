@@ -132,6 +132,8 @@ template<class Range> std::uint64_t native_events(const Range& events) {
 struct Frame {
   std::uint64_t tick{}, body_hash{}, observation_hash{}, event_hash{}, event_count{};
   std::uint64_t transition_hash{}, body_count{}, score{}, gauge{}, level{};
+  // Legacy v1 field name: this word encodes latest_final_score. Canonical RPY
+  // export uses the FIRST recorded_final_score, separately hashed in transition.
   std::uint64_t highest_chain{}, canonical_score{};
 };
 static_assert(sizeof(Frame) == 12 * sizeof(std::uint64_t));
