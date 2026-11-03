@@ -30,10 +30,13 @@ def sha(path):
 
 
 def candidates(replay, prefix, horizon, count):
-    """Incumbent plus deterministic shot deletion/injection/geometry variants."""
+    """Incumbent plus distinct, effective sparse shot/timing/geometry edits."""
     words=list(struct.unpack(f"<{(len(replay)-52)//4}I",replay[52:]))
     output=[(0,0,*([0]*8))]
-    for ordinal in range(1,count):
+    seen={()};ordinal=0
+    while len(output)<count:
+        ordinal+=1
+        if ordinal>count*256:raise ValueError("requested more distinct mutations than this menu provides")
         offset=((ordinal-1)//8)%horizon
         original=words[prefix+offset] if prefix+offset<len(words) else 0
         mode=(ordinal-1)%8
@@ -41,17 +44,25 @@ def candidates(replay, prefix, horizon, count):
             value=0
         else:
             kind=1+(mode%2)
-            x=(250+(mode-4)*8+(ordinal//(8*horizon))*4)%640
-            y=350+((ordinal//8)%5)*8
-            if original&3:
+            cycle=(ordinal-1)//(8*horizon)
+            x=(250+(mode-4)*8+(cycle%160)*4)%640
+            y=(350+((ordinal//8)%5)*8+cycle//160)%480
+            if original&3 and cycle==0:
                 x=max(0,min(639,((original>>2)&1023)+(mode-4)*4))
                 y=min(479,(original>>12)&511)
             value=(y<<12)|(x<<2)|kind
         # Include two-edit timing displacement when an actual source shot exists.
         if mode==0 and original&3 and offset+1<horizon:
-            output.append((2,0,offset,0,offset+1,original,0,0,0,0))
+            changes=[(offset,0),(offset+1,original)]
         else:
-            output.append((1,0,offset,value,0,0,0,0,0,0))
+            changes=[(offset,value)]
+        def normalized(word):return word if word&3 else 0
+        effective=tuple((tick,normalized(value)) for tick,value in changes
+                        if normalized(value)!=normalized(words[prefix+tick] if prefix+tick<len(words) else 0))
+        if effective in seen:continue
+        seen.add(effective);row=[len(effective),0]
+        for tick,value in effective:row.extend((tick,value))
+        row.extend([0]*(10-len(row)));output.append(tuple(row))
     return b"".join(SPEC.pack(*row) for row in output)
 
 
@@ -156,6 +167,7 @@ def main():
     report={"schema":"irisu-full-game-search-benchmark-v2","promotion_eligible":False,
       "scope":"bounded published-replay prefix, sparse mutations, fixed continuation, full game rules and exact-host translation",
       "record_search_provenance":"new sparse-mutation workload; recovered historical event-search invocation used rl_combo_diverse_search.py, whose source is absent; this benchmark does not reproduce that algorithm",
+      "candidate_generator":"distinct-effective-sparse-pixels-v2",
       "inputs":{"replay_sha256":sha(args.replay),"specs_sha256":sha(specs),"image_sha256":sha(args.image)},
       "binaries":{"oracle_sha256":sha(args.oracle),"gpu_sha256":sha(args.gpu)},
       "prefix":args.prefix,"horizon":args.horizon,"candidates":args.candidates,"host_prefix":args.host_prefix,"isolated_warps":args.isolated_warps,

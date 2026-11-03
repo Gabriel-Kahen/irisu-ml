@@ -16,7 +16,7 @@ import struct
 import subprocess
 import time
 
-from search_validate import SPEC,RESULT,candidates,decode,sha
+from search_validate import SPEC,RESULT,Telemetry,candidates,decode,sha
 
 
 def invoke(command,timeout):
@@ -71,8 +71,13 @@ def main():
     p.add_argument("--host-prefix",action="store_true");p.add_argument("--isolated-warps",action="store_true")
     p.add_argument("--final-only",action="store_true");p.add_argument("--global-guest",action="store_true")
     p.add_argument("--block-threads",type=int,default=4);p.add_argument("--stack-kib",type=int,default=16)
+    p.add_argument("--verify-winner-only",action="store_true",
+                   help="allow up to16 resident depths; validate stable ranks/lineage and independently replay the winner, omitting flattened native checks for every leaf")
     args=p.parse_args();args.output.parent.mkdir(parents=True,exist_ok=True)
-    if not 1<=args.depths<=4:p.error("independent flattened gate requires1..4 depths")
+    if not 1<=args.fanout<=16384 or not 1<=args.beam<=64 or args.fanout*args.beam>16384 or not 1<=args.horizon<=100000:
+        p.error("invalid bounded session fanout, beam or horizon")
+    if not 1<=args.depths<=(16 if args.verify_winner_only else 4):
+        p.error("independent flattened gate requires1..4 depths; winner-only mode allows1..16")
     specs_path=args.output.with_suffix(".specs.bin")
     spec_bytes=candidates(args.replay.read_bytes(),args.prefix,args.horizon,args.fanout)
     specs_path.write_bytes(spec_bytes);specs=list(SPEC.iter_unpack(spec_bytes))
@@ -83,7 +88,8 @@ def main():
     if args.final_only:command.append("--final-only")
     if args.global_guest:command.append("--global-guest")
     command.extend(["--block-threads",args.block_threads,"--stack-kib",args.stack_kib])
-    data,run=invoke(command,args.timeout);rounds=decode_session(data,args.depths)
+    with Telemetry() as telemetry:data,run=invoke(command,args.timeout)
+    rounds=decode_session(data,args.depths)
     args.output.with_suffix(".results.bin").write_bytes(data)
     report={"schema":"irisu-resident-search-session-parity-v2","promotion_eligible":False,
       "inputs":{"replay_sha256":sha(args.replay),"specs_sha256":sha(specs_path),"image_sha256":sha(args.image)},
@@ -91,24 +97,34 @@ def main():
       "command":list(map(str,command)),"gpu":run,"rounds":[],"all_candidate_parity":False,
       "prefix":args.prefix,"horizon":args.horizon,"beam":args.beam,"fanout":args.fanout,"depths":args.depths}
     report["trace_every_tick"]=not args.final_only
+    report["verification_mode"]="independent_winner_replay" if args.verify_winner_only else "every_native_candidate_and_winner_replay"
+    report["telemetry"]=telemetry.samples
+    if telemetry.samples:
+        report["peak_vram_mib"]=max(row[2] for row in telemetry.samples)
+        report["peak_gpu_util_percent"]=max(row[1] for row in telemetry.samples)
+    report["gpu_metadata"]=next((json.loads(line) for line in reversed(run["stderr"].splitlines()) if line.startswith("{")),{})
     parents=[[]]
     for depth,round in enumerate(rounds):
-        native_specs,paths=specs_for_paths(specs,parents,depth,args.horizon)
-        path=args.output.with_suffix(f".depth-{depth}.native-specs.bin");path.write_bytes(native_specs)
-        native_command=[args.oracle,args.replay,path,args.prefix,args.horizon*(depth+1),args.workers,4393102]
-        if args.final_only:native_command.append("--final-only")
-        native,native_run=invoke(native_command,args.timeout)
-        if native!=round["payload"]:
-            cpu_results,cpu_ranks=decode(native,round["count"])
-            mismatch=next(((i,j,a,b) for i,(cr,gr) in enumerate(zip(cpu_results,round["results"]))
-                           for j,(a,b) in enumerate(zip(cr,gr)) if a!=b),None)
-            raise RuntimeError(f"depth{depth} full candidate/rank mismatch: {mismatch}; native ranks{cpu_ranks}, GPU ranks{round['ranks']}")
+        if args.verify_winner_only:
+            paths=[parent+[ordinal] for parent in parents for ordinal in range(len(specs))]
+            native_command=[];native_run={};native=None
+        else:
+            native_specs,paths=specs_for_paths(specs,parents,depth,args.horizon)
+            path=args.output.with_suffix(f".depth-{depth}.native-specs.bin");path.write_bytes(native_specs)
+            native_command=[args.oracle,args.replay,path,args.prefix,args.horizon*(depth+1),args.workers,4393102]
+            if args.final_only:native_command.append("--final-only")
+            native,native_run=invoke(native_command,args.timeout)
+            if native!=round["payload"]:
+                cpu_results,cpu_ranks=decode(native,round["count"])
+                mismatch=next(((i,j,a,b) for i,(cr,gr) in enumerate(zip(cpu_results,round["results"]))
+                               for j,(a,b) in enumerate(zip(cr,gr)) if a!=b),None)
+                raise RuntimeError(f"depth{depth} full candidate/rank mismatch: {mismatch}; native ranks{cpu_ranks}, GPU ranks{round['ranks']}")
         parents=[paths[i] for i in round["ranks"][:round["keep"]]]
         report["rounds"].append({"depth":depth,"candidates":round["count"],"selected_paths":parents,
-          "native_command":list(map(str,native_command)),"native":native_run,"parity":True,
-          "result_sha256":hashlib.sha256(native).hexdigest()})
+          "native_command":list(map(str,native_command)),"native":native_run,"native_candidate_parity":None if args.verify_winner_only else True,
+          "result_sha256":hashlib.sha256(round["payload"]).hexdigest()})
     manifest=json.loads(lineage.read_text())
-    if manifest["winner_candidates"]!=parents[0]:raise RuntimeError("exported winning lineage disagrees with stable native beam")
+    if manifest["winner_candidates"]!=parents[0]:raise RuntimeError("exported winning lineage disagrees with stable ranked beam")
     final=rounds[-1]["results"][rounds[-1]["ranks"][0]]
     replay_data=winner.read_bytes();steps=(len(replay_data)-52)//4
     if steps!=final[0]:raise RuntimeError("winning replay length disagrees with selected tick")
@@ -122,7 +138,8 @@ def main():
         raise RuntimeError("winning trace independent native reset replay disagrees with final GPU frame")
     manifest["native_replay_verified"]=True;manifest["native_verification_scope"]="natural canonical terminal" if final[16] else "bounded nonterminal trace"
     manifest["winner_replay_sha256"]=sha(winner);lineage.write_text(json.dumps(manifest,indent=2)+"\n")
-    report.update(all_candidate_parity=True,winning_lineage_parity=True,
+    report.update(all_candidate_parity=None if args.verify_winner_only else True,
+      winning_lineage_consistent=True,winning_lineage_native_parity=None if args.verify_winner_only else True,
       winner_replay_sha256=sha(winner),native_reset_replay_verified=True,
       verification_scope="natural_terminal" if final[16] else "bounded_nonterminal",natural_terminal=bool(final[16]),
       canonical_score=final[20],winner_trace_ticks=steps,independent_verification=verification)
