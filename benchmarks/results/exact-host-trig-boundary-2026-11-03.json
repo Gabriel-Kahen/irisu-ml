@@ -1,0 +1,594 @@
+{
+  "version": "fixed-host-trig-load-store-audit-v1",
+  "exact_library_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+  "direct_calls": 94,
+  "immediate_binary32_result_stores": 94,
+  "binary32_input_proofs": {
+    "immediate_binary32_load": 89,
+    "binary32_load_then_nonpopping_store": 4,
+    "binary32_load_retained_below_nested_load_store": 1
+  },
+  "hardware_trig_sites": {
+    "0x15309": "fsincos",
+    "0x15316": "fcos",
+    "0x1531a": "fsin",
+    "0x15349": "fsin"
+  },
+  "runtime_flow": {
+    "0x15309": "FSINCOS; FXCH; FSTP binary32 sine cache; RET cosine; immediate caller FSTP binary32",
+    "0x15316": "fallback FCOS; FXCH; FSIN; FSTP binary32 sine cache; RET cosine; immediate caller FSTP binary32",
+    "0x15349": "standalone FSIN; RET; immediate caller FSTP binary32"
+  },
+  "limits": [
+    "Only the identified direct call sites in this exact hashed image are audited.",
+    "Float rounding boundaries do not prove numeric equivalence of any replacement helper.",
+    "CORE-MATH bounded x87 corrections do not establish unrestricted-angle equivalence.",
+    "No GPU instruction, full solver, or game-state parity is claimed by this audit."
+  ],
+  "calls": [
+    {
+      "call": "0x2484",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x2489"
+    },
+    {
+      "call": "0x24a4",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x24a9"
+    },
+    {
+      "call": "0x2548",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x254d"
+    },
+    {
+      "call": "0x255d",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x2562"
+    },
+    {
+      "call": "0x2598",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x259d"
+    },
+    {
+      "call": "0x25ad",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x25b2"
+    },
+    {
+      "call": "0x275c",
+      "target": "msvc_CIcos",
+      "input_proof": "binary32_load_then_nonpopping_store",
+      "return_store": "0x2761"
+    },
+    {
+      "call": "0x2771",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x2776"
+    },
+    {
+      "call": "0x284a",
+      "target": "msvc_CIcos",
+      "input_proof": "binary32_load_then_nonpopping_store",
+      "return_store": "0x284f"
+    },
+    {
+      "call": "0x285f",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x2864"
+    },
+    {
+      "call": "0x28f2",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x28f7"
+    },
+    {
+      "call": "0x2907",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x290c"
+    },
+    {
+      "call": "0x2ac2",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x2ac7"
+    },
+    {
+      "call": "0x2ad7",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x2adc"
+    },
+    {
+      "call": "0x5aa4",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x5aa9"
+    },
+    {
+      "call": "0x5ac4",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x5ac9"
+    },
+    {
+      "call": "0x5be8",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x5bed"
+    },
+    {
+      "call": "0x5bfd",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x5c02"
+    },
+    {
+      "call": "0x5c38",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x5c3d"
+    },
+    {
+      "call": "0x5c4d",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x5c52"
+    },
+    {
+      "call": "0x5e56",
+      "target": "msvc_CIcos",
+      "input_proof": "binary32_load_retained_below_nested_load_store",
+      "return_store": "0x5e5b"
+    },
+    {
+      "call": "0x5e6b",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x5e70"
+    },
+    {
+      "call": "0x5ea8",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x5ead"
+    },
+    {
+      "call": "0x5ebd",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x5ec2"
+    },
+    {
+      "call": "0x62bc",
+      "target": "msvc_CIcos",
+      "input_proof": "binary32_load_then_nonpopping_store",
+      "return_store": "0x62c1"
+    },
+    {
+      "call": "0x62d1",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x62d6"
+    },
+    {
+      "call": "0x6367",
+      "target": "msvc_CIcos",
+      "input_proof": "binary32_load_then_nonpopping_store",
+      "return_store": "0x636c"
+    },
+    {
+      "call": "0x637c",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x6381"
+    },
+    {
+      "call": "0x6ba4",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x6ba9"
+    },
+    {
+      "call": "0x6bc4",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x6bc9"
+    },
+    {
+      "call": "0x6c48",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x6c4d"
+    },
+    {
+      "call": "0x6c5d",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x6c62"
+    },
+    {
+      "call": "0x7ddf",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x7de4"
+    },
+    {
+      "call": "0x7df4",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x7df9"
+    },
+    {
+      "call": "0x7e8d",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x7e92"
+    },
+    {
+      "call": "0x7ea2",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x7ea7"
+    },
+    {
+      "call": "0x8c94",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x8c99"
+    },
+    {
+      "call": "0x8cb4",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x8cb9"
+    },
+    {
+      "call": "0x8e18",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x8e1d"
+    },
+    {
+      "call": "0x8e2d",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x8e32"
+    },
+    {
+      "call": "0x991b",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x9920"
+    },
+    {
+      "call": "0x9930",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x9935"
+    },
+    {
+      "call": "0x9967",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x996c"
+    },
+    {
+      "call": "0x997c",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x9981"
+    },
+    {
+      "call": "0x99e4",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x99e9"
+    },
+    {
+      "call": "0x9a04",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x9a09"
+    },
+    {
+      "call": "0x9ab8",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x9abd"
+    },
+    {
+      "call": "0x9acd",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x9ad2"
+    },
+    {
+      "call": "0xa171",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xa176"
+    },
+    {
+      "call": "0xa186",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xa18b"
+    },
+    {
+      "call": "0xa1ba",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xa1bf"
+    },
+    {
+      "call": "0xa1cf",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xa1d4"
+    },
+    {
+      "call": "0xa454",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xa459"
+    },
+    {
+      "call": "0xa474",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xa479"
+    },
+    {
+      "call": "0xa4f8",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xa4fd"
+    },
+    {
+      "call": "0xa50d",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xa512"
+    },
+    {
+      "call": "0xa856",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xa85b"
+    },
+    {
+      "call": "0xa86b",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xa870"
+    },
+    {
+      "call": "0xa95c",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xa961"
+    },
+    {
+      "call": "0xa971",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xa976"
+    },
+    {
+      "call": "0xc174",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xc179"
+    },
+    {
+      "call": "0xc194",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xc199"
+    },
+    {
+      "call": "0xc228",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xc22d"
+    },
+    {
+      "call": "0xc23d",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xc242"
+    },
+    {
+      "call": "0xd80f",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xd814"
+    },
+    {
+      "call": "0xd824",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xd829"
+    },
+    {
+      "call": "0xd869",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xd86e"
+    },
+    {
+      "call": "0xd87e",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xd883"
+    },
+    {
+      "call": "0xdc84",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xdc89"
+    },
+    {
+      "call": "0xdca4",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xdca9"
+    },
+    {
+      "call": "0xdda8",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xddad"
+    },
+    {
+      "call": "0xddbd",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xddc2"
+    },
+    {
+      "call": "0xf183",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xf188"
+    },
+    {
+      "call": "0xf198",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xf19d"
+    },
+    {
+      "call": "0xf1cc",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xf1d1"
+    },
+    {
+      "call": "0xf1e1",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xf1e6"
+    },
+    {
+      "call": "0xf432",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xf437"
+    },
+    {
+      "call": "0xf447",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xf44c"
+    },
+    {
+      "call": "0xf69b",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xf6a0"
+    },
+    {
+      "call": "0xf6b0",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xf6b5"
+    },
+    {
+      "call": "0xf704",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xf709"
+    },
+    {
+      "call": "0xf724",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xf729"
+    },
+    {
+      "call": "0xf858",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xf85d"
+    },
+    {
+      "call": "0xf86d",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0xf872"
+    },
+    {
+      "call": "0x108bc",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x108c1"
+    },
+    {
+      "call": "0x108d1",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x108d6"
+    },
+    {
+      "call": "0x10964",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x10969"
+    },
+    {
+      "call": "0x10979",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x1097e"
+    },
+    {
+      "call": "0x10c64",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x10c69"
+    },
+    {
+      "call": "0x10c84",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x10c89"
+    },
+    {
+      "call": "0x10df8",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x10dfd"
+    },
+    {
+      "call": "0x10e0d",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x10e12"
+    },
+    {
+      "call": "0x125c9",
+      "target": "msvc_CIcos",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x125ce"
+    },
+    {
+      "call": "0x125de",
+      "target": "msvc_CIsin",
+      "input_proof": "immediate_binary32_load",
+      "return_store": "0x125e3"
+    }
+  ]
+}

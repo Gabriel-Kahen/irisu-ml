@@ -90,3 +90,38 @@ That baseline is 36,000 bytes, SHA-256
 box 3, triangle 4). `--mutations` sets circle velocity before tick 200 and
 destroys/recreates the box before tick 300. These small collision fixtures are
 component tests, not a replacement for full game-state/replay validation.
+
+## Fixed-image trigonometric boundary audit
+
+```sh
+python3 tools/cuda-exact/audit_trig_boundary.py \
+  .tmp/exact-cpu-oracle/guest/libirisu_box2d_msvc_exact_multiworld.so \
+  --output artifacts/exact-host-trig-boundary.json
+```
+
+All 94 direct calls to `msvc_CIcos`/`msvc_CIsin` in the pinned host immediately
+store/pop their returned value to binary32, before any caller arithmetic.
+Their inputs are also exactly representable binary32:
+
+- 89 calls have `FLD DWORD` as their preceding floating-point instruction.
+- Four cosine calls (`0x275c`, `0x284a`, `0x62bc`, `0x6367`) have a nonpopping
+  `FST DWORD` after the load. This preserves the loaded binary32 value at ST0.
+- At `0x5e56`, `FLD DWORD` at `0x5e3a` loads the eventual cosine argument,
+  `FST DWORD` leaves it at ST0, and a second `FLD DWORD` / `FSTP DWORD` pair
+  restores that original value to the top of the stack without arithmetic.
+
+The shim's `FSINCOS` path caches sine through a binary32 store and returns
+cosine to the caller's immediate binary32 store. Its separate `FCOS`/`FSIN`
+fallback and standalone `FSIN` have the same result-rounding boundary. No
+extended trig result enters caller arithmetic at these inspected sites.
+The full reproducible call inventory is
+[`exact-host-trig-boundary-2026-11-03.json`](../benchmarks/results/exact-host-trig-boundary-2026-11-03.json).
+
+This permits a binary32-result helper *only if its actual outputs match the
+host for admitted inputs*. It does not prove an ordinary CUDA `sinf` or a
+double `sin` followed by float conversion is exact. The existing CORE-MATH
+corrections are validated on a bounded angle domain, not unrestricted x87
+inputs; a backend using that helper needs an explicit range check/failure
+boundary or a separately proved unrestricted implementation. The audit says
+nothing about arithmetic overflow/underflow, NaN payloads, status-word side
+effects, solver parity, or full-game GPU parity.
