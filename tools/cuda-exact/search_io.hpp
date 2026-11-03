@@ -31,8 +31,8 @@ inline Inputs load_inputs(const char* replay_path,const char* specs_path,
   const auto bytes=read_bytes(replay_path),specs=read_bytes(specs_path);
   if(bytes.size()<=52||(bytes.size()-52)%4||read_word(bytes,16)!=0)
     throw std::runtime_error("expected padded normal-mode replay");
-  if(specs.empty()||specs.size()%sizeof(Candidate)||specs.size()/sizeof(Candidate)>4096)
-    throw std::runtime_error("expected 1..4096 fixed 40-byte candidates");
+  if(specs.empty()||specs.size()%sizeof(Candidate)||specs.size()/sizeof(Candidate)>16384)
+    throw std::runtime_error("expected 1..16384 fixed 40-byte candidates");
   Inputs in;in.options.seed=read_word(bytes,0);
   const auto p=std::stoull(prefix),h=std::stoull(horizon);
   if(p>(bytes.size()-52)/4||!h||h>100000||p+h>UINT32_MAX)
@@ -47,7 +47,9 @@ inline Inputs load_inputs(const char* replay_path,const char* specs_path,
 }
 inline void emit_results(const std::vector<Result>& results,
                           const std::vector<std::uint32_t>& ranks) {
-  if(std::fwrite(results.data(),sizeof(Result),results.size(),stdout)!=results.size()||
+  const std::uint32_t header[]={result_magic,result_version,static_cast<std::uint32_t>(results.size()),sizeof(Result)};
+  if(std::fwrite(header,sizeof(header),1,stdout)!=1||
+     std::fwrite(results.data(),sizeof(Result),results.size(),stdout)!=results.size()||
      std::fwrite(ranks.data(),sizeof(std::uint32_t),ranks.size(),stdout)!=ranks.size()||
      std::fflush(stdout)) throw std::runtime_error("cannot write search results");
 }

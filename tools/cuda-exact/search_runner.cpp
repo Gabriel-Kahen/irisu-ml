@@ -3,7 +3,7 @@
 
 int main(int argc,char** argv) {
   try {
-    if(argc<9||argc>12) throw std::runtime_error("usage: search-runner guest-image.bin replay.rpy specs.bin prefix horizon arena-mib keep target-score [--skip-compaction-check] [--host-prefix] [--isolated-warps]");
+    if(argc<9) throw std::runtime_error("usage: search-runner image replay specs prefix horizon arena-mib keep target [--host-prefix] [--isolated-warps] [--final-only] [--global-guest] [--block-threads N] [--stack-kib N] [--skip-compaction-check]");
     const auto image=irisu::cuda_search::read_bytes(argv[1]);
     auto in=irisu::cuda_search::load_inputs(argv[2],argv[3],argv[4],argv[5]);
     const auto mib=std::stoul(argv[6]),keep=std::stoul(argv[7]);
@@ -13,15 +13,20 @@ int main(int argc,char** argv) {
       if(option=="--skip-compaction-check")in.options.validate_compaction=false;
       else if(option=="--host-prefix")in.options.host_prefix=true;
       else if(option=="--isolated-warps")in.options.isolated_warps=true;
+      else if(option=="--final-only")in.options.trace_every_tick=false;
+      else if(option=="--global-guest")in.options.cache_guest=false;
+      else if(option=="--block-threads"&&i+1<argc){const auto n=std::stoul(argv[++i]);if(!n||n>256)throw std::runtime_error("invalid block size");in.options.block_threads=n;}
+      else if(option=="--stack-kib"&&i+1<argc){const auto n=std::stoul(argv[++i]);if(n<16||n>128)throw std::runtime_error("invalid stack size");in.options.stack_bytes=n*1024;}
       else throw std::runtime_error("unknown option");}
     std::vector<irisu::cuda_search::Result> results(in.candidates.size());
     std::vector<std::uint32_t> ranks(in.candidates.size());irisu::cuda_search::Timings times;
     irisu::cuda_search::run(in.options,image.data(),image.size(),in.replay.data(),in.replay.size(),
       in.candidates.data(),in.candidates.size(),results.data(),ranks.data(),&times);
     std::uint64_t ticks{},failed{};for(const auto& r:results){ticks+=r.simulated_ticks;failed+=bool(r.failed);}
-    std::fprintf(stderr,"{\"identity\":\"experimental-cuda-game-search-v1\",\"promotion_eligible\":false,\"candidates\":%zu,\"prefix_ticks\":%u,\"horizon\":%u,\"simulated_ticks\":%llu,\"failed_candidates\":%llu,\"host_prefix\":%s,\"host_prefix_ms\":%.9f,\"prefix_ms\":%.9f,\"branch_ms\":%.9f,\"rollout_ms\":%.9f,\"rank_compact_ms\":%.9f,\"validation_ms\":%.9f,\"compaction_check_enabled\":%s,\"total_ms\":%.9f,\"allocated_bytes\":%llu,\"peak_guest_bytes\":%llu,\"compaction_errors\":%llu,\"winner\":%u}\n",
+    std::fprintf(stderr,"{\"identity\":\"experimental-cuda-game-search-v2\",\"promotion_eligible\":false,\"candidates\":%zu,\"prefix_ticks\":%u,\"horizon\":%u,\"simulated_ticks\":%llu,\"failed_candidates\":%llu,\"trace_every_tick\":%s,\"cache_guest\":%s,\"block_threads\":%u,\"stack_kib\":%u,\"host_prefix\":%s,\"host_prefix_ms\":%.9f,\"prefix_ms\":%.9f,\"branch_ms\":%.9f,\"rollout_ms\":%.9f,\"rank_compact_ms\":%.9f,\"validation_ms\":%.9f,\"compaction_check_enabled\":%s,\"total_ms\":%.9f,\"allocated_bytes\":%llu,\"peak_guest_bytes\":%llu,\"compaction_errors\":%llu,\"winner\":%u}\n",
       results.size(),in.options.prefix,in.options.horizon,(unsigned long long)ticks,(unsigned long long)failed,
-      in.options.host_prefix?"true":"false",times.host_prefix_ms,
+      in.options.trace_every_tick?"true":"false",in.options.cache_guest?"true":"false",
+      in.options.block_threads,in.options.stack_bytes/1024,in.options.host_prefix?"true":"false",times.host_prefix_ms,
       times.prefix_ms,times.branch_ms,times.rollout_ms,times.rank_compact_ms,times.validation_ms,
       in.options.validate_compaction?"true":"false",times.total_ms,
       (unsigned long long)times.allocation_bytes,(unsigned long long)times.peak_guest_bytes,

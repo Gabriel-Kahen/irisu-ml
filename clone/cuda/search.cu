@@ -1,6 +1,9 @@
 #include "search.hpp"
+#include "search_session.hpp"
 #include "world.cuh"
+#include "../../tools/cuda-exact/image_identity.hpp"
 #include <cuda_runtime.h>
+#include <algorithm>
 #include <chrono>
 #include <cfenv>
 #include <memory>
@@ -11,16 +14,28 @@
 namespace irisu::cuda_search {
 namespace {
 using cuda_game::World;
+struct GuestCache {
+  World& world;cuda_guest::Guest local{};bool active{};
+  GAME_HD GuestCache(World& w,bool enabled):world(w),active(enabled){
+    if(active){local=world.guest;world.simulator.physics_.bind(&local);}
+  }
+  GAME_HD void finish(){if(active){world.guest=local;world.bind(local.memory);active=false;}}
+};
 GAME_HD void prepare_prefix(World* world,unsigned char* arena,Options options,
  const unsigned char* image,unsigned image_size,const std::uint32_t* replay,Result* prefix) {
   ::new(static_cast<void*>(world)) World();
   world->initialize(arena,options.arena_bytes,image,image_size,options.seed);
+  GuestCache cache(*world,options.cache_guest);
   cuda_game::StepResult step{};
   for(unsigned tick=0;tick<options.prefix&&!world->failed();++tick) {
-    if(step.terminated||step.truncated){world->guest.fail(cuda_guest::aborted);break;}
+    if(step.terminated||step.truncated){
+      if(options.cache_guest)cache.local.fail(cuda_guest::aborted);
+      else world->guest.fail(cuda_guest::aborted);
+      break;
+    }
     step=world->step(cuda_game::replay_action(replay[tick],tick));
   }
-  *prefix=Result{};fold(*prefix,world->frame(step));
+  cache.finish();*prefix=Result{};fold(*prefix,world->frame(step));
   prefix->failed=world->failed()||step.terminated||step.truncated;
   prefix->guest_error=world->guest.error;prefix->fault_pc=world->guest.fault_pc;
 }
@@ -54,17 +69,23 @@ __global__ void future_kernel(World* worlds,Options options,const std::uint32_t*
   if(options.isolated_warps&&(thread&31))return;
   const unsigned lane=options.isolated_warps?thread/32:thread;if(lane>=count)return;
   auto& world=worlds[lane];auto result=*prefix;cuda_game::StepResult step{};
+  GuestCache cache(world,options.cache_guest);
   if(!result.failed)for(unsigned offset=0;offset<options.horizon&&!world.failed();++offset) {
     const auto tick=options.prefix+offset;
     const auto base=tick<replay_size?replay[tick]:0;
     step=world.step(cuda_game::replay_action(input_at(candidates[lane],offset,base),tick));
-    fold(result,world.frame(step));++result.simulated_ticks;
+    if(options.trace_every_tick)fold(result,world.frame(step));
+    ++result.simulated_ticks;
     if(step.terminated||step.truncated)break;
   }
+  cache.finish();
+  if(!options.trace_every_tick&&result.simulated_ticks)fold(result,world.frame(step));
   const auto& sim=world.simulator;
   result.clears=sim.qualifying_clear_count_;
   result.natural=step.terminated&&!step.truncated;
-  result.canonical_level=step.diagnostics.latest_final_level;
+  result.canonical_level=step.diagnostics.recorded_final_level;
+  result.canonical_score=step.diagnostics.recorded_final_score;
+  result.failed|=result.natural&&!step.diagnostics.terminal_metadata_recorded;
   result.failed|=world.failed();result.guest_error=world.guest.error;result.fault_pc=world.guest.fault_pc;
   rank_keys(result,std::uint64_t(options.prefix)+options.horizon,options.target_score);
   results[lane]=result;heaps[lane]=world.guest.heap;
@@ -76,6 +97,30 @@ __global__ void rank_kernel(const Result* results,unsigned count,std::uint32_t* 
   for(unsigned other=0;other<count;++other)
     rank+=better(results[other],other,results[lane],lane);
   ranks[rank]=lane;
+}
+unsigned padded_rank_count(unsigned count){unsigned padded=1;while(padded<count)padded<<=1;return padded;}
+__global__ void rank_indices_kernel(std::uint32_t* ranks,unsigned count,unsigned padded) {
+  const unsigned i=blockIdx.x*blockDim.x+threadIdx.x;
+  if(i<padded)ranks[i]=i<count?i:UINT32_MAX;
+}
+__device__ bool rank_before(const Result* results,unsigned a,unsigned b) {
+  if(a==UINT32_MAX||b==UINT32_MAX)return a<b;
+  return better(results[a],a,results[b],b);
+}
+__global__ void rank_merge_kernel(const Result* results,std::uint32_t* ranks,
+ unsigned padded,unsigned width,unsigned distance) {
+  const unsigned i=blockIdx.x*blockDim.x+threadIdx.x;if(i>=padded)return;
+  const auto other=i^distance;if(other<=i)return;
+  const auto a=ranks[i],b=ranks[other];const bool forward=(i&width)==0;
+  if(forward?rank_before(results,b,a):rank_before(results,a,b)){ranks[i]=b;ranks[other]=a;}
+}
+void rank_results(const Result* results,unsigned count,std::uint32_t* ranks) {
+  if(count<=256){rank_kernel<<<(count+127)/128,128>>>(results,count,ranks);return;}
+  const auto padded=padded_rank_count(count);
+  rank_indices_kernel<<<(padded+127)/128,128>>>(ranks,count,padded);
+  for(unsigned width=2;width<=padded;width<<=1)
+    for(unsigned distance=width/2;distance;distance>>=1)
+      rank_merge_kernel<<<(padded+127)/128,128>>>(results,ranks,padded,width,distance);
 }
 
 __global__ void verify_compact_kernel(const World* selected,const unsigned char* selected_arenas,
@@ -99,10 +144,12 @@ __global__ void verify_compact_kernel(const World* selected,const unsigned char*
 // Running one more identical action detects a stale PhysicsWorld owner binding
 // and accidentally shared heaps, unlike comparing public snapshot scalars.
 __global__ void continue_compact_kernel(World* selected,World* worlds,
- const std::uint32_t* ranks,unsigned count,unsigned* errors) {
+ const std::uint32_t* ranks,unsigned count,unsigned* errors,bool cache_guest) {
   const auto lane=blockIdx.x*blockDim.x+threadIdx.x;if(lane>=count)return;
   auto& a=selected[lane];auto& b=worlds[ranks[lane]];
+  GuestCache cache_a(a,cache_guest),cache_b(b,cache_guest);
   const auto step_a=a.step({}),step_b=b.step({});
+  cache_a.finish();cache_b.finish();
   Result ra{},rb{};fold(ra,a.frame(step_a));fold(rb,b.frame(step_b));
   if(a.failed()||b.failed()||ra.trace_hash!=rb.trace_hash||a.guest.heap!=b.guest.heap||
      a.state_hash()!=b.state_hash())atomicAdd(errors,1U);
@@ -126,15 +173,19 @@ void run(const Options& options,const unsigned char* image,std::size_t image_byt
  const std::uint32_t* replay,std::uint32_t replay_size,const Candidate* candidates,
  std::uint32_t count,Result* results,std::uint32_t* ranks,Timings* timings) {
   if(!image||!image_bytes||image_bytes>0x20000||!replay||!replay_size||
-     !candidates||!results||!ranks||!timings||!count||count>4096||!options.horizon||
+     !candidates||!results||!ranks||!timings||!count||count>16384||!options.horizon||
      options.horizon>100000||options.prefix>replay_size||options.arena_bytes<0x40000||
      std::uint64_t(options.prefix)+options.horizon>UINT32_MAX||
+     !options.block_threads||options.block_threads>256||
+     (options.isolated_warps&&options.block_threads>32&&options.block_threads%32)||
+     options.stack_bytes<(16U<<10)||options.stack_bytes>(128U<<10)||
      options.arena_bytes>(512U<<20)||!options.keep||options.keep>count)
     throw std::invalid_argument("invalid bounded search arguments");
   for(unsigned i=0;i<count;++i)if(!valid(candidates[i],options.horizon))
     throw std::invalid_argument("invalid candidate");
+  cuda_exact::verify_image(image,image_bytes);
   const auto begin=std::chrono::steady_clock::now();
-  check(cudaDeviceSetLimit(cudaLimitStackSize,128*1024));
+  check(cudaDeviceSetLimit(cudaLimitStackSize,options.stack_bytes));
   Memory memory;
   auto* image_gpu=memory.allocate<unsigned char>(image_bytes);
   auto* replay_gpu=memory.allocate<std::uint32_t>(replay_size);
@@ -146,7 +197,8 @@ void run(const Options& options,const unsigned char* image,std::size_t image_byt
   auto* worlds=memory.allocate<World>(count);
   auto* arenas=memory.allocate<unsigned char>(std::size_t(count)*options.arena_bytes);
   auto* results_gpu=memory.allocate<Result>(count);
-  auto* ranks_gpu=memory.allocate<std::uint32_t>(count);
+  const auto rank_count=padded_rank_count(count);
+  auto* ranks_gpu=memory.allocate<std::uint32_t>(rank_count);
   auto* heaps_gpu=memory.allocate<std::uint32_t>(count);
   auto* compact_worlds=memory.allocate<World>(options.keep);
   auto* compact_arenas=memory.allocate<unsigned char>(std::size_t(options.keep)*options.arena_bytes);
@@ -186,13 +238,14 @@ void run(const Options& options,const unsigned char* image,std::size_t image_byt
   b.record();
   clone_kernel<<<count,256>>>(worlds,arenas,prefix_world,prefix_arena,options.arena_bytes,count,nullptr);c.record();
   const auto future_threads=count*(options.isolated_warps?32U:1U);
-  future_kernel<<<(future_threads+127)/128,128>>>(worlds,options,replay_gpu,replay_size,specs_gpu,count,prefix_result,results_gpu,heaps_gpu);d.record();
-  rank_kernel<<<(count+127)/128,128>>>(results_gpu,count,ranks_gpu);
+  const auto block=options.isolated_warps?std::max(32U,options.block_threads):options.block_threads;
+  future_kernel<<<(future_threads+block-1)/block,block>>>(worlds,options,replay_gpu,replay_size,specs_gpu,count,prefix_result,results_gpu,heaps_gpu);d.record();
+  rank_results(results_gpu,count,ranks_gpu);
   clone_kernel<<<options.keep,256>>>(compact_worlds,compact_arenas,worlds,arenas,options.arena_bytes,options.keep,ranks_gpu);
   e.record();
   if(options.validate_compaction) {
     verify_compact_kernel<<<options.keep,256>>>(compact_worlds,compact_arenas,worlds,arenas,ranks_gpu,options.keep,options.arena_bytes,errors);
-    continue_compact_kernel<<<(options.keep+31)/32,32>>>(compact_worlds,worlds,ranks_gpu,options.keep,errors);
+    continue_compact_kernel<<<(options.keep+31)/32,32>>>(compact_worlds,worlds,ranks_gpu,options.keep,errors,options.cache_guest);
     verify_compact_kernel<<<options.keep,256>>>(compact_worlds,compact_arenas,worlds,arenas,ranks_gpu,options.keep,options.arena_bytes,errors);
   }
   check(cudaGetLastError());f.record();check(cudaEventSynchronize(f.value));
@@ -206,8 +259,9 @@ void run(const Options& options,const unsigned char* image,std::size_t image_byt
   timings->validation_ms=elapsed(e,f);
   timings->total_ms=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-begin).count();
   timings->allocation_bytes=(std::uint64_t(count)+options.keep+1)*(sizeof(World)+options.arena_bytes)+
-    image_bytes+std::uint64_t(replay_size)*4+std::uint64_t(count)*(sizeof(Candidate)+sizeof(Result)+8)+sizeof(Result)+4;
+    image_bytes+std::uint64_t(replay_size)*4+std::uint64_t(count)*(sizeof(Candidate)+sizeof(Result)+4)+std::uint64_t(rank_count)*4+sizeof(Result)+4;
   for(auto heap:heaps)if(heap>timings->peak_guest_bytes)timings->peak_guest_bytes=heap;
   timings->compaction_errors=compact_errors;
 }
+#include "search_session.inc"
 } // namespace irisu::cuda_search

@@ -1,0 +1,302 @@
+{
+  "schema": "irisu-resident-search-v2-parity-receipt",
+  "promotion_eligible": false,
+  "scope": "Dependent GPU beam sessions with immutable parent snapshots, stable exact canonical ranking, lineage export, terminal carry, and independent native reset replay verification; timings are correctness runs, not warmed performance claims.",
+  "small_session": {
+    "schema": "irisu-resident-search-session-parity-v2",
+    "promotion_eligible": false,
+    "inputs": {
+      "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+      "specs_sha256": "abe1e2f0ae5e844827b5357489141798afd1d960a9a38ad0256b5fcff8a337ac",
+      "image_sha256": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685"
+    },
+    "binaries": {
+      "gpu_sha256": "5d299129164ffe87f36d5887fcc0ac989e2b3bb4a60a11fe93c9b06568c41405",
+      "oracle_sha256": "d24a942bcedc99e37d783af7a1327437fc7251ef016ce06efe22957dbeab1853",
+      "game_oracle_sha256": "b94f4fdb998021e4e6a9cc6e57de680e11017f25f243b49053080fcd57481158"
+    },
+    "command": [
+      "build-project-cuda/clone/cuda/irisu-cuda-search-session",
+      "build-project-cuda/clone/cuda/generated/guest_image.bin",
+      "irisu-high-score-4393101.rpy",
+      "artifacts/gpu-exact-20261103/search-v2/session-small.specs.bin",
+      "100",
+      "2",
+      "1",
+      "2",
+      "3",
+      "4393102",
+      "artifacts/gpu-exact-20261103/search-v2/session-small.winner.rpy",
+      "artifacts/gpu-exact-20261103/search-v2/session-small.lineage.json",
+      "--host-prefix",
+      "--block-threads",
+      "4",
+      "--stack-kib",
+      "16"
+    ],
+    "gpu": {
+      "wall_seconds": 1.6238384050011518,
+      "stderr": "{\"identity\":\"experimental-cuda-game-search-session-v2\",\"promotion_eligible\":false,\"depths\":3,\"beam\":2,\"fanout\":3,\"candidate_nodes\":15,\"actual_simulated_branches\":15,\"actual_simulated_ticks\":30,\"failed_candidates\":0,\"trace_every_tick\":true,\"cache_guest\":true,\"block_threads\":4,\"stack_kib\":16,\"host_prefix_ms\":153.471003000,\"prefix_ms\":40.367103577,\"branch_ms\":5.720064163,\"rollout_ms\":1088.619476318,\"rank_compact_ms\":6.429696083,\"validation_ms\":186.294265747,\"total_ms\":1571.726011000,\"allocated_bytes\":13546060,\"compaction_errors\":0,\"winner_tick\":106,\"winner_live_score\":0,\"winner_canonical_score\":0,\"winner_canonical_level\":0,\"winner_canonical_chain\":0,\"winner_natural\":0}\n"
+    },
+    "rounds": [
+      {
+        "depth": 0,
+        "candidates": 3,
+        "selected_paths": [
+          [
+            0
+          ],
+          [
+            1
+          ]
+        ],
+        "native_command": [
+          "build-project-exact/irisu-search-oracle",
+          "irisu-high-score-4393101.rpy",
+          "artifacts/gpu-exact-20261103/search-v2/session-small.depth-0.native-specs.bin",
+          "100",
+          "2",
+          "8",
+          "4393102"
+        ],
+        "native": {
+          "wall_seconds": 0.014388099007192068,
+          "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":3,\"workers\":8,\"prefix_ticks\":100,\"horizon\":2,\"simulated_ticks\":6,\"trace_every_tick\":true,\"prefix_ms\":8.673693000,\"branch_rollout_rank_ms\":0.862580000,\"total_ms\":9.546643000,\"winner\":0}\n"
+        },
+        "parity": true,
+        "result_sha256": "67ca75ea473068bd829648312d90da2ba128109a6169e869ec00476bc6523d03"
+      },
+      {
+        "depth": 1,
+        "candidates": 6,
+        "selected_paths": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "native_command": [
+          "build-project-exact/irisu-search-oracle",
+          "irisu-high-score-4393101.rpy",
+          "artifacts/gpu-exact-20261103/search-v2/session-small.depth-1.native-specs.bin",
+          "100",
+          "4",
+          "8",
+          "4393102"
+        ],
+        "native": {
+          "wall_seconds": 0.014224219004972838,
+          "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":6,\"workers\":8,\"prefix_ticks\":100,\"horizon\":4,\"simulated_ticks\":24,\"trace_every_tick\":true,\"prefix_ms\":8.658355000,\"branch_rollout_rank_ms\":1.589953000,\"total_ms\":10.257786000,\"winner\":0}\n"
+        },
+        "parity": true,
+        "result_sha256": "b74dfb099dcb3db28bd8c1f0a0b09e880b0b43abbdf83f62f9e78e11001732c9"
+      },
+      {
+        "depth": 2,
+        "candidates": 6,
+        "selected_paths": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "native_command": [
+          "build-project-exact/irisu-search-oracle",
+          "irisu-high-score-4393101.rpy",
+          "artifacts/gpu-exact-20261103/search-v2/session-small.depth-2.native-specs.bin",
+          "100",
+          "6",
+          "8",
+          "4393102"
+        ],
+        "native": {
+          "wall_seconds": 0.01566458700108342,
+          "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":6,\"workers\":8,\"prefix_ticks\":100,\"horizon\":6,\"simulated_ticks\":36,\"trace_every_tick\":true,\"prefix_ms\":8.659838000,\"branch_rollout_rank_ms\":1.816214000,\"total_ms\":10.486692000,\"winner\":0}\n"
+        },
+        "parity": true,
+        "result_sha256": "48b15a200d6e45ce1411f9aac263bb9139cfbec9c03f8e9ba6f757376fdf89d8"
+      }
+    ],
+    "all_candidate_parity": true,
+    "prefix": 100,
+    "horizon": 2,
+    "beam": 2,
+    "fanout": 3,
+    "depths": 3,
+    "trace_every_tick": true,
+    "winning_lineage_parity": true,
+    "winner_replay_sha256": "585862d10d08e1476739ac2da8d2e9f6b69f7b9fa534ac97b0bf205c78772f03",
+    "native_reset_replay_verified": true,
+    "verification_scope": "bounded_nonterminal",
+    "natural_terminal": false,
+    "canonical_score": 0,
+    "winner_trace_ticks": 106,
+    "independent_verification": {
+      "wall_seconds": 0.011474389000795782,
+      "stderr": "{\"backend\":\"native-msvc-cpu-oracle\",\"format\":\"game-digest-v1\",\"rows\":107,\"steps\":106,\"events\":234,\"tick\":106,\"live_score\":0,\"canonical_score\":0,\"latest_final_score\":0,\"level\":1,\"highest_chain\":0,\"config_hash\":17009678407634462320,\"elapsed_seconds\":0.009728870}\n"
+    }
+  },
+  "terminal_session": {
+    "schema": "irisu-resident-search-session-parity-v2",
+    "promotion_eligible": false,
+    "inputs": {
+      "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+      "specs_sha256": "abe1e2f0ae5e844827b5357489141798afd1d960a9a38ad0256b5fcff8a337ac",
+      "image_sha256": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685"
+    },
+    "binaries": {
+      "gpu_sha256": "5d299129164ffe87f36d5887fcc0ac989e2b3bb4a60a11fe93c9b06568c41405",
+      "oracle_sha256": "d24a942bcedc99e37d783af7a1327437fc7251ef016ce06efe22957dbeab1853",
+      "game_oracle_sha256": "b94f4fdb998021e4e6a9cc6e57de680e11017f25f243b49053080fcd57481158"
+    },
+    "command": [
+      "build-project-cuda/clone/cuda/irisu-cuda-search-session",
+      "build-project-cuda/clone/cuda/generated/guest_image.bin",
+      "irisu-high-score-4393101.rpy",
+      "artifacts/gpu-exact-20261103/search-v2/session-terminal.specs.bin",
+      "97215",
+      "2",
+      "1",
+      "2",
+      "3",
+      "4393102",
+      "artifacts/gpu-exact-20261103/search-v2/session-terminal.winner.rpy",
+      "artifacts/gpu-exact-20261103/search-v2/session-terminal.lineage.json",
+      "--host-prefix",
+      "--block-threads",
+      "4",
+      "--stack-kib",
+      "16"
+    ],
+    "gpu": {
+      "wall_seconds": 58.73029907999444,
+      "stderr": "{\"identity\":\"experimental-cuda-game-search-session-v2\",\"promotion_eligible\":false,\"depths\":3,\"beam\":2,\"fanout\":3,\"candidate_nodes\":15,\"actual_simulated_branches\":9,\"actual_simulated_ticks\":18,\"failed_candidates\":0,\"trace_every_tick\":true,\"cache_guest\":true,\"block_threads\":4,\"stack_kib\":16,\"host_prefix_ms\":57330.349756000,\"prefix_ms\":37.017601013,\"branch_ms\":5.700608015,\"rollout_ms\":1209.486300621,\"rank_compact_ms\":6.376447916,\"validation_ms\":12.639231682,\"total_ms\":58676.772929000,\"allocated_bytes\":13546060,\"compaction_errors\":0,\"winner_tick\":97219,\"winner_live_score\":4393699,\"winner_canonical_score\":4393101,\"winner_canonical_level\":100,\"winner_canonical_chain\":70,\"winner_natural\":1}\n"
+    },
+    "rounds": [
+      {
+        "depth": 0,
+        "candidates": 3,
+        "selected_paths": [
+          [
+            0
+          ],
+          [
+            1
+          ]
+        ],
+        "native_command": [
+          "build-project-exact/irisu-search-oracle",
+          "irisu-high-score-4393101.rpy",
+          "artifacts/gpu-exact-20261103/search-v2/session-terminal.depth-0.native-specs.bin",
+          "97215",
+          "2",
+          "8",
+          "4393102"
+        ],
+        "native": {
+          "wall_seconds": 2.907608319997962,
+          "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":3,\"workers\":8,\"prefix_ticks\":97215,\"horizon\":2,\"simulated_ticks\":6,\"trace_every_tick\":true,\"prefix_ms\":2902.577393000,\"branch_rollout_rank_ms\":1.125460000,\"total_ms\":2903.722511000,\"winner\":0}\n"
+        },
+        "parity": true,
+        "result_sha256": "7aabcb3e523b866ef7252787127255af19353c7f79c6d5181cf93b516d9e7cee"
+      },
+      {
+        "depth": 1,
+        "candidates": 6,
+        "selected_paths": [
+          [
+            0,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "native_command": [
+          "build-project-exact/irisu-search-oracle",
+          "irisu-high-score-4393101.rpy",
+          "artifacts/gpu-exact-20261103/search-v2/session-terminal.depth-1.native-specs.bin",
+          "97215",
+          "4",
+          "8",
+          "4393102"
+        ],
+        "native": {
+          "wall_seconds": 2.923739691999799,
+          "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":6,\"workers\":8,\"prefix_ticks\":97215,\"horizon\":4,\"simulated_ticks\":24,\"trace_every_tick\":true,\"prefix_ms\":2917.507191000,\"branch_rollout_rank_ms\":2.260308000,\"total_ms\":2919.786806000,\"winner\":0}\n"
+        },
+        "parity": true,
+        "result_sha256": "ae8cadce19d96988df7a866fbcf1918c6f33d500de9223eb50fc6d80ca2f8615"
+      },
+      {
+        "depth": 2,
+        "candidates": 6,
+        "selected_paths": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "native_command": [
+          "build-project-exact/irisu-search-oracle",
+          "irisu-high-score-4393101.rpy",
+          "artifacts/gpu-exact-20261103/search-v2/session-terminal.depth-2.native-specs.bin",
+          "97215",
+          "6",
+          "8",
+          "4393102"
+        ],
+        "native": {
+          "wall_seconds": 2.929916506000154,
+          "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":6,\"workers\":8,\"prefix_ticks\":97215,\"horizon\":6,\"simulated_ticks\":24,\"trace_every_tick\":true,\"prefix_ms\":2924.134281000,\"branch_rollout_rank_ms\":1.972100000,\"total_ms\":2926.125838000,\"winner\":0}\n"
+        },
+        "parity": true,
+        "result_sha256": "ee156a653ce84c84856e9c9719adae68babb00160c506518127768b32783658b"
+      }
+    ],
+    "all_candidate_parity": true,
+    "prefix": 97215,
+    "horizon": 2,
+    "beam": 2,
+    "fanout": 3,
+    "depths": 3,
+    "trace_every_tick": true,
+    "winning_lineage_parity": true,
+    "winner_replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+    "native_reset_replay_verified": true,
+    "verification_scope": "natural_terminal",
+    "natural_terminal": true,
+    "canonical_score": 4393101,
+    "winner_trace_ticks": 97219,
+    "independent_verification": {
+      "wall_seconds": 3.6498436109977774,
+      "stderr": "{\"backend\":\"native-msvc-cpu-oracle\",\"format\":\"game-digest-v1\",\"rows\":97220,\"steps\":97219,\"events\":308512,\"tick\":97219,\"live_score\":4393699,\"canonical_score\":4393101,\"latest_final_score\":4393101,\"level\":100,\"highest_chain\":70,\"config_hash\":17009678407634462320,\"elapsed_seconds\":3.645190793}\n"
+    }
+  },
+  "native_pool_fix": {
+    "scheduling": "waitpid(-1) reaps actual completed child, keeping worker slots available; owned children killed/reaped on failure",
+    "binary_sha256": "cf4865e017afa0f559569d1d5ac834cb39cd4d23385c17224953e85e9ace48e1",
+    "parity_to_prior_v2_results_512_final_only_workers": [
+      1,
+      8,
+      16
+    ]
+  }
+}

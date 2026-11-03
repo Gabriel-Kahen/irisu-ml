@@ -1,0 +1,123 @@
+{
+  "schema": "irisu-real-search-initial-gpu-v1",
+  "promotion_eligible": false,
+  "cases": [
+    {
+      "prefix": 0,
+      "horizon": 1,
+      "count": 2,
+      "host_prefix": false,
+      "command": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/irisu-cuda-search",
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/search-initial/0-1-2.specs.bin",
+        "0",
+        "1",
+        "1",
+        "1",
+        "4393102"
+      ],
+      "cpu": {
+        "wall_seconds": 0.005751741002313793,
+        "metadata": {
+          "identity": "experimental-native-exact-search-oracle-v1",
+          "candidates": 2,
+          "workers": 8,
+          "prefix_ticks": 0,
+          "horizon": 1,
+          "simulated_ticks": 2,
+          "prefix_ms": 0.31557,
+          "branch_rollout_rank_ms": 0.767661,
+          "total_ms": 1.094452,
+          "winner": 0
+        }
+      },
+      "gpu": {
+        "wall_seconds": 0.9003417639978579,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v1",
+          "promotion_eligible": false,
+          "candidates": 2,
+          "prefix_ticks": 0,
+          "horizon": 1,
+          "simulated_ticks": 2,
+          "failed_candidates": 0,
+          "host_prefix": false,
+          "host_prefix_ms": 0.0,
+          "prefix_ms": 237.434875488,
+          "branch_ms": 1.734655976,
+          "rollout_ms": 251.634658813,
+          "rank_compact_ms": 2.060287952,
+          "validation_ms": 262.923278809,
+          "compaction_check_enabled": true,
+          "total_ms": 848.052251,
+          "allocated_bytes": 6787576,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      "byte_parity": true
+    },
+    {
+      "prefix": 100,
+      "horizon": 4,
+      "count": 8,
+      "host_prefix": true,
+      "command": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/irisu-cuda-search",
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/search-initial/100-4-8.specs.bin",
+        "100",
+        "4",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix"
+      ],
+      "cpu": {
+        "wall_seconds": 0.01352717999543529,
+        "metadata": {
+          "identity": "experimental-native-exact-search-oracle-v1",
+          "candidates": 8,
+          "workers": 8,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 32,
+          "prefix_ms": 8.259471,
+          "branch_rollout_rank_ms": 1.402879,
+          "total_ms": 9.672428,
+          "winner": 0
+        }
+      },
+      "gpu": {
+        "wall_seconds": 2.853336997999577,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v1",
+          "promotion_eligible": false,
+          "candidates": 8,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 32,
+          "failed_candidates": 0,
+          "host_prefix": true,
+          "host_prefix_ms": 143.125257,
+          "prefix_ms": 34.994174957,
+          "branch_ms": 1.700863957,
+          "rollout_ms": 1845.56237793,
+          "rank_compact_ms": 2.068480015,
+          "validation_ms": 195.23890686,
+          "compaction_check_enabled": true,
+          "total_ms": 2804.985295,
+          "allocated_bytes": 16232536,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      "byte_parity": true
+    }
+  ]
+}

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Fixed sparse-mutation full-game search parity and warmed timing matrix.
 
-Binary formats are explicitly little endian: candidate '<10I', result '<31Q'
+Binary formats are explicitly little endian: candidate '<10I', version2 result '<32Q'
 (last 11 signed objective keys), followed by one '<I' rank per candidate.
-Each result folds reset/prefix and every simulated frame, including events.
+Default results fold the checkpoint and every simulated frame, including events.
+The optional final-only production path folds checkpoint and final frames.
 """
 from __future__ import annotations
 
@@ -21,7 +22,7 @@ import time
 
 ROOT=Path(__file__).resolve().parents[2]
 SPEC=struct.Struct("<10I")
-RESULT=struct.Struct("<20Q11q")
+RESULT=struct.Struct("<21Q11q")
 
 
 def sha(path):
@@ -55,17 +56,19 @@ def candidates(replay, prefix, horizon, count):
 
 
 def decode(data,count):
-    expected=count*(RESULT.size+4)
+    expected=16+count*(RESULT.size+4)
     if len(data)!=expected:
         raise RuntimeError(f"search result length {len(data)} != {expected}")
-    results=[RESULT.unpack_from(data,i*RESULT.size) for i in range(count)]
-    ranks=list(struct.unpack_from(f"<{count}I",data,count*RESULT.size))
+    if struct.unpack_from("<4I",data)!=(0x32535249,2,count,RESULT.size):
+        raise RuntimeError("search result identity/header mismatch")
+    results=[RESULT.unpack_from(data,16+i*RESULT.size) for i in range(count)]
+    ranks=list(struct.unpack_from(f"<{count}I",data,16+count*RESULT.size))
     if sorted(ranks)!=list(range(count)):
         raise RuntimeError("rank output is not a permutation")
     for i,row in enumerate(results):
         if row[17] or row[18]:
             raise RuntimeError(f"candidate {i} failed guest={row[18]} pc={row[19]}")
-    expected_ranks=sorted(range(count),key=lambda i:(results[i][20:],-i),reverse=True)
+    expected_ranks=sorted(range(count),key=lambda i:(results[i][21:],-i),reverse=True)
     if ranks!=expected_ranks:
         raise RuntimeError("stable canonical ranking disagrees with scalar reference")
     return results,ranks
@@ -127,8 +130,11 @@ def main():
     p.add_argument("--receipt",type=Path)
     p.add_argument("--host-prefix",action="store_true",help="prepare one translated prefix on CPU then upload/rebind it; CPU preparation remains timed")
     p.add_argument("--isolated-warps",action="store_true",help="one active thread per warp avoids sharing divergent guest dispatch across worlds")
+    p.add_argument("--final-only",action="store_true",help="compare prefix and final frames; omit per-tick digest overhead on both backends")
+    p.add_argument("--global-guest",action="store_true",help="disable per-thread cached guest registers for measured comparison")
+    p.add_argument("--block-threads",type=int,default=4);p.add_argument("--stack-kib",type=int,default=16)
     args=p.parse_args()
-    if args.horizon<1 or not 1<=args.candidates<=4096 or not 1<=args.keep<=args.candidates or args.repeats<1:
+    if args.horizon<1 or not 1<=args.candidates<=16384 or not 1<=args.keep<=args.candidates or args.repeats<1:
         p.error("invalid bounded workload")
     if args.receipt:
         from runtime_identity import verify
@@ -137,23 +143,29 @@ def main():
     specs=args.output.with_suffix(".specs.bin")
     specs.write_bytes(candidates(args.replay.read_bytes(),args.prefix,args.horizon,args.candidates))
     commands=[("cpu",w,[args.oracle,args.replay,specs,args.prefix,args.horizon,w,4393102]) for w in args.workers]
+    if args.final_only:
+        commands=[(backend,w,command+["--final-only"]) for backend,w,command in commands]
     gpu_command=[args.gpu,args.image,args.replay,specs,args.prefix,args.horizon,args.arena_mib,args.keep,4393102]
     if args.host_prefix:gpu_command.append("--host-prefix")
     if args.isolated_warps:gpu_command.append("--isolated-warps")
+    if args.final_only:gpu_command.append("--final-only")
+    if args.global_guest:gpu_command.append("--global-guest")
+    gpu_command.extend(["--block-threads",args.block_threads,"--stack-kib",args.stack_kib])
     commands.append(("cuda",0,gpu_command))
     baseline=None;cases=[]
-    report={"schema":"irisu-full-game-search-benchmark-v1","promotion_eligible":False,
+    report={"schema":"irisu-full-game-search-benchmark-v2","promotion_eligible":False,
       "scope":"bounded published-replay prefix, sparse mutations, fixed continuation, full game rules and exact-host translation",
-      "record_search_provenance":"original final record runner not established; this is a new fixed workload",
+      "record_search_provenance":"new sparse-mutation workload; recovered historical event-search invocation used rl_combo_diverse_search.py, whose source is absent; this benchmark does not reproduce that algorithm",
       "inputs":{"replay_sha256":sha(args.replay),"specs_sha256":sha(specs),"image_sha256":sha(args.image)},
       "binaries":{"oracle_sha256":sha(args.oracle),"gpu_sha256":sha(args.gpu)},
       "prefix":args.prefix,"horizon":args.horizon,"candidates":args.candidates,"host_prefix":args.host_prefix,"isolated_warps":args.isolated_warps,
+      "trace_every_tick":not args.final_only,"cache_guest":not args.global_guest,"block_threads":args.block_threads,"stack_kib":args.stack_kib,
       "timing_contract":{"warmups":1,"timed_repeats":args.repeats,
         "wall":"process startup, runtime initialization, prefix preparation/upload, branches, complete futures, stable ranking, GPU selected-state compaction and result download; Python parity comparison excluded",
         "gpu_component":"CUDA events; setup/prefix, snapshot copy, future rollout, rank+compact+verification separately",
         "telemetry":"whole-device nvidia-smi samples at approximately 200 ms; not process exclusive",
         "validation":"warmup additionally compares compacted hidden state/arena and steps selected state plus independent source; timed repetitions skip that extra validation workload",
-        "cpu":"native ELF32 exact core, prefix once then bounded fork/COW candidate workers; all frame digests included"},"cases":cases}
+        "cpu":"native ELF32 exact core, prefix once then bounded fork/COW candidate workers; same digest mode as GPU"},"cases":cases}
     for backend,workers,command in commands:
         warm,wm=invoke(command,args.timeout,args.candidates)
         if baseline is None:baseline=warm

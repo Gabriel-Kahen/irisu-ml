@@ -1,0 +1,268 @@
+{
+  "schema": "irisu-real-search-v2-gates",
+  "promotion_eligible": false,
+  "gpu_sha256": "4264bef9bc305be6631edc05d7d38735ac5d2e2400e276fe938423cd67f98b23",
+  "oracle_sha256": "d24a942bcedc99e37d783af7a1327437fc7251ef016ce06efe22957dbeab1853",
+  "cases": [
+    {
+      "prefix": 0,
+      "horizon": 1,
+      "count": 2,
+      "host_prefix": false,
+      "trace_every_tick": true,
+      "command": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/irisu-cuda-search",
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/search-v2/0-1-2.specs.bin",
+        "0",
+        "1",
+        "1",
+        "1",
+        "4393102"
+      ],
+      "cpu": {
+        "wall_seconds": 0.004950654001731891,
+        "metadata": {
+          "identity": "experimental-native-exact-search-oracle-v2",
+          "candidates": 2,
+          "workers": 8,
+          "prefix_ticks": 0,
+          "horizon": 1,
+          "simulated_ticks": 2,
+          "trace_every_tick": true,
+          "prefix_ms": 0.315259,
+          "branch_rollout_rank_ms": 0.836941,
+          "total_ms": 1.162891,
+          "winner": 0
+        }
+      },
+      "gpu": {
+        "wall_seconds": 0.8760165740022785,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 2,
+          "prefix_ticks": 0,
+          "horizon": 1,
+          "simulated_ticks": 2,
+          "failed_candidates": 0,
+          "trace_every_tick": true,
+          "cache_guest": true,
+          "block_threads": 4,
+          "stack_kib": 16,
+          "host_prefix": false,
+          "host_prefix_ms": 0.0,
+          "prefix_ms": 235.412445068,
+          "branch_ms": 1.688575983,
+          "rollout_ms": 247.720962524,
+          "rank_compact_ms": 2.122751951,
+          "validation_ms": 259.979278564,
+          "compaction_check_enabled": true,
+          "total_ms": 825.688724,
+          "allocated_bytes": 7017104,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      "byte_parity": true
+    },
+    {
+      "prefix": 100,
+      "horizon": 4,
+      "count": 8,
+      "host_prefix": true,
+      "trace_every_tick": true,
+      "command": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/irisu-cuda-search",
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/search-v2/100-4-8.specs.bin",
+        "100",
+        "4",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix"
+      ],
+      "cpu": {
+        "wall_seconds": 0.014001022995216772,
+        "metadata": {
+          "identity": "experimental-native-exact-search-oracle-v2",
+          "candidates": 8,
+          "workers": 8,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 32,
+          "trace_every_tick": true,
+          "prefix_ms": 8.418018,
+          "branch_rollout_rank_ms": 1.600313,
+          "total_ms": 10.027338,
+          "winner": 0
+        }
+      },
+      "gpu": {
+        "wall_seconds": 1.5120859059970826,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 8,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 32,
+          "failed_candidates": 0,
+          "trace_every_tick": true,
+          "cache_guest": true,
+          "block_threads": 4,
+          "stack_kib": 16,
+          "host_prefix": true,
+          "host_prefix_ms": 147.644565,
+          "prefix_ms": 37.203968048,
+          "branch_ms": 1.939455986,
+          "rollout_ms": 1006.767089844,
+          "rank_compact_ms": 2.145279884,
+          "validation_ms": 192.836608887,
+          "compaction_check_enabled": true,
+          "total_ms": 1461.904463,
+          "allocated_bytes": 16806368,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      "byte_parity": true
+    },
+    {
+      "prefix": 100,
+      "horizon": 1,
+      "count": 257,
+      "host_prefix": true,
+      "trace_every_tick": true,
+      "command": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/irisu-cuda-search",
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/search-v2/100-1-257.specs.bin",
+        "100",
+        "1",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix"
+      ],
+      "cpu": {
+        "wall_seconds": 0.04384617599862395,
+        "metadata": {
+          "identity": "experimental-native-exact-search-oracle-v2",
+          "candidates": 257,
+          "workers": 8,
+          "prefix_ticks": 100,
+          "horizon": 1,
+          "simulated_ticks": 257,
+          "trace_every_tick": true,
+          "prefix_ms": 8.848716,
+          "branch_rollout_rank_ms": 30.728011,
+          "total_ms": 39.586937,
+          "winner": 0
+        }
+      },
+      "gpu": {
+        "wall_seconds": 0.8608620070008328,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 257,
+          "prefix_ticks": 100,
+          "horizon": 1,
+          "simulated_ticks": 257,
+          "failed_candidates": 0,
+          "trace_every_tick": true,
+          "cache_guest": true,
+          "block_threads": 4,
+          "stack_kib": 16,
+          "host_prefix": true,
+          "host_prefix_ms": 150.098521,
+          "prefix_ms": 39.639041901,
+          "branch_ms": 3.032063961,
+          "rollout_ms": 348.271606445,
+          "rank_compact_ms": 2.372607946,
+          "validation_ms": 190.085113525,
+          "compaction_check_enabled": true,
+          "total_ms": 807.087642,
+          "allocated_bytes": 423061844,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      "byte_parity": true
+    },
+    {
+      "prefix": 100,
+      "horizon": 2,
+      "count": 512,
+      "host_prefix": true,
+      "trace_every_tick": false,
+      "command": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/irisu-cuda-search",
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/search-v2/100-2-512.specs.bin",
+        "100",
+        "2",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix",
+        "--final-only"
+      ],
+      "cpu": {
+        "wall_seconds": 0.0743480669989367,
+        "metadata": {
+          "identity": "experimental-native-exact-search-oracle-v2",
+          "candidates": 512,
+          "workers": 8,
+          "prefix_ticks": 100,
+          "horizon": 2,
+          "simulated_ticks": 1024,
+          "trace_every_tick": false,
+          "prefix_ms": 8.651191,
+          "branch_rollout_rank_ms": 61.213631,
+          "total_ms": 69.875031,
+          "winner": 0
+        }
+      },
+      "gpu": {
+        "wall_seconds": 1.3466777819994604,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 512,
+          "prefix_ticks": 100,
+          "horizon": 2,
+          "simulated_ticks": 1024,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 4,
+          "stack_kib": 16,
+          "host_prefix": true,
+          "host_prefix_ms": 174.763222,
+          "prefix_ms": 38.577152252,
+          "branch_ms": 3.780607939,
+          "rollout_ms": 809.445373535,
+          "rank_compact_ms": 2.378751993,
+          "validation_ms": 181.942276001,
+          "compaction_check_enabled": true,
+          "total_ms": 1295.392712,
+          "allocated_bytes": 839104544,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      "byte_parity": true
+    }
+  ]
+}
