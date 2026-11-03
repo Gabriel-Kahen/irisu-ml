@@ -1,0 +1,394 @@
+{
+  "schema": "irisu-cuda-packed-input-edge-v1",
+  "status": "passed",
+  "scope": "64step partial normal-mode replay fixture; actualGPUfullgame vs authoritative nativephysics; validation invocation, not warmed performance benchmark",
+  "exact_training_admitted": false,
+  "source_replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+  "fixture_sha256": "91c086e5213aaeea6354a971ef9023e1a525e0e3cc0501fb3fe06f74b698439c",
+  "fixture_bytes": 388928,
+  "fixture_path": "artifacts/gpu-exact-20261103/input-edge-64/both-held-cursor-corners.rpy",
+  "fixture_is_completed_score_record": false,
+  "fixture_construction": {
+    "header_and_payload_length_unchanged": true,
+    "words_after_index31_unchanged": true,
+    "patch_encoding": "[replay_index,input_word]; kind bits0..1, x bits2..11, y bits12..20",
+    "patches": [
+      [
+        0,
+        1844401
+      ],
+      [
+        1,
+        2097151
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        3,
+        1844403
+      ],
+      [
+        4,
+        1844403
+      ],
+      [
+        5,
+        0
+      ],
+      [
+        6,
+        1844401
+      ],
+      [
+        7,
+        1844401
+      ],
+      [
+        8,
+        1844403
+      ],
+      [
+        9,
+        1844402
+      ],
+      [
+        10,
+        0
+      ],
+      [
+        11,
+        1844402
+      ],
+      [
+        12,
+        2097150
+      ],
+      [
+        13,
+        0
+      ],
+      [
+        14,
+        2097151
+      ],
+      [
+        15,
+        2097151
+      ],
+      [
+        16,
+        0
+      ],
+      [
+        17,
+        1
+      ],
+      [
+        18,
+        0
+      ],
+      [
+        19,
+        4094
+      ],
+      [
+        20,
+        0
+      ],
+      [
+        21,
+        2093059
+      ],
+      [
+        22,
+        2093059
+      ],
+      [
+        23,
+        0
+      ],
+      [
+        24,
+        1844403
+      ],
+      [
+        25,
+        1844401
+      ],
+      [
+        26,
+        1844403
+      ],
+      [
+        27,
+        0
+      ],
+      [
+        28,
+        1844402
+      ],
+      [
+        29,
+        1844403
+      ],
+      [
+        30,
+        0
+      ],
+      [
+        31,
+        1844403
+      ]
+    ]
+  },
+  "native_event_coverage": {
+    "observer_source_path": "artifacts/gpu-exact-20261103/input-edge-64/native-events.cpp",
+    "observer_source_sha256": "ff6fe69e1b7508b1bb5da4bd502397b62cf3af5b7d18c5f35076c09fc39c5684",
+    "observer_binary_sha256": "73e02817bfb7347d220c83f84385714aed9141fe3ec3b6e5209c711d5e09c542",
+    "observer_links": "same authoritative ELF32 irisu_core and pinned MSVC exact physics library as nativeoracle; public EventKind counters",
+    "totals": {
+      "weak_shots": 8,
+      "strong_shots": 12,
+      "held_ignored": 16,
+      "invalid_actions": 0,
+      "ejected": 8,
+      "destroyed": 19
+    },
+    "assertion_encoding": "[replay_index,weak_shots,strong_shots,held_ignored]",
+    "assertions": [
+      [
+        0,
+        0,
+        0,
+        1
+      ],
+      [
+        1,
+        0,
+        0,
+        2
+      ],
+      [
+        2,
+        0,
+        0,
+        0
+      ],
+      [
+        3,
+        1,
+        1,
+        0
+      ],
+      [
+        4,
+        0,
+        0,
+        2
+      ],
+      [
+        6,
+        1,
+        0,
+        0
+      ],
+      [
+        7,
+        0,
+        0,
+        1
+      ],
+      [
+        8,
+        0,
+        1,
+        1
+      ],
+      [
+        9,
+        0,
+        0,
+        1
+      ],
+      [
+        11,
+        0,
+        1,
+        0
+      ],
+      [
+        12,
+        0,
+        0,
+        1
+      ],
+      [
+        14,
+        1,
+        1,
+        0
+      ],
+      [
+        15,
+        0,
+        0,
+        2
+      ],
+      [
+        17,
+        1,
+        0,
+        0
+      ],
+      [
+        19,
+        0,
+        1,
+        0
+      ],
+      [
+        21,
+        1,
+        1,
+        0
+      ],
+      [
+        22,
+        0,
+        0,
+        2
+      ],
+      [
+        24,
+        1,
+        1,
+        0
+      ],
+      [
+        25,
+        0,
+        0,
+        1
+      ],
+      [
+        26,
+        0,
+        1,
+        1
+      ],
+      [
+        28,
+        0,
+        1,
+        0
+      ],
+      [
+        29,
+        1,
+        0,
+        1
+      ],
+      [
+        31,
+        1,
+        1,
+        0
+      ]
+    ]
+  },
+  "limitations": [
+    "Packedcoordinates remaininsideencodedrange0..1023/0..511; this isnot out-of-encodedrange InvalidAction validation.",
+    "Headerterminalscore remainsoriginal; fixturemustonlybeevaluatedasbounded64stepprefix."
+  ],
+  "differential": {
+    "schema": "irisu-cuda-game-differential-v1",
+    "exact_gpu_promoted": false,
+    "backend": "cuda",
+    "steps_per_case": 64,
+    "inputs": {
+      "build-project-exact/irisu-game-oracle": "b94f4fdb998021e4e6a9cc6e57de680e11017f25f243b49053080fcd57481158",
+      "build-project-cuda/clone/cuda/irisu-cuda-game-probe": "d6b211e410ab7e1fcfe0e91b5f6d961866b844e000fe121a38939b70e6edbb2d",
+      "build-project-cuda/clone/cuda/generated/guest_image.bin": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685",
+      "artifacts/gpu-exact-20261103/input-edge-64/both-held-cursor-corners.rpy": "91c086e5213aaeea6354a971ef9023e1a525e0e3cc0501fb3fe06f74b698439c"
+    },
+    "cases": [
+      {
+        "seed": 1298144938,
+        "replay_sha256": "91c086e5213aaeea6354a971ef9023e1a525e0e3cc0501fb3fe06f74b698439c",
+        "runs": [
+          {
+            "name": "native",
+            "command": [
+              "/home/gabe/Documents/ChatGPT/irisu/build-project-exact/irisu-game-oracle",
+              "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/input-edge-64/differential/seed-1298144938.rpy",
+              "64"
+            ],
+            "wall_seconds": 0.015538532003120054,
+            "digest_sha256": "168521cc828fd2f7317f6395b830d8c65ff533c21396f10f7655927539dcc49d",
+            "metadata": {
+              "backend": "native-msvc-cpu-oracle",
+              "format": "game-digest-v1",
+              "rows": 65,
+              "steps": 64,
+              "events": 703,
+              "tick": 64,
+              "live_score": 0,
+              "canonical_score": 0,
+              "latest_final_score": 0,
+              "level": 1,
+              "highest_chain": 0,
+              "config_hash": 17009678407634462320,
+              "elapsed_seconds": 0.009027083
+            }
+          },
+          {
+            "name": "probe",
+            "command": [
+              "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/irisu-cuda-game-probe",
+              "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+              "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/input-edge-64/differential/seed-1298144938.rpy",
+              "64",
+              "--arena-mib",
+              "8",
+              "--gpu"
+            ],
+            "wall_seconds": 10.21858590500051,
+            "digest_sha256": "168521cc828fd2f7317f6395b830d8c65ff533c21396f10f7655927539dcc49d",
+            "metadata": {
+              "backend": "cuda-translated-full-game",
+              "experimental": true,
+              "clone_verified": false,
+              "rows": 65,
+              "requested_steps": 64,
+              "tick": 64,
+              "guest_error": 0,
+              "fault_pc": 0,
+              "guest_heap": 359392,
+              "game_failed": false,
+              "config_hash": 17009678407634462320,
+              "score": 0,
+              "canonical_score": 0,
+              "latest_final_score": 0,
+              "level": 1,
+              "chain": 0,
+              "kernel_ms": 10087.523438,
+              "elapsed_seconds": 10.16172551,
+              "world_bytes": 582664,
+              "arena_bytes": 8388608
+            }
+          }
+        ],
+        "comparison": {
+          "version": "game-digest-v1-comparison",
+          "rows": 65,
+          "mismatches": 0,
+          "trajectory_sha256": "168521cc828fd2f7317f6395b830d8c65ff533c21396f10f7655927539dcc49d",
+          "scope": "All encoded scalar/body/event/transition digests match; FNV-1a is not a collision-resistant proof of unobserved internal state."
+        }
+      }
+    ],
+    "status": "passed"
+  }
+}
