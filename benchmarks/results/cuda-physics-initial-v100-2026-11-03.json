@@ -1,0 +1,623 @@
+{
+  "schema": "irisu-cuda-physics-initial-v1",
+  "scope": "Early faithfully translated fixed-host physics fixture; bothbodiesandtimings real, not full game or search benchmark.",
+  "comparison_limit": "Three dynamic bodies with floor, all lanes repeat same initial fixture. No historical dense pipeline speedup established. Fast-compile configuration dramatically slower than native.",
+  "cases": {
+    "physics-local-tiny1": {
+      "schema": "irisu-cuda-physics-fixture-v1",
+      "scope": "three dynamic bodies plus floor; x/y/angle/vx/vy every tick; identical initial fixture per lane",
+      "full_game_or_search_parity": false,
+      "probe_backend": "cuda",
+      "not_comparable_to_historical_dense_decisions_per_second": true,
+      "timestamp_unix": 1793734910.6743476,
+      "git_head": "72f821d8f7a7efeda83ee564123a1d54da4aadd1",
+      "source_sha256": {
+        "tools/cuda-exact/physics_validate.py": "042970f4d6c3da7dfb6b3898e68e5fddf4a6760a4244fe426dd7c6ba337026cb",
+        "tools/cuda-exact/physics_probe.cu": "4153e3c3f4545e72f9636bc65767fb6432bc95ebb7a6718804989ce184b422e4",
+        "tools/cuda-exact/physics_oracle.c": "911982824cbe415749ffbc6bfbe92ccb08d07e2fa6b844cd7dca3aeabd4548cf",
+        "clone/cuda/guest.hpp": "85af0b9e51c999032a09e84da2184b76e76bf33e424a8c1bbf12a786673f8c43"
+      },
+      "binary_sha256": {
+        "probe": "fb7420cdeb2fdd8c47c344f26c69f6e4dab3f01b1ee6883c6669e91a74187257",
+        "oracle": "77b4e6cdc3e9e45e51a77093747eab420acdaf7081ee7ddf28c90e11158180c8",
+        "library": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+        "image": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685"
+      },
+      "platform": "Linux-7.2.7-1-cachyos-x86_64-with-glibc2.44",
+      "cpu": "AMD Ryzen 7 3700X 8-Core Processor",
+      "gpu": "Tesla V100-PCIE-32GB, GPU-190591ef-22de-5bc4-0ba4-35864ecab28a, 580.178.04, 32768, 250.00",
+      "timing_contract": {
+        "warmup": "one invocation per case/backend/config before timed repetitions",
+        "process_wall_seconds": "process creation, runtime startup, world creation, simulation, serialization, download and stdout capture; comparison excluded",
+        "cpu_parallelism": "independent native oracle processes launched by a bounded thread pool; process startup is included",
+        "gpu_kernel_ms": "probe-reported CUDA events; world setup plus all simulation steps; excludes allocation/upload/download",
+        "telemetry": "whole-device nvidia-smi 100ms samples; peaks are not process-exclusive",
+        "fixture_limits": "lanes repeat one fixture, no game RNG/spawns/scoring, no dense-board or candidate-search speedup established"
+      },
+      "commands": [
+        [
+          "/home/gabe/Documents/irisu/build-gpu-guest/physics-probe-local",
+          "/home/gabe/Documents/irisu/build-gpu-guest/generated/guest_image.bin",
+          "1",
+          "--gpu",
+          "--lanes",
+          "1"
+        ],
+        {
+          "native_command": [
+            "/home/gabe/Documents/irisu/.tmp/physics-oracle",
+            "/home/gabe/Documents/irisu/artifacts/gpu-exact-20261103/recovery-script-smoke/guest/libirisu_box2d_msvc_exact_multiworld.so",
+            "1"
+          ],
+          "parallel_processes": 1,
+          "lanes": 1
+        }
+      ],
+      "references": [
+        {
+          "mutations": false,
+          "bytes_per_lane": 60,
+          "sha256": "9d3aef002cf25e1fe8e5ac004c23acad065d08c64bcfed5396241460baf30733"
+        }
+      ],
+      "warmups": [
+        {
+          "backend": "cuda",
+          "lanes": 1,
+          "steps_per_lane": 1,
+          "mutations": false,
+          "wall_seconds": 0.5396243530012725,
+          "probe_metadata": [
+            {
+              "backend": "cuda",
+              "lanes": 1,
+              "steps": 1,
+              "mutations": false,
+              "kernel_ms": 362.021851,
+              "elapsed_ms": 394.99718,
+              "bytesperlane": 2097152,
+              "maxheapbytes": 342880,
+              "dispatches": 7442,
+              "failures": 0
+            }
+          ],
+          "compared_words": 15,
+          "mismatches": 0
+        }
+      ],
+      "runs": [
+        {
+          "backend": "cuda",
+          "cpu_processes": 0,
+          "lanes": 1,
+          "steps_per_lane": 1,
+          "mutations": false,
+          "compared_words_per_repetition": 15,
+          "process_wall_seconds": [
+            0.48457267000048887
+          ],
+          "median_process_wall_ticks_per_second": 2.0636739583332075,
+          "probe_metadata": [
+            [
+              {
+                "backend": "cuda",
+                "lanes": 1,
+                "steps": 1,
+                "mutations": false,
+                "kernel_ms": 335.905792,
+                "elapsed_ms": 366.006562,
+                "bytesperlane": 2097152,
+                "maxheapbytes": 342880,
+                "dispatches": 7442,
+                "failures": 0
+              }
+            ]
+          ],
+          "mismatches": 0,
+          "kernel_ms": [
+            335.905792
+          ],
+          "median_kernel_ticks_per_second": 2.977025177344962
+        },
+        {
+          "backend": "native",
+          "cpu_processes": 1,
+          "lanes": 1,
+          "steps_per_lane": 1,
+          "mutations": false,
+          "compared_words_per_repetition": 15,
+          "process_wall_seconds": [
+            0.000810943001852138
+          ],
+          "median_process_wall_ticks_per_second": 1233.1322888489929,
+          "probe_metadata": [],
+          "mismatches": 0
+        }
+      ],
+      "pass": true,
+      "telemetry_columns": [
+        "timestamp",
+        "gpu_utilization_percent",
+        "memory_used_mib",
+        "power_w",
+        "temperature_c"
+      ],
+      "telemetry_summary": {
+        "samples": 10,
+        "max_utilization_percent": 100.0,
+        "max_memory_mib": 1029.0,
+        "max_power_w": 44.2,
+        "max_temperature_c": 38.0,
+        "limits": "Whole-device100ms sampling; notprocess-exclusive, notSMoccupancy."
+      },
+      "raw_report": "build-gpu-guest/physics-local-tiny1.json"
+    },
+    "physics-local-tiny10": {
+      "schema": "irisu-cuda-physics-fixture-v1",
+      "scope": "three dynamic bodies plus floor; x/y/angle/vx/vy every tick; identical initial fixture per lane",
+      "full_game_or_search_parity": false,
+      "probe_backend": "cuda",
+      "not_comparable_to_historical_dense_decisions_per_second": true,
+      "timestamp_unix": 1793734921.4858072,
+      "git_head": "72f821d8f7a7efeda83ee564123a1d54da4aadd1",
+      "source_sha256": {
+        "tools/cuda-exact/physics_validate.py": "042970f4d6c3da7dfb6b3898e68e5fddf4a6760a4244fe426dd7c6ba337026cb",
+        "tools/cuda-exact/physics_probe.cu": "4153e3c3f4545e72f9636bc65767fb6432bc95ebb7a6718804989ce184b422e4",
+        "tools/cuda-exact/physics_oracle.c": "911982824cbe415749ffbc6bfbe92ccb08d07e2fa6b844cd7dca3aeabd4548cf",
+        "clone/cuda/guest.hpp": "85af0b9e51c999032a09e84da2184b76e76bf33e424a8c1bbf12a786673f8c43"
+      },
+      "binary_sha256": {
+        "probe": "fb7420cdeb2fdd8c47c344f26c69f6e4dab3f01b1ee6883c6669e91a74187257",
+        "oracle": "77b4e6cdc3e9e45e51a77093747eab420acdaf7081ee7ddf28c90e11158180c8",
+        "library": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+        "image": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685"
+      },
+      "platform": "Linux-7.2.7-1-cachyos-x86_64-with-glibc2.44",
+      "cpu": "AMD Ryzen 7 3700X 8-Core Processor",
+      "gpu": "Tesla V100-PCIE-32GB, GPU-190591ef-22de-5bc4-0ba4-35864ecab28a, 580.178.04, 32768, 250.00",
+      "timing_contract": {
+        "warmup": "one invocation per case/backend/config before timed repetitions",
+        "process_wall_seconds": "process creation, runtime startup, world creation, simulation, serialization, download and stdout capture; comparison excluded",
+        "cpu_parallelism": "independent native oracle processes launched by a bounded thread pool; process startup is included",
+        "gpu_kernel_ms": "probe-reported CUDA events; world setup plus all simulation steps; excludes allocation/upload/download",
+        "telemetry": "whole-device nvidia-smi 100ms samples; peaks are not process-exclusive",
+        "fixture_limits": "lanes repeat one fixture, no game RNG/spawns/scoring, no dense-board or candidate-search speedup established"
+      },
+      "commands": [
+        [
+          "/home/gabe/Documents/irisu/build-gpu-guest/physics-probe-local",
+          "/home/gabe/Documents/irisu/build-gpu-guest/generated/guest_image.bin",
+          "10",
+          "--gpu",
+          "--lanes",
+          "1"
+        ],
+        {
+          "native_command": [
+            "/home/gabe/Documents/irisu/.tmp/physics-oracle",
+            "/home/gabe/Documents/irisu/artifacts/gpu-exact-20261103/recovery-script-smoke/guest/libirisu_box2d_msvc_exact_multiworld.so",
+            "10"
+          ],
+          "parallel_processes": 1,
+          "lanes": 1
+        },
+        {
+          "native_command": [
+            "/home/gabe/Documents/irisu/.tmp/physics-oracle",
+            "/home/gabe/Documents/irisu/artifacts/gpu-exact-20261103/recovery-script-smoke/guest/libirisu_box2d_msvc_exact_multiworld.so",
+            "10"
+          ],
+          "parallel_processes": 8,
+          "lanes": 1
+        },
+        [
+          "/home/gabe/Documents/irisu/build-gpu-guest/physics-probe-local",
+          "/home/gabe/Documents/irisu/build-gpu-guest/generated/guest_image.bin",
+          "10",
+          "--gpu",
+          "--lanes",
+          "32"
+        ],
+        {
+          "native_command": [
+            "/home/gabe/Documents/irisu/.tmp/physics-oracle",
+            "/home/gabe/Documents/irisu/artifacts/gpu-exact-20261103/recovery-script-smoke/guest/libirisu_box2d_msvc_exact_multiworld.so",
+            "10"
+          ],
+          "parallel_processes": 1,
+          "lanes": 32
+        },
+        {
+          "native_command": [
+            "/home/gabe/Documents/irisu/.tmp/physics-oracle",
+            "/home/gabe/Documents/irisu/artifacts/gpu-exact-20261103/recovery-script-smoke/guest/libirisu_box2d_msvc_exact_multiworld.so",
+            "10"
+          ],
+          "parallel_processes": 8,
+          "lanes": 32
+        }
+      ],
+      "references": [
+        {
+          "mutations": false,
+          "bytes_per_lane": 600,
+          "sha256": "b44046ca898e1f6b1bf2b4d939d7e71ea2608b6e53d8a8edcb17e4924c4c1604"
+        }
+      ],
+      "warmups": [
+        {
+          "backend": "cuda",
+          "lanes": 1,
+          "steps_per_lane": 10,
+          "mutations": false,
+          "wall_seconds": 0.7685136439977214,
+          "probe_metadata": [
+            {
+              "backend": "cuda",
+              "lanes": 1,
+              "steps": 10,
+              "mutations": false,
+              "kernel_ms": 602.283997,
+              "elapsed_ms": 635.019189,
+              "bytesperlane": 2097152,
+              "maxheapbytes": 342880,
+              "dispatches": 14881,
+              "failures": 0
+            }
+          ],
+          "compared_words": 150,
+          "mismatches": 0
+        },
+        {
+          "backend": "cuda",
+          "lanes": 32,
+          "steps_per_lane": 10,
+          "mutations": false,
+          "wall_seconds": 0.7198834900009388,
+          "probe_metadata": [
+            {
+              "backend": "cuda",
+              "lanes": 32,
+              "steps": 10,
+              "mutations": false,
+              "kernel_ms": 585.723877,
+              "elapsed_ms": 613.771423,
+              "bytesperlane": 2097152,
+              "maxheapbytes": 342880,
+              "dispatches": 476192,
+              "failures": 0
+            }
+          ],
+          "compared_words": 4800,
+          "mismatches": 0
+        }
+      ],
+      "runs": [
+        {
+          "backend": "cuda",
+          "cpu_processes": 0,
+          "lanes": 1,
+          "steps_per_lane": 10,
+          "mutations": false,
+          "compared_words_per_repetition": 150,
+          "process_wall_seconds": [
+            0.7347679249978682,
+            0.7375022880005417
+          ],
+          "median_process_wall_ticks_per_second": 13.584462840736423,
+          "probe_metadata": [
+            [
+              {
+                "backend": "cuda",
+                "lanes": 1,
+                "steps": 10,
+                "mutations": false,
+                "kernel_ms": 584.403992,
+                "elapsed_ms": 611.777179,
+                "bytesperlane": 2097152,
+                "maxheapbytes": 342880,
+                "dispatches": 14881,
+                "failures": 0
+              }
+            ],
+            [
+              {
+                "backend": "cuda",
+                "lanes": 1,
+                "steps": 10,
+                "mutations": false,
+                "kernel_ms": 584.407043,
+                "elapsed_ms": 612.994755,
+                "bytesperlane": 2097152,
+                "maxheapbytes": 342880,
+                "dispatches": 14881,
+                "failures": 0
+              }
+            ]
+          ],
+          "mismatches": 0,
+          "kernel_ms": [
+            584.403992,
+            584.407043
+          ],
+          "median_kernel_ticks_per_second": 17.111405865534113
+        },
+        {
+          "backend": "native",
+          "cpu_processes": 1,
+          "lanes": 1,
+          "steps_per_lane": 10,
+          "mutations": false,
+          "compared_words_per_repetition": 150,
+          "process_wall_seconds": [
+            0.0010005939984694123,
+            0.0009230069990735501
+          ],
+          "median_process_wall_ticks_per_second": 10397.166577448354,
+          "probe_metadata": [],
+          "mismatches": 0
+        },
+        {
+          "backend": "native",
+          "cpu_processes": 8,
+          "lanes": 1,
+          "steps_per_lane": 10,
+          "mutations": false,
+          "compared_words_per_repetition": 150,
+          "process_wall_seconds": [
+            0.0008764069971221033,
+            0.0008016549982130527
+          ],
+          "median_process_wall_ticks_per_second": 11918.510791376,
+          "probe_metadata": [],
+          "mismatches": 0
+        },
+        {
+          "backend": "cuda",
+          "cpu_processes": 0,
+          "lanes": 32,
+          "steps_per_lane": 10,
+          "mutations": false,
+          "compared_words_per_repetition": 4800,
+          "process_wall_seconds": [
+            0.7267396360002749,
+            0.7337041489990952
+          ],
+          "median_process_wall_ticks_per_second": 438.22296111197187,
+          "probe_metadata": [
+            [
+              {
+                "backend": "cuda",
+                "lanes": 32,
+                "steps": 10,
+                "mutations": false,
+                "kernel_ms": 585.733093,
+                "elapsed_ms": 612.87123,
+                "bytesperlane": 2097152,
+                "maxheapbytes": 342880,
+                "dispatches": 476192,
+                "failures": 0
+              }
+            ],
+            [
+              {
+                "backend": "cuda",
+                "lanes": 32,
+                "steps": 10,
+                "mutations": false,
+                "kernel_ms": 585.733093,
+                "elapsed_ms": 613.233639,
+                "bytesperlane": 2097152,
+                "maxheapbytes": 342880,
+                "dispatches": 476192,
+                "failures": 0
+              }
+            ]
+          ],
+          "mismatches": 0,
+          "kernel_ms": [
+            585.733093,
+            585.733093
+          ],
+          "median_kernel_ticks_per_second": 546.3239209535323
+        },
+        {
+          "backend": "native",
+          "cpu_processes": 1,
+          "lanes": 32,
+          "steps_per_lane": 10,
+          "mutations": false,
+          "compared_words_per_repetition": 4800,
+          "process_wall_seconds": [
+            0.02695328099798644,
+            0.02609015900088707
+          ],
+          "median_process_wall_ticks_per_second": 12065.582473791137,
+          "probe_metadata": [],
+          "mismatches": 0
+        },
+        {
+          "backend": "native",
+          "cpu_processes": 8,
+          "lanes": 32,
+          "steps_per_lane": 10,
+          "mutations": false,
+          "compared_words_per_repetition": 4800,
+          "process_wall_seconds": [
+            0.009985051001422107,
+            0.00969610199899762
+          ],
+          "median_process_wall_ticks_per_second": 32518.42003292953,
+          "probe_metadata": [],
+          "mismatches": 0
+        }
+      ],
+      "pass": true,
+      "telemetry_columns": [
+        "timestamp",
+        "gpu_utilization_percent",
+        "memory_used_mib",
+        "power_w",
+        "temperature_c"
+      ],
+      "telemetry_summary": {
+        "samples": 44,
+        "max_utilization_percent": 100.0,
+        "max_memory_mib": 1091.0,
+        "max_power_w": 43.83,
+        "max_temperature_c": 38.0,
+        "limits": "Whole-device100ms sampling; notprocess-exclusive, notSMoccupancy."
+      },
+      "raw_report": "build-gpu-guest/physics-local-tiny10.json"
+    },
+    "physics-local-600pilot": {
+      "schema": "irisu-cuda-physics-fixture-v1",
+      "scope": "three dynamic bodies plus floor; x/y/angle/vx/vy every tick; identical initial fixture per lane",
+      "full_game_or_search_parity": false,
+      "probe_backend": "cuda",
+      "not_comparable_to_historical_dense_decisions_per_second": true,
+      "timestamp_unix": 1793734947.8714168,
+      "git_head": "72f821d8f7a7efeda83ee564123a1d54da4aadd1",
+      "source_sha256": {
+        "tools/cuda-exact/physics_validate.py": "042970f4d6c3da7dfb6b3898e68e5fddf4a6760a4244fe426dd7c6ba337026cb",
+        "tools/cuda-exact/physics_probe.cu": "4153e3c3f4545e72f9636bc65767fb6432bc95ebb7a6718804989ce184b422e4",
+        "tools/cuda-exact/physics_oracle.c": "911982824cbe415749ffbc6bfbe92ccb08d07e2fa6b844cd7dca3aeabd4548cf",
+        "clone/cuda/guest.hpp": "85af0b9e51c999032a09e84da2184b76e76bf33e424a8c1bbf12a786673f8c43"
+      },
+      "binary_sha256": {
+        "probe": "fb7420cdeb2fdd8c47c344f26c69f6e4dab3f01b1ee6883c6669e91a74187257",
+        "oracle": "77b4e6cdc3e9e45e51a77093747eab420acdaf7081ee7ddf28c90e11158180c8",
+        "library": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+        "image": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685"
+      },
+      "platform": "Linux-7.2.7-1-cachyos-x86_64-with-glibc2.44",
+      "cpu": "AMD Ryzen 7 3700X 8-Core Processor",
+      "gpu": "Tesla V100-PCIE-32GB, GPU-190591ef-22de-5bc4-0ba4-35864ecab28a, 580.178.04, 32768, 250.00",
+      "timing_contract": {
+        "warmup": "one invocation per case/backend/config before timed repetitions",
+        "process_wall_seconds": "process creation, runtime startup, world creation, simulation, serialization, download and stdout capture; comparison excluded",
+        "cpu_parallelism": "independent native oracle processes launched by a bounded thread pool; process startup is included",
+        "gpu_kernel_ms": "probe-reported CUDA events; world setup plus all simulation steps; excludes allocation/upload/download",
+        "telemetry": "whole-device nvidia-smi 100ms samples; peaks are not process-exclusive",
+        "fixture_limits": "lanes repeat one fixture, no game RNG/spawns/scoring, no dense-board or candidate-search speedup established"
+      },
+      "commands": [
+        [
+          "/home/gabe/Documents/irisu/build-gpu-guest/physics-probe-local",
+          "/home/gabe/Documents/irisu/build-gpu-guest/generated/guest_image.bin",
+          "600",
+          "--gpu",
+          "--lanes",
+          "1"
+        ],
+        {
+          "native_command": [
+            "/home/gabe/Documents/irisu/.tmp/physics-oracle",
+            "/home/gabe/Documents/irisu/artifacts/gpu-exact-20261103/recovery-script-smoke/guest/libirisu_box2d_msvc_exact_multiworld.so",
+            "600"
+          ],
+          "parallel_processes": 1,
+          "lanes": 1
+        }
+      ],
+      "references": [
+        {
+          "mutations": false,
+          "bytes_per_lane": 36000,
+          "sha256": "4fcd94f803509317a3f81b9611c0c4c362374354becf04b5382252c6f2d603b9"
+        }
+      ],
+      "warmups": [
+        {
+          "backend": "cuda",
+          "lanes": 1,
+          "steps_per_lane": 600,
+          "mutations": false,
+          "wall_seconds": 55.04211834099988,
+          "probe_metadata": [
+            {
+              "backend": "cuda",
+              "lanes": 1,
+              "steps": 600,
+              "mutations": false,
+              "kernel_ms": 54894.644531,
+              "elapsed_ms": 54922.634543,
+              "bytesperlane": 2097152,
+              "maxheapbytes": 347008,
+              "dispatches": 876447,
+              "failures": 0
+            }
+          ],
+          "compared_words": 9000,
+          "mismatches": 0
+        }
+      ],
+      "runs": [
+        {
+          "backend": "cuda",
+          "cpu_processes": 0,
+          "lanes": 1,
+          "steps_per_lane": 600,
+          "mutations": false,
+          "compared_words_per_repetition": 9000,
+          "process_wall_seconds": [
+            55.067669739997655
+          ],
+          "median_process_wall_ticks_per_second": 10.895685305604971,
+          "probe_metadata": [
+            [
+              {
+                "backend": "cuda",
+                "lanes": 1,
+                "steps": 600,
+                "mutations": false,
+                "kernel_ms": 54897.390625,
+                "elapsed_ms": 54931.067576,
+                "bytesperlane": 2097152,
+                "maxheapbytes": 347008,
+                "dispatches": 876447,
+                "failures": 0
+              }
+            ]
+          ],
+          "mismatches": 0,
+          "kernel_ms": [
+            54897.390625
+          ],
+          "median_kernel_ticks_per_second": 10.92948122249663
+        },
+        {
+          "backend": "native",
+          "cpu_processes": 1,
+          "lanes": 1,
+          "steps_per_lane": 600,
+          "mutations": false,
+          "compared_words_per_repetition": 9000,
+          "process_wall_seconds": [
+            0.006085790999350138
+          ],
+          "median_process_wall_ticks_per_second": 98590.30651300219,
+          "probe_metadata": [],
+          "mismatches": 0
+        }
+      ],
+      "pass": true,
+      "telemetry_columns": [
+        "timestamp",
+        "gpu_utilization_percent",
+        "memory_used_mib",
+        "power_w",
+        "temperature_c"
+      ],
+      "telemetry_summary": {
+        "samples": 1070,
+        "max_utilization_percent": 100.0,
+        "max_memory_mib": 1029.0,
+        "max_power_w": 46.22,
+        "max_temperature_c": 40.0,
+        "limits": "Whole-device100ms sampling; notprocess-exclusive, notSMoccupancy."
+      },
+      "raw_report": "build-gpu-guest/physics-local-600pilot.json"
+    }
+  }
+}
