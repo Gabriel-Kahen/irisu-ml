@@ -4815,5 +4815,10 @@
   },
   "quality_limitation": "The all-zero incumbent lineage was pruned at depth0 while candidates were nonterminal. Finite short-horizon score-first beam selection can sacrifice a later stronger combo. Completion-first ranking then filled the beam with terminal games at depth2.",
   "winning_replay": "artifacts/gpu-exact-20261103/search-v2/resident-suffix-96000.winner.rpy",
-  "winning_replay_sha256": "68e2583456629aed08affb77ff1ed8e34d5596c4ac1ae99ce5a5ab3697a0f256"
+  "winning_replay_sha256": "68e2583456629aed08affb77ff1ed8e34d5596c4ac1ae99ce5a5ab3697a0f256",
+  "historical_runtime_preservation": {
+    "manifest": "artifacts/gpu-exact-20261103/preserved-search-v2/manifest.json",
+    "sha256": "607ac894b70894f7410e05d382d9d52b0dae3e55d38719ddf58c09043e0c039f",
+    "scope": "immutable old binaries, original identities, generated inputs and source archive; restore this execution context to reproduce the historical run"
+  }
 }

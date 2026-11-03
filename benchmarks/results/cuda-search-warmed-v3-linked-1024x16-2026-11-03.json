@@ -1,0 +1,1586 @@
+{
+  "schema": "irisu-full-game-search-benchmark-v2",
+  "promotion_eligible": false,
+  "scope": "bounded published-replay prefix, sparse mutations, fixed continuation, full game rules and exact-host translation",
+  "record_search_provenance": "new sparse-mutation workload; recovered historical event-search invocation used rl_combo_diverse_search.py, whose source is absent; this benchmark does not reproduce that algorithm",
+  "candidate_generator": "distinct-effective-sparse-pixels-v2",
+  "distinct_normalized_specs": 1024,
+  "inputs": {
+    "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+    "specs_sha256": "b8c094e1a48fe8a80424df21cf3890f5bf015291ec4cd1893ca530b96c7acdeb",
+    "image_sha256": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685"
+  },
+  "binaries": {
+    "oracle_sha256": "cf4865e017afa0f559569d1d5ac834cb39cd4d23385c17224953e85e9ace48e1",
+    "gpu_sha256": "c2e64a367eb2e6a34f56db33b8191775dd794b63674da37d31c9ce571111da22"
+  },
+  "prefix": 100,
+  "horizon": 16,
+  "candidates": 1024,
+  "host_prefix": true,
+  "isolated_warps": true,
+  "trace_every_tick": false,
+  "cache_guest": true,
+  "block_threads": 128,
+  "stack_kib": 16,
+  "timing_contract": {
+    "warmups": 1,
+    "timed_repeats": 3,
+    "wall": "process startup, runtime initialization, prefix preparation/upload, branches, complete futures, stable ranking, GPU selected-state compaction and result download; Python parity comparison excluded",
+    "gpu_component": "CUDA events; setup/prefix, snapshot copy, future rollout, rank+compact+verification separately",
+    "telemetry": "whole-device nvidia-smi samples at approximately 200 ms; not process exclusive",
+    "validation": "warmup additionally compares compacted hidden state/arena and steps selected state plus independent source; timed repetitions skip that extra validation workload",
+    "cpu": "native ELF32 exact core, prefix once then bounded fork/COW candidate workers; same digest mode as GPU"
+  },
+  "cases": [
+    {
+      "backend": "cpu",
+      "workers": 1,
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-v3-linked-1024x16-2026-11-03.specs.bin",
+        "100",
+        "16",
+        "1",
+        "4393102",
+        "--final-only"
+      ],
+      "validation_command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-v3-linked-1024x16-2026-11-03.specs.bin",
+        "100",
+        "16",
+        "1",
+        "4393102",
+        "--final-only"
+      ],
+      "warmup": {
+        "wall_seconds": 1.7591441110052983,
+        "metadata": {
+          "identity": "experimental-native-exact-search-oracle-v2",
+          "candidates": 1024,
+          "workers": 1,
+          "prefix_ticks": 100,
+          "horizon": 16,
+          "simulated_ticks": 16384,
+          "trace_every_tick": false,
+          "prefix_ms": 8.381876,
+          "branch_rollout_rank_ms": 1746.25947,
+          "total_ms": 1754.650122,
+          "winner": 0
+        }
+      },
+      "runs": [
+        {
+          "wall_seconds": 1.7521083419997012,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 1024,
+            "workers": 1,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "trace_every_tick": false,
+            "prefix_ms": 8.903718,
+            "branch_rollout_rank_ms": 1738.217837,
+            "total_ms": 1747.130432,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 1.7448364740048419,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 1024,
+            "workers": 1,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "trace_every_tick": false,
+            "prefix_ms": 8.630288,
+            "branch_rollout_rank_ms": 1731.799182,
+            "total_ms": 1740.438768,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 1.7515023700034362,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 1024,
+            "workers": 1,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "trace_every_tick": false,
+            "prefix_ms": 8.513776,
+            "branch_rollout_rank_ms": 1738.508901,
+            "total_ms": 1747.031795,
+            "winner": 0
+          }
+        }
+      ],
+      "parity": true,
+      "result_sha256": "7977d82101064667360f5c0a4ecdcce684c030101c6a63290a866d6b28977a76",
+      "winner": 0,
+      "distinct_final_frame_fingerprints": 1024,
+      "distinct_trace_fingerprints": 1024,
+      "actual_simulated_ticks": 16384,
+      "median_wall_seconds": 1.7515023700034362,
+      "search_branches_per_second": 584.6409445612061,
+      "simulation_ticks_per_second": 9354.255112979297,
+      "telemetry": [
+        [
+          1793743202.6650252,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743202.880785,
+          0.0,
+          9.0,
+          26.12
+        ],
+        [
+          1793743203.0982559,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743203.3133376,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743203.528826,
+          0.0,
+          9.0,
+          26.13
+        ],
+        [
+          1793743203.7443764,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743203.9654725,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743204.1809163,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743204.3960993,
+          0.0,
+          9.0,
+          26.13
+        ],
+        [
+          1793743204.6131828,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743204.8328063,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743205.0481136,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743205.2634084,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743205.4792216,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743205.6959498,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743205.9162927,
+          0.0,
+          9.0,
+          26.13
+        ],
+        [
+          1793743206.136602,
+          0.0,
+          9.0,
+          26.04
+        ],
+        [
+          1793743206.357165,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743206.5788717,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743206.7984138,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743207.0200822,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743207.2402084,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743207.4609106,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743207.6760726,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743207.8912227,
+          0.0,
+          9.0,
+          26.13
+        ]
+      ],
+      "peak_vram_mib": 9.0,
+      "peak_gpu_util_percent": 0.0
+    },
+    {
+      "backend": "cpu",
+      "workers": 8,
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-v3-linked-1024x16-2026-11-03.specs.bin",
+        "100",
+        "16",
+        "8",
+        "4393102",
+        "--final-only"
+      ],
+      "validation_command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-v3-linked-1024x16-2026-11-03.specs.bin",
+        "100",
+        "16",
+        "8",
+        "4393102",
+        "--final-only"
+      ],
+      "warmup": {
+        "wall_seconds": 0.2678644850020646,
+        "metadata": {
+          "identity": "experimental-native-exact-search-oracle-v2",
+          "candidates": 1024,
+          "workers": 8,
+          "prefix_ticks": 100,
+          "horizon": 16,
+          "simulated_ticks": 16384,
+          "trace_every_tick": false,
+          "prefix_ms": 8.744034,
+          "branch_rollout_rank_ms": 254.656308,
+          "total_ms": 263.409409,
+          "winner": 0
+        }
+      },
+      "runs": [
+        {
+          "wall_seconds": 0.2542297769978177,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 1024,
+            "workers": 8,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "trace_every_tick": false,
+            "prefix_ms": 9.115822,
+            "branch_rollout_rank_ms": 240.602362,
+            "total_ms": 249.727481,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 0.2571214970012079,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 1024,
+            "workers": 8,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "trace_every_tick": false,
+            "prefix_ms": 8.791024,
+            "branch_rollout_rank_ms": 243.815234,
+            "total_ms": 252.614594,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 0.2560790839997935,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 1024,
+            "workers": 8,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "trace_every_tick": false,
+            "prefix_ms": 8.546548,
+            "branch_rollout_rank_ms": 243.119721,
+            "total_ms": 251.675367,
+            "winner": 0
+          }
+        }
+      ],
+      "parity": true,
+      "result_sha256": "7977d82101064667360f5c0a4ecdcce684c030101c6a63290a866d6b28977a76",
+      "winner": 0,
+      "distinct_final_frame_fingerprints": 1024,
+      "distinct_trace_fingerprints": 1024,
+      "actual_simulated_ticks": 16384,
+      "median_wall_seconds": 0.2560790839997935,
+      "search_branches_per_second": 3998.764694116235,
+      "simulation_ticks_per_second": 63980.23510585976,
+      "telemetry": [
+        [
+          1793743208.186948,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743208.4040632,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743208.6255028,
+          0.0,
+          9.0,
+          26.13
+        ],
+        [
+          1793743208.8454986,
+          0.0,
+          9.0,
+          26.03
+        ]
+      ],
+      "peak_vram_mib": 9.0,
+      "peak_gpu_util_percent": 0.0
+    },
+    {
+      "backend": "cpu",
+      "workers": 16,
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-v3-linked-1024x16-2026-11-03.specs.bin",
+        "100",
+        "16",
+        "16",
+        "4393102",
+        "--final-only"
+      ],
+      "validation_command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-v3-linked-1024x16-2026-11-03.specs.bin",
+        "100",
+        "16",
+        "16",
+        "4393102",
+        "--final-only"
+      ],
+      "warmup": {
+        "wall_seconds": 0.1986541810038034,
+        "metadata": {
+          "identity": "experimental-native-exact-search-oracle-v2",
+          "candidates": 1024,
+          "workers": 16,
+          "prefix_ticks": 100,
+          "horizon": 16,
+          "simulated_ticks": 16384,
+          "trace_every_tick": false,
+          "prefix_ms": 8.645087,
+          "branch_rollout_rank_ms": 185.610357,
+          "total_ms": 194.264481,
+          "winner": 0
+        }
+      },
+      "runs": [
+        {
+          "wall_seconds": 0.20415780100302072,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 1024,
+            "workers": 16,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "trace_every_tick": false,
+            "prefix_ms": 8.896515,
+            "branch_rollout_rank_ms": 190.375162,
+            "total_ms": 199.280924,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 0.21975472200574586,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 1024,
+            "workers": 16,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "trace_every_tick": false,
+            "prefix_ms": 8.812405,
+            "branch_rollout_rank_ms": 205.820995,
+            "total_ms": 214.643609,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 0.20920959200157085,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 1024,
+            "workers": 16,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "trace_every_tick": false,
+            "prefix_ms": 8.996415,
+            "branch_rollout_rank_ms": 195.414248,
+            "total_ms": 204.421934,
+            "winner": 0
+          }
+        }
+      ],
+      "parity": true,
+      "result_sha256": "7977d82101064667360f5c0a4ecdcce684c030101c6a63290a866d6b28977a76",
+      "winner": 0,
+      "distinct_final_frame_fingerprints": 1024,
+      "distinct_trace_fingerprints": 1024,
+      "actual_simulated_ticks": 16384,
+      "median_wall_seconds": 0.20920959200157085,
+      "search_branches_per_second": 4894.613053842729,
+      "simulation_ticks_per_second": 78313.80886148366,
+      "telemetry": [
+        [
+          1793743209.1598914,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743209.378188,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743209.5951812,
+          0.0,
+          9.0,
+          25.93
+        ]
+      ],
+      "peak_vram_mib": 9.0,
+      "peak_gpu_util_percent": 0.0
+    },
+    {
+      "backend": "cuda",
+      "workers": 0,
+      "command": [
+        "build-project-cuda/clone/cuda/irisu-cuda-search",
+        "build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-v3-linked-1024x16-2026-11-03.specs.bin",
+        "100",
+        "16",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix",
+        "--isolated-warps",
+        "--final-only",
+        "--block-threads",
+        "128",
+        "--stack-kib",
+        "16",
+        "--skip-compaction-check"
+      ],
+      "validation_command": [
+        "build-project-cuda/clone/cuda/irisu-cuda-search",
+        "build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-v3-linked-1024x16-2026-11-03.specs.bin",
+        "100",
+        "16",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix",
+        "--isolated-warps",
+        "--final-only",
+        "--block-threads",
+        "128",
+        "--stack-kib",
+        "16"
+      ],
+      "warmup": {
+        "wall_seconds": 10.733043733001978,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 1024,
+          "prefix_ticks": 100,
+          "horizon": 16,
+          "simulated_ticks": 16384,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 128,
+          "stack_kib": 16,
+          "host_prefix": true,
+          "host_prefix_ms": 148.079319,
+          "prefix_ms": 37.342208862,
+          "branch_ms": 7.770112038,
+          "rollout_ms": 10214.736328125,
+          "rank_compact_ms": 2.400255919,
+          "validation_ms": 185.884674072,
+          "compaction_check_enabled": true,
+          "total_ms": 10681.375392,
+          "allocated_bytes": 1674455072,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      "runs": [
+        {
+          "wall_seconds": 9.999274271998729,
+          "metadata": {
+            "identity": "experimental-cuda-game-search-v2",
+            "promotion_eligible": false,
+            "candidates": 1024,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "failed_candidates": 0,
+            "trace_every_tick": false,
+            "cache_guest": true,
+            "block_threads": 128,
+            "stack_kib": 16,
+            "host_prefix": true,
+            "host_prefix_ms": 149.185021,
+            "prefix_ms": 37.042175293,
+            "branch_ms": 7.103487968,
+            "rollout_ms": 9670.31640625,
+            "rank_compact_ms": 2.403327942,
+            "validation_ms": 0.002048,
+            "compaction_check_enabled": false,
+            "total_ms": 9946.883157,
+            "allocated_bytes": 1674455072,
+            "peak_guest_bytes": 359392,
+            "compaction_errors": 0,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 10.418617086994345,
+          "metadata": {
+            "identity": "experimental-cuda-game-search-v2",
+            "promotion_eligible": false,
+            "candidates": 1024,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "failed_candidates": 0,
+            "trace_every_tick": false,
+            "cache_guest": true,
+            "block_threads": 128,
+            "stack_kib": 16,
+            "host_prefix": true,
+            "host_prefix_ms": 146.800212,
+            "prefix_ms": 36.683776855,
+            "branch_ms": 7.532544136,
+            "rollout_ms": 10094.33984375,
+            "rank_compact_ms": 2.39411211,
+            "validation_ms": 0.002048,
+            "compaction_check_enabled": false,
+            "total_ms": 10366.646312,
+            "allocated_bytes": 1674455072,
+            "peak_guest_bytes": 359392,
+            "compaction_errors": 0,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 10.993278049005312,
+          "metadata": {
+            "identity": "experimental-cuda-game-search-v2",
+            "promotion_eligible": false,
+            "candidates": 1024,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "failed_candidates": 0,
+            "trace_every_tick": false,
+            "cache_guest": true,
+            "block_threads": 128,
+            "stack_kib": 16,
+            "host_prefix": true,
+            "host_prefix_ms": 149.730614,
+            "prefix_ms": 36.443134308,
+            "branch_ms": 7.32159996,
+            "rollout_ms": 10662.17578125,
+            "rank_compact_ms": 2.428927898,
+            "validation_ms": 0.002048,
+            "compaction_check_enabled": false,
+            "total_ms": 10941.300541,
+            "allocated_bytes": 1674455072,
+            "peak_guest_bytes": 359392,
+            "compaction_errors": 0,
+            "winner": 0
+          }
+        }
+      ],
+      "parity": true,
+      "result_sha256": "7977d82101064667360f5c0a4ecdcce684c030101c6a63290a866d6b28977a76",
+      "winner": 0,
+      "distinct_final_frame_fingerprints": 1024,
+      "distinct_trace_fingerprints": 1024,
+      "actual_simulated_ticks": 16384,
+      "median_wall_seconds": 10.418617086994345,
+      "search_branches_per_second": 98.28559697028011,
+      "simulation_ticks_per_second": 1572.5695515244818,
+      "telemetry": [
+        [
+          1793743220.5302036,
+          100.0,
+          15.0,
+          45.77
+        ],
+        [
+          1793743220.746908,
+          87.0,
+          4315.0,
+          42.96
+        ],
+        [
+          1793743220.9621472,
+          3.0,
+          4337.0,
+          89.29
+        ],
+        [
+          1793743221.1772628,
+          100.0,
+          4337.0,
+          82.05
+        ],
+        [
+          1793743221.3928363,
+          100.0,
+          4337.0,
+          76.67
+        ],
+        [
+          1793743221.608285,
+          100.0,
+          4337.0,
+          73.28
+        ],
+        [
+          1793743221.82357,
+          100.0,
+          4337.0,
+          72.22
+        ],
+        [
+          1793743222.0391843,
+          100.0,
+          4337.0,
+          70.59
+        ],
+        [
+          1793743222.2542357,
+          100.0,
+          4337.0,
+          70.2
+        ],
+        [
+          1793743222.4695916,
+          100.0,
+          4337.0,
+          70.59
+        ],
+        [
+          1793743222.6849504,
+          100.0,
+          4337.0,
+          69.33
+        ],
+        [
+          1793743222.9007094,
+          100.0,
+          4337.0,
+          70.3
+        ],
+        [
+          1793743223.1154897,
+          100.0,
+          4337.0,
+          68.56
+        ],
+        [
+          1793743223.3307033,
+          100.0,
+          4337.0,
+          69.33
+        ],
+        [
+          1793743223.5461514,
+          100.0,
+          4337.0,
+          68.56
+        ],
+        [
+          1793743223.7627668,
+          100.0,
+          4337.0,
+          68.09
+        ],
+        [
+          1793743223.9781928,
+          100.0,
+          4337.0,
+          68.58
+        ],
+        [
+          1793743224.1929421,
+          100.0,
+          4337.0,
+          68.19
+        ],
+        [
+          1793743224.4082456,
+          100.0,
+          4337.0,
+          67.8
+        ],
+        [
+          1793743224.6250684,
+          100.0,
+          4337.0,
+          68.0
+        ],
+        [
+          1793743224.8402944,
+          100.0,
+          4337.0,
+          67.22
+        ],
+        [
+          1793743225.0574741,
+          100.0,
+          4337.0,
+          67.22
+        ],
+        [
+          1793743225.272952,
+          100.0,
+          4337.0,
+          67.42
+        ],
+        [
+          1793743225.4891517,
+          100.0,
+          4337.0,
+          66.81
+        ],
+        [
+          1793743225.704002,
+          100.0,
+          4337.0,
+          67.42
+        ],
+        [
+          1793743225.919873,
+          100.0,
+          4337.0,
+          66.54
+        ],
+        [
+          1793743226.1348968,
+          100.0,
+          4337.0,
+          67.12
+        ],
+        [
+          1793743226.3505971,
+          100.0,
+          4337.0,
+          66.93
+        ],
+        [
+          1793743226.5657554,
+          100.0,
+          4337.0,
+          66.83
+        ],
+        [
+          1793743226.780905,
+          100.0,
+          4337.0,
+          66.64
+        ],
+        [
+          1793743226.9959586,
+          100.0,
+          4337.0,
+          66.93
+        ],
+        [
+          1793743227.2185712,
+          100.0,
+          4337.0,
+          66.98
+        ],
+        [
+          1793743227.4335318,
+          100.0,
+          4337.0,
+          66.35
+        ],
+        [
+          1793743227.6488018,
+          100.0,
+          4337.0,
+          66.54
+        ],
+        [
+          1793743227.8639698,
+          100.0,
+          4337.0,
+          66.64
+        ],
+        [
+          1793743228.0794535,
+          100.0,
+          4337.0,
+          65.87
+        ],
+        [
+          1793743228.2953525,
+          100.0,
+          4337.0,
+          63.93
+        ],
+        [
+          1793743228.510632,
+          100.0,
+          4337.0,
+          61.62
+        ],
+        [
+          1793743228.7254481,
+          100.0,
+          4337.0,
+          60.65
+        ],
+        [
+          1793743228.9410353,
+          100.0,
+          4337.0,
+          59.28
+        ],
+        [
+          1793743229.1567702,
+          100.0,
+          4337.0,
+          56.32
+        ],
+        [
+          1793743229.3720543,
+          100.0,
+          4337.0,
+          51.49
+        ],
+        [
+          1793743229.5869007,
+          100.0,
+          4337.0,
+          49.15
+        ],
+        [
+          1793743229.8018498,
+          100.0,
+          4337.0,
+          48.0
+        ],
+        [
+          1793743230.0189028,
+          100.0,
+          4337.0,
+          46.93
+        ],
+        [
+          1793743230.2338586,
+          100.0,
+          4337.0,
+          45.48
+        ],
+        [
+          1793743230.4489112,
+          100.0,
+          4337.0,
+          43.93
+        ],
+        [
+          1793743230.6642761,
+          100.0,
+          4315.0,
+          43.16
+        ],
+        [
+          1793743230.881252,
+          26.0,
+          4337.0,
+          98.11
+        ],
+        [
+          1793743231.096883,
+          100.0,
+          4337.0,
+          81.86
+        ],
+        [
+          1793743231.311997,
+          100.0,
+          4337.0,
+          76.37
+        ],
+        [
+          1793743231.5272336,
+          100.0,
+          4337.0,
+          75.5
+        ],
+        [
+          1793743231.7436116,
+          100.0,
+          4337.0,
+          72.4
+        ],
+        [
+          1793743231.9589512,
+          100.0,
+          4337.0,
+          71.07
+        ],
+        [
+          1793743232.1741188,
+          100.0,
+          4337.0,
+          71.46
+        ],
+        [
+          1793743232.3898275,
+          100.0,
+          4337.0,
+          70.19
+        ],
+        [
+          1793743232.605448,
+          100.0,
+          4337.0,
+          70.49
+        ],
+        [
+          1793743232.8202772,
+          100.0,
+          4337.0,
+          70.13
+        ],
+        [
+          1793743233.0353153,
+          100.0,
+          4337.0,
+          69.45
+        ],
+        [
+          1793743233.2504573,
+          100.0,
+          4337.0,
+          69.62
+        ],
+        [
+          1793743233.467615,
+          100.0,
+          4337.0,
+          69.16
+        ],
+        [
+          1793743233.6822736,
+          100.0,
+          4337.0,
+          69.06
+        ],
+        [
+          1793743233.8971193,
+          100.0,
+          4337.0,
+          68.58
+        ],
+        [
+          1793743234.1122394,
+          100.0,
+          4337.0,
+          68.38
+        ],
+        [
+          1793743234.3300152,
+          100.0,
+          4337.0,
+          68.09
+        ],
+        [
+          1793743234.5450296,
+          100.0,
+          4337.0,
+          68.19
+        ],
+        [
+          1793743234.7600617,
+          100.0,
+          4337.0,
+          68.19
+        ],
+        [
+          1793743234.9751408,
+          100.0,
+          4337.0,
+          68.26
+        ],
+        [
+          1793743235.1922445,
+          100.0,
+          4337.0,
+          67.61
+        ],
+        [
+          1793743235.4073844,
+          100.0,
+          4337.0,
+          67.39
+        ],
+        [
+          1793743235.6226666,
+          100.0,
+          4337.0,
+          67.38
+        ],
+        [
+          1793743235.8379104,
+          100.0,
+          4337.0,
+          67.03
+        ],
+        [
+          1793743236.0538125,
+          100.0,
+          4337.0,
+          66.94
+        ],
+        [
+          1793743236.2687,
+          100.0,
+          4337.0,
+          67.22
+        ],
+        [
+          1793743236.483562,
+          100.0,
+          4337.0,
+          67.22
+        ],
+        [
+          1793743236.6986914,
+          100.0,
+          4337.0,
+          67.04
+        ],
+        [
+          1793743236.9164152,
+          100.0,
+          4337.0,
+          66.83
+        ],
+        [
+          1793743237.131492,
+          100.0,
+          4337.0,
+          66.74
+        ],
+        [
+          1793743237.34642,
+          100.0,
+          4337.0,
+          66.83
+        ],
+        [
+          1793743237.5612602,
+          100.0,
+          4337.0,
+          66.83
+        ],
+        [
+          1793743237.7787511,
+          100.0,
+          4337.0,
+          66.71
+        ],
+        [
+          1793743237.9938974,
+          100.0,
+          4337.0,
+          66.64
+        ],
+        [
+          1793743238.2089372,
+          100.0,
+          4337.0,
+          65.29
+        ],
+        [
+          1793743238.4239843,
+          100.0,
+          4337.0,
+          62.39
+        ],
+        [
+          1793743238.640374,
+          100.0,
+          4337.0,
+          61.33
+        ],
+        [
+          1793743238.8555229,
+          100.0,
+          4337.0,
+          60.09
+        ],
+        [
+          1793743239.0707579,
+          100.0,
+          4337.0,
+          56.9
+        ],
+        [
+          1793743239.287148,
+          100.0,
+          4337.0,
+          54.09
+        ],
+        [
+          1793743239.5027118,
+          100.0,
+          4337.0,
+          51.49
+        ],
+        [
+          1793743239.7177498,
+          100.0,
+          4337.0,
+          47.71
+        ],
+        [
+          1793743239.9324923,
+          100.0,
+          4337.0,
+          46.83
+        ],
+        [
+          1793743240.1474998,
+          100.0,
+          4337.0,
+          46.84
+        ],
+        [
+          1793743240.3643732,
+          100.0,
+          4337.0,
+          45.38
+        ],
+        [
+          1793743240.5796392,
+          100.0,
+          4337.0,
+          44.51
+        ],
+        [
+          1793743240.7950106,
+          100.0,
+          4337.0,
+          43.54
+        ],
+        [
+          1793743241.0143466,
+          100.0,
+          35.0,
+          46.35
+        ],
+        [
+          1793743241.2302172,
+          0.0,
+          4335.0,
+          54.66
+        ],
+        [
+          1793743241.4472847,
+          94.0,
+          4337.0,
+          91.61
+        ],
+        [
+          1793743241.6620255,
+          100.0,
+          4337.0,
+          81.69
+        ],
+        [
+          1793743241.8771484,
+          100.0,
+          4337.0,
+          76.1
+        ],
+        [
+          1793743242.0937407,
+          100.0,
+          4337.0,
+          74.34
+        ],
+        [
+          1793743242.3086944,
+          100.0,
+          4337.0,
+          72.43
+        ],
+        [
+          1793743242.5245256,
+          100.0,
+          4337.0,
+          72.12
+        ],
+        [
+          1793743242.7398207,
+          100.0,
+          4337.0,
+          70.49
+        ],
+        [
+          1793743242.9554298,
+          100.0,
+          4337.0,
+          70.9
+        ],
+        [
+          1793743243.1705894,
+          100.0,
+          4337.0,
+          70.42
+        ],
+        [
+          1793743243.3855138,
+          100.0,
+          4337.0,
+          70.01
+        ],
+        [
+          1793743243.603105,
+          100.0,
+          4337.0,
+          69.04
+        ],
+        [
+          1793743243.8181205,
+          100.0,
+          4337.0,
+          69.74
+        ],
+        [
+          1793743244.033226,
+          100.0,
+          4337.0,
+          68.48
+        ],
+        [
+          1793743244.2483306,
+          100.0,
+          4337.0,
+          68.77
+        ],
+        [
+          1793743244.463252,
+          100.0,
+          4337.0,
+          68.67
+        ],
+        [
+          1793743244.680091,
+          100.0,
+          4337.0,
+          68.67
+        ],
+        [
+          1793743244.895729,
+          100.0,
+          4337.0,
+          68.67
+        ],
+        [
+          1793743245.1109867,
+          100.0,
+          4337.0,
+          68.29
+        ],
+        [
+          1793743245.326107,
+          100.0,
+          4337.0,
+          68.19
+        ],
+        [
+          1793743245.54239,
+          100.0,
+          4337.0,
+          68.0
+        ],
+        [
+          1793743245.757373,
+          100.0,
+          4337.0,
+          68.0
+        ],
+        [
+          1793743245.9725368,
+          100.0,
+          4337.0,
+          67.61
+        ],
+        [
+          1793743246.1875477,
+          100.0,
+          4337.0,
+          67.61
+        ],
+        [
+          1793743246.4048133,
+          100.0,
+          4337.0,
+          67.22
+        ],
+        [
+          1793743246.620113,
+          100.0,
+          4337.0,
+          67.22
+        ],
+        [
+          1793743246.8354218,
+          100.0,
+          4337.0,
+          67.51
+        ],
+        [
+          1793743247.0505002,
+          100.0,
+          4337.0,
+          66.74
+        ],
+        [
+          1793743247.2668161,
+          100.0,
+          4337.0,
+          67.51
+        ],
+        [
+          1793743247.481904,
+          100.0,
+          4337.0,
+          67.03
+        ],
+        [
+          1793743247.6969557,
+          100.0,
+          4337.0,
+          67.12
+        ],
+        [
+          1793743247.9141383,
+          100.0,
+          4337.0,
+          67.22
+        ],
+        [
+          1793743248.1289792,
+          100.0,
+          4337.0,
+          66.74
+        ],
+        [
+          1793743248.3449454,
+          100.0,
+          4337.0,
+          67.12
+        ],
+        [
+          1793743248.560103,
+          100.0,
+          4337.0,
+          66.16
+        ],
+        [
+          1793743248.7751818,
+          100.0,
+          4337.0,
+          64.04
+        ],
+        [
+          1793743248.9904761,
+          100.0,
+          4337.0,
+          61.42
+        ],
+        [
+          1793743249.205138,
+          100.0,
+          4337.0,
+          60.26
+        ],
+        [
+          1793743249.421371,
+          100.0,
+          4337.0,
+          59.21
+        ],
+        [
+          1793743249.6372344,
+          100.0,
+          4337.0,
+          57.19
+        ],
+        [
+          1793743249.85258,
+          100.0,
+          4337.0,
+          52.06
+        ],
+        [
+          1793743250.0675015,
+          100.0,
+          4337.0,
+          49.55
+        ],
+        [
+          1793743250.2827377,
+          100.0,
+          4337.0,
+          47.42
+        ],
+        [
+          1793743250.4995308,
+          100.0,
+          4337.0,
+          46.84
+        ],
+        [
+          1793743250.7145095,
+          100.0,
+          4337.0,
+          45.29
+        ],
+        [
+          1793743250.929429,
+          100.0,
+          4337.0,
+          44.8
+        ],
+        [
+          1793743251.1442065,
+          100.0,
+          4337.0,
+          44.71
+        ],
+        [
+          1793743251.3593225,
+          100.0,
+          4337.0,
+          44.71
+        ],
+        [
+          1793743251.574049,
+          100.0,
+          4337.0,
+          44.71
+        ],
+        [
+          1793743251.788816,
+          100.0,
+          4337.0,
+          44.51
+        ]
+      ],
+      "peak_vram_mib": 4337.0,
+      "peak_gpu_util_percent": 100.0
+    }
+  ]
+}
