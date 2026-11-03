@@ -53,20 +53,20 @@ __global__ void run_guest(irisu::cuda_guest::Guest* guests,std::uint32_t* output
 #endif
 
 int main(int argc,char** argv) {
-  if(argc<2) {std::fprintf(stderr,"usage: physics-probe image.bin [steps] [--gpu] [--mutations] [--lanes N]\n");return 2;}
-  unsigned steps=600,lanes=1;bool gpu=false,mutations=false;
+  if(argc<2) {std::fprintf(stderr,"usage: physics-probe image.bin [steps] [--gpu] [--mutations] [--lanes N] [--arena-bytes N]\n");return 2;}
+  unsigned steps=600,lanes=1,capacity=2*1024*1024;bool gpu=false,mutations=false;
   for(int i=2;i<argc;++i) {
     const std::string a=argv[i];
     if(a=="--gpu")gpu=true;
     else if(a=="--mutations")mutations=true;
     else if(a=="--lanes"&&i+1<argc)lanes=std::stoul(argv[++i]);
+    else if(a=="--arena-bytes"&&i+1<argc)capacity=std::stoul(argv[++i]);
     else steps=std::stoul(a);
   }
-  if(!steps||steps>100000||!lanes||lanes>8192)return 2;
+  if(!steps||steps>100000||!lanes||lanes>65536 || capacity<0x80000 || capacity>0x40000000 || (capacity&15))return 2;
   std::ifstream input(argv[1],std::ios::binary);
   const std::vector<unsigned char> image((std::istreambuf_iterator<char>(input)),{});
   if(image.empty()||image.size()>0x20000)return 2;
-  constexpr unsigned capacity=2*1024*1024;
   std::vector<std::uint32_t> output(std::size_t(lanes)*steps*15);
   std::vector<irisu::cuda_guest::Guest> guests(lanes);
   std::vector<unsigned char> memory(gpu?0:std::size_t(capacity)*lanes);

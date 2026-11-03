@@ -60,6 +60,7 @@ def main() -> int:
     parser.add_argument("--image", type=Path, default=ROOT / "build-gpu-guest/generated/guest_image.bin")
     parser.add_argument("--steps", type=int, default=600)
     parser.add_argument("--lanes", type=int, nargs="+", default=[1, 32, 128])
+    parser.add_argument("--arena-bytes", type=int, help="optional per-world arena size for the current probe")
     parser.add_argument("--cpu-threads", type=int, nargs="+", default=[1, 8, 16])
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--mutations", choices=("both", "off", "on"), default="both")
@@ -69,8 +70,10 @@ def main() -> int:
     args = parser.parse_args()
     if not 1 <= args.steps <= 100000 or not 1 <= args.repeats <= 20:
         parser.error("steps must be 1..100000, repeats 1..20")
-    if any(not 1 <= n <= 8192 for n in args.lanes) or any(not 1 <= n <= 64 for n in args.cpu_threads):
-        parser.error("lanes must be 1..8192 and CPU threads 1..64")
+    if any(not 1 <= n <= 65536 for n in args.lanes) or any(not 1 <= n <= 64 for n in args.cpu_threads):
+        parser.error("lanes must be 1..65536 and CPU threads 1..64")
+    if args.arena_bytes is not None and (args.arena_bytes < 0x80000 or args.arena_bytes > 0x40000000 or args.arena_bytes % 16):
+        parser.error("arena-bytes must be aligned to16 and512KiB..1GiB")
     for name in ("probe", "oracle", "library", "image"):
         setattr(args, name, getattr(args, name).resolve())
     if digest(args.library) != HOST_SHA:
@@ -79,12 +82,14 @@ def main() -> int:
     source_paths = [ROOT / "tools/cuda-exact/physics_validate.py",
                     ROOT / "tools/cuda-exact/physics_probe.cu",
                     ROOT / "tools/cuda-exact/physics_oracle.c",
-                    ROOT / "clone/cuda/guest.hpp"]
+                    ROOT / "clone/cuda/guest.hpp", ROOT / "clone/cuda/guest_program.cuh",
+                    ROOT / "tools/cuda-exact/translate.py", ROOT / "tools/cuda-exact/x87_numeric.cuh"]
     result = {
         "schema": "irisu-cuda-physics-fixture-v1",
         "scope": "three dynamic bodies plus floor; x/y/angle/vx/vy every tick; identical initial fixture per lane",
         "full_game_or_search_parity": False,
         "probe_backend": args.backend,
+        "arena_bytes": args.arena_bytes,
         "not_comparable_to_historical_dense_decisions_per_second": True,
         "timestamp_unix": time.time(),
         "git_head": capture(["git", "rev-parse", "HEAD"]),
@@ -132,7 +137,8 @@ def main() -> int:
                                           "sha256": hashlib.sha256(reference).hexdigest()})
             for lanes in args.lanes:
                 gpu = [str(args.probe), str(args.image), str(args.steps),
-                       *(["--gpu"] if args.backend == "cuda" else []), "--lanes", str(lanes), *flags]
+                       *(["--gpu"] if args.backend == "cuda" else []), "--lanes", str(lanes),
+                       *(["--arena-bytes", str(args.arena_bytes)] if args.arena_bytes is not None else []), *flags]
                 result["commands"].append(gpu)
                 if digest(args.probe) != result["binary_sha256"]["probe"]:
                     raise RuntimeError("probe binary changed during the benchmark")
