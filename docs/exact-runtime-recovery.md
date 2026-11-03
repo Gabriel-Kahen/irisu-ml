@@ -125,3 +125,17 @@ inputs; a backend using that helper needs an explicit range check/failure
 boundary or a separately proved unrestricted implementation. The audit says
 nothing about arithmetic overflow/underflow, NaN payloads, status-word side
 effects, solver parity, or full-game GPU parity.
+
+The lowering's implicit x87 operands are separately checked against native
+instruction bytes, not another interpretation of Capstone operands:
+
+```sh
+.venv-gpu/bin/python tools/cuda-exact/test_translation.py
+```
+
+This checks 118 register/memory forms on two input patterns, including reverse
+subtract/divide, popping arithmetic, exchanges, stores and compare/pop forms.
+It also checks 40 ADC/SBB result/defined-flag cases including carry wrapping
+and signed overflow. It requires x86-64, GNU C++, the optional CUDA headers,
+and the GPU development Python dependencies. These are lowering-component
+tests; the hardware trig and complete simulation still need their own gates.
