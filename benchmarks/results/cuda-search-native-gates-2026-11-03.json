@@ -1,0 +1,294 @@
+{
+  "schema": "irisu-native-search-gates-v1",
+  "scope": "authoritative ELF32 native fork/COW search oracle only; not CUDA validation or benchmark",
+  "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+  "binary_sha256": "3a27d8f7f5d6518893ad396488c77f31f2d3059bcd40d8fdd0a78b59aa264f58",
+  "source_sha256": {
+    "tools/cuda-exact/search_oracle.cpp": "ca916069de6cfaa0dc54821db64837e794e96b769c5e3c1d26b1e2c4a3b9d25f",
+    "clone/cuda/search.hpp": "9e30d4fa11c36c7241b8656fd205e1fc1166d07278444c04e0437462078d5a50"
+  },
+  "cases": [
+    {
+      "prefix": 0,
+      "horizon": 4,
+      "candidates": 16,
+      "workers": [
+        {
+          "workers": 1,
+          "wall_seconds": 0.09964530100114644,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v1",
+            "candidates": 16,
+            "workers": 1,
+            "prefix_ticks": 0,
+            "horizon": 4,
+            "simulated_ticks": 64,
+            "prefix_ms": 0.651579,
+            "branch_rollout_rank_ms": 41.331066,
+            "total_ms": 41.999767,
+            "winner": 0
+          }
+        },
+        {
+          "workers": 8,
+          "wall_seconds": 0.013177656001062132,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v1",
+            "candidates": 16,
+            "workers": 8,
+            "prefix_ticks": 0,
+            "horizon": 4,
+            "simulated_ticks": 64,
+            "prefix_ms": 0.385442,
+            "branch_rollout_rank_ms": 6.683984,
+            "total_ms": 7.084254,
+            "winner": 0
+          }
+        },
+        {
+          "workers": 16,
+          "wall_seconds": 0.012041706999298185,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v1",
+            "candidates": 16,
+            "workers": 16,
+            "prefix_ticks": 0,
+            "horizon": 4,
+            "simulated_ticks": 64,
+            "prefix_ms": 0.360936,
+            "branch_rollout_rank_ms": 6.968795,
+            "total_ms": 7.342255,
+            "winner": 0
+          }
+        }
+      ],
+      "winner": 0,
+      "result_sha256": "bbb322d8b0d531e36c93e5f514676bb4e490a20e17fb47c554b64fb74e4810db",
+      "canonical_scores": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ticks": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "worker_parity": true
+    },
+    {
+      "prefix": 100,
+      "horizon": 10,
+      "candidates": 16,
+      "workers": [
+        {
+          "workers": 1,
+          "wall_seconds": 0.042359130005934276,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v1",
+            "candidates": 16,
+            "workers": 1,
+            "prefix_ticks": 100,
+            "horizon": 10,
+            "simulated_ticks": 160,
+            "prefix_ms": 8.81284,
+            "branch_rollout_rank_ms": 27.875922,
+            "total_ms": 36.702679,
+            "winner": 0
+          }
+        },
+        {
+          "workers": 8,
+          "wall_seconds": 0.02725131499755662,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v1",
+            "candidates": 16,
+            "workers": 8,
+            "prefix_ticks": 100,
+            "horizon": 10,
+            "simulated_ticks": 160,
+            "prefix_ms": 9.255902,
+            "branch_rollout_rank_ms": 7.594996,
+            "total_ms": 16.862739,
+            "winner": 0
+          }
+        },
+        {
+          "workers": 16,
+          "wall_seconds": 0.023338058002991602,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v1",
+            "candidates": 16,
+            "workers": 16,
+            "prefix_ticks": 100,
+            "horizon": 10,
+            "simulated_ticks": 160,
+            "prefix_ms": 9.237237,
+            "branch_rollout_rank_ms": 7.880708,
+            "total_ms": 17.132092,
+            "winner": 0
+          }
+        }
+      ],
+      "winner": 0,
+      "result_sha256": "c0e24022048fd73ac594575722e17d8720c095c59fe49974162f83526c0707ba",
+      "canonical_scores": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ticks": [
+        110,
+        110,
+        110,
+        110,
+        110,
+        110,
+        110,
+        110,
+        110,
+        110,
+        110,
+        110,
+        110,
+        110,
+        110,
+        110
+      ],
+      "worker_parity": true
+    },
+    {
+      "prefix": 97215,
+      "horizon": 10,
+      "candidates": 16,
+      "workers": [
+        {
+          "workers": 1,
+          "wall_seconds": 3.0157028660032665,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v1",
+            "candidates": 16,
+            "workers": 1,
+            "prefix_ticks": 97215,
+            "horizon": 10,
+            "simulated_ticks": 63,
+            "prefix_ms": 2991.963887,
+            "branch_rollout_rank_ms": 17.240969,
+            "total_ms": 3009.226587,
+            "winner": 6
+          }
+        },
+        {
+          "workers": 8,
+          "wall_seconds": 2.9701348079979653,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v1",
+            "candidates": 16,
+            "workers": 8,
+            "prefix_ticks": 97215,
+            "horizon": 10,
+            "simulated_ticks": 63,
+            "prefix_ms": 2962.572786,
+            "branch_rollout_rank_ms": 3.372811,
+            "total_ms": 2965.96811,
+            "winner": 6
+          }
+        },
+        {
+          "workers": 16,
+          "wall_seconds": 2.954095385000983,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v1",
+            "candidates": 16,
+            "workers": 16,
+            "prefix_ticks": 97215,
+            "horizon": 10,
+            "simulated_ticks": 63,
+            "prefix_ms": 2947.183557,
+            "branch_rollout_rank_ms": 2.834447,
+            "total_ms": 2950.039636,
+            "winner": 6
+          }
+        }
+      ],
+      "winner": 6,
+      "result_sha256": "d6d7a2e3f3e23703fb76059b174a75b191d48c3b090616f8b91f381c3cf11034",
+      "canonical_scores": [
+        4393101,
+        4393101,
+        4393101,
+        4393101,
+        4393101,
+        4393101,
+        4393101,
+        4393101,
+        4393101,
+        4393101,
+        4393101,
+        4393101,
+        4393101,
+        4393101,
+        4393101,
+        4393101
+      ],
+      "ticks": [
+        97219,
+        97219,
+        97219,
+        97219,
+        97219,
+        97219,
+        97218,
+        97219,
+        97219,
+        97219,
+        97219,
+        97219,
+        97219,
+        97219,
+        97219,
+        97219
+      ],
+      "worker_parity": true
+    }
+  ]
+}
