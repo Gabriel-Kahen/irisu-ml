@@ -224,3 +224,99 @@ The receipt includes CMake cache, compiler flags, link commands, and the CPU
 reference model/microcode and GPU/driver identities. Verification rejects drift.
 The runtime also checks the actual image SHA-256 before allocating GPU state;
 modified, truncated or wrong-sized images are rejected.
+
+## Final measurements on this machine
+
+The warmed, distinct-candidate future/ranking workloads use prefix 100,
+`--final-only` on both backends, one warmup and three measured repetitions.
+Times below are median process wall times. The CPU oracle uses native exact
+physics and fork/COW; GPU time also includes materializing survivor checkpoints.
+The CPU oracle discards child worlds after ranking. This comparison therefore
+covers fixed candidate futures and ranking, with that extra GPU compaction cost;
+it is not a matched persistent CPU/GPU beam-lifecycle benchmark.
+
+| Future budget | Best tested CPU | GPU | GPU branches/s | GPU ticks/s | GPU slowdown |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 512 × 4 ticks | 0.0696 s (8 workers) | 1.5107 s | 338.9 | 1,355.7 | 21.7× |
+| 1,024 × 16 ticks | 0.1752 s (16 workers) | 10.5952 s | 96.6 | 1,546.4 | 60.5× |
+
+All warmups and timed results match the native per-candidate results, canonical
+ranks and outcome fingerprints. The raw CPU 1/8/16-worker samples and whole-device
+telemetry are retained in
+[512 × 4](../benchmarks/results/cuda-search-warmed-v4-linked-512x4-2026-11-03.json)
+and [1,024 × 16](../benchmarks/results/cuda-search-warmed-v4-linked-1024x16-2026-11-03.json).
+Peak sampled GPU memory was 3,541 and 4,337 MiB respectively. Native parallel
+runtimes varied across earlier runs; the retained samples support the reported
+measurements, not a universal CPU or GPU throughput ceiling.
+
+Batch exploration through 16,384 distinct futures used 28,239 MiB but did not
+improve useful throughput beyond the roughly 1,024-world case. Isolated warps
+with 128 threads per block performed best in the measured scheduling sweep.
+The region-local register-cache experiment improved its small physics fixture
+by under 0.7% while raising register use from 70 to 206, so it remains disabled.
+
+The separate three-body physics benchmark repeats two trajectories across
+16,384 worlds. Normal/mutation GPU wall times are 16.653/15.160 seconds versus
+7.691/7.541 seconds for the best tested CPU configuration (16 processes): about
+2.17×/2.01× slower. GPU kernel-only throughput reaches roughly 666k/730k ticks/s;
+those rates exclude initialization/transfers and are not search throughput.
+See the [warmed physics receipt](../benchmarks/results/cuda-physics-warmed-v100-2026-11-03.json).
+
+The [final resident campaign](../benchmarks/results/cuda-live-beam-high-score-campaign-v4-2026-11-03.json)
+starts at tick 96,000 of the published record and
+uses 16 dependent depths, 80 ticks per depth, beam 8 and fanout 32. It evaluated
+3,872 candidate nodes, including 3,456 active branches and 206,412 actual future
+ticks. Process wall time was 322.935 seconds: 53.243 seconds preparing the host
+prefix and 269.411 seconds in GPU rollout. Peak sampled device memory was
+3,155 MiB, with zero failed candidates or compaction errors.
+
+The winner independently replays from reset through natural termination at tick
+97,218 with canonical score **4,393,101**, level 100 and highest chain 70. It ties
+the published record; its live score of 4,394,445 is not a new canonical record.
+The original replay remains unchanged. The original incumbent was independently
+replayed too, and the runtime identity verified before and after the campaign.
+The long campaign verifies its winner; the smaller differential gates compare
+every leaf. No optimized native CPU resident beam was timed against this campaign.
+
+Reproduce the bounded campaign with a new output destination:
+
+```sh
+python3 tools/cuda-exact/search_session_validate.py \
+  --oracle build-project-exact/irisu-search-oracle \
+  --game-oracle build-project-exact/irisu-game-oracle \
+  --gpu build-project-cuda/clone/cuda/irisu-cuda-search-session \
+  --image build-project-cuda/clone/cuda/generated/guest_image.bin \
+  --replay irisu-high-score-4393101.rpy --prefix 96000 --horizon 80 \
+  --fanout 32 --beam 8 --depths 16 --arena-mib 1 --host-prefix \
+  --isolated-warps --block-threads 128 --stack-kib 16 --final-only \
+  --verify-winner-only --timeout 900 --output artifacts/cuda-live-beam-local.json
+```
+
+The [consolidated final receipt](../benchmarks/results/cuda-v100-final-2026-11-03.json)
+links the raw campaign, runtime identities, warmed timing samples, qualification
+receipts and test logs. Prior greedy and protected-beam experiments are preserved
+separately rather than replaced by the final live-beam result.
+
+## Qualification boundaries
+
+The published record matches all 97,220 frame regression rows on GPU through
+1,520 checkpoint segments, including every segment's hidden-state and complete
+arena hashes. Four additional seeded cases exercise natural termination and
+post-terminal replay tails. Continuous short trajectories, native/GPU branch
+futures, BothShots/held-input/cursor cases, and actual-engine memory checks pass.
+These results are recorded in the linked receipts; a single continuous
+97,219-tick GPU run was not performed.
+
+The pinned instruction audit found comparison-status consumption limited to
+C0/C2/C3 and control-word truncation around integer conversion. Its explicit
+limits are preserved in the
+[status audit](../benchmarks/results/pinned-x87-status-consumers-2026-11-03.json).
+This is evidence for the pinned program's consumed semantics, not a general
+architectural x87 emulator or a formal whole-program proof. The admitted numeric
+domain and fixed container capacities remain enforced. Durable cross-version
+snapshot serialization is outside this implementation.
+
+The backend is slower than the measured native CPU path. It remains an optional
+research backend with a distinct identity; production exact-training admission
+is unchanged. A finite beam and sparse proposal menu do not establish a global
+score optimum or learned policy transfer.

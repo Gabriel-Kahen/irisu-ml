@@ -1,0 +1,325 @@
+{
+  "schema": "irisu-v100-exact-backend-final-v1",
+  "date": "2026-11-03",
+  "branch": "codex/v100-exact-backend",
+  "status": "implemented-and-qualified-within-documented-domain",
+  "production_exact_training_admitted": false,
+  "conclusion": {
+    "correctness": "Pinned normal-mode CPU/GPU comparisons pass within the documented domain.",
+    "performance": "The implemented full-game GPU search is slower than the best measured CPU worker configurations.",
+    "score_improved": false
+  },
+  "implementation": [
+    "Optional CUDA sm_70 backend for pinned MSVC/x87 physics using modular generated translation",
+    "Source-derived full normal-mode game simulation, RNG, scoring and contacts on GPU",
+    "Copyable full checkpoints with pointer rebinding, stable canonical ranking and resident dependent beam search",
+    "Independent native exact CPU forks and reset replay verification",
+    "Image admission checks and strict source/build/binary/CPU/GPU runtime identity receipts"
+  ],
+  "hardware": {
+    "gpu": "Tesla V100-PCIE-32GB",
+    "cuda_toolkit": "12.9.86",
+    "driver": "580.178.04",
+    "architecture": "sm_70",
+    "cpu": "AMD Ryzen 7 3700X 8 cores / 16 threads",
+    "power_limit_watts": 250,
+    "global_power_or_driver_settings_changed": false
+  },
+  "pins": {
+    "native_physics_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+    "guest_image_sha256": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685",
+    "published_replay": {
+      "path": "irisu-high-score-4393101.rpy",
+      "sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79"
+    },
+    "session_identity": {
+      "path": "artifacts/gpu-exact-20261103/final-session-v4-identity.json",
+      "sha256": "9f16cde27bc2d93513d59b67761e1d2141c6f12f02f3ada21328fcb9c9e33623"
+    },
+    "onepass_identity": {
+      "path": "artifacts/gpu-exact-20261103/final-search-v4-linked-identity.json",
+      "sha256": "d378f9583d981f9bc61800b7e590cbf9af23b56affbed94b3496495df100610e"
+    },
+    "identity_verified_before_and_after_campaign": true
+  },
+  "validation": {
+    "ctest_cuda_build": {
+      "passed": 14,
+      "failed": 0,
+      "log": {
+        "path": "artifacts/gpu-exact-20261103/ctest-cuda-final.txt",
+        "sha256": "d40a0e7c5d0594afc0789b8329d4bcd020dfd3b699672b66e683ae9364acf731"
+      }
+    },
+    "ctest_native_exact_build": {
+      "passed": 12,
+      "failed": 0,
+      "log": {
+        "path": "artifacts/gpu-exact-20261103/ctest-project-exact-final.txt",
+        "sha256": "d2823e40d270a482200bf0726900ac680e884bb5827950f58b12af8bd23c67fd"
+      }
+    },
+    "record": {
+      "steps": 97219,
+      "frames": 97220,
+      "checkpoint_segments": 1520,
+      "segment_ticks": 64,
+      "per_frame_regression_match": true,
+      "hidden_and_full_arena_endpoint_match": true,
+      "continuous_full_length_gpu_replay_observed": false
+    },
+    "additional_seed_cases": {
+      "count": 4,
+      "attempted_words_each": 4096,
+      "physical_ticks_total": 3025,
+      "termination_and_frozen_tail_covered": true
+    },
+    "input_edges": {
+      "steps": 64,
+      "frame_matches": 65,
+      "explicit_native_event_assertions": 23,
+      "coverage": [
+        "BothShots",
+        "held/released/repressed",
+        "weak/strong partial transitions",
+        "opening suppression",
+        "cursor corners"
+      ],
+      "invalid_coordinate_range_tested": false
+    },
+    "live_beam_archive_case": {
+      "independent_native_leaves": 544,
+      "full_cumulative_trace_rank_lifecycle_selection_match": true
+    },
+    "receipts": [
+      {
+        "path": "benchmarks/results/cuda-game-segmented-record-v100-2026-11-03.json",
+        "sha256": "d87bf47c3e010cc3186c1e06c2ba46ddf876f7a3005367c1e8f2e2ebefc0dff3"
+      },
+      {
+        "path": "benchmarks/results/cuda-game-seed-segments-v100-2026-11-03.json",
+        "sha256": "62350308216c3b2d523a155ad2ae140816cc26df58d2128bb7bec2f6e80f7a99"
+      },
+      {
+        "path": "benchmarks/results/cuda-game-input-edge-v100-2026-11-03.json",
+        "sha256": "875ab040fb635247bfb296d659ce17819e84ffbf33ea80b43f336f0c926881c4"
+      },
+      {
+        "path": "benchmarks/results/cuda-live-beam-policy-qualification-v4-2026-11-03.json",
+        "sha256": "9d66a6264255c9d94f418163916b7e677b316ab065c25c11226626a90b00f8e8"
+      },
+      {
+        "path": "benchmarks/results/cuda-live-beam-memcheck-v4-2026-11-03.json",
+        "sha256": "495ec7f4effdde4521de9af93e83d096a02e985d4988a58e9381feb58ee6ab87"
+      },
+      {
+        "path": "benchmarks/results/cuda-search-sanitizer-v3-2026-11-03.json",
+        "sha256": "58a26b68568485e1e08fbeffbe648d738d3d9c496a38ae52cc5adf1d9cc6d56c"
+      },
+      {
+        "path": "benchmarks/results/pinned-x87-status-consumers-2026-11-03.json",
+        "sha256": "33086aae8156e01f4784cf41cf8898ebb8d2e310b50f41b2fd0c1a4936d9591b"
+      },
+      {
+        "path": "benchmarks/results/cuda-x87-numeric-2026-11-03.json",
+        "sha256": "4861a17649b5eb57693ffc68387e88d11522471e1601148b1cb72f3328d67770"
+      }
+    ]
+  },
+  "full_game_performance": {
+    "scope": "Fixed candidate futures and ranking. GPU additionally materializes survivor checkpoints; CPU children are discarded. This is not an optimized persistent CPU/GPU beam comparison. Final-only mode on both backends.",
+    "workloads": [
+      {
+        "receipt": {
+          "path": "benchmarks/results/cuda-search-warmed-v4-linked-512x4-2026-11-03.json",
+          "sha256": "b69e8ed359a2c84f2ab51d4bf9de0b3be046f30d39c10291cf361b4c14af5cc8"
+        },
+        "prefix": 100,
+        "candidates": 512,
+        "horizon": 4,
+        "warmups": 1,
+        "timed_repeats": 3,
+        "trace_every_tick": false,
+        "gpu_slowdown_over_best_tested_cpu": 21.715872951338373,
+        "cases": [
+          {
+            "backend": "cpu",
+            "workers": 1,
+            "median_wall_seconds": 0.3556905209989054,
+            "search_branches_per_second": 1439.4535973635789,
+            "simulation_ticks_per_second": 5757.8143894543155,
+            "actual_simulated_ticks": 2048,
+            "parity": true,
+            "peak_vram_mib": 9.0
+          },
+          {
+            "backend": "cpu",
+            "workers": 8,
+            "median_wall_seconds": 0.06956437299959362,
+            "search_branches_per_second": 7360.089337727389,
+            "simulation_ticks_per_second": 29440.357350909555,
+            "actual_simulated_ticks": 2048,
+            "parity": true,
+            "peak_vram_mib": 9.0
+          },
+          {
+            "backend": "cpu",
+            "workers": 16,
+            "median_wall_seconds": 0.07164295999973547,
+            "search_branches_per_second": 7146.550058817928,
+            "simulation_ticks_per_second": 28586.200235271714,
+            "actual_simulated_ticks": 2048,
+            "parity": true,
+            "peak_vram_mib": 9.0
+          },
+          {
+            "backend": "cuda",
+            "workers": 0,
+            "median_wall_seconds": 1.5106510859986884,
+            "search_branches_per_second": 338.92670832160945,
+            "simulation_ticks_per_second": 1355.7068332864378,
+            "actual_simulated_ticks": 2048,
+            "parity": true,
+            "peak_vram_mib": 3541.0
+          }
+        ]
+      },
+      {
+        "receipt": {
+          "path": "benchmarks/results/cuda-search-warmed-v4-linked-1024x16-2026-11-03.json",
+          "sha256": "2962e0d76f853a0b445f9bc2a15807d2d77294a95a433309c226b365776e9648"
+        },
+        "prefix": 100,
+        "candidates": 1024,
+        "horizon": 16,
+        "warmups": 1,
+        "timed_repeats": 3,
+        "trace_every_tick": false,
+        "gpu_slowdown_over_best_tested_cpu": 60.48858759498591,
+        "cases": [
+          {
+            "backend": "cpu",
+            "workers": 1,
+            "median_wall_seconds": 1.6582618389948038,
+            "search_branches_per_second": 617.5140595532987,
+            "simulation_ticks_per_second": 9880.22495285278,
+            "actual_simulated_ticks": 16384,
+            "parity": true,
+            "peak_vram_mib": 9.0
+          },
+          {
+            "backend": "cpu",
+            "workers": 8,
+            "median_wall_seconds": 0.24730952800018713,
+            "search_branches_per_second": 4140.560245617488,
+            "simulation_ticks_per_second": 66248.96392987981,
+            "actual_simulated_ticks": 16384,
+            "parity": true,
+            "peak_vram_mib": 9.0
+          },
+          {
+            "backend": "cpu",
+            "workers": 16,
+            "median_wall_seconds": 0.17516020800394472,
+            "search_branches_per_second": 5846.0766384619665,
+            "simulation_ticks_per_second": 93537.22621539146,
+            "actual_simulated_ticks": 16384,
+            "parity": true,
+            "peak_vram_mib": 9.0
+          },
+          {
+            "backend": "cuda",
+            "workers": 0,
+            "median_wall_seconds": 10.595193585002562,
+            "search_branches_per_second": 96.6475970245099,
+            "simulation_ticks_per_second": 1546.3615523921585,
+            "actual_simulated_ticks": 16384,
+            "parity": true,
+            "peak_vram_mib": 4337.0
+          }
+        ]
+      }
+    ],
+    "variability": "Earlier CPU worker timings varied; raw samples are retained. No universal throughput ceiling is claimed."
+  },
+  "physics_performance": {
+    "receipt": {
+      "path": "benchmarks/results/cuda-physics-warmed-v100-2026-11-03.json",
+      "sha256": "238de682be167f3ef9b8c0873dca2d14bf4552c6007965ba33eb0f8c011f23e2"
+    },
+    "worlds": 16384,
+    "ticks_each": 600,
+    "unique_trajectories": 2,
+    "gpu_wall_seconds_normal_mutation": [
+      16.653482,
+      15.159973
+    ],
+    "best_cpu_wall_seconds_normal_mutation": [
+      7.691237,
+      7.540515
+    ],
+    "cpu_processes": 16,
+    "scope": "Repeated three-body fixtures; kernel-only throughput is not full-game search throughput."
+  },
+  "final_campaign": {
+    "receipt": {
+      "path": "artifacts/gpu-exact-20261103/search-v4/resident-suffix-96000-live-beam-v4.json",
+      "sha256": "5d7bd9ca6d36057f7c3b26fb618540028b1da24b55c72b2938c8c03944bf98dd"
+    },
+    "prefix": 96000,
+    "horizon_each_depth": 80,
+    "depths": 16,
+    "beam": 8,
+    "fanout": 32,
+    "policy": "Best result archive plus live futures and protected unchanged incumbent",
+    "candidate_nodes": 3872,
+    "actual_simulated_branches": 3456,
+    "actual_simulated_ticks": 206412,
+    "budget_maximum_future_ticks": 309760,
+    "process_wall_seconds": 322.9347473430025,
+    "host_prefix_seconds": 53.243095440999994,
+    "gpu_rollout_seconds": 269.411032714844,
+    "peak_sampled_vram_mib": 3155.0,
+    "failed_candidates": 0,
+    "compaction_errors": 0,
+    "canonical_score": 4393101,
+    "level": 100,
+    "highest_chain": 70,
+    "natural_terminal": true,
+    "winner_tick": 97218,
+    "native_reset_replay_verified": true,
+    "verification_scope": "Independent native winner and original incumbent reset replays; other final campaign leaves were not individually native-replayed. Smaller gates compare every leaf.",
+    "winner_replay": {
+      "path": "artifacts/gpu-exact-20261103/search-v4/resident-suffix-96000-live-beam-v4.winner.rpy",
+      "sha256": "08642915b5f0a75938fcdd76a05df99a6c1fe2348ffced59dabaf4b8113705cf"
+    },
+    "published_record_unchanged": true,
+    "improved_published_record": false,
+    "tracked_campaign_receipt": {
+      "path": "benchmarks/results/cuda-live-beam-high-score-campaign-v4-2026-11-03.json",
+      "sha256": "18c671a2ed79c8cfc4f9eea627c2e3ea0b158cfe9764ec68ba19ed6821336589"
+    }
+  },
+  "limits": [
+    "Checkpoint-segmented full record coverage; no single continuous 97219-tick GPU run.",
+    "Pinned consumed x87 semantics and admitted numeric domains; no general architectural x87 or formal whole-program equivalence proof.",
+    "Bounded arenas, containers and sparse finite search proposals.",
+    "No reproduction of the missing historical event-proposal search implementation.",
+    "No global score optimum, production training admission or learned-policy transfer claim.",
+    "Durable cross-version checkpoint serialization is not implemented."
+  ],
+  "guide": "docs/cuda-exact.md",
+  "publication": "Local commits only; no remote push or deployment.",
+  "completion_state": {
+    "runtime_identity_checks": "Both final onepass and session receipts verified after campaign.",
+    "original_continuous_search_service": {
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "MainPID": 0
+    },
+    "search_or_compiler_processes_found": false,
+    "original_published_replay_sha256_unchanged": true,
+    "performance_speedup_goal_achieved": false
+  },
+  "evidence_commit": "d9e17da"
+}
