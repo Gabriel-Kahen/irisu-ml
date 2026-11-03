@@ -3,18 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#10120f">
+  <meta name="theme-color" content="#070a0b">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; style-src 'self'; connect-src 'self'; img-src 'self'">
   <title>irisu · Metsu</title>
-  <link rel="stylesheet" href="./styles.css?v=metsu-20261103b">
+  <link rel="stylesheet" href="./styles.css?v=metsu-20261103c">
 </head>
 <body>
   <main class="app">
     <header>
-      <div class="brand"><span class="wordmark">irisu</span><span class="mode-name">Metsu</span></div>
+      <div class="brand">irisu</div>
       <div class="header-actions">
-        <a class="normal-link" href="../">normal mode</a>
-        <button id="openReplayButton" type="button" disabled>replay</button>
+        <button id="openReplayButton" type="button" disabled>play replay</button>
         <input id="replayFileInput" type="file" accept=".rpy,application/octet-stream" hidden>
         <button id="pauseButton">pause <kbd>enter</kbd></button>
         <button id="restartButton">restart <kbd>R</kbd></button>
@@ -26,21 +25,12 @@
       </div>
     </header>
 
-    <section class="scoreboard" aria-label="Run statistics">
-      <div class="metric score-metric"><span class="metric-label">Score</span><output id="hudScore">00000000</output></div>
-      <div class="metric"><span class="metric-label">Level</span><output id="hudLevel">01</output></div>
-      <div class="metric"><span class="metric-label">Best chain</span><output id="hudChain">00</output></div>
-      <div class="metric life-metric">
-        <div class="life-heading"><span class="metric-label">Life</span><output id="hudGauge">1,000 / 10,000</output></div>
-        <div class="life-track" role="progressbar" aria-label="Life gauge" aria-valuemin="0" aria-valuemax="100" aria-valuenow="10"><span id="hudGaugeFill"></span></div>
-      </div>
-    </section>
     <div class="layout">
       <section class="game-frame">
         <canvas id="game" width="640" height="480" tabindex="0" aria-label="Irisu Metsu game field"></canvas>
         <div id="runtimeLoading" class="runtime-loading" role="status" aria-live="polite" aria-atomic="true">
           <div class="runtime-spinner" aria-hidden="true"></div>
-          <strong>Preparing the field</strong>
+          <strong>loading</strong>
         </div>
         <div id="gameOver" class="modal" hidden>
           <span class="modal-kicker">RUN COMPLETE</span>
@@ -51,7 +41,7 @@
             <button id="againButton" type="button" class="primary">try again</button>
           </div>
         </div>
-        <div id="paused" class="pause-mark" hidden><span>Paused<small>Enter to continue</small></span></div>
+        <div id="paused" class="pause-mark" hidden>PAUSED</div>
       </section>
 
       <section id="replayControls" class="replay-controls" aria-label="Replay playback controls" hidden>
@@ -81,13 +71,9 @@
       </section>
 
     </div>
-    <footer class="controls-legend" aria-label="Game controls">
-      <div><span><kbd>W</kbd> / left click <b>weak</b></span><span><kbd>S</kbd> / right click <b>strong</b></span><span><kbd>⇧</kbd> + click <b>both</b></span><span><kbd>Space</kbd> <b>fast forward</b></span></div>
-      <span class="ex-legend"><i aria-hidden="true"></i> EX block</span>
-    </footer>
     <div id="appError" class="app-error" role="alert" hidden></div>
   </main>
   <div id="toast" class="toast"></div>
-  <script type="module" src="./app.js?v=metsu-20261103b"></script>
+  <script type="module" src="./app.js?v=metsu-20261103c"></script>
 </body>
 </html>

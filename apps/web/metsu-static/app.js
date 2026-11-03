@@ -1,12 +1,12 @@
-import {BrowserGame} from "./exact-runtime.js?v=metsu-20261103b";
+import {BrowserGame} from "./exact-runtime.js?v=metsu-20261103c";
 import {
   activatedTrailAlphas, colorFor, hasActivatedTrail,
-} from "./colors.mjs?v=metsu-20261103b";
+} from "./colors.mjs?v=metsu-20261103c";
 import {
   clampReplayScrubFrame, parseReplay, REPLAY_TICK_MS,
-} from "./replay.mjs?v=metsu-20261103b";
-import {RestartGate} from "./restart-gate.mjs?v=metsu-20261103b";
-import {drawMetsuWalls, isExBody} from "./presentation.mjs?v=metsu-20261103b";
+} from "./replay.mjs?v=metsu-20261103c";
+import {RestartGate} from "./restart-gate.mjs?v=metsu-20261103c";
+import {drawMetsuWalls, isExBody} from "./presentation.mjs?v=metsu-20261103c";
 
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
@@ -32,8 +32,6 @@ const ui = {
   runtimeLoading: $("#runtimeLoading"),
   appError: $("#appError"),
   toast: $("#toast"),
-  hudScore: $("#hudScore"), hudLevel: $("#hudLevel"), hudChain: $("#hudChain"),
-  hudGauge: $("#hudGauge"), hudGaugeFill: $("#hudGaugeFill"),
 };
 
 let snapshot = null;
@@ -337,6 +335,48 @@ function drawBackdrop() {
   }
 }
 
+function outlinedText(text, x, y, size, align = "left") {
+  ctx.save();
+  ctx.textAlign = align;
+  ctx.font = `italic 900 ${size}px "Trebuchet MS", sans-serif`;
+  ctx.lineJoin = "round";
+  ctx.strokeStyle = "#55152c";
+  ctx.lineWidth = 5;
+  ctx.strokeText(text, x, y);
+  ctx.fillStyle = "#f0e2a6";
+  ctx.fillText(text, x, y);
+  ctx.restore();
+}
+
+function drawHud(state) {
+  outlinedText("Level", 21, 428, 28);
+  outlinedText(String(state.level), 52, 458, 25, "center");
+
+  const trackX = 151, trackY = 437, trackW = 312, trackH = 15;
+  ctx.fillStyle = "#33161eaa";
+  ctx.fillRect(trackX, trackY, trackW, trackH);
+  const ratio = Math.max(0, Math.min(1, state.gauge / state.gauge_max));
+  const gaugeGradient = ctx.createLinearGradient(trackX, 0, trackX + trackW, 0);
+  gaugeGradient.addColorStop(0, "#7c1b31");
+  gaugeGradient.addColorStop(1, "#b02a3f");
+  ctx.fillStyle = gaugeGradient;
+  ctx.fillRect(trackX, trackY, trackW * ratio, trackH);
+  ctx.fillStyle = "#ffffff18";
+  ctx.fillRect(trackX, trackY, trackW, 3);
+
+  const digits = String(state.score).padStart(8, "0");
+  ctx.save();
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = "900 26px Georgia, serif";
+  ctx.strokeStyle = "#681a38";
+  ctx.lineWidth = 5;
+  ctx.strokeText(digits, 320, 462);
+  ctx.fillStyle = "#eee0a4";
+  ctx.fillText(digits, 320, 462);
+  ctx.restore();
+}
+
 function drawClearBursts(now) {
   for (let i = clearBursts.length - 1; i >= 0; i--) {
     const burst = clearBursts[i];
@@ -373,12 +413,12 @@ function drawScorePopups(now) {
     ctx.globalAlpha = 1 - progress;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.font = "600 20px ui-monospace, monospace";
-    ctx.strokeStyle = "#101713";
-    ctx.lineWidth = 3;
+    ctx.font = "900 26px Georgia, serif";
+    ctx.strokeStyle = "#681a38";
+    ctx.lineWidth = 5;
     ctx.lineJoin = "round";
     ctx.strokeText(String(popup.value), popup.x, popup.y - rise);
-    ctx.fillStyle = "#f6edce";
+    ctx.fillStyle = "#eee0a4";
     ctx.fillText(String(popup.value), popup.x, popup.y - rise);
     ctx.restore();
   }
@@ -419,6 +459,7 @@ function draw(now) {
       .forEach((body) => drawBody(body, now));
     drawClearBursts(now);
     drawScorePopups(now);
+    drawHud(state);
   }
   if (aim.visible) {
     ctx.save();
@@ -476,16 +517,6 @@ function syncUi() {
   if (!snapshot) return;
   soundtrack.update(snapshot);
   const state = snapshot.observation;
-  const ratio = Math.max(0, Math.min(1, state.gauge / state.gauge_max));
-  if (ui.hudScore) ui.hudScore.textContent = String(state.score).padStart(8, "0");
-  if (ui.hudLevel) ui.hudLevel.textContent = String(state.level).padStart(2, "0");
-  if (ui.hudChain) ui.hudChain.textContent = String(state.highest_chain).padStart(2, "0");
-  if (ui.hudGauge) ui.hudGauge.textContent = `${Math.max(0, state.gauge).toLocaleString("en-US")} / ${state.gauge_max.toLocaleString("en-US")}`;
-  if (ui.hudGaugeFill) {
-    ui.hudGaugeFill.style.transform = `scaleX(${ratio})`;
-    ui.hudGaugeFill.parentElement.setAttribute("aria-valuenow", String(Math.round(ratio * 100)));
-    ui.hudGaugeFill.parentElement.classList.toggle("critical", ratio < .03);
-  }
   const replay = snapshot.replay;
   const replayMode = snapshot.mode === "replay";
   started ||= snapshot.running || state.tick > 0;
