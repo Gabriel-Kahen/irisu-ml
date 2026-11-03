@@ -4,7 +4,10 @@ This optional backend translates the pinned i386 MSVC physics image rather than
 replacing it with a float32 Box2D implementation. Its admission boundary is
 explicit: unsupported instructions, numeric domains, capacities or guest-memory
 accesses invalidate the lane. A failed candidate must never participate in score
-selection. The production CPU runtime and exact-training pins remain separate.
+selection. Search wire format v2 carries the **first recorded terminal** score
+explicitly for ranking and replay headers. The older Frame v1 regression wire
+retains its legacy `canonical_score` field encoding of the latest diagnostic;
+that field alone is not the ranking contract. The production CPU runtime and exact-training pins remain separate.
 
 The development target is a single Tesla V100 PCIe 32 GB (`sm_70`). The observed
 host has a Ryzen 7 3700X, NVIDIA driver 580.178.04, CUDA 12.9.86 and GCC 14 for
@@ -44,10 +47,15 @@ parity evidence must be attached separately for the actual workload tested.
 ## Build separation
 
 The CPU exact oracle requires a 32-bit GNU build; CUDA requires a separate
-64-bit build tree. Portable builds do not require CUDA or translation packages.
+64-bit build tree. Portable builds do not require CUDA, OpenSSL or translation packages.
+CUDA image admission uses the host OpenSSL Crypto library; the optional build
+checks for its development headers and library.
 First recover the original runtime using [exact-runtime-recovery.md](exact-runtime-recovery.md).
 
 ```sh
+# Recover only when the preserved runtime is absent (existing outputs are refused).
+[ -d .local/exact-runtime-20260824/exact-runtime/guest ] || \
+  python3 tools/recover-exact-cpu-runtime.py --output .local/exact-runtime-20260824/exact-runtime
 python3 -m venv .venv-gpu
 .venv-gpu/bin/pip install -r tools/cuda-exact/requirements.txt
 cmake -S . -B build-project-exact -DCMAKE_BUILD_TYPE=Release \
@@ -111,3 +119,95 @@ wall time, VRAM and sampled device utilization. A shorter horizon or a faster
 memory-copy kernel does not establish a full-game search speedup. Historical
 CPU decisions/s in `docs/fidelity.md` describe another workload and are not a
 denominator for these measurements.
+
+## Run the implementation
+
+Build the optional executables and native reference tools:
+
+```sh
+cmake --build build-project-cuda --target irisu-cuda-physics-probe \
+  irisu-cuda-game-probe irisu-cuda-game-segments irisu-cuda-search \
+  irisu-cuda-search-session -j 3
+cmake --build build-project-exact --target irisu-game-oracle irisu-search-oracle -j 3
+```
+
+A continuous short GPU trajectory checks body, observation, event and diagnostic
+regression digests against the independent native oracle:
+
+```sh
+python3 tools/cuda-exact/game_validate.py \
+  --oracle build-project-exact/irisu-game-oracle \
+  --probe build-project-cuda/clone/cuda/irisu-cuda-game-probe \
+  --image build-project-cuda/clone/cuda/generated/guest_image.bin \
+  --steps 128 --gpu --arena-mib 1 --output artifacts/cuda-game-smoke
+```
+
+To cover the complete record in parallel checkpoint segments, prepare its
+independent native digest, then run the segmented validator. Host preparation
+and GPU execution times are separate; this is validation, not a search benchmark.
+
+```sh
+mkdir -p artifacts
+build-project-exact/irisu-game-oracle irisu-high-score-4393101.rpy \
+  > artifacts/record-native.digest
+env -u CUDA_VISIBLE_DEVICES build-project-cuda/clone/cuda/irisu-cuda-game-segments \
+  build-project-cuda/clone/cuda/generated/guest_image.bin \
+  irisu-high-score-4393101.rpy artifacts/record-native.digest \
+  --segment-ticks 64 --threads 4 --arena-mib 1
+```
+
+The fixed-budget benchmark performs a warmup and identical native/GPU candidate
+comparisons on every timed repetition. `--final-only` removes per-tick regression
+hashing from **both** backends, retaining checkpoint/final comparisons; use the
+default for per-step validation. A host-translated prefix is prepared once per
+search process and included in its wall time. No host work occurs per future tick.
+
+```sh
+python3 tools/cuda-exact/search_validate.py \
+  --oracle build-project-exact/irisu-search-oracle \
+  --gpu build-project-cuda/clone/cuda/irisu-cuda-search \
+  --image build-project-cuda/clone/cuda/generated/guest_image.bin \
+  --prefix 100 --horizon 8 --candidates 512 --arena-mib 1 --keep 8 \
+  --workers 1 8 16 --repeats 3 --host-prefix --final-only \
+  --output benchmarks/results/cuda-search-local.json
+```
+
+The resident beam queues dependent depths with no intermediate state download,
+retains selected device checkpoints, and records stable parent/candidate lineage.
+The following small differential independently checks every leaf against native
+forks and verifies the exported winning trace from reset. Its flattened native
+reference deliberately repeats earlier history for correctness and must not be
+used as an optimized CPU multi-depth speed benchmark.
+
+```sh
+python3 tools/cuda-exact/search_session_validate.py \
+  --oracle build-project-exact/irisu-search-oracle \
+  --game-oracle build-project-exact/irisu-game-oracle \
+  --gpu build-project-cuda/clone/cuda/irisu-cuda-search-session \
+  --image build-project-cuda/clone/cuda/generated/guest_image.bin \
+  --replay irisu-high-score-4393101.rpy --prefix 100 --horizon 2 \
+  --fanout 3 --beam 2 --depths 3 --arena-mib 1 --host-prefix \
+  --output artifacts/cuda-resident-session.json
+```
+
+The session runner writes a candidate replay and an experimental lineage manifest
+with `native_replay_verified=false`. The independent validator adds the replay
+hash, verification scope, and successful native reset-replay check. A bounded
+nonterminal trace is labeled as such; it is not a completed score record.
+Production training admission remains false even after this diagnostic check.
+
+Create a runtime receipt once sources, build flags and binaries are stable:
+
+```sh
+python3 tools/cuda-exact/runtime_identity.py create \
+  --binary build-project-cuda/clone/cuda/irisu-cuda-search \
+  --generated build-project-cuda/clone/cuda/generated \
+  --host .local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so \
+  --build-command 'cmake --build build-project-cuda --target irisu-cuda-search -j 3' \
+  --output artifacts/cuda-search-identity.json
+python3 tools/cuda-exact/runtime_identity.py verify artifacts/cuda-search-identity.json
+```
+
+The receipt includes CMake cache, compiler flags and link commands when available.
+The runtime also checks the actual image SHA-256 before allocating GPU state;
+modified, truncated or wrong-sized images are rejected.
