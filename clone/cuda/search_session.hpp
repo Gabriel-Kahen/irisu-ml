@@ -6,11 +6,12 @@ namespace irisu::cuda_search {
 struct SessionOptions {
   Options game{};
   std::uint32_t depths{3}, beam{1};
+  bool protect_incumbent{true};
 };
 struct SessionOutput {
   // Rounds are flattened in order. Each contains round_counts[d] results and
   // ranks. A chosen child ordinal encodes parent rank * fanout + candidate.
-  std::vector<std::uint32_t> round_counts, round_kept, ranks;
+  std::vector<std::uint32_t> round_counts, round_kept, ranks, selected_children, protected_ranks;
   std::vector<Result> results;
   std::vector<std::uint32_t> winner_candidates, winner_words;
   std::uint64_t winner_canonical_chain{}, actual_simulated_ticks{}, actual_simulated_branches{};

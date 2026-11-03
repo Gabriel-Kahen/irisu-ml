@@ -32,14 +32,22 @@ def invoke(command,timeout):
 
 
 def decode_session(data,depths):
-    if len(data)<8 or struct.unpack_from("<2I",data)!=(2,depths):raise RuntimeError("bad session version/depth header")
+    if len(data)<8:raise RuntimeError("short session header")
+    version,declared=struct.unpack_from("<2I",data)
+    if version not in (2,3) or declared!=depths:raise RuntimeError("bad session version/depth header")
     offset=8;rounds=[]
     for depth in range(depths):
         count,keep=struct.unpack_from("<2I",data,offset);offset+=8
         size=16+count*(RESULT.size+4);payload=data[offset:offset+size];offset+=size
         results,ranks=decode(payload,count)
         if not 1<=keep<=count:raise RuntimeError("invalid compacted beam width")
-        rounds.append({"count":count,"keep":keep,"results":results,"ranks":ranks,"payload":payload})
+        selected=ranks[:keep];protected_rank=None
+        if version>=3:
+            selected=list(struct.unpack_from(f"<{keep}I",data,offset));offset+=4*keep
+            protected_rank=struct.unpack_from("<I",data,offset)[0];offset+=4
+            if len(set(selected))!=keep or any(i>=count for i in selected):raise RuntimeError("invalid selected child indices")
+        rounds.append({"version":version,"count":count,"keep":keep,"results":results,"ranks":ranks,
+                       "selected":selected,"protected_rank":protected_rank,"payload":payload})
     if offset!=len(data):raise RuntimeError("trailing session bytes")
     return rounds
 
@@ -73,6 +81,7 @@ def main():
     p.add_argument("--block-threads",type=int,default=4);p.add_argument("--stack-kib",type=int,default=16)
     p.add_argument("--verify-winner-only",action="store_true",
                    help="allow up to16 resident depths; validate stable ranks/lineage and independently replay the winner, omitting flattened native checks for every leaf")
+    p.add_argument("--no-protect-incumbent",action="store_true",help="reproduce greedy canonical top-K selection without retaining the zero-edit source lineage")
     args=p.parse_args();args.output.parent.mkdir(parents=True,exist_ok=True)
     if not 1<=args.fanout<=16384 or not 1<=args.beam<=64 or args.fanout*args.beam>16384 or not 1<=args.horizon<=100000:
         p.error("invalid bounded session fanout, beam or horizon")
@@ -87,16 +96,18 @@ def main():
     if args.isolated_warps:command.append("--isolated-warps")
     if args.final_only:command.append("--final-only")
     if args.global_guest:command.append("--global-guest")
+    if args.no_protect_incumbent:command.append("--no-protect-incumbent")
     command.extend(["--block-threads",args.block_threads,"--stack-kib",args.stack_kib])
     with Telemetry() as telemetry:data,run=invoke(command,args.timeout)
     rounds=decode_session(data,args.depths)
     args.output.with_suffix(".results.bin").write_bytes(data)
-    report={"schema":"irisu-resident-search-session-parity-v2","promotion_eligible":False,
+    report={"schema":"irisu-resident-search-session-parity-v3","promotion_eligible":False,
       "inputs":{"replay_sha256":sha(args.replay),"specs_sha256":sha(specs_path),"image_sha256":sha(args.image)},
       "binaries":{"gpu_sha256":sha(args.gpu),"oracle_sha256":sha(args.oracle),"game_oracle_sha256":sha(args.game_oracle)},
       "command":list(map(str,command)),"gpu":run,"rounds":[],"all_candidate_parity":False,
       "prefix":args.prefix,"horizon":args.horizon,"beam":args.beam,"fanout":args.fanout,"depths":args.depths}
     report["trace_every_tick"]=not args.final_only
+    report["protect_incumbent"]=not args.no_protect_incumbent
     report["distinct_normalized_specs"]=len(set(specs))
     report["verification_mode"]="independent_winner_replay" if args.verify_winner_only else "every_native_candidate_and_winner_replay"
     report["telemetry"]=telemetry.samples
@@ -104,7 +115,7 @@ def main():
         report["peak_vram_mib"]=max(row[2] for row in telemetry.samples)
         report["peak_gpu_util_percent"]=max(row[1] for row in telemetry.samples)
     report["gpu_metadata"]=next((json.loads(line) for line in reversed(run["stderr"].splitlines()) if line.startswith("{")),{})
-    parents=[[]]
+    parents=[[]];protected_parent=0;best_path=[]
     for depth,round in enumerate(rounds):
         if args.verify_winner_only:
             paths=[parent+[ordinal] for parent in parents for ordinal in range(len(specs))]
@@ -120,14 +131,26 @@ def main():
                 mismatch=next(((i,j,a,b) for i,(cr,gr) in enumerate(zip(cpu_results,round["results"]))
                                for j,(a,b) in enumerate(zip(cr,gr)) if a!=b),None)
                 raise RuntimeError(f"depth{depth} full candidate/rank mismatch: {mismatch}; native ranks{cpu_ranks}, GPU ranks{round['ranks']}")
-        parents=[paths[i] for i in round["ranks"][:round["keep"]]]
+        expected_selected=round["ranks"][:round["keep"]]
+        expected_protected=0xffffffff
+        if not args.no_protect_incumbent:
+            if round["version"]<3:raise RuntimeError("runtime does not support protected-incumbent selection")
+            protected_child=protected_parent*len(specs)
+            if protected_child not in expected_selected:expected_selected[-1]=protected_child
+            expected_protected=expected_selected.index(protected_child)
+        if round["selected"]!=expected_selected or round["protected_rank"]!=expected_protected:
+            raise RuntimeError(f"depth{depth} incumbent-selection policy mismatch")
+        protected_parent=expected_protected
+        best_path=paths[round["ranks"][0]]
+        parents=[paths[i] for i in round["selected"]]
         report["rounds"].append({"depth":depth,"candidates":round["count"],"selected_paths":parents,
           "distinct_final_frame_fingerprints":len({row[:12] for row in round["results"]}),
           "distinct_trace_fingerprints":len({row[12] for row in round["results"]}),
+          "selected_children":round["selected"],"protected_parent_rank":round["protected_rank"],
           "native_command":list(map(str,native_command)),"native":native_run,"native_candidate_parity":None if args.verify_winner_only else True,
           "result_sha256":hashlib.sha256(round["payload"]).hexdigest()})
     manifest=json.loads(lineage.read_text())
-    if manifest["winner_candidates"]!=parents[0]:raise RuntimeError("exported winning lineage disagrees with stable ranked beam")
+    if manifest["winner_candidates"]!=best_path:raise RuntimeError("exported winning lineage disagrees with best final canonical leaf")
     final=rounds[-1]["results"][rounds[-1]["ranks"][0]]
     replay_data=winner.read_bytes();steps=(len(replay_data)-52)//4
     if steps!=final[0]:raise RuntimeError("winning replay length disagrees with selected tick")
@@ -141,11 +164,26 @@ def main():
         raise RuntimeError("winning trace independent native reset replay disagrees with final GPU frame")
     manifest["native_replay_verified"]=True;manifest["native_verification_scope"]="natural canonical terminal" if final[16] else "bounded nonterminal trace"
     manifest["winner_replay_sha256"]=sha(winner);lineage.write_text(json.dumps(manifest,indent=2)+"\n")
+    incumbent_verification={};incumbent_floor=None
+    if not args.no_protect_incumbent:
+        source_frames,incumbent_verification=invoke([args.game_oracle,args.replay],args.timeout)
+        source_header=struct.unpack_from("<5I",args.replay.read_bytes())
+        source_metadata=next(json.loads(line) for line in reversed(incumbent_verification["stderr"].splitlines()) if line.startswith("{"))
+        # For incomplete games the comparator prioritizes survival before
+        # score. A numeric score floor is promised only for level100 sources.
+        if source_header[1]>=100 and args.prefix+args.horizon*args.depths>=source_metadata["tick"]:
+            if not final[16] or final[20]<source_header[2]:
+                raise RuntimeError("protected resident search returned less than its independently verified source incumbent")
+            incumbent_floor=source_header[2]
+            manifest["native_verified_incumbent_score_floor"]=incumbent_floor
+            lineage.write_text(json.dumps(manifest,indent=2)+"\n")
     report.update(all_candidate_parity=None if args.verify_winner_only else True,
       winning_lineage_consistent=True,winning_lineage_native_parity=None if args.verify_winner_only else True,
       winner_replay_sha256=sha(winner),native_reset_replay_verified=True,
       verification_scope="natural_terminal" if final[16] else "bounded_nonterminal",natural_terminal=bool(final[16]),
       canonical_score=final[20],winner_trace_ticks=steps,independent_verification=verification)
+    report["native_verified_incumbent_score_floor"]=incumbent_floor
+    report["incumbent_native_verification"]=incumbent_verification
     args.output.write_text(json.dumps(report,indent=2)+"\n");print(json.dumps({k:v for k,v in report.items() if k in {"all_candidate_parity","native_reset_replay_verified","verification_scope","canonical_score","winner_trace_ticks"}}))
     return 0
 if __name__=="__main__":raise SystemExit(main())
