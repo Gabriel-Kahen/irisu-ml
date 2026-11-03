@@ -23,6 +23,10 @@ if(g.pc==30224u && !g.depth && !g.error && g.r[1]<=g.capacity-12) {
   const std::uint64_t bound=count>=0?256ull*count+256:0;
   if(count>=0 && count<=4096 && budget>=bound &&
      std::uint64_t(constraints)+120ull*count<=g.capacity) {
+    // Native b2ContactConstraint has at most two contact points. Keep the
+    // conservative block bound valid even for non-native/corrupt snapshots.
+    for(std::int32_t i=0;i<count;++i)
+      if(g.load<std::uint32_t>(constraints+120u*i+116u)>2u)goto dispatch;
     const auto before=g.instructions;
     if(::irisu::cuda_direct::velocity(g)) {
       const auto used=g.instructions-before;

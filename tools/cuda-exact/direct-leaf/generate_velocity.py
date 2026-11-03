@@ -94,7 +94,7 @@ def main():
   if i.address not in states:continue
   sp,depth=states[i.address];lower=Lower(i);lower.sp=sp;lower.depth=depth
   lines.append(f'block_{i.address}:')
-  if i.address in starts:lines.append(f'g.pc={i.address}u;++g.instructions;if(g.error){{exit_depth={depth};goto commit;}}')
+  if i.address in starts:lines.append(f'g.pc={i.address}u;if(g.error){{exit_depth={depth};goto commit;}}++g.instructions;')
   m=i.mnemonic
   if m in BASE.COND:s=f'if(state.condition({BASE.COND[m]}))goto block_{i.operands[0].imm};goto block_{i.address+i.size};'
   elif m=='jmp':s=f'goto block_{i.operands[0].imm};'
