@@ -7,7 +7,7 @@ __global__ void session_parent_indices(std::uint32_t* indices,unsigned count,uns
 }
 __global__ void session_future_kernel(World* worlds,Options options,const std::uint32_t* replay,
  unsigned replay_size,const Candidate* specs,unsigned fanout,unsigned count,
- const Result* parents,const Result* root,Result* results,std::uint64_t end_tick,
+ const Result* parents,const Result* root,Result* results,std::uint32_t* lifecycle,std::uint64_t end_tick,
  unsigned long long* actual_ticks,std::uint32_t* peak_heap) {
   const unsigned thread=blockIdx.x*blockDim.x+threadIdx.x;
   if(options.isolated_warps&&(thread&31))return;
@@ -33,6 +33,7 @@ __global__ void session_future_kernel(World* worlds,Options options,const std::u
   result.clears=world.simulator.qualifying_clear_count_;
   result.failed|=world.failed();result.guest_error=world.guest.error;result.fault_pc=world.guest.fault_pc;
   rank_keys(result,end_tick,options.target_score);results[lane]=result;
+  lifecycle[lane]=(world.simulator.terminated_?1U:0U)|(world.simulator.truncated_?2U:0U);
   atomicAdd(actual_ticks,static_cast<unsigned long long>(ticks));
   if(ticks)atomicAdd(actual_ticks+1,1ULL);
   atomicMax(peak_heap,world.guest.heap);
@@ -42,11 +43,21 @@ __global__ void session_compact_results(Result* parents,const Result* children,
   const unsigned lane=blockIdx.x*blockDim.x+threadIdx.x;
   if(lane<keep)parents[lane]=children[selected[lane]];
 }
-__global__ void session_select_children(const std::uint32_t* ranks,unsigned count,
- unsigned keep,unsigned fanout,bool protect,std::uint32_t* protected_parent,
+__global__ void session_select_children(const Result* results,const std::uint32_t* ranks,
+ const std::uint32_t* lifecycle,unsigned count,unsigned keep,unsigned fanout,
+ bool greedy,bool protect,std::uint32_t* protected_parent,
  std::uint32_t* selected,std::uint32_t* protected_history,unsigned* errors) {
   if(threadIdx.x||blockIdx.x)return;
-  for(unsigned i=0;i<keep;++i)selected[i]=ranks[i];
+  selected[0]=ranks[0];unsigned filled=1;
+  if(!greedy&&keep>1)for(unsigned i=1;i<count&&filled<keep;++i){
+    const auto child=ranks[i];
+    if(!lifecycle[child]&&!results[child].failed)selected[filled++]=child;
+  }
+  for(unsigned i=1;i<count&&filled<keep;++i){
+    const auto child=ranks[i];bool duplicate=false;
+    for(unsigned j=0;j<filled;++j)duplicate|=selected[j]==child;
+    if(!duplicate)selected[filled++]=child;
+  }
   if(!protect){*protected_history=UINT32_MAX;return;}
   const auto child=(*protected_parent)*fanout;
   if(child>=count){atomicAdd(errors,1U);*protected_history=UINT32_MAX;return;}
@@ -99,6 +110,7 @@ void run_session(const SessionOptions& options,const unsigned char* image,
   auto* child_arenas=memory.allocate<unsigned char>(std::size_t(capacity)*game.arena_bytes);
   auto* indices=memory.allocate<std::uint32_t>(capacity);
   auto* all_results=memory.allocate<Result>(total);
+  auto* all_lifecycle=memory.allocate<std::uint32_t>(total);
   auto* all_ranks=memory.allocate<std::uint32_t>(total_ranks);
   auto* all_selected=memory.allocate<std::uint32_t>(total_selected);
   auto* protected_parent=memory.allocate<std::uint32_t>(1);check(cudaMemset(protected_parent,0,4));
@@ -137,15 +149,16 @@ void run_session(const SessionOptions& options,const unsigned char* image,
     auto event=std::make_unique<RoundEvents>();event->before.record();
     const auto count=output->round_counts[depth],keep=output->round_kept[depth];
     auto* results=all_results+offsets[depth];auto* ranks=all_ranks+rank_offsets[depth];
+    auto* lifecycle=all_lifecycle+offsets[depth];
     auto* selected=all_selected+selection_offsets[depth];
     session_parent_indices<<<(count+127)/128,128>>>(indices,count,fanout);
     clone_kernel<<<count,256>>>(children,child_arenas,parents,parent_arenas,game.arena_bytes,count,indices);
     event->branched.record();const auto threads=count*(game.isolated_warps?32U:1U);
     const auto block=game.isolated_warps?std::max(32U,game.block_threads):game.block_threads;
     session_future_kernel<<<(threads+block-1)/block,block>>>(children,game,replay_gpu,replay_size,specs_gpu,
-      fanout,count,parent_results,root_result,results,std::uint64_t(game.prefix)+std::uint64_t(depth+1)*game.horizon,actual_ticks,peak_heap);
+      fanout,count,parent_results,root_result,results,lifecycle,std::uint64_t(game.prefix)+std::uint64_t(depth+1)*game.horizon,actual_ticks,peak_heap);
     event->simulated.record();rank_results(results,count,ranks);
-    session_select_children<<<1,1>>>(ranks,count,keep,fanout,options.protect_incumbent,
+    session_select_children<<<1,1>>>(results,ranks,lifecycle,count,keep,fanout,options.greedy_beam,options.protect_incumbent,
       protected_parent,selected,protected_history+depth,errors);
     clone_kernel<<<keep,256>>>(parents,parent_arenas,children,child_arenas,game.arena_bytes,keep,selected);
     session_compact_results<<<(keep+31)/32,32>>>(parent_results,results,selected,keep);
@@ -159,8 +172,10 @@ void run_session(const SessionOptions& options,const unsigned char* image,
   }
   check(cudaGetLastError());validation_end.record();check(cudaEventSynchronize(validation_end.value));
   output->results.resize(total);output->ranks.resize(total);
+  output->lifecycle_flags.resize(total);
   output->selected_children.resize(total_selected);output->protected_ranks.resize(options.depths);
   check(cudaMemcpy(output->results.data(),all_results,total*sizeof(Result),cudaMemcpyDeviceToHost));
+  check(cudaMemcpy(output->lifecycle_flags.data(),all_lifecycle,total*4,cudaMemcpyDeviceToHost));
   for(unsigned d=0;d<options.depths;++d)
     check(cudaMemcpy(output->ranks.data()+offsets[d],all_ranks+rank_offsets[d],std::size_t(output->round_counts[d])*4,cudaMemcpyDeviceToHost));
   check(cudaMemcpy(output->selected_children.data(),all_selected,total_selected*4,cudaMemcpyDeviceToHost));
@@ -189,7 +204,7 @@ void run_session(const SessionOptions& options,const unsigned char* image,
   t.validation_ms=elapsed(end,validation_end);t.compaction_errors=compact_errors;t.peak_guest_bytes=heap;
   t.allocation_bytes=std::uint64_t(capacity+options.beam)*(sizeof(World)+game.arena_bytes)+image_bytes+
     std::uint64_t(replay_size)*4+std::uint64_t(fanout)*sizeof(Candidate)+std::uint64_t(options.beam)*sizeof(Result)+
-    std::uint64_t(capacity)*4+total*sizeof(Result)+total_ranks*4+32+sizeof(Result)+
+    std::uint64_t(capacity)*4+total*(sizeof(Result)+4)+total_ranks*4+32+sizeof(Result)+
     total_selected*4+std::uint64_t(options.depths)*4+4;
   t.total_ms=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-begin).count();
 }

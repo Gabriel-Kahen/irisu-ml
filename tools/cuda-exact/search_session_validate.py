@@ -34,7 +34,7 @@ def invoke(command,timeout):
 def decode_session(data,depths):
     if len(data)<8:raise RuntimeError("short session header")
     version,declared=struct.unpack_from("<2I",data)
-    if version not in (2,3) or declared!=depths:raise RuntimeError("bad session version/depth header")
+    if version not in (2,3,4) or declared!=depths:raise RuntimeError("bad session version/depth header")
     offset=8;rounds=[]
     for depth in range(depths):
         count,keep=struct.unpack_from("<2I",data,offset);offset+=8
@@ -46,8 +46,12 @@ def decode_session(data,depths):
             selected=list(struct.unpack_from(f"<{keep}I",data,offset));offset+=4*keep
             protected_rank=struct.unpack_from("<I",data,offset)[0];offset+=4
             if len(set(selected))!=keep or any(i>=count for i in selected):raise RuntimeError("invalid selected child indices")
+        lifecycle=None
+        if version>=4:
+            lifecycle=list(struct.unpack_from(f"<{count}I",data,offset));offset+=4*count
+            if any(flag&~3 for flag in lifecycle):raise RuntimeError("invalid lifecycle flags")
         rounds.append({"version":version,"count":count,"keep":keep,"results":results,"ranks":ranks,
-                       "selected":selected,"protected_rank":protected_rank,"payload":payload})
+                       "selected":selected,"protected_rank":protected_rank,"lifecycle":lifecycle,"payload":payload})
     if offset!=len(data):raise RuntimeError("trailing session bytes")
     return rounds
 
@@ -81,7 +85,8 @@ def main():
     p.add_argument("--block-threads",type=int,default=4);p.add_argument("--stack-kib",type=int,default=16)
     p.add_argument("--verify-winner-only",action="store_true",
                    help="allow up to16 resident depths; validate stable ranks/lineage and independently replay the winner, omitting flattened native checks for every leaf")
-    p.add_argument("--no-protect-incumbent",action="store_true",help="reproduce greedy canonical top-K selection without retaining the zero-edit source lineage")
+    p.add_argument("--no-protect-incumbent",action="store_true",help="allow the zero-edit source lineage to be pruned")
+    p.add_argument("--greedy-beam",action="store_true",help="use legacy canonical top-K survivors instead of retaining the best child plus live futures")
     args=p.parse_args();args.output.parent.mkdir(parents=True,exist_ok=True)
     if not 1<=args.fanout<=16384 or not 1<=args.beam<=64 or args.fanout*args.beam>16384 or not 1<=args.horizon<=100000:
         p.error("invalid bounded session fanout, beam or horizon")
@@ -97,17 +102,19 @@ def main():
     if args.final_only:command.append("--final-only")
     if args.global_guest:command.append("--global-guest")
     if args.no_protect_incumbent:command.append("--no-protect-incumbent")
+    if args.greedy_beam:command.append("--greedy-beam")
     command.extend(["--block-threads",args.block_threads,"--stack-kib",args.stack_kib])
     with Telemetry() as telemetry:data,run=invoke(command,args.timeout)
     rounds=decode_session(data,args.depths)
     args.output.with_suffix(".results.bin").write_bytes(data)
-    report={"schema":"irisu-resident-search-session-parity-v3","promotion_eligible":False,
+    report={"schema":"irisu-resident-search-session-parity-v4","promotion_eligible":False,
       "inputs":{"replay_sha256":sha(args.replay),"specs_sha256":sha(specs_path),"image_sha256":sha(args.image)},
       "binaries":{"gpu_sha256":sha(args.gpu),"oracle_sha256":sha(args.oracle),"game_oracle_sha256":sha(args.game_oracle)},
       "command":list(map(str,command)),"gpu":run,"rounds":[],"all_candidate_parity":False,
       "prefix":args.prefix,"horizon":args.horizon,"beam":args.beam,"fanout":args.fanout,"depths":args.depths}
     report["trace_every_tick"]=not args.final_only
     report["protect_incumbent"]=not args.no_protect_incumbent
+    report["greedy_beam"]=args.greedy_beam
     report["distinct_normalized_specs"]=len(set(specs))
     report["verification_mode"]="independent_winner_replay" if args.verify_winner_only else "every_native_candidate_and_winner_replay"
     report["telemetry"]=telemetry.samples
@@ -125,13 +132,24 @@ def main():
             path=args.output.with_suffix(f".depth-{depth}.native-specs.bin");path.write_bytes(native_specs)
             native_command=[args.oracle,args.replay,path,args.prefix,args.horizon*(depth+1),args.workers,4393102]
             if args.final_only:native_command.append("--final-only")
+            lifecycle_path=args.output.with_suffix(f".depth-{depth}.native-lifecycle.bin")
+            native_command.extend(["--emit-lifecycle",lifecycle_path])
             native,native_run=invoke(native_command,args.timeout)
             if native!=round["payload"]:
                 cpu_results,cpu_ranks=decode(native,round["count"])
                 mismatch=next(((i,j,a,b) for i,(cr,gr) in enumerate(zip(cpu_results,round["results"]))
                                for j,(a,b) in enumerate(zip(cr,gr)) if a!=b),None)
                 raise RuntimeError(f"depth{depth} full candidate/rank mismatch: {mismatch}; native ranks{cpu_ranks}, GPU ranks{round['ranks']}")
-        expected_selected=round["ranks"][:round["keep"]]
+            native_flags=struct.unpack(f"<{round['count']}I",lifecycle_path.read_bytes())
+            if list(native_flags)!=round["lifecycle"]:raise RuntimeError(f"depth{depth} native/GPU lifecycle mismatch")
+        if round["lifecycle"] is None:raise RuntimeError("runtime lacks live-beam lifecycle flags")
+        if args.greedy_beam:expected_selected=round["ranks"][:round["keep"]]
+        else:
+            expected_selected=round["ranks"][:1]
+            expected_selected.extend(i for i in round["ranks"][1:] if round["lifecycle"][i]==0)
+            expected_selected=expected_selected[:round["keep"]]
+            expected_selected.extend(i for i in round["ranks"] if i not in expected_selected)
+            expected_selected=expected_selected[:round["keep"]]
         expected_protected=0xffffffff
         if not args.no_protect_incumbent:
             if round["version"]<3:raise RuntimeError("runtime does not support protected-incumbent selection")
@@ -147,6 +165,8 @@ def main():
           "distinct_final_frame_fingerprints":len({row[:12] for row in round["results"]}),
           "distinct_trace_fingerprints":len({row[12] for row in round["results"]}),
           "selected_children":round["selected"],"protected_parent_rank":round["protected_rank"],
+          "live_children":sum(flag==0 for flag in round["lifecycle"]),
+          "selected_live_children":sum(round["lifecycle"][i]==0 for i in round["selected"]),
           "native_command":list(map(str,native_command)),"native":native_run,"native_candidate_parity":None if args.verify_winner_only else True,
           "result_sha256":hashlib.sha256(round["payload"]).hexdigest()})
     manifest=json.loads(lineage.read_text())
