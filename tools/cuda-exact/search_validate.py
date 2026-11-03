@@ -168,6 +168,7 @@ def main():
       "scope":"bounded published-replay prefix, sparse mutations, fixed continuation, full game rules and exact-host translation",
       "record_search_provenance":"new sparse-mutation workload; recovered historical event-search invocation used rl_combo_diverse_search.py, whose source is absent; this benchmark does not reproduce that algorithm",
       "candidate_generator":"distinct-effective-sparse-pixels-v2",
+      "distinct_normalized_specs":len(set(SPEC.iter_unpack(specs.read_bytes()))),
       "inputs":{"replay_sha256":sha(args.replay),"specs_sha256":sha(specs),"image_sha256":sha(args.image)},
       "binaries":{"oracle_sha256":sha(args.oracle),"gpu_sha256":sha(args.gpu)},
       "prefix":args.prefix,"horizon":args.horizon,"candidates":args.candidates,"host_prefix":args.host_prefix,"isolated_warps":args.isolated_warps,
@@ -194,6 +195,8 @@ def main():
         ticks=sum(row[13] for row in rows)
         case={"backend":backend,"workers":workers,"command":list(map(str,timed_command)),"validation_command":list(map(str,command)),"warmup":wm,"runs":runs,
           "parity":True,"result_sha256":hashlib.sha256(warm).hexdigest(),"winner":ranks[0],
+          "distinct_final_frame_fingerprints":len({row[:12] for row in rows}),
+          "distinct_trace_fingerprints":len({row[12] for row in rows}),
           "actual_simulated_ticks":ticks,"median_wall_seconds":median,
           "search_branches_per_second":args.candidates/median,"simulation_ticks_per_second":ticks/median,
           "telemetry":telemetry.samples}

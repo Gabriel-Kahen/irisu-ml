@@ -97,6 +97,7 @@ def main():
       "command":list(map(str,command)),"gpu":run,"rounds":[],"all_candidate_parity":False,
       "prefix":args.prefix,"horizon":args.horizon,"beam":args.beam,"fanout":args.fanout,"depths":args.depths}
     report["trace_every_tick"]=not args.final_only
+    report["distinct_normalized_specs"]=len(set(specs))
     report["verification_mode"]="independent_winner_replay" if args.verify_winner_only else "every_native_candidate_and_winner_replay"
     report["telemetry"]=telemetry.samples
     if telemetry.samples:
@@ -121,6 +122,8 @@ def main():
                 raise RuntimeError(f"depth{depth} full candidate/rank mismatch: {mismatch}; native ranks{cpu_ranks}, GPU ranks{round['ranks']}")
         parents=[paths[i] for i in round["ranks"][:round["keep"]]]
         report["rounds"].append({"depth":depth,"candidates":round["count"],"selected_paths":parents,
+          "distinct_final_frame_fingerprints":len({row[:12] for row in round["results"]}),
+          "distinct_trace_fingerprints":len({row[12] for row in round["results"]}),
           "native_command":list(map(str,native_command)),"native":native_run,"native_candidate_parity":None if args.verify_winner_only else True,
           "result_sha256":hashlib.sha256(round["payload"]).hexdigest()})
     manifest=json.loads(lineage.read_text())
