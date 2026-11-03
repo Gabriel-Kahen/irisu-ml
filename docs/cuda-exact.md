@@ -167,13 +167,25 @@ python3 tools/cuda-exact/search_validate.py \
   --oracle build-project-exact/irisu-search-oracle \
   --gpu build-project-cuda/clone/cuda/irisu-cuda-search \
   --image build-project-cuda/clone/cuda/generated/guest_image.bin \
-  --prefix 100 --horizon 8 --candidates 512 --arena-mib 1 --keep 8 \
+  --prefix 100 --horizon 4 --candidates 512 --arena-mib 1 --keep 8 \
   --workers 1 8 16 --repeats 3 --host-prefix --final-only \
+  --isolated-warps --block-threads 128 --stack-kib 16 \
   --output benchmarks/results/cuda-search-local.json
 ```
 
 The resident beam queues dependent depths with no intermediate state download,
 retains selected device checkpoints, and records stable parent/candidate lineage.
+Session wire format v4 records lifecycle flags and actual selected children
+separately from canonical ranks. The default selector keeps the highest-ranked
+result, fills remaining slots with live futures, and protects candidate 0's
+unchanged incumbent lineage. Ranked fallbacks fill any unused slots. Candidate 0
+must contain no edits. With at least two survivors, this retains a completed
+archive alongside exploration; beam one reserves its progress slot for the
+incumbent and exports the best final leaf.
+`--greedy-beam` disables live-priority filling while retaining incumbent
+protection; add `--no-protect-incumbent` for strict canonical top-K selection.
+A score floor is claimed only for an independently verified
+level-100 incumbent whose natural ending lies within the search budget.
 The following small differential independently checks every leaf against native
 forks and verifies the exported winning trace from reset. Its flattened native
 reference deliberately repeats earlier history for correctness and must not be
@@ -208,6 +220,7 @@ python3 tools/cuda-exact/runtime_identity.py create \
 python3 tools/cuda-exact/runtime_identity.py verify artifacts/cuda-search-identity.json
 ```
 
-The receipt includes CMake cache, compiler flags and link commands when available.
+The receipt includes CMake cache, compiler flags, link commands, and the CPU
+reference model/microcode and GPU/driver identities. Verification rejects drift.
 The runtime also checks the actual image SHA-256 before allocating GPU state;
 modified, truncated or wrong-sized images are rejected.
