@@ -1,0 +1,38 @@
+{
+  "schema": "irisu-cupti-capability-probe-v1",
+  "scope": "Context creation and API enable/disable only; no kernels or sample data collected. Successful PC sampling enable does not alone establish usable sampled counters.",
+  "results": [
+    {
+      "api": "cuInit",
+      "result": 0
+    },
+    {
+      "api": "cuptiActivityEnable(CONCURRENT_KERNEL)",
+      "result": 0,
+      "name": "CUPTI_SUCCESS"
+    },
+    {
+      "api": "cuptiActivityDisable(CONCURRENT_KERNEL)",
+      "result": 0,
+      "name": "CUPTI_SUCCESS"
+    },
+    {
+      "api": "cuptiDeviceGetNumEventDomains",
+      "result": 27,
+      "name": "CUPTI_ERROR_NOT_SUPPORTED"
+    },
+    {
+      "api": "cuptiPCSamplingEnable",
+      "result": 0,
+      "name": "CUPTI_SUCCESS"
+    },
+    {
+      "api": "cuptiPCSamplingDisable",
+      "result": 0,
+      "name": "CUPTI_SUCCESS"
+    }
+  ],
+  "stderr": "",
+  "source_sha256": "bd584cd7fb0fb4afd85d7f369b02581af12d1fc4167c199ee427cbe76744342e",
+  "conclusion": "Dedicated PC sampling setup and activity tracing are available to current nonadmin user. Legacy event domain API unsupported. Actual sample collection remains to be tested."
+}
