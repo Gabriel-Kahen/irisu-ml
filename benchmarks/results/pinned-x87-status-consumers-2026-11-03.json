@@ -1,0 +1,1518 @@
+{
+  "schema": "irisu-pinned-x87-status-audit-v1",
+  "source_host_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+  "translator_sha256": "44c2c5a17762c3c551043175e80111f5121eb2a657f78107162b2d7f7b1d5d86",
+  "scope": "static consumers of the current pinned physics image; no GPU work or emulator-source changes",
+  "finding": "no explicit exception, C1, TOP or busy-bit dependence found in the audited status tests and local dataflow",
+  "general_x87_exception_emulation_claim": false,
+  "decoded_instructions": 20272,
+  "fnstsw_ax": {
+    "translated_inventory_sites": 185,
+    "raw_text_sites_with_valid_masked_followup": 227,
+    "raw_additional_sites_outside_inventory": 42,
+    "raw_sites_first_AH_masks": {
+      "0x41": 97,
+      "0x05": 103,
+      "0x44": 13,
+      "0x01": 14
+    },
+    "translated_sites_first_AH_masks": {
+      "0x41": 78,
+      "0x05": 82,
+      "0x44": 11,
+      "0x01": 14
+    },
+    "observed_status_mask": "0x4500",
+    "observed_bits": [
+      "C0",
+      "C2",
+      "C3"
+    ],
+    "unobserved_status_bits": [
+      "exceptions/ES/SF",
+      "C1",
+      "TOP",
+      "busy"
+    ],
+    "nearest_translated_condition_producers": {
+      "FCOM": 119,
+      "FCOMP": 45,
+      "FCOMPP": 17,
+      "FUCOMPP": 4
+    },
+    "trig_status_condition_producers": 0
+  },
+  "control_word": {
+    "fnstcw": 4,
+    "fldcw": 8,
+    "function": "b2BroadPhase::ComputeBounds",
+    "sites": [
+      {
+        "pc": "0x36c6",
+        "operation": "save"
+      },
+      {
+        "pc": "0x36e6",
+        "operation": "truncate"
+      },
+      {
+        "pc": "0x36fd",
+        "operation": "restore"
+      },
+      {
+        "pc": "0x3707",
+        "operation": "save"
+      },
+      {
+        "pc": "0x3724",
+        "operation": "truncate"
+      },
+      {
+        "pc": "0x3738",
+        "operation": "restore"
+      },
+      {
+        "pc": "0x3746",
+        "operation": "save"
+      },
+      {
+        "pc": "0x375e",
+        "operation": "truncate"
+      },
+      {
+        "pc": "0x3772",
+        "operation": "restore"
+      },
+      {
+        "pc": "0x3780",
+        "operation": "save"
+      },
+      {
+        "pc": "0x3798",
+        "operation": "truncate"
+      },
+      {
+        "pc": "0x37ab",
+        "operation": "restore"
+      }
+    ],
+    "temporary_change": "OR saved control word with0x0c00; FISTP towardzero; restore original word",
+    "pc53_preserved": true,
+    "fistp_pcs": [
+      "0x36ea",
+      "0x3728",
+      "0x3762",
+      "0x379d"
+    ],
+    "other_x87_arithmetic_while_truncating": false
+  },
+  "forward_status_bit_audit": {
+    "initial_unmodeled_mask": "0xbaff",
+    "local_cfg_states_checked": 5091,
+    "local_unmodeled_reads": [],
+    "caller_continuation_states_checked": 5596,
+    "caller_continuation_unmodeled_reads": [],
+    "call_return_scope": "local CFG and caller continuation with known bool/pointer callee result kills; not a formal whole-program indirect-call proof",
+    "residual_EAX_status_bits": "may remain in ABI scratch across float/void returns and be saved/restored by trig wrappers; raw architectural exception state is not claimed equal",
+    "trig_wrappers": {
+      "msvc_CIcos": "0x152de; push/pop EAX preserves incoming bits; range comparisons use freshly loaded float operand bits",
+      "msvc_CIsin": "0x15323; push/pop EAX preserves incoming bits; compare uses freshly loaded operand bits",
+      "msvc_CIsqrt": "0x1534c; FSQRT/RET; no integer status consumer"
+    }
+  },
+  "environment_opcode_audit": {
+    "translated_FSTSW_waiting_variants": 0,
+    "FNSTSW_memory_destinations_found": 0,
+    "translated_environment_save_restore_or_clear_instructions": 0,
+    "raw_FNSAVE_false_positives": [
+      {
+        "pc": "0x302d",
+        "actual": "inside MOV EBX,EBP at0x302c"
+      },
+      {
+        "pc": "0x8808",
+        "actual": "inside JL displacement at0x8807"
+      }
+    ],
+    "raw_WAIT_false_positive_pcs": [
+      "0x39bb",
+      "0x551b",
+      "0x6e4b",
+      "0xba7b",
+      "0x12aab",
+      "0x13d5b",
+      "0x14beb",
+      "0x14d3b"
+    ],
+    "raw_WAIT_false_positive_explanation": "all are the ModRM byte of LEA EBX,[EBX] alignment instructions"
+  },
+  "limits": [
+    "42 raw extra FNSTSW copies are outside the translation inventory; this audit does not establish their reachability or full instruction coverage",
+    "No arbitrary x87 exception/control-mode semantics or architectural-state attestation is claimed",
+    "Supported numeric domains still rely on existing fail-closed arithmetic/trig guards and independent native workload differentials"
+  ],
+  "status_sites": [
+    {
+      "pc": "0x29da",
+      "consumer_pc": "0x29dc",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x2a0a",
+      "consumer_pc": "0x2a0c",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x2a3a",
+      "consumer_pc": "0x2a3c",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x2a55",
+      "consumer_pc": "0x2a57",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x2b36",
+      "consumer_pc": "0x2b38",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x2b51",
+      "consumer_pc": "0x2b55",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x2b85",
+      "consumer_pc": "0x2b87",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x2b9e",
+      "consumer_pc": "0x2ba2",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x2c6a",
+      "consumer_pc": "0x2c6c",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x2d4d",
+      "consumer_pc": "0x2d4f",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x2d6b",
+      "consumer_pc": "0x2d6d",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x2e4f",
+      "consumer_pc": "0x2e51",
+      "mask_ah": "0x44",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x2f50",
+      "consumer_pc": "0x2f52",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x2f5b",
+      "consumer_pc": "0x2f5d",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x33ba",
+      "consumer_pc": "0x33bc",
+      "mask_ah": "0x41",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x33ea",
+      "consumer_pc": "0x33ec",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x345f",
+      "consumer_pc": "0x3461",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x3493",
+      "consumer_pc": "0x3495",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x34df",
+      "consumer_pc": "0x34e1",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x3513",
+      "consumer_pc": "0x3515",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x4496",
+      "consumer_pc": "0x449a",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x464a",
+      "consumer_pc": "0x464e",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x4666",
+      "consumer_pc": "0x4668",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x47f6",
+      "consumer_pc": "0x47f8",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x4807",
+      "consumer_pc": "0x4809",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x4830",
+      "consumer_pc": "0x4832",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x491d",
+      "consumer_pc": "0x4921",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x495b",
+      "consumer_pc": "0x495d",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x4a49",
+      "consumer_pc": "0x4a4d",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x4a71",
+      "consumer_pc": "0x4a75",
+      "mask_ah": "0x1",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x4af9",
+      "consumer_pc": "0x4afb",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x4c66",
+      "consumer_pc": "0x4c6a",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x4e2b",
+      "consumer_pc": "0x4e2d",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x4e4d",
+      "consumer_pc": "0x4e4f",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x4e78",
+      "consumer_pc": "0x4e7a",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x4ee6",
+      "consumer_pc": "0x4ee8",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x4fdc",
+      "consumer_pc": "0x4fde",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x5007",
+      "consumer_pc": "0x5009",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x5033",
+      "consumer_pc": "0x5035",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x505f",
+      "consumer_pc": "0x5061",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x50a6",
+      "consumer_pc": "0x50a8",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x5211",
+      "consumer_pc": "0x5213",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x523b",
+      "consumer_pc": "0x523d",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x5267",
+      "consumer_pc": "0x5269",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x5293",
+      "consumer_pc": "0x5295",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x52d7",
+      "consumer_pc": "0x52d9",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x530d",
+      "consumer_pc": "0x5311",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x5344",
+      "consumer_pc": "0x5348",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x5382",
+      "consumer_pc": "0x5386",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x53a0",
+      "consumer_pc": "0x53a2",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x53ab",
+      "consumer_pc": "0x53ad",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x53c1",
+      "consumer_pc": "0x53c3",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x540e",
+      "consumer_pc": "0x5412",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x5424",
+      "consumer_pc": "0x5426",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x5594",
+      "consumer_pc": "0x5598",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x55e3",
+      "consumer_pc": "0x55e5",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x5721",
+      "consumer_pc": "0x5723",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x575e",
+      "consumer_pc": "0x5762",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x578f",
+      "consumer_pc": "0x5791",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x59e7",
+      "consumer_pc": "0x59e9",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x5a3f",
+      "consumer_pc": "0x5a43",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x5ba6",
+      "consumer_pc": "0x5baa",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x5d08",
+      "consumer_pc": "0x5d0c",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x5f62",
+      "consumer_pc": "0x5f64",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x602c",
+      "consumer_pc": "0x6030",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x604d",
+      "consumer_pc": "0x604f",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x6086",
+      "consumer_pc": "0x608a",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x6099",
+      "consumer_pc": "0x609b",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x60ae",
+      "consumer_pc": "0x60b0",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x624a",
+      "consumer_pc": "0x624e",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x656a",
+      "consumer_pc": "0x656c",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x6718",
+      "consumer_pc": "0x671a",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x6b05",
+      "consumer_pc": "0x6b07",
+      "mask_ah": "0x44",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x7188",
+      "consumer_pc": "0x718a",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x725f",
+      "consumer_pc": "0x7261",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x756a",
+      "consumer_pc": "0x756c",
+      "mask_ah": "0x41",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x759a",
+      "consumer_pc": "0x759c",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x75ca",
+      "consumer_pc": "0x75cc",
+      "mask_ah": "0x41",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x75e5",
+      "consumer_pc": "0x75e7",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x77c7",
+      "consumer_pc": "0x77c9",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x7a18",
+      "consumer_pc": "0x7a1a",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x7a33",
+      "consumer_pc": "0x7a35",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x7cbd",
+      "consumer_pc": "0x7cc1",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x7cdc",
+      "consumer_pc": "0x7cde",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x7cf7",
+      "consumer_pc": "0x7cfb",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x7d49",
+      "consumer_pc": "0x7d4d",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x7f0f",
+      "consumer_pc": "0x7f11",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x7ff6",
+      "consumer_pc": "0x7ffa",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x80de",
+      "consumer_pc": "0x80e0",
+      "mask_ah": "0x44",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x80ed",
+      "consumer_pc": "0x80ef",
+      "mask_ah": "0x44",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x8198",
+      "consumer_pc": "0x819c",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x81b1",
+      "consumer_pc": "0x81b5",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x83a5",
+      "consumer_pc": "0x83a7",
+      "mask_ah": "0x1",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x83b0",
+      "consumer_pc": "0x83b2",
+      "mask_ah": "0x1",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x8460",
+      "consumer_pc": "0x8462",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x8471",
+      "consumer_pc": "0x8473",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x8482",
+      "consumer_pc": "0x8484",
+      "mask_ah": "0x1",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x8596",
+      "consumer_pc": "0x8598",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x85a7",
+      "consumer_pc": "0x85a9",
+      "mask_ah": "0x1",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x85b8",
+      "consumer_pc": "0x85bc",
+      "mask_ah": "0x1",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x87ed",
+      "consumer_pc": "0x87ef",
+      "mask_ah": "0x44",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x87fd",
+      "consumer_pc": "0x87ff",
+      "mask_ah": "0x44",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x881a",
+      "consumer_pc": "0x881c",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x892e",
+      "consumer_pc": "0x8930",
+      "mask_ah": "0x1",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x8947",
+      "consumer_pc": "0x8949",
+      "mask_ah": "0x44",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x8956",
+      "consumer_pc": "0x8958",
+      "mask_ah": "0x44",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x8a27",
+      "consumer_pc": "0x8a2b",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x8afe",
+      "consumer_pc": "0x8b02",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x8b2b",
+      "consumer_pc": "0x8b2f",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x8b58",
+      "consumer_pc": "0x8b5c",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x8b99",
+      "consumer_pc": "0x8b9d",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x8bbb",
+      "consumer_pc": "0x8bbd",
+      "mask_ah": "0x1",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x8dd6",
+      "consumer_pc": "0x8dda",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x8f88",
+      "consumer_pc": "0x8f8c",
+      "mask_ah": "0x41",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x9219",
+      "consumer_pc": "0x921d",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x967a",
+      "consumer_pc": "0x967c",
+      "mask_ah": "0x41",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x96aa",
+      "consumer_pc": "0x96ac",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x96da",
+      "consumer_pc": "0x96dc",
+      "mask_ah": "0x41",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x96f5",
+      "consumer_pc": "0x96f7",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x97fd",
+      "consumer_pc": "0x97ff",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x9818",
+      "consumer_pc": "0x981a",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x99ae",
+      "consumer_pc": "0x99b2",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x99c9",
+      "consumer_pc": "0x99cb",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xa207",
+      "consumer_pc": "0xa209",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xa6b7",
+      "consumer_pc": "0xa6b9",
+      "mask_ah": "0x44",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xa800",
+      "consumer_pc": "0xa802",
+      "mask_ah": "0x44",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xa948",
+      "consumer_pc": "0xa94a",
+      "mask_ah": "0x44",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xa9da",
+      "consumer_pc": "0xa9dc",
+      "mask_ah": "0x41",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0xaa48",
+      "consumer_pc": "0xaa4a",
+      "mask_ah": "0x44",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xaa6f",
+      "consumer_pc": "0xaa71",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xaa8e",
+      "consumer_pc": "0xaa90",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xaab9",
+      "consumer_pc": "0xaabd",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xaaf5",
+      "consumer_pc": "0xaaf7",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xb583",
+      "consumer_pc": "0xb585",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xc398",
+      "consumer_pc": "0xc39c",
+      "mask_ah": "0x41",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0xc797",
+      "consumer_pc": "0xc799",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xc7b2",
+      "consumer_pc": "0xc7b4",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xc975",
+      "consumer_pc": "0xc977",
+      "mask_ah": "0x1",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xc9a4",
+      "consumer_pc": "0xc9a6",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xce8a",
+      "consumer_pc": "0xce8c",
+      "mask_ah": "0x41",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0xceba",
+      "consumer_pc": "0xcebc",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0xceea",
+      "consumer_pc": "0xceec",
+      "mask_ah": "0x41",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0xcf05",
+      "consumer_pc": "0xcf07",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0xd6b4",
+      "consumer_pc": "0xd6b6",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xd6cf",
+      "consumer_pc": "0xd6d1",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xd787",
+      "consumer_pc": "0xd78b",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xd7b4",
+      "consumer_pc": "0xd7b6",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xd7cf",
+      "consumer_pc": "0xd7d1",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xd8b2",
+      "consumer_pc": "0xd8b4",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xd9e0",
+      "consumer_pc": "0xd9e4",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xd9f9",
+      "consumer_pc": "0xd9fd",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xdc52",
+      "consumer_pc": "0xdc54",
+      "mask_ah": "0x1",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xdc65",
+      "consumer_pc": "0xdc67",
+      "mask_ah": "0x1",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xdf18",
+      "consumer_pc": "0xdf1c",
+      "mask_ah": "0x41",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0xe103",
+      "consumer_pc": "0xe109",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xe13e",
+      "consumer_pc": "0xe142",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xe17d",
+      "consumer_pc": "0xe181",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xe1a8",
+      "consumer_pc": "0xe1ac",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xe5ea",
+      "consumer_pc": "0xe5ec",
+      "mask_ah": "0x41",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0xe61a",
+      "consumer_pc": "0xe61c",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0xe64a",
+      "consumer_pc": "0xe64c",
+      "mask_ah": "0x41",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0xe665",
+      "consumer_pc": "0xe667",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0xe81e",
+      "consumer_pc": "0xe820",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xe86a",
+      "consumer_pc": "0xe86c",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xe8c0",
+      "consumer_pc": "0xe8c2",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xe8d7",
+      "consumer_pc": "0xe8d9",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xe912",
+      "consumer_pc": "0xe914",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xe929",
+      "consumer_pc": "0xe92b",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xec4e",
+      "consumer_pc": "0xec50",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xed6f",
+      "consumer_pc": "0xed71",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xef79",
+      "consumer_pc": "0xef7d",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xefb2",
+      "consumer_pc": "0xefb6",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xeff9",
+      "consumer_pc": "0xeffd",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xf01a",
+      "consumer_pc": "0xf01c",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xf041",
+      "consumer_pc": "0xf043",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xf05c",
+      "consumer_pc": "0xf05e",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xf2aa",
+      "consumer_pc": "0xf2ac",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xf2fe",
+      "consumer_pc": "0xf302",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xf323",
+      "consumer_pc": "0xf325",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xf340",
+      "consumer_pc": "0xf342",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xf383",
+      "consumer_pc": "0xf385",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xf510",
+      "consumer_pc": "0xf512",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xf567",
+      "consumer_pc": "0xf56b",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xf58c",
+      "consumer_pc": "0xf58e",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xf5a9",
+      "consumer_pc": "0xf5ab",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xf5ec",
+      "consumer_pc": "0xf5ee",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xf6e8",
+      "consumer_pc": "0xf6ea",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xfb48",
+      "consumer_pc": "0xfb4c",
+      "mask_ah": "0x41",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0xff03",
+      "consumer_pc": "0xff05",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xff1e",
+      "consumer_pc": "0xff20",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xff3a",
+      "consumer_pc": "0xff3c",
+      "mask_ah": "0x1",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0xff52",
+      "consumer_pc": "0xff54",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x101ca",
+      "consumer_pc": "0x101cc",
+      "mask_ah": "0x41",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x101fa",
+      "consumer_pc": "0x101fc",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x1022a",
+      "consumer_pc": "0x1022c",
+      "mask_ah": "0x41",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x10245",
+      "consumer_pc": "0x10247",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x10a1b",
+      "consumer_pc": "0x10a1d",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x10bda",
+      "consumer_pc": "0x10bdc",
+      "mask_ah": "0x1",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x10bed",
+      "consumer_pc": "0x10bef",
+      "mask_ah": "0x1",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x10da6",
+      "consumer_pc": "0x10daa",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x11895",
+      "consumer_pc": "0x11897",
+      "mask_ah": "0x44",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x11b2f",
+      "consumer_pc": "0x11b31",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x11c5b",
+      "consumer_pc": "0x11c5d",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x11c85",
+      "consumer_pc": "0x11c87",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x11cb1",
+      "consumer_pc": "0x11cb3",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x11cdd",
+      "consumer_pc": "0x11cdf",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x11d22",
+      "consumer_pc": "0x11d24",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x11e34",
+      "consumer_pc": "0x11e36",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x11e7a",
+      "consumer_pc": "0x11e7c",
+      "mask_ah": "0x41",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x11eaa",
+      "consumer_pc": "0x11eac",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x11eef",
+      "consumer_pc": "0x11ef1",
+      "mask_ah": "0x41",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x11f23",
+      "consumer_pc": "0x11f25",
+      "mask_ah": "0x41",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x11f6f",
+      "consumer_pc": "0x11f71",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x11fa3",
+      "consumer_pc": "0x11fa5",
+      "mask_ah": "0x5",
+      "in_translated_inventory": false
+    },
+    {
+      "pc": "0x12029",
+      "consumer_pc": "0x1202b",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x12040",
+      "consumer_pc": "0x12042",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x1246d",
+      "consumer_pc": "0x1246f",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x1265e",
+      "consumer_pc": "0x12660",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x12685",
+      "consumer_pc": "0x12689",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x129f3",
+      "consumer_pc": "0x129f7",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x12ac7",
+      "consumer_pc": "0x12ac9",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x12ae6",
+      "consumer_pc": "0x12ae8",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x12b11",
+      "consumer_pc": "0x12b13",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x12b2e",
+      "consumer_pc": "0x12b30",
+      "mask_ah": "0x41",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x12b83",
+      "consumer_pc": "0x12b85",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x12ccc",
+      "consumer_pc": "0x12cd0",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    },
+    {
+      "pc": "0x13ddc",
+      "consumer_pc": "0x13dde",
+      "mask_ah": "0x5",
+      "in_translated_inventory": true
+    }
+  ]
+}
