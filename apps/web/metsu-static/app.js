@@ -1,12 +1,12 @@
-import {BrowserGame} from "./exact-runtime.js?v=metsu-20261103c";
+import {BrowserGame} from "./exact-runtime.js?v=metsu-20261103d";
 import {
   activatedTrailAlphas, colorFor, hasActivatedTrail,
-} from "./colors.mjs?v=metsu-20261103c";
+} from "./colors.mjs?v=metsu-20261103d";
 import {
   clampReplayScrubFrame, parseReplay, REPLAY_TICK_MS,
-} from "./replay.mjs?v=metsu-20261103c";
-import {RestartGate} from "./restart-gate.mjs?v=metsu-20261103c";
-import {drawMetsuWalls, isExBody} from "./presentation.mjs?v=metsu-20261103c";
+} from "./replay.mjs?v=metsu-20261103d";
+import {RestartGate} from "./restart-gate.mjs?v=metsu-20261103d";
+import {drawMetsuWalls, isExBody} from "./presentation.mjs?v=metsu-20261103d";
 
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
@@ -324,15 +324,8 @@ function drawBody(body, now) {
 }
 
 function drawBackdrop() {
-  const background = ctx.createRadialGradient(310, 150, 20, 310, 230, 460);
-  background.addColorStop(0, "#1b2821");
-  background.addColorStop(1, "#0e1512");
-  ctx.fillStyle = background;
+  ctx.fillStyle = "#0c1517";
   ctx.fillRect(0, 0, 640, 480);
-  ctx.fillStyle = "#d6e2c70d";
-  for (let x = 16; x < 640; x += 24) {
-    for (let y = 16; y < 480; y += 24) ctx.fillRect(x, y, 1, 1);
-  }
 }
 
 function outlinedText(text, x, y, size, align = "left") {
