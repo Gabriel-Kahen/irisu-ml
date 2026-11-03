@@ -1,0 +1,38 @@
+{
+  "version": "cpu-worker-byte-differential-v1",
+  "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+  "left_worker_sha256": "8ef81521e81a5b2a764c305ac48dad997b28476bcd2fccbd1c9aed9603322854",
+  "right_worker_sha256": "0ca5dcf7b00c394a105ee6f469e35c52581581710b768e338de08c0088263b69",
+  "exact_library_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+  "steps": 97219,
+  "compared_payload_bytes": 188356329,
+  "length_prefixed_transcript_sha256": "1c0ec5f7b679fe23847ffdb38b8564ee9984d9311017d90e1a22a69e02fa53b7",
+  "mismatches": 0,
+  "canonical_score": 4393101,
+  "level": 100,
+  "highest_chain": 70,
+  "elapsed_seconds": 5.379843472997891,
+  "source_commit": "c675d5527f6cb8a1eded036a6de9060c7f4cff64",
+  "verification_date": "2026-11-03",
+  "scope": "CPU oracle recovery and equivalence; no GPU performance or parity claim",
+  "tests": {
+    "exact_ctest": {
+      "passed": 12,
+      "failed": 0
+    },
+    "portable_ctest": {
+      "passed": 8,
+      "failed": 0
+    },
+    "old_external_replay_corpus": "not available; configuration skipped corresponding CTests"
+  },
+  "physics_fixture": {
+    "steps": 600,
+    "bodies": 3,
+    "words_per_body": 5,
+    "bytes": 36000,
+    "sha256": "4fcd94f803509317a3f81b9611c0c4c362374354becf04b5382252c6f2d603b9"
+  },
+  "recovery_archive_sha256": "0340660c5e5ccd1bbc47bd75eb60ec96349a0d046fa9cf1e5923ff78ee77838f",
+  "historical_training_identity_modified": false
+}
