@@ -1,8 +1,9 @@
 # Metsu development checkpoint
 
-This checkpoint establishes an isolated development workspace and an audit
-plan. **Metsu gameplay is not implemented or qualified here.** Normal mode
-remains the default; no website deployment is part of this checkpoint.
+Metsu is implemented as an optional separate simulator and browser client; see
+[the usage and evidence guide](metsu.md). This document records its development
+history and separation contract. Normal remains the default. Original-game
+full-replay qualification remains separate from component and browser parity.
 
 Development branch: `codex/metsu-mode`. The working checkout is
 `/home/gabe/.codex/worktrees/irisu-metsu/irisu`, created from `13023da`.
@@ -111,9 +112,10 @@ For example, the current native recovered build requires `GLIBC_ABI_GNU_TLS`,
 which must not be assumed available in the older guest ABI. The guest relink and an actual
 browser boot/parity check remain required before calling Metsu web-ready.
 
-## Next work
+## Further fidelity work
 
-Finish the original-executable audit, retain reproducible Metsu reference
-traces, implement the separate engine, then add the client. A runnable mode
-does not by itself establish original-game fidelity. Record measured results
+Retain complete original-game mode-1 replay traces and compare them against the
+separate engine. The original setter and contact component probes establish
+bounded behavior; browser/native parity checks the execution path. Neither
+substitutes for a full original-game replay comparison. Record future results
 and unresolved differences separately from normal's existing evidence.

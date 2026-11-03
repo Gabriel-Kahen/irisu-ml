@@ -695,3 +695,6 @@ if(IRISU_BUILD_BENCHMARKS AND IRISU_PHYSICS_BACKEND STREQUAL "exact-msvc")
   add_executable(irisu-search-oracle tools/cuda-exact/search_oracle.cpp)
   target_link_libraries(irisu-search-oracle PRIVATE irisu_core Threads::Threads)
 endif()
+
+# Optional independent gameplay target; the normal build stays the default.
+include(cmake/Metsu.cmake)

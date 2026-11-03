@@ -92,6 +92,10 @@ a separate experimental identity and workload-specific parity evidence.
 
 ## Playable web client
 
+An optional **Metsu mode** simulator and separate browser client are described
+in [the Metsu guide](docs/metsu.md). Enable it with `IRISU_BUILD_METSU=ON`;
+normal mode remains the default and uses its existing runtime and replay mode.
+
 [**Play Irisu online**](https://irisu.online/) in the static browser client at
 [`apps/web/`](apps/web). It runs the exact i386 worker locally under v86 inside
 a Web Worker. GitHub Pages serves the files; gameplay and physics run in the

@@ -1,6 +1,12 @@
 #include "irisu/config_io.hpp"
 #include "irisu/floating_point.hpp"
+#ifdef IRISU_METSU_WORKER
+#include "irisu/metsu/simulator.hpp"
+using WorkerSimulator = irisu::metsu::Simulator;
+#else
 #include "irisu/simulator.hpp"
+using WorkerSimulator = irisu::Simulator;
+#endif
 
 #include <algorithm>
 #include <array>
@@ -331,7 +337,7 @@ void append_transition_prefix(std::vector<std::byte>& output,
 }
 
 void append_transition(std::vector<std::byte>& output,
-                       const irisu::Simulator& simulator,
+                       const WorkerSimulator& simulator,
                        const irisu::StepResult& transition) {
   const irisu::Observation observation = simulator.observation();
   constexpr std::size_t kObservationFixedBytes = 112U;
@@ -352,7 +358,7 @@ void append_transition(std::vector<std::byte>& output,
 }
 
 void append_padded_transition(std::vector<std::byte>& output,
-                              const irisu::Simulator& simulator,
+                              const WorkerSimulator& simulator,
                               const irisu::StepResult& transition,
                               std::uint64_t event_generation) {
   const irisu::Observation observation = simulator.observation();
@@ -526,7 +532,11 @@ class Worker {
         if (count > 1024U) {
           throw std::invalid_argument("configuration override count exceeds limit");
         }
+#ifdef IRISU_METSU_WORKER
+        auto config = irisu::metsu::default_config();
+#else
         irisu::MechanicsConfig config;
+#endif
         for (std::uint32_t index = 0; index < count; ++index) {
           const std::string key = read_string(payload, offset);
           const double value = read_value<double>(payload, offset);
@@ -540,7 +550,7 @@ class Worker {
           throw std::invalid_argument(
               "exact worker configuration is immutable after reset");
         }
-        irisu::Simulator configured(config);
+        WorkerSimulator configured(config);
         invalidate_padded_events();
         simulator_ = std::move(configured);
         append(output, simulator_.config_hash());
@@ -548,8 +558,14 @@ class Worker {
       }
       case Opcode::ConfigJson: {
         require_empty(payload);
-        const std::string json = irisu::mechanics_config_json(
+        std::string json = irisu::mechanics_config_json(
             simulator_.config(), simulator_.config_hash());
+#ifdef IRISU_METSU_WORKER
+        const auto profile = json.find("v2.03-normal");
+        if (profile == std::string::npos) throw std::logic_error("missing worker profile identity");
+        json.replace(profile, std::strlen("v2.03-normal"), "v2.03-metsu");
+        json.insert(1, "\"game_mode\":1,");
+#endif
         output.insert(output.end(),
                       reinterpret_cast<const std::byte*>(json.data()),
                       reinterpret_cast<const std::byte*>(json.data() +
@@ -615,7 +631,7 @@ class Worker {
 
   std::uint16_t control_word_{};
   ExactPhysicsAttestation exact_attestation_;
-  irisu::Simulator simulator_;
+  WorkerSimulator simulator_;
   bool has_reset_{};
   std::uint64_t event_generation_{};
   std::vector<irisu::Event> padded_events_;

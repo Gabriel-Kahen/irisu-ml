@@ -1,8 +1,9 @@
-# Metsu mode: bounded original-binary audit
+# Metsu mode: original-binary evidence
 
-Audit date: 2026-11-03. This is a context and implementation-planning checkpoint,
-not an implemented mode or a runtime-fidelity claim. No simulator source was
-changed during this audit. Addresses below refer to the original v2.03 engine.
+Audit date: 2026-11-03. This ledger began as a bounded planning checkpoint and
+now includes implementation-ready contact rules and native original-component
+execution receipts. It does not establish complete original-game replay parity.
+Addresses below refer to the original v2.03 engine.
 
 ## Original recovered and identified
 
@@ -154,7 +155,7 @@ specification:
 The meaning and update/deletion semantics of `+0xf4` require the full actor
 update audit. Implementing it as an ordinary grouped boolean would be premature.
 
-## Next evidence and claim boundaries
+## Initial checkpoint next steps (superseded where completed below)
 
 1. Trace every `Block+0xf0`, `+0xf4`, and `+0xf8` read/write, and every scene
    mode branch in actor updates, contacts, clear-color, and terminal handling.
@@ -170,3 +171,316 @@ update audit. Implementing it as an ordinary grouped boolean would be premature.
 No complete original-game mode-1 replay parity, long-run trajectory fidelity,
 EX sampling distribution, browser behavior, or Metsu simulator is claimed here.
 The pinned original is now available locally for the next audit phase.
+
+## Implementation audit continuation (2026-11-03)
+
+The following supersedes the bounded checkpoint's unresolved static mechanics
+where explicit pseudocode is now supplied. Evidence remains original-machine-code
+inspection unless an execution receipt is named. Original full-game mode-1
+replay parity has not yet been established.
+
+### World and terminal scene behavior
+
+`0x409467–0x409487` unconditionally calls:
+
+```text
+b2d_init(0, -200, 640, 480, 160, 10)
+```
+
+The five stored constants at `0x4344c0..0x4344d0` decode to `10,160,480,640,-200`;
+there is no mode branch around this call. EX center Y=500 does not justify
+expanding the broadphase AABB: a minimum EX radius21 extends to Y479 and
+therefore still overlaps the world bound.
+
+Scene update checks game-over at its beginning (`0x409939`), still executes
+field update/contact traversal, clamps gauge to `0..max`, increments the scene
+counter, applies passive drain, and floors gauge at1 (`0x409d14–0x409d73`).
+Metsu's passive parameter is zero, so this shared code subtracts zero.
+Ordinary actor rot runs afterward and can make gauge nonpositive for the next
+scene update. Positive rewards can still exceed the maximum until the scene
+clamp. The shared ordinary clear reward hook uses the selected reward120.
+The rainbow `clear_color` loop skips all gauge rewards in a nonzero scene mode
+(`0x403303–0x40331d`), while retaining its full-pool matching/deletion behavior.
+
+The level cap path is shared and unconditional (`0x40af48–0x40af79`): requested
+level>=100 stores100 and finishes; it does not call the nonterminal setter.
+Six clears per level means clear594 first requests100, clear600 first requests101.
+As with normal, a terminal call does not interrupt the current contact traversal.
+Repeated terminal calls and first-persisted versus last-live ending metadata
+therefore retain the ordering documented in the normal ledger. Music is
+mode-specific; gameplay stopping semantics are shared.
+
+### Ticket builder and original EX sampling bug
+
+`0x412268–0x412295` expands the ordinary sizes/weights using `0x41207c`, writes
+its total to `0x4428f0`, sizes to the D array at `0x442900`, and slot indices
+to the D array at `0x442910`. In Metsu the total is70. The nonzero-mode path
+then expands EX weights into sizes at `0x4428f8`, indices at `0x442908`, and
+stores the EX total200 at `0x4428f4` (`0x41229a–0x4122cf`).
+
+However, **the generator reads only the ordinary total**: `0x4059e6`,
+`0x4059f3`, and `0x405a09` all read `0x4428f0`, not `0x4428f4`. It draws
+`GetRand(69)` for both ordinary and EX actors. The call's EX flag selects
+which ticket arrays are indexed afterward (`0x405a19–0x405aac`).
+Consequently the shipped EX runtime distribution is:
+
+| Random ticket | Size | Slot |
+|---|---:|---:|
+| 0..19 | 42 | 0 |
+| 20..59 | 58 | 1 |
+| 60..69 | 74 | 2 |
+
+The configured EX sizes90/104/120 are unreachable from this generator with the
+shipped70-ticket ordinary table. Do not replace this with a normalized200-ticket
+draw. The optional `initial` flag uses the same ordinary-total random maximum
+and clamps only against that same total (`0x4059ec–0x405a19`).
+
+At the full field-construction checkpoint: level1 consumes no shape-cutoff RNG
+call, then special scheduler consumes `GetRand(12)`, then ten initial ordinary
+spawns each consume `(69,380,1000,5,100)`. This gives51 draws before replay
+word0, assuming every allocation succeeds. The scene's pre-word actor pass,
+startup input gate, and special threshold scheduler itself are shared. The first
+cadence ordinary spawn consumes the same five calls; the first EX spawn consumes
+`(69,304,0,1000,5,100)` in that order. The zero-maximum call consumes RNG.
+EX skips orb conversion regardless of threshold; ordinary conversion still
+omits the final shape draw on an orb spawn, as documented for normal.
+
+### Actor state and post-contact update
+
+Use separate scene mode and per-actor EX flag. New fields beyond normal state:
+`ex = Block+0xf0`, signed `ex_timer = Block+0xf4`, unsigned
+`dynamic_updates = Block+0xf8`. Constructor defaults are `(false,-1,0)` at
+`0x4033b7–0x4033c3`. `Actor.remaining=-1` is explicitly written at
+`0x40764d–0x407664`. EX generator leaves it unchanged, while ordinary actors
+receive the configured10000-update lifetime. Existing out-of-bounds cleanup can
+still set remaining1 for an EX actor once dynamic and `e5` is set.
+
+After the shared base update, out-of-bounds check, fresh-state transition, and
+post-contact cleanup, the actor path at `0x40348e–0x4035b1` performs:
+
+```text
+if not ex and lifecycle != rotten and rot_timer != 0:
+    ++rot_timer
+    if rot_timer > selected_death_delay and role == block:
+        lifecycle = rotten
+        gauge -= selected_rot_penalty
+if dynamic:
+    ++dynamic_updates
+if ex_timer > 0:
+    --ex_timer
+    if ex_timer == 0:
+        grouped = true
+```
+
+Thus EX actors can acquire `rot_timer=1` as a contact property but do not
+increment it into the ordinary rotten state or pay a rot penalty. The countdown
+runs after post-contact cleanup, so reaching zero sets grouped during the later
+actor pass. It does not immediately set clear-pending, increment a group clear
+count, reward gauge, or score. An eligible subsequent contact performs those
+operations. No separate EX deletion or score routine is introduced: clear-pending
+and ordinary cleanup drive shared scoring/destruction. Countdown expiry also
+plays sound, which has no simulation state consequence.
+
+### Full mode-aware contact pseudocode
+
+Names map to existing normal ledger fields: `dynamic=c4`, `special=c5`,
+`state=c8`, `role=cc`, `rot=d0`, `grouped=d4`, `clear_pending=d5`,
+`group=d8`, `hits=dc`, `contacts=e0`, `gate_seen=e4`, `past_gate=e5`.
+Roles are block4, projectile5, bottom2, side3, top6. Contact traversal order
+is unchanged from normal; only the branch predicates below differ.
+
+`both_scripted(A,B)`, `0x40a958–0x40a9de`:
+
+```text
+if A.dynamic or B.dynamic or A.ex != B.ex: return false
+for actor in [A,B]:
+    if actor.age <= 2 and not actor.special and actor.role == block:
+        destroy_immediately(actor)
+return true
+```
+
+Mixed EX/ordinary scripted contact therefore proceeds to grouping/activation.
+
+`top_gate(target,source)`, `0x40a6f0–0x40a743`:
+
+```text
+if not target.dynamic and (
+    (source.role == top and not target.ex) or
+    (source.role == bottom and target.ex)):
+    target.gate_seen = true
+    return true
+return false
+```
+
+The same `past_gate` latch/cleanup semantics apply; EX actors use the bottom
+as their startup gate while ordinary actors use the top.
+
+`group_pair(A,B)`, `0x40a2a4–0x40a357`:
+
+```text
+if A.color != B.color: return 0
+if A.state == rotten and (B.state == rotten or B.ex): return 0
+if B.state == rotten and (A.state == rotten or A.ex): return 0
+if A.role != block and B.role != block: return 0
+if A.grouped and B.grouped: return 0
+return max(add_to_group(A,B), add_to_group(B,A))
+```
+
+`add_to_group(target,source)`, `0x40a35c–0x40a49e`:
+
+```text
+if target.ex and source.ex:
+    if target.ex_timer == -1 and 0 < source.ex_timer <= 112:
+        assert source.group != null
+        target.group = source.group
+        ++target.group.chain
+        ++target.group.shadow
+        target.ex_timer = 120
+        target.dynamic = true
+    return 0
+if target.grouped or target.role != block: return 0
+if source.grouped:
+    assert source.group != null
+    target.group = source.group
+else:
+    target.group = new zeroed shared chain record
+++target.group.chain
+++target.group.shadow
+if target.ex and source.grouped:
+    target.ex_timer = 120
+    target.dynamic = true
+else:
+    target.grouped = true
+return target.group.chain
+```
+
+The EX-to-EX propagation branch returns0 even when it attaches a chain.
+It waits until the source has completed at least8 countdown decrements.
+The mixed branch intentionally allows replacing the group and resetting the
+timer of a still-ungrouped EX actor; no extra `ex_timer==-1` gate applies there.
+
+`activate(target,source)`, `0x40a7d8–0x40a899`:
+
+```text
+if target.dynamic: return
+activate = false
+if not target.ex:
+    if source.dynamic and source.role != side:
+        activate = (not source.grouped or target.color == source.color
+                    or source.role == bottom)
+else:
+    activate = (source.role == projectile and source.rot == 0) or (
+        source.role == block and not source.ex and not source.dynamic)
+if activate:
+    target.dynamic = true
+    if shared_sound == -1: shared_sound = 0
+    if source.role == projectile: source.delete = true
+```
+
+`eligible_clear_source(source)`, `0x40a4a4–0x40a4d5`:
+`source.ex or source.rot>0 or source.role==bottom`.
+`eligible_clear_target(target)`, `0x40a4d8–0x40a50b`:
+`target.grouped and target.role==block and not target.clear_pending`.
+
+`burst(target,source)`, `0x40a510–0x40a627`:
+
+```text
+if not eligible_clear_target(target) or not eligible_clear_source(source): return
+set target.clear_pending = true       # same virtual hook as normal
+++target.group.num
+if target.role == block:
+    reward_hook(target)               # zero if rotten, else group.num * reward120
+    ++qualifying_clears
+    candidate = floor(qualifying_clears / 6) + 1
+    if candidate > current_level: set_level(candidate)
+if not target.ex: shared_sound_flag = 0
+if target.color == source.color and eligible_clear_target(source):
+    set source.clear_pending = true   # no extra num/reward/count increment here
+```
+
+The role check is present in the original even though the target predicate
+already requires block. The wrapper `0x40a62c` calls this in both directions.
+The normal actor cleanup scores pending clears with the selected Metsu score
+scale, slot multiplier, and shared group record, preserving late mutations.
+
+`start_rot(target,source)`, `0x40a66c–0x40a6ec`:
+
+```text
+if target.role not in {block,projectile}: return
+if source.role != bottom and source.rot == 0: return
+if target.special or target.rot != 0 or target.age <= 100: return
+if target.ex and target.dynamic_updates < 5: return
+target.rot = 1
+```
+
+`special(special,other)`, `0x40a748–0x40a7d4`, retains the normal predicates:
+only an orb with `special && past_gate && dynamic` acts; a projectile is deleted
+and the orb survives; an ungrouped ordinary/EX block that is not rotten invokes
+full-pool clear-color and consumes the orb; an ungrouped rotten block consumes
+the orb without clearing color. Grouped blocks do nothing. The scene-mode check
+inside clear-color suppresses Metsu gauge gain entirely, as noted above.
+
+`direct_hit(block,projectile)`, `0x40a89c–0x40a952`:
+
+```text
+if projectile.role != projectile or block.role != block: return
+if projectile.contacts == 1 and block.grouped:
+    ++block.hits
+    if block.hits >= 2:
+        projectile.delete = true
+        block.delete = true
+if block.state != rotten and not block.ex:
+    projectile.delete = true
+```
+
+Parameter labels distinguish actor arguments from role constants. Initial EX
+activation may already have deleted a projectile in the preceding handler;
+this handler never reverses an earlier deletion. It adds no EX-specific hit
+counter beyond the existing `hits`.
+
+
+### Original-byte execution receipts and clone comparisons
+
+The original level setters were executed natively under Linux with x87 control
+word `0x027f`, using the pinned PE image at its original addresses. The harness
+first reproduced all99 prior normal score-scale and all99 normal descent bit
+patterns, then dumped all99 Metsu parameter rows. The new authoritative table
+is [`metsu-level-parameters.tsv`](metsu-level-parameters.tsv), SHA-256
+`d1786c82eec4583f71cb23be664b879038b2929be262bb2726430025c3f73d1a`.
+Reproduction tool: `tools/metsu/dump_level_parameters.py`; execution receipt:
+`benchmarks/results/metsu-level-parameters-2026-11-03.json`.
+The original `fsin` and power routines remained unmodified. Level1's EX cadence
+is176, illustrating why ideal-trigonometry recomputation (175) is insufficient.
+
+The isolated original contact and actor timer routines also execute natively:
+`tools/metsu/dump_original_contacts.py` builds `original_contacts_probe.c`,
+authenticates the executable hash, and produces
+[`metsu-contacts-original-components.json`](metsu-contacts-original-components.json).
+It contains21 named scenarios and a complete stub inventory. These exercise
+EX countdown120→112, propagation's112/113 boundary, countdown expiry, mixed
+group reset, bottom/top gates, activation predicates, rot's4/5-update boundary,
+EX rot non-advancement, scripted-pair dispatch, mature EX burst/reward,
+direct-hit projectile retention, and Metsu orb no-reward behavior. Original
+normal color-clear and fresh ordinary grouping provide positive controls.
+
+`tests/native/test_metsu_components.cpp` compares those same21 named scenarios
+against the implemented simulator over67 measured fields. Metsu cases call its
+real complete contact dispatcher or actor update; unrelated dispatcher effects
+are excluded from each direct-handler measurement projection. The one normal
+color-clear control uses the existing normal simulator through public snapshot
+and step APIs with reward120, allowing the same measured+240 gain for a live
+and a retained dead color slot. No normal implementation/header was changed.
+
+Component-probe exclusions are material: native physics, base actor integration,
+full actor post-contact cleanup, rendering, particles, and audio are stubbed or
+omitted. The original clear-pending routine and shared reward hook execute.
+This establishes direct original-code component evidence and clone agreement
+on the listed projections; it does not establish complete mode-1 replay or
+long-run trajectory parity.
+
+Dispatcher orientation is verified at `0x40ab3c–0x40ab48`: native contact(A,B)
+is pushed as arguments(B,A) to the pair helper. The pair helper itself reverses
+again for its first directional grouping call. Therefore the implementation's
+first directional target is nativeA, source nativeB; its second target is
+nativeB. The burst wrapper has the same net target order. Do not reverse the
+implementation after reading only the bare helper argument order.
