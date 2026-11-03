@@ -1,0 +1,125 @@
+{
+  "schema": "irisu-cuda-translator-host-validation-v1",
+  "scope": "translated physics instruction dispatch and arena allocator; host execution only",
+  "full_gpu_or_search_parity": false,
+  "source_sha256": {
+    "clone/cuda/guest.hpp": "550de52ae7356d52b274baceb0589aae5b2951405ae9eae6f2d8ebca11a77542",
+    "clone/cuda/guest_program.cuh": "e1ecabdafc458efeca43389b8b6fbc0eee59229ed6af3b6c3702056e488a724c",
+    "tools/cuda-exact/translate.py": "6fb0e7c0b1a044e70ada51b312f04dce870f9f658c80951645a5d56c87f93d6d",
+    "tools/cuda-exact/physics_probe.cu": "4153e3c3f4545e72f9636bc65767fb6432bc95ebb7a6718804989ce184b422e4",
+    "tools/cuda-exact/guest_memory_validate.cpp": "3739fa17ac7176ce73f261ad610a0ddd6e4356464b7e7a331775399c57edfb47"
+  },
+  "host_binary_sha256": "360419ea8fc6c9aad845bf7b2f7e784b70119d84b83d7340e28ace58f0fce6dd",
+  "region_shift": 10,
+  "dead_flag_writes_elided": 513,
+  "fixtures": [
+    {
+      "case": "host-small600",
+      "steps": 600,
+      "compared_words": 9000,
+      "mismatches": 0,
+      "sha256": "4fcd94f803509317a3f81b9611c0c4c362374354becf04b5382252c6f2d603b9",
+      "metadata": {
+        "backend": "translated-host",
+        "lanes": 1,
+        "steps": 600,
+        "mutations": false,
+        "kernel_ms": 0.0,
+        "elapsed_ms": 75.047253,
+        "bytesperlane": 2097152,
+        "maxheapbytes": 347008,
+        "dispatches": 1913572,
+        "failures": 0
+      }
+    },
+    {
+      "case": "host-small600-mutations",
+      "steps": 600,
+      "compared_words": 9000,
+      "mismatches": 0,
+      "sha256": "162ba7744a7837107d1f0215f2dfa964bc2fb453768b178f6d7703d93d5a4e7a",
+      "metadata": {
+        "backend": "translated-host",
+        "lanes": 1,
+        "steps": 600,
+        "mutations": true,
+        "kernel_ms": 0.0,
+        "elapsed_ms": 65.781263,
+        "bytesperlane": 2097152,
+        "maxheapbytes": 347008,
+        "dispatches": 1724928,
+        "failures": 0
+      }
+    }
+  ],
+  "allocator": {
+    "transitions": 50000,
+    "reuses": 24969,
+    "clone_state_allocation_parity": true,
+    "heap_high_water": 49872
+  },
+  "lowering": {
+    "x87_forms": 118,
+    "input_patterns": 2,
+    "adc_sbb_cases": 40,
+    "pass": true
+  },
+  "compiler_attempts": [
+    {
+      "frontend": "O2",
+      "ptxas": "default O3",
+      "region_shift": 12,
+      "outcome": "terminated by agent at19GB assemblerRSS to avoid machine pressure; no binary"
+    },
+    {
+      "frontend": "O2",
+      "ptxas": "O1",
+      "region_shift": 12,
+      "outcome": "assembler observed20GBRSS; no binary retained"
+    },
+    {
+      "frontend": "O2",
+      "ptxas": "O1",
+      "region_shift": 10,
+      "outcome": "terminated at12GBRSS; no binary; move to PTXAS0 for pilot"
+    }
+  ],
+  "modular_compile": {
+    "regions": 77,
+    "largest_region_source_bytes": 38290,
+    "largest_region_compile": {
+      "command": [
+        "/opt/cuda/bin/nvcc",
+        "-ccbin",
+        "g++-14",
+        "-std=c++20",
+        "-O2",
+        "-arch=sm_70",
+        "-dc",
+        "--fmad=false",
+        "--ftz=false",
+        "--prec-div=true",
+        "--prec-sqrt=true",
+        "-diag-suppress=68,177",
+        "-Xptxas=-O1,-v",
+        "build-cuda-physics/generated-split/guest_region_26.cu",
+        "-o",
+        "build-cuda-physics/region26.o"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 5.4437542209998355,
+      "max_rss_kib": 199672
+    },
+    "ptxas_milliseconds": 1243.771,
+    "stack_bytes": 0,
+    "spill_load_bytes": 0,
+    "spill_store_bytes": 0
+  },
+  "generated_source_sha256": {
+    "guest_blocks.inc": "1b95052c16d619758406cf9fe479ff5571b1d657390de0207a4400aa331523fc",
+    "guest_image.bin": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685",
+    "manifest.json": "0d2925323ec57a9e3e7c98662de7fc931c7156e4e11b4e120a66a3c461985f2f",
+    "guest_exports.inc": "cd9d1a29bc3eb5f1bb633ac57e9a5ecf680354ded6ec1a5826b568353dd63f2e",
+    "guest_callbacks.inc": "1ddc81abab23f40f0a68acde8803156fa3018c27efa526dbf9228e406da43093"
+  }
+}
