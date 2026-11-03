@@ -1,0 +1,639 @@
+{
+  "schema": "irisu-cuda-region-local-guest-experiment-v1",
+  "scope": "opt-in generated region-local Guest cache; physics fixture only; no complete search performance claim",
+  "default_enabled": false,
+  "default_promoted": false,
+  "decision": "stop after <0.7percent single-world gains and increased register/stack pressure; no larger batch or full PTXAS3 variant pursued",
+  "host_parity": [
+    {
+      "variant": "reference",
+      "mutation": false,
+      "command": [
+        "build-cuda-region-reference/physics-probe-host",
+        "build-cuda-region-reference/generated/guest_image.bin",
+        "600"
+      ],
+      "metadata": {
+        "backend": "translated-host",
+        "lanes": 1,
+        "steps": 600,
+        "mutations": false,
+        "kernel_ms": 0.0,
+        "elapsed_ms": 70.684272,
+        "bytesperlane": 2097152,
+        "maxheapbytes": 347008,
+        "dispatches": 1913572,
+        "registers_per_thread": 0,
+        "local_bytes_per_thread": 0,
+        "shared_bytes_per_block": 0,
+        "failures": 0
+      },
+      "output_sha256": "4fcd94f803509317a3f81b9611c0c4c362374354becf04b5382252c6f2d603b9",
+      "compared_words": 9000,
+      "mismatches": 0
+    },
+    {
+      "variant": "reference",
+      "mutation": true,
+      "command": [
+        "build-cuda-region-reference/physics-probe-host",
+        "build-cuda-region-reference/generated/guest_image.bin",
+        "600",
+        "--mutations"
+      ],
+      "metadata": {
+        "backend": "translated-host",
+        "lanes": 1,
+        "steps": 600,
+        "mutations": true,
+        "kernel_ms": 0.0,
+        "elapsed_ms": 65.268554,
+        "bytesperlane": 2097152,
+        "maxheapbytes": 347008,
+        "dispatches": 1724928,
+        "registers_per_thread": 0,
+        "local_bytes_per_thread": 0,
+        "shared_bytes_per_block": 0,
+        "failures": 0
+      },
+      "output_sha256": "162ba7744a7837107d1f0215f2dfa964bc2fb453768b178f6d7703d93d5a4e7a",
+      "compared_words": 9000,
+      "mismatches": 0
+    },
+    {
+      "variant": "cache",
+      "mutation": false,
+      "command": [
+        "build-cuda-region-cache/physics-probe-host",
+        "build-cuda-region-cache/generated/guest_image.bin",
+        "600"
+      ],
+      "metadata": {
+        "backend": "translated-host",
+        "lanes": 1,
+        "steps": 600,
+        "mutations": false,
+        "kernel_ms": 0.0,
+        "elapsed_ms": 72.880067,
+        "bytesperlane": 2097152,
+        "maxheapbytes": 347008,
+        "dispatches": 1913572,
+        "registers_per_thread": 0,
+        "local_bytes_per_thread": 0,
+        "shared_bytes_per_block": 0,
+        "failures": 0
+      },
+      "output_sha256": "4fcd94f803509317a3f81b9611c0c4c362374354becf04b5382252c6f2d603b9",
+      "compared_words": 9000,
+      "mismatches": 0
+    },
+    {
+      "variant": "cache",
+      "mutation": true,
+      "command": [
+        "build-cuda-region-cache/physics-probe-host",
+        "build-cuda-region-cache/generated/guest_image.bin",
+        "600",
+        "--mutations"
+      ],
+      "metadata": {
+        "backend": "translated-host",
+        "lanes": 1,
+        "steps": 600,
+        "mutations": true,
+        "kernel_ms": 0.0,
+        "elapsed_ms": 68.027429,
+        "bytesperlane": 2097152,
+        "maxheapbytes": 347008,
+        "dispatches": 1724928,
+        "registers_per_thread": 0,
+        "local_bytes_per_thread": 0,
+        "shared_bytes_per_block": 0,
+        "failures": 0
+      },
+      "output_sha256": "162ba7744a7837107d1f0215f2dfa964bc2fb453768b178f6d7703d93d5a4e7a",
+      "compared_words": 9000,
+      "mismatches": 0
+    }
+  ],
+  "gpu_ab": {
+    "scope": "one-lane3bodyfixture A/B; one preceding invocation and three timed invocations per variant/case; each invocation has its own process/context",
+    "commands": [
+      [
+        "build-project-cuda/clone/cuda/irisu-cuda-physics-probe",
+        "build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "600",
+        "--gpu",
+        "--arena-bytes",
+        "524288"
+      ],
+      [
+        "build-cuda-region-cache/clone/cuda/irisu-cuda-physics-probe",
+        "build-cuda-region-cache/clone/cuda/generated/guest_image.bin",
+        "600",
+        "--gpu",
+        "--arena-bytes",
+        "524288"
+      ],
+      [
+        "build-project-cuda/clone/cuda/irisu-cuda-physics-probe",
+        "build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "600",
+        "--gpu",
+        "--arena-bytes",
+        "524288",
+        "--mutations"
+      ],
+      [
+        "build-cuda-region-cache/clone/cuda/irisu-cuda-physics-probe",
+        "build-cuda-region-cache/clone/cuda/generated/guest_image.bin",
+        "600",
+        "--gpu",
+        "--arena-bytes",
+        "524288",
+        "--mutations"
+      ]
+    ],
+    "warmups": [
+      {
+        "variant": "reference",
+        "mutation": false,
+        "repeat": -1,
+        "wall_seconds": 3.894394994000322,
+        "metadata": {
+          "backend": "cuda",
+          "lanes": 1,
+          "steps": 600,
+          "mutations": false,
+          "kernel_ms": 3726.267334,
+          "elapsed_ms": 3754.604882,
+          "bytesperlane": 524288,
+          "maxheapbytes": 347008,
+          "dispatches": 1913572,
+          "registers_per_thread": 70,
+          "local_bytes_per_thread": 360,
+          "shared_bytes_per_block": 0,
+          "failures": 0
+        },
+        "compared_words": 9000,
+        "mismatches": 0
+      },
+      {
+        "variant": "cache",
+        "mutation": false,
+        "repeat": -1,
+        "wall_seconds": 3.833931470006064,
+        "metadata": {
+          "backend": "cuda",
+          "lanes": 1,
+          "steps": 600,
+          "mutations": false,
+          "kernel_ms": 3688.976318,
+          "elapsed_ms": 3716.709362,
+          "bytesperlane": 524288,
+          "maxheapbytes": 347008,
+          "dispatches": 1913572,
+          "registers_per_thread": 206,
+          "local_bytes_per_thread": 648,
+          "shared_bytes_per_block": 0,
+          "failures": 0
+        },
+        "compared_words": 9000,
+        "mismatches": 0
+      },
+      {
+        "variant": "reference",
+        "mutation": true,
+        "repeat": -1,
+        "wall_seconds": 3.482210900001519,
+        "metadata": {
+          "backend": "cuda",
+          "lanes": 1,
+          "steps": 600,
+          "mutations": true,
+          "kernel_ms": 3330.302002,
+          "elapsed_ms": 3358.316194,
+          "bytesperlane": 524288,
+          "maxheapbytes": 347008,
+          "dispatches": 1724928,
+          "registers_per_thread": 70,
+          "local_bytes_per_thread": 360,
+          "shared_bytes_per_block": 0,
+          "failures": 0
+        },
+        "compared_words": 9000,
+        "mismatches": 0
+      },
+      {
+        "variant": "cache",
+        "mutation": true,
+        "repeat": -1,
+        "wall_seconds": 3.4593934009972145,
+        "metadata": {
+          "backend": "cuda",
+          "lanes": 1,
+          "steps": 600,
+          "mutations": true,
+          "kernel_ms": 3315.205078,
+          "elapsed_ms": 3342.98505,
+          "bytesperlane": 524288,
+          "maxheapbytes": 347008,
+          "dispatches": 1724928,
+          "registers_per_thread": 206,
+          "local_bytes_per_thread": 648,
+          "shared_bytes_per_block": 0,
+          "failures": 0
+        },
+        "compared_words": 9000,
+        "mismatches": 0
+      }
+    ],
+    "samples": [
+      {
+        "variant": "reference",
+        "mutation": false,
+        "repeat": 0,
+        "wall_seconds": 3.855949676995806,
+        "metadata": {
+          "backend": "cuda",
+          "lanes": 1,
+          "steps": 600,
+          "mutations": false,
+          "kernel_ms": 3712.5979,
+          "elapsed_ms": 3739.400136,
+          "bytesperlane": 524288,
+          "maxheapbytes": 347008,
+          "dispatches": 1913572,
+          "registers_per_thread": 70,
+          "local_bytes_per_thread": 360,
+          "shared_bytes_per_block": 0,
+          "failures": 0
+        },
+        "compared_words": 9000,
+        "mismatches": 0
+      },
+      {
+        "variant": "cache",
+        "mutation": false,
+        "repeat": 0,
+        "wall_seconds": 3.828786833997583,
+        "metadata": {
+          "backend": "cuda",
+          "lanes": 1,
+          "steps": 600,
+          "mutations": false,
+          "kernel_ms": 3689.049072,
+          "elapsed_ms": 3716.610329,
+          "bytesperlane": 524288,
+          "maxheapbytes": 347008,
+          "dispatches": 1913572,
+          "registers_per_thread": 206,
+          "local_bytes_per_thread": 648,
+          "shared_bytes_per_block": 0,
+          "failures": 0
+        },
+        "compared_words": 9000,
+        "mismatches": 0
+      },
+      {
+        "variant": "reference",
+        "mutation": false,
+        "repeat": 1,
+        "wall_seconds": 3.8554094249993796,
+        "metadata": {
+          "backend": "cuda",
+          "lanes": 1,
+          "steps": 600,
+          "mutations": false,
+          "kernel_ms": 3712.655273,
+          "elapsed_ms": 3740.25077,
+          "bytesperlane": 524288,
+          "maxheapbytes": 347008,
+          "dispatches": 1913572,
+          "registers_per_thread": 70,
+          "local_bytes_per_thread": 360,
+          "shared_bytes_per_block": 0,
+          "failures": 0
+        },
+        "compared_words": 9000,
+        "mismatches": 0
+      },
+      {
+        "variant": "cache",
+        "mutation": false,
+        "repeat": 1,
+        "wall_seconds": 3.8364874140024767,
+        "metadata": {
+          "backend": "cuda",
+          "lanes": 1,
+          "steps": 600,
+          "mutations": false,
+          "kernel_ms": 3688.953857,
+          "elapsed_ms": 3716.767025,
+          "bytesperlane": 524288,
+          "maxheapbytes": 347008,
+          "dispatches": 1913572,
+          "registers_per_thread": 206,
+          "local_bytes_per_thread": 648,
+          "shared_bytes_per_block": 0,
+          "failures": 0
+        },
+        "compared_words": 9000,
+        "mismatches": 0
+      },
+      {
+        "variant": "reference",
+        "mutation": false,
+        "repeat": 2,
+        "wall_seconds": 3.855094011996698,
+        "metadata": {
+          "backend": "cuda",
+          "lanes": 1,
+          "steps": 600,
+          "mutations": false,
+          "kernel_ms": 3712.702393,
+          "elapsed_ms": 3740.206734,
+          "bytesperlane": 524288,
+          "maxheapbytes": 347008,
+          "dispatches": 1913572,
+          "registers_per_thread": 70,
+          "local_bytes_per_thread": 360,
+          "shared_bytes_per_block": 0,
+          "failures": 0
+        },
+        "compared_words": 9000,
+        "mismatches": 0
+      },
+      {
+        "variant": "cache",
+        "mutation": false,
+        "repeat": 2,
+        "wall_seconds": 3.830010403995402,
+        "metadata": {
+          "backend": "cuda",
+          "lanes": 1,
+          "steps": 600,
+          "mutations": false,
+          "kernel_ms": 3688.94165,
+          "elapsed_ms": 3715.945349,
+          "bytesperlane": 524288,
+          "maxheapbytes": 347008,
+          "dispatches": 1913572,
+          "registers_per_thread": 206,
+          "local_bytes_per_thread": 648,
+          "shared_bytes_per_block": 0,
+          "failures": 0
+        },
+        "compared_words": 9000,
+        "mismatches": 0
+      },
+      {
+        "variant": "reference",
+        "mutation": true,
+        "repeat": 0,
+        "wall_seconds": 3.474143888997787,
+        "metadata": {
+          "backend": "cuda",
+          "lanes": 1,
+          "steps": 600,
+          "mutations": true,
+          "kernel_ms": 3330.348145,
+          "elapsed_ms": 3357.311711,
+          "bytesperlane": 524288,
+          "maxheapbytes": 347008,
+          "dispatches": 1724928,
+          "registers_per_thread": 70,
+          "local_bytes_per_thread": 360,
+          "shared_bytes_per_block": 0,
+          "failures": 0
+        },
+        "compared_words": 9000,
+        "mismatches": 0
+      },
+      {
+        "variant": "cache",
+        "mutation": true,
+        "repeat": 0,
+        "wall_seconds": 3.4639129630013485,
+        "metadata": {
+          "backend": "cuda",
+          "lanes": 1,
+          "steps": 600,
+          "mutations": true,
+          "kernel_ms": 3315.227539,
+          "elapsed_ms": 3342.550873,
+          "bytesperlane": 524288,
+          "maxheapbytes": 347008,
+          "dispatches": 1724928,
+          "registers_per_thread": 206,
+          "local_bytes_per_thread": 648,
+          "shared_bytes_per_block": 0,
+          "failures": 0
+        },
+        "compared_words": 9000,
+        "mismatches": 0
+      },
+      {
+        "variant": "reference",
+        "mutation": true,
+        "repeat": 1,
+        "wall_seconds": 3.4787673569953768,
+        "metadata": {
+          "backend": "cuda",
+          "lanes": 1,
+          "steps": 600,
+          "mutations": true,
+          "kernel_ms": 3330.371582,
+          "elapsed_ms": 3357.810838,
+          "bytesperlane": 524288,
+          "maxheapbytes": 347008,
+          "dispatches": 1724928,
+          "registers_per_thread": 70,
+          "local_bytes_per_thread": 360,
+          "shared_bytes_per_block": 0,
+          "failures": 0
+        },
+        "compared_words": 9000,
+        "mismatches": 0
+      },
+      {
+        "variant": "cache",
+        "mutation": true,
+        "repeat": 1,
+        "wall_seconds": 3.456129559999681,
+        "metadata": {
+          "backend": "cuda",
+          "lanes": 1,
+          "steps": 600,
+          "mutations": true,
+          "kernel_ms": 3315.17041,
+          "elapsed_ms": 3341.285573,
+          "bytesperlane": 524288,
+          "maxheapbytes": 347008,
+          "dispatches": 1724928,
+          "registers_per_thread": 206,
+          "local_bytes_per_thread": 648,
+          "shared_bytes_per_block": 0,
+          "failures": 0
+        },
+        "compared_words": 9000,
+        "mismatches": 0
+      },
+      {
+        "variant": "reference",
+        "mutation": true,
+        "repeat": 2,
+        "wall_seconds": 3.470614701996965,
+        "metadata": {
+          "backend": "cuda",
+          "lanes": 1,
+          "steps": 600,
+          "mutations": true,
+          "kernel_ms": 3330.386963,
+          "elapsed_ms": 3356.587248,
+          "bytesperlane": 524288,
+          "maxheapbytes": 347008,
+          "dispatches": 1724928,
+          "registers_per_thread": 70,
+          "local_bytes_per_thread": 360,
+          "shared_bytes_per_block": 0,
+          "failures": 0
+        },
+        "compared_words": 9000,
+        "mismatches": 0
+      },
+      {
+        "variant": "cache",
+        "mutation": true,
+        "repeat": 2,
+        "wall_seconds": 3.467000938995625,
+        "metadata": {
+          "backend": "cuda",
+          "lanes": 1,
+          "steps": 600,
+          "mutations": true,
+          "kernel_ms": 3315.215332,
+          "elapsed_ms": 3343.29909,
+          "bytesperlane": 524288,
+          "maxheapbytes": 347008,
+          "dispatches": 1724928,
+          "registers_per_thread": 206,
+          "local_bytes_per_thread": 648,
+          "shared_bytes_per_block": 0,
+          "failures": 0
+        },
+        "compared_words": 9000,
+        "mismatches": 0
+      }
+    ],
+    "binary_sha256": {
+      "reference": "5c0bfbedad52dcfeb21a8f485b114d76e28d10034d08a6fb9f248080c2acd568",
+      "cache": "c7f49d61e18f40a2fcf4b5b526e638aa94238d1b88e2dc724106b61ca1b6dcee"
+    },
+    "pass": true,
+    "summary": [
+      {
+        "mutation": false,
+        "median_kernel_ms": {
+          "reference": 3712.655273,
+          "cache": 3688.953857
+        },
+        "cache_speedup": 1.0064249694950846
+      },
+      {
+        "mutation": true,
+        "median_kernel_ms": {
+          "reference": 3330.371582,
+          "cache": 3315.215332
+        },
+        "cache_speedup": 1.0045717241512806
+      }
+    ]
+  },
+  "writeback_gate": {
+    "cases": [
+      "budget0",
+      "budget1",
+      "budget2",
+      "budget8",
+      "bad-stack",
+      "unsupported-fp"
+    ],
+    "host_ab_equal": true,
+    "gpu_ab_equal": true,
+    "gpu_vs_host_equal": true,
+    "canonical_dump_sha256": "d2aa79c3414c799f7621f29e5d1fef09431aa6b193902b53144257ebd1b312d7",
+    "arena_encoding": "FNV-1a whole-arena regression digest; not cryptographic attestation",
+    "gpu_binary_sha256": {
+      "reference": "638cc0370a93e66db66a2b15c639d26f5102db88e0222f6f9edd40d58c5a7937",
+      "cache": "06176a43aa87fa012351e4828ee50276cf1274c52fbe3ec2b28b960937ae8667"
+    }
+  },
+  "resources": {
+    "reference_kernel_registers": 70,
+    "cache_kernel_registers": 206,
+    "reference_kernel_local_bytes": 360,
+    "cache_kernel_local_bytes": 648
+  },
+  "largest_region_compile": {
+    "ptxas1": {
+      "command": [
+        "/opt/cuda/bin/nvcc",
+        "-ccbin",
+        "g++-14",
+        "-std=c++20",
+        "-O2",
+        "-arch=sm_70",
+        "-dc",
+        "--fmad=false",
+        "--ftz=false",
+        "--prec-div=true",
+        "--prec-sqrt=true",
+        "-diag-suppress=68,177",
+        "-Xptxas=-O1,-v",
+        "build-cuda-region-cache/generated/guest_region_26.cu",
+        "-o",
+        "build-cuda-region-cache/region26.o"
+      ],
+      "wall_seconds": 8.088030712002364,
+      "max_rss_kib": 239408,
+      "exit_code": 0
+    },
+    "ptxas3": {
+      "command": [
+        "/opt/cuda/bin/nvcc",
+        "-ccbin",
+        "g++-14",
+        "-std=c++20",
+        "-O2",
+        "-arch=sm_70",
+        "-dc",
+        "--fmad=false",
+        "--ftz=false",
+        "--prec-div=true",
+        "--prec-sqrt=true",
+        "-diag-suppress=68,177",
+        "-Xptxas=-O3,-v",
+        "build-cuda-region-cache/generated/guest_region_26.cu",
+        "-o",
+        "build-cuda-region-cache/region26-ptxas3.o"
+      ],
+      "wall_seconds": 10.941928088002896,
+      "max_rss_kib": 241500,
+      "exit_code": 0
+    },
+    "standalone_registers": {
+      "ptxas1": 132,
+      "ptxas3": 124
+    }
+  },
+  "source_sha256": {
+    "tools/cuda-exact/translate.py": "44c2c5a17762c3c551043175e80111f5121eb2a657f78107162b2d7f7b1d5d86",
+    "tools/cuda-exact/physics_probe.cu": "c732024f3e773b0b5f5b23abddcc3021b565d48daefaf67f943fc367dbb850fe",
+    "tools/cuda-exact/region_writeback_validate.cpp": "6fae755fe69ecf83253cf45fef5a51954c694f2eb209c43c2328ac8c90258a1a",
+    "tools/cuda-exact/region_writeback_validate.cu": "cc65d9816dc0d28317b74890da3e3734062cede6731d92b826c6befa924d94b0"
+  },
+  "cached_library_sha256": "c21a7421150d5ba70deca86d81c3749424d804f339549bb309acbfc2f6600f12",
+  "build_command": "cmake -S . -B build-cuda-region-cache -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=/usr/bin/g++-14 -DCMAKE_CUDA_COMPILER=/opt/cuda/bin/nvcc -DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-14 -DIRISU_BUILD_TESTS=OFF -DIRISU_BUILD_SHARED=OFF -DIRISU_BUILD_BENCHMARKS=OFF -DIRISU_BUILD_CUDA_EXPERIMENTS=ON -DIRISU_CUDA_REGION_LOCAL_GUEST=ON -DPython3_EXECUTABLE=/home/gabe/Documents/ChatGPT/irisu/.venv-gpu/bin/python -DIRISU_CUDA_EXACT_HOST=/home/gabe/Documents/ChatGPT/irisu/.local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so; cmake --build build-cuda-region-cache --target irisu-cuda-physics-probe -j3",
+  "generator_regression_pass": true
+}

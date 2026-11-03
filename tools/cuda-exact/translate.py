@@ -151,7 +151,7 @@ class Lower:
         raise ValueError(m)
 
 
-def generate(source: Path, output: Path, region_shift: int = 10):
+def generate(source: Path, output: Path, region_shift: int = 10, region_local_guest: bool = False):
     digest=hashlib.sha256(source.read_bytes()).hexdigest()
     if digest!=PIN: raise SystemExit(f'input host hash is {digest}; expected {PIN}')
     output.mkdir(parents=True,exist_ok=True)
@@ -257,8 +257,15 @@ def generate(source: Path, output: Path, region_shift: int = 10):
         for region, group in grouped.items():
             region_start=len(code)
             regions.append(region);starts.add(group[0].address)
-            code.extend([f'IRISU_GUEST_HD IRISU_GUEST_NOINLINE IRISU_GUEST_REGION_INLINE void region_{region}(Guest& g, std::uint64_t& budget) {{',
-                         'dispatch:',f'if(g.error || (g.pc>>{region_shift})!={region}u) return;', 'switch(g.pc) {'])
+            argument='original' if region_local_guest else 'g'
+            code.append(f'IRISU_GUEST_HD IRISU_GUEST_NOINLINE IRISU_GUEST_REGION_INLINE void region_{region}(Guest& {argument}, std::uint64_t& budget) {{')
+            if region_local_guest:
+                # Worlds keep their Guest object outside the guest byte arena.
+                # Every exit (including faults and budget exhaustion) commits
+                # all scalar/stack/allocator state before the next dispatcher.
+                code.extend(['Guest g=original;', 'struct Commit { Guest& source;Guest& destination;',
+                    'IRISU_GUEST_HD ~Commit(){destination=source;} } commit{g,original};'])
+            code.extend(['dispatch:',f'if(g.error || (g.pc>>{region_shift})!={region}u) return;', 'switch(g.pc) {'])
             code.extend(f'case {i.address}u: goto block_{i.address};' for i in group if i.address in starts)
             code.extend(['default:g.fail(bad_pc);return;','}'])
             def edge(target):
@@ -317,7 +324,7 @@ def generate(source: Path, output: Path, region_shift: int = 10):
         identity+=f'inline constexpr const char source_sha256[]="{digest}";\n}}\n'
         write_generated(output/'guest_image_identity.inc', identity)
         public={k:v for k,v in symbols.items() if k.startswith('msvc_b2d_world_')}
-        manifest=dict(version=1,region_shift=region_shift,region_sources=region_sources,source_sha256=digest,image_bytes=len(image),image_sha256=image_sha,exports=public,imports=imports,
+        manifest=dict(version=1,region_shift=region_shift,region_local_guest=region_local_guest,region_sources=region_sources,source_sha256=digest,image_bytes=len(image),image_sha256=image_sha,exports=public,imports=imports,
                       instructions=len(instructions),dead_flag_writes=sum(not live_after[i.address] and i.mnemonic in flag_writers for i in instructions),mnemonics=dict(Counter(i.mnemonic for i in instructions)),unsupported=unsupported,
                       attestation='experimental; CPU comparison required; no promotion authority')
         write_generated(output/'manifest.json', json.dumps(manifest,indent=2)+'\n')
@@ -345,5 +352,6 @@ if __name__=='__main__':
     parser.add_argument('source',type=Path)
     parser.add_argument('output',type=Path)
     parser.add_argument('--region-shift', type=int, choices=range(8,15), default=10, help='log2 guest-code bytes per optimizer function')
+    parser.add_argument('--region-local-guest', action='store_true', help='experimental per-region Guest cache with unconditional writeback')
     args=parser.parse_args()
-    generate(args.source,args.output,args.region_shift)
+    generate(args.source,args.output,args.region_shift,args.region_local_guest)
