@@ -2,6 +2,7 @@
 // translated checkpoint, validates every frame and the complete endpoint state.
 // This is explicitly not a measurement of one continuous GPU replay.
 #include "../../clone/cuda/world.cuh"
+#include "image_identity.hpp"
 #include <cuda_runtime.h>
 #include <algorithm>
 #include <chrono>
@@ -58,6 +59,7 @@ int main(int argc,char** argv) {
  try {
   if(argc<4)throw std::runtime_error("usage: game-segments image.bin replay.rpy native.digest [--segment-ticks N] [--max-steps N] [--arena-mib N] [--threads N]");
   const auto image=read(argv[1]),replay=read(argv[2]),native=read(argv[3]);
+  irisu::cuda_exact::verify_image(image.data(),image.size());
   if(image.empty()||image.size()>0x20000||replay.size()<56||(replay.size()-52)%4||word(replay,16))throw std::runtime_error("invalid image/replay");
   unsigned steps=(replay.size()-52)/4,stride=256,capacity=1024*1024,threads=4;
   for(int i=4;i<argc;++i) {
