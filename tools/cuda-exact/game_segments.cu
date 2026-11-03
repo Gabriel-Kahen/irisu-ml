@@ -78,7 +78,7 @@ int main(int argc,char** argv) {
   std::vector<std::uint32_t> words(steps);for(unsigned i=0;i<steps;++i)words[i]=word(replay,52+4*i);
   std::vector<Frame> reference(steps+1),actual(steps+1);std::memcpy(reference.data(),native.data(),reference.size()*96);
   std::vector<game::World> checkpoints(count);std::vector<unsigned char> arenas(std::size_t(count)*capacity);
-  std::vector<std::uint64_t> initial_hash(count),final_hash(count);
+  std::vector<std::uint64_t> initial_hash(count),final_hash(count),expected_tick(count);
   auto host=std::make_unique<game::World>();std::vector<unsigned char> memory(capacity);
   const std::uint16_t cw=0x027f;__asm__ __volatile__("fldcw %0"::"m"(cw));
   const auto start=std::chrono::steady_clock::now();
@@ -95,7 +95,7 @@ int main(int argc,char** argv) {
       if(host->failed())throw std::runtime_error("host checkpoint trajectory failed");
       equal_frame(host->frame(result),reference[tick+1],tick+1,"host");
     }
-    final_hash[segment]=host->state_hash(true);
+    final_hash[segment]=host->state_hash(true);expected_tick[segment]=host->simulator.tick_;
   }
   const double host_seconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-start).count();
   game::World* device_worlds{};unsigned char* device_arenas{};std::uint32_t* device_words{};
@@ -115,7 +115,7 @@ int main(int argc,char** argv) {
   check(cudaMemcpy(endpoints.data(),device_endpoints,count*sizeof(Endpoint),cudaMemcpyDeviceToHost));
   for(unsigned segment=0;segment<count;++segment) {
     const auto& endpoint=endpoints[segment];
-    if(endpoint.initial_hash!=initial_hash[segment]||endpoint.final_hash!=final_hash[segment]||endpoint.tick!=std::min(steps,(segment+1)*stride)||endpoint.error||endpoint.game_failed) {
+    if(endpoint.initial_hash!=initial_hash[segment]||endpoint.final_hash!=final_hash[segment]||endpoint.tick!=expected_tick[segment]||endpoint.error||endpoint.game_failed) {
       std::fprintf(stderr,"segment%u endpoint mismatch initial%llx/%llx final%llx/%llx tick%llu error%u game%u\n",segment,
         (unsigned long long)endpoint.initial_hash,(unsigned long long)initial_hash[segment],(unsigned long long)endpoint.final_hash,(unsigned long long)final_hash[segment],
         (unsigned long long)endpoint.tick,endpoint.error,endpoint.game_failed);
@@ -124,9 +124,9 @@ int main(int argc,char** argv) {
   }
   for(unsigned row=0;row<=steps;++row)equal_frame(actual[row],reference[row],row,"cuda");
   check(cudaFree(device_endpoints));check(cudaFree(device_frames));check(cudaFree(device_words));check(cudaFree(device_arenas));check(cudaFree(device_worlds));check(cudaEventDestroy(begin));check(cudaEventDestroy(end));
-  std::printf("{\"schema\":\"irisu-cuda-game-segments-v1\",\"status\":\"passed\",\"scope\":\"checkpoint-segmented GPU replay; every frame plus canonical hidden/complete arena endpoint hashes\",\"continuous_gpu_replay_observed\":false,\"exact_training_admitted\":false,\"steps\":%u,\"rows\":%u,\"segments\":%u,\"segment_ticks\":%u,\"arena_bytes\":%u,\"threads_per_block\":%u,\"host_checkpoint_seconds\":%.9f,\"gpu_kernel_ms\":%.6f,\"elapsed_seconds\":%.9f,\"canonical_score\":%lld,\"live_score\":%lld,\"level\":%u,\"chain\":%u}\n",
+  std::printf("{\"schema\":\"irisu-cuda-game-segments-v1\",\"status\":\"passed\",\"scope\":\"checkpoint-segmented GPU replay; every frame plus canonical hidden/complete arena endpoint hashes\",\"continuous_gpu_replay_observed\":false,\"exact_training_admitted\":false,\"replay_words\":%u,\"rows\":%u,\"segments\":%u,\"segment_ticks\":%u,\"arena_bytes\":%u,\"threads_per_block\":%u,\"host_checkpoint_seconds\":%.9f,\"gpu_kernel_ms\":%.6f,\"elapsed_seconds\":%.9f,\"final_tick\":%llu,\"canonical_score\":%lld,\"live_score\":%lld,\"level\":%u,\"chain\":%u}\n",
     steps,steps+1,count,stride,capacity,threads,host_seconds,kernel_ms,std::chrono::duration<double>(std::chrono::steady_clock::now()-start).count(),
-    (long long)host->simulator.latest_final_score_,(long long)host->simulator.score_,host->simulator.level_,host->simulator.highest_chain_);
+    (unsigned long long)host->simulator.tick_,(long long)host->simulator.latest_final_score_,(long long)host->simulator.score_,host->simulator.level_,host->simulator.highest_chain_);
   return 0;
  }catch(const std::exception& error){std::fprintf(stderr,"game-segments: %s\n",error.what());return 1;}
 }
