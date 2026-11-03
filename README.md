@@ -86,6 +86,10 @@ neither. The [RL documentation](RL.md),
 measured limits. The published replay is a search result, not evidence of
 general policy transfer.
 
+The optional [CUDA exact-host experiments](docs/cuda-exact.md) target the V100
+with translated MSVC physics, relocatable worlds and batched search. They carry
+a separate experimental identity and workload-specific parity evidence.
+
 ## Playable web client
 
 [**Play Irisu online**](https://irisu.online/) in the static browser client at

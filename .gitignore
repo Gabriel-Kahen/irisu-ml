@@ -46,3 +46,7 @@ node_modules/
 /build-*/
 /.tmp/
 compile_commands.json
+
+# Recovered pinned runtime and optional translation dependencies.
+/.local/
+/.venv-gpu/

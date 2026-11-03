@@ -1,0 +1,30 @@
+{
+  "schema": "irisu-record-search-historical-provenance-v1",
+  "evidence_kind": "archived execution commands and completion messages, not surviving run artifacts",
+  "thread_id": "01a1028c-0406-70b1-9220-82263cade0a2",
+  "turn_id": "01a1028c-849e-7723-9a01-90dbdc07e0c3",
+  "score": 4393101,
+  "previous_score": 4387613,
+  "game_seed": 1298144938,
+  "winning_search_seed": 661003,
+  "winning_root_tick": 96000,
+  "runner": "/home/gabe/.codex/worktrees/a40c/irisu/benchmarks/rl_combo_diverse_search.py",
+  "launch_command_item": "exec-267dfdac-6360-4a17-8fa1-9d6d14f68c83",
+  "completion_command_item": "exec-adcefc7e-23e2-44a5-9e53-26bdca173a40",
+  "algorithm": "event",
+  "horizon": 3072,
+  "segment": 32,
+  "beam_width": 24,
+  "candidates": 48,
+  "fixed_option_interval": true,
+  "causal_options": 4,
+  "retirement_options": 6,
+  "co_clear_options": 8,
+  "preparation_options": 6,
+  "extract_sha256": "d03b4b0c625f420a035436c0b123b195bac1c17ef64fcc57c24bedecc653e57e",
+  "limitations": [
+    "Original worktree runner and campaign artifacts are absent.",
+    "The new sparse-candidate CUDA workload does not claim to reproduce the historical event proposal algorithm.",
+    "Historical worker identity remains distinct from rebuilt oracle and experimental CUDA identity."
+  ]
+}
