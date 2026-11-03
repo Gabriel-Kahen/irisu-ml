@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Validate resident dependent GPU beam depths against independent native forks.
 
-Small gates compose at most four sparse mutations per leaf, so every candidate
-at every depth can be independently evaluated from the native root checkpoint.
-The exported winning replay is also checked from reset by game-oracle.
+Small gates independently evaluate every candidate from the native root
+checkpoint. Longer edit histories are materialized in grouped base replays;
+the root prefix and cumulative hash history remain unchanged. The exported
+winning replay is also checked from reset by game-oracle.
 """
 from __future__ import annotations
 import argparse
@@ -71,6 +72,50 @@ def specs_for_paths(specs,parents,depth,horizon):
     return b"".join(rows),paths
 
 
+def native_round(args,specs,parents,depth):
+    """Keep the root checkpoint/hash seed while admitting longer edit history."""
+    paths=[parent+[ordinal] for parent in parents for ordinal in range(len(specs))]
+    base_command=[args.oracle,args.replay,None,args.prefix,args.horizon*(depth+1),args.workers,4393102]
+    if args.final_only:base_command.append("--final-only")
+    try:
+        encoded,_=specs_for_paths(specs,parents,depth,args.horizon)
+    except ValueError:
+        # Previous segments become part of the immutable base replay. Only
+        # current-segment edits occupy the native oracle's four-edit record.
+        original=args.replay.read_bytes();all_rows=[];all_flags=[];runs=[]
+        for parent_index,parent in enumerate(parents):
+            replay=bytearray(original)
+            required=52+4*(args.prefix+depth*args.horizon)
+            if len(replay)<required:replay.extend(bytes(required-len(replay)))
+            for d,ordinal in enumerate(parent):
+                source=specs[ordinal]
+                for i in range(source[0]):
+                    tick=args.prefix+d*args.horizon+source[2+2*i]
+                    struct.pack_into("<I",replay,52+4*tick,source[3+2*i])
+            rp=args.output.with_suffix(f".depth-{depth}.parent-{parent_index}.rpy");rp.write_bytes(replay)
+            sp=args.output.with_suffix(f".depth-{depth}.parent-{parent_index}.specs.bin")
+            encoded=[]
+            for source in specs:
+                row=list(source)
+                for i in range(source[0]):row[2+2*i]+=depth*args.horizon
+                encoded.append(SPEC.pack(*row))
+            sp.write_bytes(b"".join(encoded))
+            lp=args.output.with_suffix(f".depth-{depth}.parent-{parent_index}.lifecycle.bin")
+            command=base_command.copy();command[1]=rp;command[2]=sp;command.extend(["--emit-lifecycle",lp])
+            data,run=invoke(command,args.timeout);rows,_=decode(data,len(specs));all_rows.extend(rows)
+            all_flags.extend(struct.unpack(f"<{len(specs)}I",lp.read_bytes()))
+            runs.append({"command":list(map(str,command)),"replay_sha256":sha(rp),"specs_sha256":sha(sp),**run})
+        ranks=sorted(range(len(all_rows)),key=lambda i:(all_rows[i][21:],-i),reverse=True)
+        payload=struct.pack("<4I",0x32535249,2,len(all_rows),RESULT.size)+b"".join(RESULT.pack(*row) for row in all_rows)+struct.pack(f"<{len(ranks)}I",*ranks)
+        return payload,all_flags,[],{"grouped_parent_oracles":runs},paths
+    sp=args.output.with_suffix(f".depth-{depth}.native-specs.bin");sp.write_bytes(encoded)
+    lp=args.output.with_suffix(f".depth-{depth}.native-lifecycle.bin")
+    command=base_command.copy();command[2]=sp;command.extend(["--emit-lifecycle",lp])
+    data,run=invoke(command,args.timeout)
+    flags=list(struct.unpack(f"<{len(paths)}I",lp.read_bytes()))
+    return data,flags,command,run,paths
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("--gpu",type=Path,required=True);p.add_argument("--oracle",type=Path,required=True)
@@ -128,20 +173,13 @@ def main():
             paths=[parent+[ordinal] for parent in parents for ordinal in range(len(specs))]
             native_command=[];native_run={};native=None
         else:
-            native_specs,paths=specs_for_paths(specs,parents,depth,args.horizon)
-            path=args.output.with_suffix(f".depth-{depth}.native-specs.bin");path.write_bytes(native_specs)
-            native_command=[args.oracle,args.replay,path,args.prefix,args.horizon*(depth+1),args.workers,4393102]
-            if args.final_only:native_command.append("--final-only")
-            lifecycle_path=args.output.with_suffix(f".depth-{depth}.native-lifecycle.bin")
-            native_command.extend(["--emit-lifecycle",lifecycle_path])
-            native,native_run=invoke(native_command,args.timeout)
+            native,native_flags,native_command,native_run,paths=native_round(args,specs,parents,depth)
             if native!=round["payload"]:
                 cpu_results,cpu_ranks=decode(native,round["count"])
                 mismatch=next(((i,j,a,b) for i,(cr,gr) in enumerate(zip(cpu_results,round["results"]))
                                for j,(a,b) in enumerate(zip(cr,gr)) if a!=b),None)
                 raise RuntimeError(f"depth{depth} full candidate/rank mismatch: {mismatch}; native ranks{cpu_ranks}, GPU ranks{round['ranks']}")
-            native_flags=struct.unpack(f"<{round['count']}I",lifecycle_path.read_bytes())
-            if list(native_flags)!=round["lifecycle"]:raise RuntimeError(f"depth{depth} native/GPU lifecycle mismatch")
+            if native_flags!=round["lifecycle"]:raise RuntimeError(f"depth{depth} native/GPU lifecycle mismatch")
         if round["lifecycle"] is None:raise RuntimeError("runtime lacks live-beam lifecycle flags")
         if args.greedy_beam:expected_selected=round["ranks"][:round["keep"]]
         else:
