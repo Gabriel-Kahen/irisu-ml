@@ -1,15 +1,20 @@
-import {BrowserGame} from "./exact-runtime.js?v=metsu-20261103a";
+import {BrowserGame} from "./exact-runtime.js?v=metsu-20261103b";
 import {
   activatedTrailAlphas, colorFor, hasActivatedTrail,
-} from "./colors.mjs?v=metsu-20261103a";
+} from "./colors.mjs?v=metsu-20261103b";
 import {
   clampReplayScrubFrame, parseReplay, REPLAY_TICK_MS,
-} from "./replay.mjs?v=metsu-20261103a";
-import {RestartGate} from "./restart-gate.mjs?v=metsu-20261103a";
-import {drawMetsuWalls, isExBody} from "./presentation.mjs?v=metsu-20261103a";
+} from "./replay.mjs?v=metsu-20261103b";
+import {RestartGate} from "./restart-gate.mjs?v=metsu-20261103b";
+import {drawMetsuWalls, isExBody} from "./presentation.mjs?v=metsu-20261103b";
 
 const canvas = document.querySelector("#game");
 const ctx = canvas.getContext("2d");
+const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+canvas.width = 640 * pixelRatio;
+canvas.height = 480 * pixelRatio;
+ctx.scale(pixelRatio, pixelRatio);
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const $ = (selector) => document.querySelector(selector);
 const ui = {
   over: $("#gameOver"), again: $("#againButton"), finalTitle: $("#finalTitle"),
@@ -27,6 +32,8 @@ const ui = {
   runtimeLoading: $("#runtimeLoading"),
   appError: $("#appError"),
   toast: $("#toast"),
+  hudScore: $("#hudScore"), hudLevel: $("#hudLevel"), hudChain: $("#hudChain"),
+  hudGauge: $("#hudGauge"), hudGaugeFill: $("#hudGaugeFill"),
 };
 
 let snapshot = null;
@@ -47,6 +54,7 @@ const bodyTrails = new Map();
 const bodyPositions = new Map();
 const pendingScores = [];
 const scorePopups = [];
+const clearBursts = [];
 const soundtrack = {start() {}, update() {}};
 
 const restartGate = new RestartGate((pending) => {
@@ -107,12 +115,13 @@ function acceptSnapshot(next, force = false) {
     bodyPositions.clear();
     pendingScores.length = 0;
     scorePopups.length = 0;
+    clearBursts.length = 0;
     trailTick = -1;
   }
   if (next.observation.tick !== trailTick) {
     const active = new Set();
     for (const body of next.observation.bodies) {
-      bodyPositions.set(body.id, {x: body.x, y: body.y});
+      bodyPositions.set(body.id, {x: body.x, y: body.y, color: colorFor(body, snapshotTime)});
       if (!hasActivatedTrail(body)) continue;
       active.add(body.id);
       const trail = bodyTrails.get(body.id) || [];
@@ -243,89 +252,112 @@ function bodyPath(body, size) {
   } else ctx.rect(-size / 2, -size / 2, size, size);
 }
 
-function fillBody(body, size, color, pose, alpha = 1) {
+function fillBody(body, size, color, pose, alpha = 1, detailed = false) {
   ctx.save();
   ctx.translate(pose.x, pose.y);
   ctx.rotate(pose.angle || 0);
   ctx.globalAlpha = alpha;
   bodyPath(body, size);
   ctx.fillStyle = color;
+  if (detailed) {
+    ctx.shadowColor = "#00000050";
+    ctx.shadowBlur = 7;
+    ctx.shadowOffsetY = 3;
+  }
   ctx.fill();
+  if (detailed) {
+    ctx.shadowColor = "transparent";
+    const face = ctx.createLinearGradient(-size / 2, -size / 2, size / 2, size / 2);
+    face.addColorStop(0, "#ffffff24");
+    face.addColorStop(.45, "#ffffff00");
+    face.addColorStop(1, "#00000026");
+    ctx.fillStyle = face;
+    ctx.fill();
+    ctx.strokeStyle = "#ffffff40";
+    ctx.lineWidth = .8;
+    ctx.stroke();
+    if (body.lifecycle === "rotten") {
+      ctx.clip();
+      ctx.strokeStyle = "#10171355";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let x = -size; x < size; x += 9) {
+        ctx.moveTo(x, -size / 2);
+        ctx.lineTo(x + size, size / 2);
+      }
+      ctx.stroke();
+    }
+  }
   ctx.restore();
 }
 
 function drawBody(body, now) {
   const size = Math.max(2, body.size);
   const color = colorFor(body, now);
-  if (hasActivatedTrail(body)) {
+  if (hasActivatedTrail(body) && !reducedMotion.matches) {
     const trail = bodyTrails.get(body.id) || [];
     trail.slice(0, -1).forEach((pose, index, echoes) => {
       const alphaOffset = activatedTrailAlphas.length - echoes.length;
       fillBody(body, size, color, pose,
-        activatedTrailAlphas[alphaOffset + index]);
+        activatedTrailAlphas[alphaOffset + index] * .4);
     });
   }
   fillBody(body, size, color, body,
-    body.lifecycle === "scripted_falling" ? .62 : 1);
+    body.lifecycle === "scripted_falling" ? .88 : 1, true);
   if (isExBody(body)) {
     ctx.save();
     ctx.translate(body.x, body.y);
-    ctx.strokeStyle = "#f4e7ab";
-    ctx.lineWidth = 2;
+    const active = body.lifecycle === "confirmed";
+    ctx.strokeStyle = active ? "#fff1bf" : "#d6b46ca0";
+    ctx.lineWidth = active ? 1.6 : 1;
     ctx.beginPath();
     ctx.arc(0, 0, size / 2 + 3, 0, Math.PI * 2);
     ctx.stroke();
+    const rotation = (reducedMotion.matches || !snapshot?.running ? 0 : now / 1800) + body.id * 1.7;
+    ctx.beginPath();
+    ctx.arc(0, 0, size / 2 + 3, rotation, rotation + Math.PI * .55);
+    ctx.strokeStyle = "#fff0c9";
+    ctx.lineCap = "round";
+    ctx.shadowColor = "#e0bf7450";
+    ctx.shadowBlur = 6;
+    ctx.stroke();
     ctx.restore();
   }
-  // v2.03 renders rotten pieces with their normal color and shape. The small
-  // gray squares in reference footage are projectiles, not dead blocks.
 }
 
 function drawBackdrop() {
-  ctx.fillStyle = "#0c1517";
+  const background = ctx.createRadialGradient(310, 150, 20, 310, 230, 460);
+  background.addColorStop(0, "#1b2821");
+  background.addColorStop(1, "#0e1512");
+  ctx.fillStyle = background;
   ctx.fillRect(0, 0, 640, 480);
+  ctx.fillStyle = "#d6e2c70d";
+  for (let x = 16; x < 640; x += 24) {
+    for (let y = 16; y < 480; y += 24) ctx.fillRect(x, y, 1, 1);
+  }
 }
 
-function outlinedText(text, x, y, size, align = "left") {
-  ctx.save();
-  ctx.textAlign = align;
-  ctx.font = `italic 900 ${size}px "Trebuchet MS", sans-serif`;
-  ctx.lineJoin = "round";
-  ctx.strokeStyle = "#55152c";
-  ctx.lineWidth = 5;
-  ctx.strokeText(text, x, y);
-  ctx.fillStyle = "#f0e2a6";
-  ctx.fillText(text, x, y);
-  ctx.restore();
-}
-
-function drawHud(state) {
-  outlinedText("Level", 21, 428, 28);
-  outlinedText(String(state.level), 52, 458, 25, "center");
-
-  const trackX = 151, trackY = 437, trackW = 312, trackH = 15;
-  ctx.fillStyle = "#33161eaa";
-  ctx.fillRect(trackX, trackY, trackW, trackH);
-  const ratio = Math.max(0, Math.min(1, state.gauge / state.gauge_max));
-  const gaugeGradient = ctx.createLinearGradient(trackX, 0, trackX + trackW, 0);
-  gaugeGradient.addColorStop(0, "#7c1b31");
-  gaugeGradient.addColorStop(1, "#b02a3f");
-  ctx.fillStyle = gaugeGradient;
-  ctx.fillRect(trackX, trackY, trackW * ratio, trackH);
-  ctx.fillStyle = "#ffffff18";
-  ctx.fillRect(trackX, trackY, trackW, 3);
-
-  const digits = String(state.score).padStart(8, "0");
-  ctx.save();
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.font = "900 26px Georgia, serif";
-  ctx.strokeStyle = "#681a38";
-  ctx.lineWidth = 5;
-  ctx.strokeText(digits, 320, 462);
-  ctx.fillStyle = "#eee0a4";
-  ctx.fillText(digits, 320, 462);
-  ctx.restore();
+function drawClearBursts(now) {
+  for (let i = clearBursts.length - 1; i >= 0; i--) {
+    const burst = clearBursts[i];
+    const progress = (now - burst.startedAt) / 550;
+    if (progress >= 1) { clearBursts.splice(i, 1); continue; }
+    const radius = 6 + 24 * progress;
+    ctx.save();
+    ctx.globalAlpha = (1 - progress) * .65;
+    ctx.strokeStyle = burst.color;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(burst.x, burst.y, radius, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = burst.color;
+    for (let n = 0; n < 6; n++) {
+      const angle = n * Math.PI / 3;
+      ctx.fillRect(burst.x + Math.cos(angle) * radius * 1.3 - 1,
+        burst.y + Math.sin(angle) * radius * 1.3 - 1, 2, 2);
+    }
+    ctx.restore();
+  }
 }
 
 function drawScorePopups(now) {
@@ -341,12 +373,12 @@ function drawScorePopups(now) {
     ctx.globalAlpha = 1 - progress;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.font = "900 26px Georgia, serif";
-    ctx.strokeStyle = "#681a38";
-    ctx.lineWidth = 5;
+    ctx.font = "600 20px ui-monospace, monospace";
+    ctx.strokeStyle = "#101713";
+    ctx.lineWidth = 3;
     ctx.lineJoin = "round";
     ctx.strokeText(String(popup.value), popup.x, popup.y - rise);
-    ctx.fillStyle = "#eee0a4";
+    ctx.fillStyle = "#f6edce";
     ctx.fillText(String(popup.value), popup.x, popup.y - rise);
     ctx.restore();
   }
@@ -385,12 +417,12 @@ function draw(now) {
     drawWalls(state);
     [...interpolatedBodies(now)].sort((a, b) => a.id - b.id)
       .forEach((body) => drawBody(body, now));
+    drawClearBursts(now);
     drawScorePopups(now);
-    drawHud(state);
   }
   if (aim.visible) {
     ctx.save();
-    ctx.strokeStyle = "#ece8dd";
+    ctx.strokeStyle = "#f6edcebb";
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.arc(aim.x, aim.y, 9, 0, Math.PI * 2);
@@ -408,6 +440,13 @@ function processEvents(events) {
   for (const event of events) {
     if (event.sequence <= lastEvent) continue;
     lastEvent = event.sequence;
+    if (event.kind_name === "cleared" && !reducedMotion.matches) {
+      const position = bodyPositions.get(event.a);
+      if (position) {
+        clearBursts.push({...position, startedAt: performance.now()});
+        if (clearBursts.length > 48) clearBursts.shift();
+      }
+    }
     if (event.kind_name === "score_changed" && event.value > 0) {
       pendingScores.push(event);
     } else if (event.kind_name === "cleared" &&
@@ -437,6 +476,16 @@ function syncUi() {
   if (!snapshot) return;
   soundtrack.update(snapshot);
   const state = snapshot.observation;
+  const ratio = Math.max(0, Math.min(1, state.gauge / state.gauge_max));
+  if (ui.hudScore) ui.hudScore.textContent = String(state.score).padStart(8, "0");
+  if (ui.hudLevel) ui.hudLevel.textContent = String(state.level).padStart(2, "0");
+  if (ui.hudChain) ui.hudChain.textContent = String(state.highest_chain).padStart(2, "0");
+  if (ui.hudGauge) ui.hudGauge.textContent = `${Math.max(0, state.gauge).toLocaleString("en-US")} / ${state.gauge_max.toLocaleString("en-US")}`;
+  if (ui.hudGaugeFill) {
+    ui.hudGaugeFill.style.transform = `scaleX(${ratio})`;
+    ui.hudGaugeFill.parentElement.setAttribute("aria-valuenow", String(Math.round(ratio * 100)));
+    ui.hudGaugeFill.parentElement.classList.toggle("critical", ratio < .03);
+  }
   const replay = snapshot.replay;
   const replayMode = snapshot.mode === "replay";
   started ||= snapshot.running || state.tick > 0;

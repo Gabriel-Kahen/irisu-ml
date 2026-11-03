@@ -21,11 +21,25 @@ export function metsuWallRects(field) {
 }
 
 export function drawMetsuWalls(ctx, field) {
-  ctx.fillStyle = "#f3f3ef";
-  for (const rect of metsuWallRects(field)) {
+  const walls = metsuWallRects(field);
+  ctx.save();
+  for (const rect of walls) {
+    ctx.fillStyle = "#29372e";
     ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+    ctx.strokeStyle = "#5e70574d";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(rect.x + .5, rect.y + .5, rect.width - 1, rect.height - 1);
   }
-  ctx.fillStyle = "#cad0cd55";
-  ctx.fillRect(field.x, field.y, 3, field.height);
-  ctx.fillRect(field.x + field.width + 8, field.y, 3, field.height);
+  const floor = walls[2];
+  ctx.fillStyle = "#d6b46c80";
+  ctx.fillRect(floor.x, floor.y, floor.width, 1);
+  ctx.fillStyle = "#cad9b51c";
+  ctx.fillRect(field.x + 15, field.y, 1, field.height);
+  ctx.fillRect(field.x + field.width + 8, field.y, 1, field.height);
+  // Small contact-line markers give the floor an edge without hiding EX bodies.
+  ctx.fillStyle = "#d6b46c66";
+  for (let x = floor.x + 10; x < floor.x + floor.width - 6; x += 12) {
+    ctx.fillRect(x, floor.y + 5, 3, 1);
+  }
+  ctx.restore();
 }

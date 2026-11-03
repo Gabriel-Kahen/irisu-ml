@@ -12,6 +12,10 @@ nine distinct colors, and a ring identifying EX circles. Normal-mode replays
 must be opened in the normal client. No normal-mode soundtrack rotation is
 applied to Metsu.
 
+Score, level, best chain, and life sit above the field. EX circles have amber
+rings; diagonal stripes identify rotten blocks without changing their color.
+Trails, clear bursts, and animated ring accents respect reduced-motion settings.
+
 ## Build and preview
 
 First build `irisu-metsu-exact-worker` as described in `docs/metsu.md` and

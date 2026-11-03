@@ -1,11 +1,12 @@
+// Nine stable hues: falling, active, and EX bodies keep their color identity.
 export const palette = [
-  "#861f00", "#0005a4", "#9a9000", "#b227b5",
-  "#52aba7", "#5b729c", "#1b747a", "#92335f", "#b56816",
+  "#db7768", "#7395dc", "#d2bc62", "#b68acb",
+  "#68b5a2", "#a4bbd1", "#57a8be", "#cf87a4", "#d59a61",
 ];
 
 export const activatedPalette = [
-  "#e44717", "#2945ff", "#eee116", "#b227b5",
-  "#52aba7", "#5b729c", "#35bdc4", "#e35b98", "#ffab35",
+  "#ff9988", "#a1b9ff", "#f4df89", "#deb0f5",
+  "#8bdac5", "#d0e4f4", "#87d8ea", "#f4b1cf", "#f6c18d",
 ];
 
 export const bonusPalette = [
@@ -26,7 +27,7 @@ export function hasActivatedTrail(body) {
 }
 
 export function colorFor(body, now = 0) {
-  if (body.kind === "projectile") return "#d9dcda";
+  if (body.kind === "projectile") return "#f4eedb";
   if (body.kind === "bonus") {
     return bonusPalette[Math.floor(now / bonusColorIntervalMs) % bonusPalette.length];
   }
