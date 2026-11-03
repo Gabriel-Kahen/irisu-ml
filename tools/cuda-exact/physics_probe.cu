@@ -1,6 +1,7 @@
 // The actual pinned MSVC physics instruction stream, executed on host or CUDA.
 // Binary stdout matches physics_oracle.c: tick/body/(x,y,r,vx,vy) float words.
 #include "../../clone/cuda/guest_program.cuh"
+#include "image_identity.hpp"
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
@@ -66,7 +67,8 @@ int main(int argc,char** argv) {
   if(!steps||steps>100000||!lanes||lanes>65536 || capacity<0x80000 || capacity>0x40000000 || (capacity&15))return 2;
   std::ifstream input(argv[1],std::ios::binary);
   const std::vector<unsigned char> image((std::istreambuf_iterator<char>(input)),{});
-  if(image.empty()||image.size()>0x20000)return 2;
+  try { irisu::cuda_exact::verify_image(image.data(),image.size()); }
+  catch(const std::exception& error) { std::fprintf(stderr,"%s\n",error.what());return 2; }
   std::vector<std::uint32_t> output(std::size_t(lanes)*steps*15);
   std::vector<irisu::cuda_guest::Guest> guests(lanes);
   std::vector<unsigned char> memory(gpu?0:std::size_t(capacity)*lanes);

@@ -7,7 +7,7 @@
   "binary_sha256": "e20f8dbc55d8979a937d115b0d3c041dfcdce05dcdd4011a48acb39580a54d45",
   "static_region_library_sha256": "ca8e36ef364c559273a95f0d9d6330a3efccc6178e301ceedce1361573702f37",
   "gpu": "Tesla V100-PCIE-32GB, GPU-190591ef-22de-5bc4-0ba4-35864ecab28a, 580.178.04, 32768, 250.00",
-  "compiler": "CUDA12.9;g++14;sm70;frontendO2;PTXASO1;77separatelycompiledregionTUs;rdc;fmadfalse;ftzfalse;precdivtrue;precsqrttrue",
+  "compiler": "CUDA12.9;g++14;sm70;nvcc-host-O2;device-default-optimized;PTXASO1;77separatelycompiledregionTUs;rdc;fmadfalse;ftzfalse;precdivtrue;precsqrttrue",
   "source_sha256": {
     "clone/cuda/guest.hpp": "550de52ae7356d52b274baceb0589aae5b2951405ae9eae6f2d8ebca11a77542",
     "clone/cuda/guest_program.cuh": "e1ecabdafc458efeca43389b8b6fbc0eee59229ed6af3b6c3702056e488a724c",

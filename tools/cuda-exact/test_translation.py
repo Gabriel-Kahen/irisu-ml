@@ -11,6 +11,8 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import hashlib
+import os
 from pathlib import Path
 import subprocess
 import tempfile
@@ -136,6 +138,30 @@ class NativeInstructionParity(unittest.TestCase):
         source = '#include "clone/cuda/guest.hpp"\n#include <cstdio>\nint main(){int failed=0;\n' + "\n".join(chunks) + 'return failed?1:0;}'
         result = compile_run(source)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+
+class GeneratedIdentity(unittest.TestCase):
+    def test_pinned_image_identity_and_incremental_build(self):
+        source = Path(os.environ.get("IRISU_CUDA_EXACT_HOST", str(
+            ROOT / ".local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so")))
+        if not source.exists():
+            self.skipTest("pinned development physics host is unavailable")
+        with tempfile.TemporaryDirectory(prefix="irisu-codegen-") as tmp:
+            output = Path(tmp) / "generated"
+            LOWER.generate(source, output)
+            before = {p.name: p.stat().st_mtime_ns for p in output.iterdir()}
+            LOWER.generate(source, output)
+            self.assertEqual(before, {p.name: p.stat().st_mtime_ns for p in output.iterdir()})
+            manifest = json.loads((output / "manifest.json").read_text())
+            image_sha = hashlib.sha256((output / "guest_image.bin").read_bytes()).hexdigest()
+            self.assertEqual(manifest["image_sha256"], image_sha)
+            self.assertIn(image_sha, (output / "guest_image_identity.inc").read_text())
+            tampered = Path(tmp) / "tampered.so"
+            altered = bytearray(source.read_bytes()); altered[-1] ^= 1
+            tampered.write_bytes(altered)
+            with self.assertRaises(SystemExit):
+                LOWER.generate(tampered, Path(tmp) / "rejected")
+            self.assertFalse((Path(tmp) / "rejected").exists())
 
 
 if __name__ == "__main__":

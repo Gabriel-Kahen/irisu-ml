@@ -23,6 +23,12 @@ COND = dict(je=0,jne=1,jb=2,jae=3,jbe=4,ja=5,jl=6,jge=7,jle=8,jg=9,jp=10,jnp=11,
 TYPES = {1:'std::uint8_t',2:'std::uint16_t',4:'std::uint32_t',8:'std::uint64_t'}
 
 
+def write_generated(path: Path, content: str | bytes | bytearray) -> None:
+    data = content.encode() if isinstance(content, str) else content
+    if not path.exists() or path.read_bytes() != data:
+        path.write_bytes(data)
+
+
 class Lower:
     def __init__(self, ins, flags_live=True):
         self.i=ins
@@ -281,7 +287,7 @@ def generate(source: Path, output: Path, region_shift: int = 10):
             next_address=group[-1].address+group[-1].size
             code.extend([f'g.pc={next_address}u;return;','}'])
             region_name=f'guest_region_{region}'
-            (output/f'{region_name}.inc').write_text('\n'.join(code[region_start:])+'\n')
+            write_generated(output/f'{region_name}.inc', '\n'.join(code[region_start:])+'\n')
             code[region_start:]=[f'#include "{region_name}.inc"']
             root=Path(__file__).resolve().parents[2]
             includes=[root/'clone/cuda/guest.hpp',root/'tools/cuda-exact/x87_numeric.cuh']
@@ -289,26 +295,34 @@ def generate(source: Path, output: Path, region_shift: int = 10):
             unit+='#ifdef __CUDACC__\n#define IRISU_GUEST_NOINLINE __noinline__\n#else\n#define IRISU_GUEST_NOINLINE __attribute__((noinline))\n#endif\n'
             unit+='#define IRISU_GUEST_REGION_INLINE\nnamespace irisu::cuda_guest {\n'
             unit+=f'#include "{region_name}.inc"\n}}\n'
-            (output/f'{region_name}.cu').write_text(unit)
+            write_generated(output/f'{region_name}.cu', unit)
             region_sources.append(f'{region_name}.cu')
-        (output/'guest_region_declarations.inc').write_text('\n'.join(
+        write_generated(output/'guest_region_declarations.inc', '\n'.join(
             f'IRISU_GUEST_HD IRISU_GUEST_NOINLINE void region_{r}(Guest&, std::uint64_t&);' for r in regions)+'\n')
-        (output/'region_sources.cmake').write_text('set(IRISU_CUDA_GENERATED_REGION_SOURCES\n'+
+        write_generated(output/'region_sources.cmake', 'set(IRISU_CUDA_GENERATED_REGION_SOURCES\n'+
             '\n'.join(f'  "${{CMAKE_CURRENT_LIST_DIR}}/{p}"' for p in region_sources)+'\n)\n')
         code.append('#endif')
         code.extend(['IRISU_GUEST_HD IRISU_GUEST_NOINLINE inline void execute(Guest& g,std::uint64_t budget=100000000) {',
                      f'while(g.pc&&!g.error&&budget){{if(callback(g)){{--budget;++g.instructions;continue;}}switch(g.pc>>{region_shift}){{'])
         code.extend(f'case {r}:region_{r}(g,budget);break;' for r in regions)
         code.extend(['default:g.fail(bad_pc);break;','}}if(g.pc&&!g.error)g.fail(budget_exhausted);','}'])
-        (output/'guest_blocks.inc').write_text('\n'.join(code)+'\n')
-        (output/'guest_image.bin').write_bytes(image)
+        write_generated(output/'guest_blocks.inc', '\n'.join(code)+'\n')
+        write_generated(output/'guest_image.bin', image)
+        image_sha=hashlib.sha256(image).hexdigest()
+        identity='#pragma once\n#include <cstdint>\nnamespace irisu::cuda_guest {\n'
+        identity+=f'inline constexpr std::uint32_t image_bytes={len(image)}u;\n'
+        identity+='inline constexpr unsigned char image_sha256[32]={'+','.join(
+            f'0x{x:02x}' for x in bytes.fromhex(image_sha))+'};\n'
+        identity+=f'inline constexpr const char image_sha256_hex[]="{image_sha}";\n'
+        identity+=f'inline constexpr const char source_sha256[]="{digest}";\n}}\n'
+        write_generated(output/'guest_image_identity.inc', identity)
         public={k:v for k,v in symbols.items() if k.startswith('msvc_b2d_world_')}
-        manifest=dict(version=1,region_shift=region_shift,region_sources=region_sources,source_sha256=digest,image_bytes=len(image),exports=public,imports=imports,
+        manifest=dict(version=1,region_shift=region_shift,region_sources=region_sources,source_sha256=digest,image_bytes=len(image),image_sha256=image_sha,exports=public,imports=imports,
                       instructions=len(instructions),dead_flag_writes=sum(not live_after[i.address] and i.mnemonic in flag_writers for i in instructions),mnemonics=dict(Counter(i.mnemonic for i in instructions)),unsupported=unsupported,
                       attestation='experimental; CPU comparison required; no promotion authority')
-        (output/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+        write_generated(output/'manifest.json', json.dumps(manifest,indent=2)+'\n')
         # Export addresses allow callers to build ABI stacks without x86 decoding.
-        (output/'guest_exports.inc').write_text('\n'.join(f'constexpr std::uint32_t {k}={v}u;' for k,v in public.items())+'\n')
+        write_generated(output/'guest_exports.inc', '\n'.join(f'constexpr std::uint32_t {k}={v}u;' for k,v in public.items())+'\n')
         callbacks=['IRISU_GUEST_HD inline bool callback(Guest& g) { switch(g.pc) {']
         for address,name in imports.items():
             pre=f'case {address}u:{{auto a=g.load<std::uint32_t>(g.r[4]+4);'
@@ -322,7 +336,7 @@ def generate(source: Path, output: Path, region_shift: int = 10):
                 body+='g.r[0]=a;'
             callbacks.append(pre+body+'g.pc=g.pop();return true;}')
         callbacks+=['default:return false;} }']
-        (output/'guest_callbacks.inc').write_text('\n'.join(callbacks)+'\n')
+        write_generated(output/'guest_callbacks.inc', '\n'.join(callbacks)+'\n')
         print(json.dumps(dict(image_bytes=len(image),instructions=len(instructions),unsupported=len(unsupported))))
 
 

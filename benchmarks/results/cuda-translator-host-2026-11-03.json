@@ -66,22 +66,25 @@
   },
   "compiler_attempts": [
     {
-      "frontend": "O2",
       "ptxas": "default O3",
       "region_shift": 12,
-      "outcome": "terminated by agent at19GB assemblerRSS to avoid machine pressure; no binary"
+      "outcome": "terminated by agent at19GB assemblerRSS to avoid machine pressure; no binary",
+      "nvcc_host_optimization": "O2",
+      "device_optimization": "nvcc default optimized device compilation; no Ofast-compile flag"
     },
     {
-      "frontend": "O2",
       "ptxas": "O1",
       "region_shift": 12,
-      "outcome": "assembler observed20GBRSS; no binary retained"
+      "outcome": "assembler observed20GBRSS; no binary retained",
+      "nvcc_host_optimization": "O2",
+      "device_optimization": "nvcc default optimized device compilation; no Ofast-compile flag"
     },
     {
-      "frontend": "O2",
       "ptxas": "O1",
       "region_shift": 10,
-      "outcome": "terminated at12GBRSS; no binary; move to PTXAS0 for pilot"
+      "outcome": "terminated at12GBRSS; no binary; move to PTXAS0 for pilot",
+      "nvcc_host_optimization": "O2",
+      "device_optimization": "nvcc default optimized device compilation; no Ofast-compile flag"
     }
   ],
   "modular_compile": {
