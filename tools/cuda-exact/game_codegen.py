@@ -180,6 +180,12 @@ def game() -> str:
                      r"    GAME_HD \1 \2(", methods)
     methods = methods.replace("  sequence_events(result.events);", "  sequence_events(result.events);\n  failed_ |= result.events.overflow;")
     methods = methods.replace("  active_contact_pairs_ = move(current);", "  active_contact_pairs_.assign_live(current);")
+    # Scratch is owned by each world, so CUDA does not reserve tens of KiB of
+    # thread stack for fixed-capacity vectors. Each call clears before use;
+    # scratch never participates in game state, RNG or event ordering.
+    methods = methods.replace("  vector<ScriptedOrigin> scripted_origins;", "  auto& scripted_origins=scripted_origins_scratch_;scripted_origins.clear();")
+    methods = methods.replace("  vector<std::uint64_t> current;", "  auto& current=current_contacts_scratch_;current.clear();")
+    methods = methods.replace("  vector<Body*> actors;", "  auto& actors=actor_refs_scratch_;actors.clear();")
     methods = methods.replace("  const auto contacts = physics_.step(bodies_);", "  const auto& contacts = physics_.step(bodies_);\n  failed_ |= contacts.overflow;")
     methods = re.sub(r"(  validate_public_spawn_geometry\([\s\S]*?\);)",r"\1\n  if(failed_) return 0;",methods)
     methods = methods.replace("  const auto parameter_level = min<std::uint32_t>(level_, 99U);\n  const auto parameters", "  failed_ |= actors.overflow;\n  const auto parameter_level = min<std::uint32_t>(level_, 99U);\n  const auto parameters")
@@ -241,7 +247,7 @@ def game() -> str:
     return ("#pragma once\n#include \"game_tables.cuh\"\nnamespace irisu::cuda_game {\n" + parameters +
             "template<class Physics> class Simulator {\npublic:\n" + prelude +
             "static constexpr BodyId kMaximumBodyId=0x7fffffffU;\nstatic constexpr std::size_t kMaximumSnapshotGroups=1000000;\n" +
-            helpers + numeric_guard + normal + methods + config_hash + members + "\n  mutable bool failed_{};\n};\n}\n")
+            helpers + numeric_guard + normal + methods + config_hash + members + "\n  vector<ScriptedOrigin> scripted_origins_scratch_;\n  vector<std::uint64_t> current_contacts_scratch_;\n  vector<Body*> actor_refs_scratch_;\n  mutable bool failed_{};\n};\n}\n")
 
 
 def main() -> None:

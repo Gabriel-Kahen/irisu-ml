@@ -25,6 +25,7 @@ class PhysicsWorld {
   std::uint32_t world_{};
   vector<Entry> entries_{};
   vector<Contact> contacts_{};
+  vector<Body*> ordered_scratch_{};
 
   GAME_HD std::uint32_t f(double x) const {return cuda_guest::float_word(static_cast<float>(x));}
   template<class... T> GAME_HD std::uint32_t call(std::uint32_t fn,T... args) const {
@@ -140,7 +141,7 @@ class PhysicsWorld {
     if(!e->pending){call(cuda_guest::msvc_b2d_world_destroy_body,world_,e->native);e->pending=true;}
   }
   GAME_HD void synchronize(vector<Body>& bodies) {
-    vector<Body*> ordered;
+    auto& ordered=ordered_scratch_;ordered.clear();
     for(auto& b:bodies)ordered.push_back(&b);
     sort(ordered.begin(),ordered.end(),[] GAME_HD (const Body* a,const Body* b){
       if(a->actor_slot!=b->actor_slot)return a->actor_slot<b->actor_slot;

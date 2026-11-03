@@ -62,7 +62,10 @@ __global__ void run(game::World* world,unsigned char* memory,unsigned capacity,
   if(threadIdx.x||blockIdx.x)return;
   ::new(static_cast<void*>(world)) game::World();
   world->initialize(memory,capacity,image,image_size,seed);
+  auto local_guest=world->guest;
+  world->simulator.physics_.bind(&local_guest);
   trajectory(*world,words,steps,frames);
+  world->guest=local_guest;world->bind(memory);
 }
 void check(cudaError_t code) {
   if(code!=cudaSuccess)throw std::runtime_error(cudaGetErrorString(code));
@@ -96,7 +99,7 @@ int main(int argc,char** argv) {
 #ifdef __CUDACC__
   if(gpu){
     game::World* device_world{};unsigned char *memory{},*device_image{};std::uint32_t* device_words{};Frame* device_frames{};
-    check(cudaDeviceSetLimit(cudaLimitStackSize,128*1024));
+    check(cudaDeviceSetLimit(cudaLimitStackSize,16*1024));
     check(cudaMalloc(&device_world,sizeof(game::World)));check(cudaMalloc(&memory,capacity));
     check(cudaMalloc(&device_image,image.size()));check(cudaMemcpy(device_image,image.data(),image.size(),cudaMemcpyHostToDevice));
     check(cudaMalloc(&device_words,words.size()*4));check(cudaMemcpy(device_words,words.data(),words.size()*4,cudaMemcpyHostToDevice));

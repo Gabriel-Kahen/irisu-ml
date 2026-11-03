@@ -7,7 +7,8 @@
 namespace irisu::cuda_game {
 
 // Inline game containers and guest-offset physics pointers make complete worlds
-// relocatable by byte copy. The two native pointers must be rebound afterwards.
+// relocatable by byte copy. The two semantic native pointers must be rebound
+// afterwards; scratch Body pointers are always cleared and rebuilt before use.
 // Arena bytes include the pinned program image, allocator, physics and stack.
 struct World {
   cuda_guest::Guest guest{};

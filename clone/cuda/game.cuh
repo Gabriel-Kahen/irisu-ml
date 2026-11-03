@@ -223,7 +223,7 @@ GAME_HD GAME_NOINLINE void reset(std::uint64_t seed_value) {
   }
   // The scene transition runs one actor-pool pass after construction, before
   // replay word 0, without stepping Box2D or advancing the scene counter.
-  vector<ScriptedOrigin> scripted_origins;
+  auto& scripted_origins=scripted_origins_scratch_;scripted_origins.clear();
   for (const auto& body : bodies_) {
     if (!body.physics_owned) {
       scripted_origins.emplace_back(body.id, body.position, body.angle);
@@ -589,7 +589,7 @@ GAME_HD GAME_NOINLINE void tick_once(bool left_level, bool right_level, double c
   previous_right_level_ = right_level;
   maybe_spawn(level_, events);
 
-  vector<ScriptedOrigin> scripted_origins;
+  auto& scripted_origins=scripted_origins_scratch_;scripted_origins.clear();
   for (const auto& body : bodies_) {
     if (live(body) && !body.physics_owned) {
       scripted_origins.emplace_back(body.id, body.position, body.angle);
@@ -697,7 +697,7 @@ GAME_HD GAME_NOINLINE void process_contacts(const vector<Contact>& contacts,
                                  bool left_edge, bool right_edge,
                                  double cursor_x, double cursor_y,
                                  Events& events) {
-  vector<std::uint64_t> current;
+  auto& current=current_contacts_scratch_;current.clear();
   current.reserve(contacts.size());
   for (const auto& contact : contacts) current.push_back(contact_key(contact));
   sort(current.begin(), current.end());
@@ -987,7 +987,7 @@ GAME_HD GAME_NOINLINE void process_contacts(const vector<Contact>& contacts,
 GAME_HD GAME_NOINLINE void process_actor_updates(
     const vector<ScriptedOrigin>& scripted_origins,
     Events& events) {
-  vector<Body*> actors;
+  auto& actors=actor_refs_scratch_;actors.clear();
   actors.reserve(bodies_.size());
   for (auto& body : bodies_) {
     if (body.lifecycle != Lifecycle::Deleted) actors.push_back(&body);
@@ -1393,6 +1393,9 @@ GAME_HD std::uint64_t calculate_config_hash() const {
   bool numeric_guard_required_{};
   vector<std::uint64_t> active_contact_pairs_{};
 
+  vector<ScriptedOrigin> scripted_origins_scratch_;
+  vector<std::uint64_t> current_contacts_scratch_;
+  vector<Body*> actor_refs_scratch_;
   mutable bool failed_{};
 };
 }

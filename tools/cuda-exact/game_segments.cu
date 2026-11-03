@@ -25,12 +25,14 @@ __global__ void segments(game::World* worlds,unsigned char* memory,unsigned capa
   if(lane>=count)return;
   auto& world=worlds[lane];world.bind(memory+std::size_t(lane)*capacity);
   auto& result=endpoints[lane];result.initial_hash=world.state_hash(true);
+  auto local_guest=world.guest;world.simulator.physics_.bind(&local_guest);
   const unsigned start=lane*stride,stop=start+stride<steps?start+stride:steps;
   if(!start)frames[0]=world.frame();
   for(unsigned tick=start;tick<stop&&!world.failed();++tick) {
     const auto step=world.step(game::replay_action(words[tick],tick));
     frames[tick+1]=world.frame(step);
   }
+  world.guest=local_guest;world.bind(memory+std::size_t(lane)*capacity);
   result.final_hash=world.state_hash(true);result.tick=world.simulator.tick_;
   result.error=world.guest.error;result.game_failed=world.failed();
 }
@@ -98,7 +100,7 @@ int main(int argc,char** argv) {
   const double host_seconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-start).count();
   game::World* device_worlds{};unsigned char* device_arenas{};std::uint32_t* device_words{};
   Frame* device_frames{};Endpoint* device_endpoints{};std::vector<Endpoint> endpoints(count);
-  check(cudaDeviceSetLimit(cudaLimitStackSize,128*1024));
+  check(cudaDeviceSetLimit(cudaLimitStackSize,16*1024));
   check(cudaMalloc(&device_worlds,checkpoints.size()*sizeof(game::World)));
   check(cudaMalloc(&device_arenas,arenas.size()));check(cudaMalloc(&device_words,words.size()*4));
   check(cudaMalloc(&device_frames,actual.size()*sizeof(Frame)));check(cudaMalloc(&device_endpoints,count*sizeof(Endpoint)));
