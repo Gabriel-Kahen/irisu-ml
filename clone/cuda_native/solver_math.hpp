@@ -17,6 +17,10 @@
 #ifndef IRISU_CUDA_NATIVE_CACHED_ROTATION
 #define IRISU_CUDA_NATIVE_CACHED_ROTATION 0
 #endif
+#ifndef IRISU_CUDA_NATIVE_DEVICE_TRIG
+#define IRISU_CUDA_NATIVE_DEVICE_TRIG 0
+#endif
+static_assert(IRISU_CUDA_NATIVE_DEVICE_TRIG>=0&&IRISU_CUDA_NATIVE_DEVICE_TRIG<=2);
 namespace irisu::cuda_native::math {
 using Number=irisu::cuda_exact::Number;
 using TrigPair=irisu::cuda_exact::TrigPair;
@@ -31,10 +35,26 @@ NATIVE_HD inline Store store(double a){
  const float value=irisu::cuda_exact::float_rn(a);
  return {value,irisu::cuda_exact::normal_or_zero(a)&&finite(value)};
 }
-NATIVE_HD inline TrigPair sincos(float a){return irisu::cuda_exact::sincos_reloaded_float(a);}
 // Exact admission predicate of sincos_reloaded_float for an already binary32
 // operand. Cache hits must not bypass the original range/NaN/Inf rejection.
 NATIVE_HD inline bool sincos_input_supported(float a){return (irisu::cuda_exact::bits_float(a)&0x7fffffffU)<0x49000000U;}
+NATIVE_HD inline TrigPair sincos(float a){
+#if IRISU_CUDA_NATIVE_DEVICE_TRIG && defined(__CUDA_ARCH__)
+ // Explicit approximate profile: device library trig, original admission.
+ // Host/default/existing numeric implementation remain exact and unchanged.
+ if(!sincos_input_supported(a))return {0,0,false};
+ if((irisu::cuda_exact::bits_float(a)&0x7fffffffU)==0)return {a,1.0f,true};
+ float sine,cosine;
+#if IRISU_CUDA_NATIVE_DEVICE_TRIG == 2
+ ::__sincosf(a,&sine,&cosine);
+#else
+ ::sincosf(a,&sine,&cosine);
+#endif
+ return {sine,cosine,finite(sine)&&finite(cosine)};
+#else
+ return irisu::cuda_exact::sincos_reloaded_float(a);
+#endif
+}
 // Each operation rounds independently to PC53; store() marks the observed
 // native binary32 rounding points. Callers must reject a failed context.
 struct Context {
