@@ -8,6 +8,9 @@
 #ifndef IRISU_CUDA_NATIVE_F32_STORE
 #define IRISU_CUDA_NATIVE_F32_STORE 0
 #endif
+#ifndef IRISU_CUDA_NATIVE_BOUNDED_STORE
+#define IRISU_CUDA_NATIVE_BOUNDED_STORE 0
+#endif
 #ifndef IRISU_CUDA_NATIVE_CACHED_ROTATION
 #define IRISU_CUDA_NATIVE_CACHED_ROTATION 0
 #endif
@@ -37,7 +40,7 @@ struct Context {
  NATIVE_HD double take(Number n){if(!n.supported)status=Status::unsupported_numeric;return n.value;}
 #if IRISU_CUDA_NATIVE_BOUNDED_MATH && defined(__CUDA_ARCH__)
  // Experimental current-graph domain only; not a generic checked Context.
- // Keep store/div/sqrt/trig checks. See bounded_math_contract.md for bounds
+ // Keep F32 finite/div/sqrt/trig checks. See bounded_math_contract.md for bounds
  // and the unsupported unstored-product counterexample. Checked is default.
  NATIVE_HD double add(double a,double b){return irisu::cuda_exact::add_rn(a,b);}
  NATIVE_HD double sub(double a,double b){return irisu::cuda_exact::sub_rn(a,b);}
@@ -49,7 +52,17 @@ struct Context {
 #endif
  NATIVE_HD double div(double a,double b){return take(math::div(a,b));}
  NATIVE_HD double sqrt(double a){return take(math::sqrt(a));}
- NATIVE_HD float store(double a){auto n=math::store(a);if(!n.supported)status=Status::unsupported_numeric;return n.value;}
+ NATIVE_HD float store(double a){
+#if IRISU_CUDA_NATIVE_BOUNDED_STORE && IRISU_CUDA_NATIVE_BOUNDED_MATH && defined(__CUDA_ARCH__)
+  // Current bounded graphs only: no nonzero subnormal binary64 store input.
+  // Free math::store and host Context remain checked; see bounded_store_contract.md.
+  const float value=irisu::cuda_exact::float_rn(a);
+  if(!math::finite(value))status=Status::unsupported_numeric;
+  return value;
+#else
+  auto n=math::store(a);if(!n.supported)status=Status::unsupported_numeric;return n.value;
+#endif
+ }
  // Only adjacent binary32 stores may use these overloads. Float products are
  // exact in binary64; float add/sub have no harmful double-round to binary32.
  // Nonfinite inputs retain the original graph; rejected payloads are unspecified.
