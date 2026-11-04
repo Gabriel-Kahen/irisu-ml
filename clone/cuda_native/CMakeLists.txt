@@ -125,3 +125,12 @@ target_compile_options(irisu-native-shared_future-validate PRIVATE -O1)
 if(IRISU_BUILD_TESTS)
   add_test(NAME cuda-native-domain COMMAND irisu-native-domain)
 endif()
+
+# Persistent orchestration service, using this build's existing numeric profile.
+irisu_native_cuda(irisu-cuda-search-engine tools/orchestrator/cuda_engine.cu)
+target_compile_options(irisu-cuda-search-engine PRIVATE
+  "$<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-constexpr;--Ofast-compile=${IRISU_CUDA_NATIVE_GAME_FAST_COMPILE}>")
+if(IRISU_CUDA_NATIVE_MAX_REGISTERS)
+  target_compile_options(irisu-cuda-search-engine PRIVATE
+    "$<$<COMPILE_LANGUAGE:CUDA>:--maxrregcount=${IRISU_CUDA_NATIVE_MAX_REGISTERS}>")
+endif()

@@ -1,0 +1,63 @@
+name: High-score search
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, codex/high-score-orchestrator]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: search-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.11', '3.14']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install test tools
+        run: python -m pip install '.[test]' ruff
+      - name: Check search Python source
+        run: ruff check python/irisu_search --select E9,F63,F7,F82
+      - name: Test orchestration and learning
+        # Exact-library and CUDA integration tests explicitly skip here. Their
+        # independent device/native gates run in the development environment.
+        run: python -m pytest -q tests/test_search_*.py
+
+  portable-native:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build portable simulator and resident worker
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DIRISU_BUILD_TESTS=ON
+          cmake --build build -j 2
+      - name: Test portable simulator
+        run: ctest --test-dir build --output-on-failure -j 2
+      - name: Exercise portable resident checkpoints
+        env:
+          PYTHONPATH: python
+        run: |
+          python - <<'PY'
+          from irisu_search.engine import Engine
+          with Engine(['./build/irisu-search-engine']) as engine:
+              parent = engine.load(42, [0] * 100)
+              result = engine.batch(parent['handle'], 32, [{'mode': 1, 'search_seed': 7}])['results'][0]
+              replay = engine.load(42, [0] * 100 + result['words'])
+              assert result['summary'] == replay['summary']
+              repeated = engine.batch(parent['handle'], 32, [{'mode': 1, 'search_seed': 7}])['results'][0]
+              assert result['words'] == repeated['words']
+              assert result['summary'] == repeated['summary']
+          PY

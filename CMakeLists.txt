@@ -705,3 +705,24 @@ if(IRISU_BUILD_BENCHMARKS AND IRISU_PHYSICS_BACKEND STREQUAL "exact-msvc")
   add_executable(irisu-search-session-oracle tools/cuda-exact/search_session_oracle.cpp)
   target_link_libraries(irisu-search-session-oracle PRIVATE irisu_core Threads::Threads)
 endif()
+
+# Persistent high-score search service; Linux fork/COW is the native transport.
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  add_executable(irisu-search-engine tools/orchestrator/native_engine.cpp)
+  target_link_libraries(irisu-search-engine PRIVATE irisu_core Threads::Threads)
+  target_compile_definitions(irisu-search-engine PRIVATE
+    IRISU_ORCHESTRATOR_BACKEND="${irisu_physics_backend_label}")
+endif()
+
+# Exact genealogy/score attribution; this target does not change engine binaries.
+if(IRISU_PHYSICS_BACKEND STREQUAL "exact-msvc")
+  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+    "${PROJECT_SOURCE_DIR}/tools/orchestrator/trace_record.cpp")
+  file(SHA256 "${PROJECT_SOURCE_DIR}/tools/orchestrator/trace_record.cpp" irisu_search_trace_source_sha256)
+  add_executable(irisu-search-trace tools/orchestrator/trace_record.cpp)
+  target_link_libraries(irisu-search-trace PRIVATE irisu_core)
+  target_compile_definitions(irisu-search-trace PRIVATE
+    IRISU_ORCHESTRATOR_BACKEND="${irisu_physics_backend_label}"
+    IRISU_TRACE_SOURCE_SHA256="${irisu_search_trace_source_sha256}"
+    IRISU_TRACE_EXACT_LIBRARY_SHA256="${irisu_exact_box2d_sha256}")
+endif()
