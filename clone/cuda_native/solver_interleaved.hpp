@@ -64,6 +64,14 @@ struct Descriptor {
   const auto address=reinterpret_cast<std::uintptr_t>(world);
   if(!words||!scene_stride||address<scene_base)return {};
   const auto difference=address-scene_base;
+#ifdef __CUDA_ARCH__
+  // Packed rollout kernels assign the matching pool lane to global thread ID.
+  // Verify its complete address before avoiding integer remainder/division;
+  // isolated layouts and separately allocated buffers retain the general path.
+  const std::size_t thread=std::size_t(blockIdx.x)*blockDim.x+threadIdx.x;
+  if(thread<lanes&&difference==thread*scene_stride)
+   return {words,lanes,unsigned(thread),body_capacity,constraint_capacity,bodies,contacts};
+#endif
   if(difference%scene_stride||difference/scene_stride>=lanes)return {};
   return {words,lanes,unsigned(difference/scene_stride),body_capacity,constraint_capacity,bodies,contacts};
  }

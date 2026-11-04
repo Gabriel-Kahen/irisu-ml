@@ -35,7 +35,9 @@ The runner owns a separate global allocation of
 counters, and uploads `Descriptor` to the consumer's translation-unit-local
 `device_workspace` symbol. The descriptor records the base Scene address,
 `sizeof(Scene)` stride and pool lane count. `World` must be the first Scene
-member. Every concurrently executing world needs a distinct lane; workspace
+member. A device fast path uses global thread ID only after verifying its
+exact configured world address; other mappings retain the full stride/range
+checks. Every concurrently executing world needs a distinct lane; workspace
 and source arrays cannot alias. Prefix/selected allocations outside this pool
 continue through the original solver. Counters report velocity islands,
 position islands, capacity fallback, outside-pool fallback, and errors.
