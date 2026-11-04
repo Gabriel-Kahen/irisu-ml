@@ -122,3 +122,41 @@ on each warmup/repetition and reports process wall separately from stage time.
 Native stage timers include barrier dispatch; GPU kernel events exclude driver
 startup and transfers. These differences are explicit and cannot support a
 complete world/search speed claim.
+
+## Sweep-and-prune operation oracle
+
+`oracle_broadphase.cpp` calls the pinned native constructor and public native
+methods directly. The operation packet is defined by `broadphase_wire.hpp`:
+32-byte header `{0x3153424e,1,operation_count,8,worldAABB[4]}`, then 32-byte
+operations `{kind,logicalSlot,userIdOrQueryLimit,aabb[4],reserved=0}`. Kinds are
+create1, move2, destroy3, commit4, query5. Kind6 sets timestamp65535 as an explicit
+private-state precondition for testing the next wrap transition.
+
+Each result is five uint32 values `{ordinal,result,queryCount,eventCount,23823}`,
+then ordered query user IDs, ordered four-word callbacks `{add1|remove2,user1,
+user2,pairToken}`, and all 95,292 native state bytes. Only the initial two
+PairManager owner/callback pointers are zeroed. Other user-data pointers are
+fixture scalar IDs/tokens, so there are no address-dependent values to mask.
+Callback vtable slots are the MSVC deleting destructor, PairAdded, PairRemoved;
+GCC's ordinary virtual-class ABI is not substituted.
+
+Actual native snapshot evidence establishes proxyPool0x12014 (16-byte stride),
+freeProxy0x14014, **bounds0x14016**, queryResults0x17016, queryCount0x17418,
+worldAABB0x1741c, quantization0x1742c, proxyCount0x17434, timestamp0x17438.
+Bound elements have alignment2; two padding bytes occur *after* queryResults,
+not before bounds. An early alignment inference placed bounds at0x14018; the
+raw native comparison caught it before admission. Pair entries are 12 bytes,
+4096 in number; proxy capacity is512. These are native ABI offsets, not a
+suggestion to encode geometry using C++ `sizeof`.
+
+Oracle backing storage is explicitly zeroed before construction. The original
+PairManager does not initialize its buffered-count field; the later portable
+source contains a safety patch. This initial condition must be stated rather
+than treating uninitialized bytes as universal native semantics. Default
+histories stay below64 simultaneously live proxies (at most2016pairs), keeping
+the original native fixed-capacity implementation safe even for all-overlap
+fixtures. Full512-proxy capacity and null callback-result cases need separate
+qualification before claiming them. Histories cover endpoint ties, pending
+move/commit order, remove/reinsert, proxy free-list reuse, query limits,
+clamping and timestamp wrap. Every raw state byte and event/query word is
+compared, not only final pair sets or state hashes.

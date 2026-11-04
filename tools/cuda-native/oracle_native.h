@@ -67,3 +67,19 @@ static NativeMethod0 oracle_post_solve(const NativeOracle* o){return (NativeMeth
 static NativeMethod0 oracle_solver_destructor(const NativeOracle* o){return (NativeMethod0)oracle_symbol(o,"??1b2ContactSolver@@QAE@XZ",0x72e0);}
 static NativeMethod0 oracle_stack_constructor(const NativeOracle* o){return (NativeMethod0)oracle_symbol(o,"??0b2StackAllocator@@QAE@XZ",0x13460);}
 static NativeMethod0 oracle_stack_destructor(const NativeOracle* o){return (NativeMethod0)oracle_symbol(o,"??1b2StackAllocator@@QAE@XZ",0x13480);}
+// Broad-phase ABI: native MSVC callback vtable has deleting-dtor/add/remove
+// slots at byte0/4/8. Build it explicitly; GCC virtual class layout differs.
+typedef void (ORACLE_THISCALL *NativeBroadCtor)(void*,const void*,void*);
+typedef uint16_t (ORACLE_THISCALL *NativeProxyCreate)(void*,const void*,void*);
+typedef void (ORACLE_THISCALL *NativeProxyDestroy)(void*,int);
+typedef void (ORACLE_THISCALL *NativeProxyMove)(void*,int,const void*);
+typedef int (ORACLE_THISCALL *NativeBroadQuery)(void*,const void*,void**,int);
+typedef void (ORACLE_THISCALL *NativeComputeBounds)(void*,uint16_t*,uint16_t*,const void*);
+static NativeBroadCtor oracle_broad_constructor(const NativeOracle* o){return (NativeBroadCtor)oracle_symbol(o,"??0b2BroadPhase@@QAE@ABUb2AABB@@PAVb2PairCallback@@@Z",0x3580);}
+static NativeMethod0 oracle_broad_destructor(const NativeOracle* o){return (NativeMethod0)oracle_symbol(o,"??1b2BroadPhase@@QAE@XZ",0x3010);}
+static NativeProxyCreate oracle_proxy_create(const NativeOracle* o){return (NativeProxyCreate)oracle_symbol(o,"?CreateProxy@b2BroadPhase@@QAEGABUb2AABB@@PAX@Z",0x37c0);}
+static NativeProxyDestroy oracle_proxy_destroy(const NativeOracle* o){return (NativeProxyDestroy)oracle_symbol(o,"?DestroyProxy@b2BroadPhase@@QAEXH@Z",0x39f0);}
+static NativeProxyMove oracle_proxy_move(const NativeOracle* o){return (NativeProxyMove)oracle_symbol(o,"?MoveProxy@b2BroadPhase@@QAEXHABUb2AABB@@@Z",0x3c30);}
+static NativeMethod0 oracle_broad_commit(const NativeOracle* o){return (NativeMethod0)oracle_symbol(o,"?Commit@b2BroadPhase@@QAEXXZ",0x3390);}
+static NativeBroadQuery oracle_broad_query(const NativeOracle* o){return (NativeBroadQuery)oracle_symbol(o,"?Query@b2BroadPhase@@QAEHABUb2AABB@@PAPAXH@Z",0x4100);}
+static NativeComputeBounds oracle_compute_bounds(const NativeOracle* o){return (NativeComputeBounds)oracle_symbol(o,"?ComputeBounds@b2BroadPhase@@AAEXPAG0ABUb2AABB@@@Z",0x3670);}

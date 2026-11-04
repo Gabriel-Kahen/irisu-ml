@@ -1,0 +1,2756 @@
+{
+  "schema": "irisu-native-SAP-history-parity-v1",
+  "promotion_eligible": false,
+  "scope": "Exact native SAP stage, <=64live proxy fixture scope, calloc-backed explicit initial state, 95,292B snapshots with only first two native owner/callback pointer words zeroed; callback/query ordering retained. Timestamp force is an explicit private-state precondition to exercise wrap. No world/search admission.",
+  "seed": 661003,
+  "random_operations": 200,
+  "operations": 239,
+  "labels": [
+    "first",
+    "overlap-add",
+    "move-remove-buffered",
+    "commit-remove",
+    "move-add-buffered",
+    "commit-add",
+    "query-all",
+    "destroy-remove",
+    "proxy-reuse",
+    "identical-bound-ties",
+    "identical-bound-ties",
+    "identical-bound-ties",
+    "identical-bound-ties",
+    "identical-bound-ties",
+    "identical-bound-ties",
+    "identical-bound-ties",
+    "identical-bound-ties",
+    "random-create-0",
+    "random-create-1",
+    "random-create-2",
+    "random-create-3",
+    "random-query-4",
+    "random-move-5",
+    "random-move-6",
+    "random-commit-7",
+    "random-create-8",
+    "random-move-9",
+    "random-destroy-10",
+    "random-move-11",
+    "random-move-12",
+    "random-query-13",
+    "random-query-14",
+    "random-move-15",
+    "random-move-16",
+    "random-move-17",
+    "random-move-18",
+    "random-query-19",
+    "random-create-20",
+    "random-query-21",
+    "random-query-22",
+    "random-move-23",
+    "random-destroy-24",
+    "random-move-25",
+    "random-move-26",
+    "random-destroy-27",
+    "random-commit-28",
+    "random-destroy-29",
+    "random-query-30",
+    "random-query-31",
+    "random-create-32",
+    "random-query-33",
+    "random-commit-34",
+    "random-query-35",
+    "random-query-36",
+    "random-query-37",
+    "random-create-38",
+    "random-move-39",
+    "random-move-40",
+    "random-destroy-41",
+    "random-query-42",
+    "random-move-43",
+    "random-move-44",
+    "random-commit-45",
+    "random-move-46",
+    "random-create-47",
+    "random-destroy-48",
+    "random-create-49",
+    "random-move-50",
+    "random-query-51",
+    "random-move-52",
+    "random-move-53",
+    "random-move-54",
+    "random-destroy-55",
+    "random-commit-56",
+    "random-move-57",
+    "random-move-58",
+    "random-create-59",
+    "random-move-60",
+    "random-move-61",
+    "random-destroy-62",
+    "random-move-63",
+    "random-destroy-64",
+    "random-commit-65",
+    "random-query-66",
+    "random-move-67",
+    "random-commit-68",
+    "random-move-69",
+    "random-query-70",
+    "random-commit-71",
+    "random-move-72",
+    "random-create-73",
+    "random-move-74",
+    "random-destroy-75",
+    "random-create-76",
+    "random-commit-77",
+    "random-query-78",
+    "random-destroy-79",
+    "random-commit-80",
+    "random-query-81",
+    "random-move-82",
+    "random-move-83",
+    "random-query-84",
+    "random-move-85",
+    "random-move-86",
+    "random-create-87",
+    "random-move-88",
+    "random-query-89",
+    "random-move-90",
+    "random-query-91",
+    "random-move-92",
+    "random-move-93",
+    "random-move-94",
+    "random-create-95",
+    "random-move-96",
+    "random-query-97",
+    "random-move-98",
+    "random-commit-99",
+    "random-query-100",
+    "random-create-101",
+    "random-commit-102",
+    "random-commit-103",
+    "random-create-104",
+    "random-move-105",
+    "random-destroy-106",
+    "random-query-107",
+    "random-move-108",
+    "random-move-109",
+    "random-commit-110",
+    "random-commit-111",
+    "random-query-112",
+    "random-query-113",
+    "random-query-114",
+    "random-move-115",
+    "random-move-116",
+    "random-move-117",
+    "random-move-118",
+    "random-move-119",
+    "random-move-120",
+    "random-query-121",
+    "random-move-122",
+    "random-move-123",
+    "random-commit-124",
+    "random-move-125",
+    "random-move-126",
+    "random-create-127",
+    "random-move-128",
+    "random-query-129",
+    "random-commit-130",
+    "random-create-131",
+    "random-create-132",
+    "random-move-133",
+    "random-commit-134",
+    "random-move-135",
+    "random-move-136",
+    "random-create-137",
+    "random-move-138",
+    "random-move-139",
+    "random-query-140",
+    "random-commit-141",
+    "random-create-142",
+    "random-move-143",
+    "random-move-144",
+    "random-query-145",
+    "random-move-146",
+    "random-destroy-147",
+    "random-query-148",
+    "random-move-149",
+    "random-query-150",
+    "random-query-151",
+    "random-move-152",
+    "random-create-153",
+    "random-create-154",
+    "random-commit-155",
+    "random-move-156",
+    "random-create-157",
+    "random-destroy-158",
+    "random-commit-159",
+    "random-move-160",
+    "random-move-161",
+    "random-query-162",
+    "random-move-163",
+    "random-create-164",
+    "random-destroy-165",
+    "random-move-166",
+    "random-move-167",
+    "random-create-168",
+    "random-query-169",
+    "random-move-170",
+    "random-move-171",
+    "random-commit-172",
+    "random-query-173",
+    "random-commit-174",
+    "random-query-175",
+    "random-query-176",
+    "random-move-177",
+    "random-move-178",
+    "random-move-179",
+    "random-move-180",
+    "random-move-181",
+    "random-query-182",
+    "random-move-183",
+    "random-move-184",
+    "random-query-185",
+    "random-query-186",
+    "random-move-187",
+    "random-move-188",
+    "random-destroy-189",
+    "random-move-190",
+    "random-move-191",
+    "random-move-192",
+    "random-move-193",
+    "random-destroy-194",
+    "random-destroy-195",
+    "random-move-196",
+    "random-move-197",
+    "random-destroy-198",
+    "random-query-199",
+    "final-buffer-commit",
+    "valid-private-timestamp-wrap-precondition",
+    "wrap-reset-query",
+    "ordered-final-destroy",
+    "ordered-final-destroy",
+    "ordered-final-destroy",
+    "ordered-final-destroy",
+    "ordered-final-destroy",
+    "ordered-final-destroy",
+    "ordered-final-destroy",
+    "ordered-final-destroy",
+    "ordered-final-destroy",
+    "ordered-final-destroy",
+    "ordered-final-destroy",
+    "ordered-final-destroy",
+    "ordered-final-destroy",
+    "ordered-final-destroy",
+    "ordered-final-destroy",
+    "ordered-final-destroy",
+    "ordered-final-destroy",
+    "ordered-final-destroy",
+    "empty-query"
+  ],
+  "native_command": [
+    "artifacts/cuda-native-20261103/oracle-broadphase",
+    ".local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+    "artifacts/cuda-native-20261103/broadphase-native-first.ops.bin"
+  ],
+  "native_metadata": "{\"schema\":\"irisu-native-broadphase-oracle-v1\",\"operations\":239,\"add_events\":61,\"remove_events\":61,\"active_proxies\":0,\"state_bytes\":95292,\"calloc_initial_condition\":true,\"scope_max_live_proxies\":64}\n",
+  "native_oracle_sha256": "e8aa28082eebb4ad0cbb4f8ee1886df4b92c56fa27e5dd87a771525000cde3dd",
+  "native_pin": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+  "input_sha256": "cded9b3e9299c97f1f88d6aca8af0981ba08c1722495709a82415e94984502b1",
+  "native_output_sha256": "22b969e1b0b258db99983929095d45d7fc1636c94cf607c11c195e9844b2b834",
+  "steps": [
+    {
+      "operation": 0,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "34b478386bb5a1cccfbc5e1306e0c8fd5649839a43623e024b81c4cfe8d61676"
+    },
+    {
+      "operation": 1,
+      "result": 1,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          101,
+          202,
+          1
+        ]
+      ],
+      "state_sha256": "a475b6b6c6274f33d9afecd7e51c2bf2171e7f254c9f27af126f65a1c351705c"
+    },
+    {
+      "operation": 2,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "d37b3310dc4188544be7bf84d637e65557dbf0f348b2c763f3694b303b31e719"
+    },
+    {
+      "operation": 3,
+      "result": 0,
+      "queries": [],
+      "callbacks": [
+        [
+          2,
+          101,
+          202,
+          1
+        ]
+      ],
+      "state_sha256": "34978c2d7232c5055a11cf676b4878544155265abeab6d254a2a3ff8e871d36b"
+    },
+    {
+      "operation": 4,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "cc6ad96c6e810128ac6caf44053b6afeb80d7688adb2ea97606452755ae1f79f"
+    },
+    {
+      "operation": 5,
+      "result": 0,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          101,
+          202,
+          2
+        ]
+      ],
+      "state_sha256": "7a362106c5002908d483099ccab39f17698eef3fbd8a8cf3594a69b71f22c09b"
+    },
+    {
+      "operation": 6,
+      "result": 2,
+      "queries": [
+        101,
+        202
+      ],
+      "callbacks": [],
+      "state_sha256": "ec1378cf516041d70039c2c8d6358c0caf17e79eb6ac8d23a17168b4b52872ab"
+    },
+    {
+      "operation": 7,
+      "result": 0,
+      "queries": [],
+      "callbacks": [
+        [
+          2,
+          101,
+          202,
+          2
+        ]
+      ],
+      "state_sha256": "52e7286dea3a3f02c10a6a1e7a12d035c615300915c84b96c613171b3c9fc162"
+    },
+    {
+      "operation": 8,
+      "result": 0,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          303,
+          202,
+          3
+        ]
+      ],
+      "state_sha256": "b700a7bc8cde1443bfb3401b3a55c3b415caff8c7b7c8ed2a69b338eaf20c7b6"
+    },
+    {
+      "operation": 9,
+      "result": 2,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          202,
+          1003,
+          4
+        ],
+        [
+          1,
+          303,
+          1003,
+          5
+        ]
+      ],
+      "state_sha256": "deaf35ab7116c26e58162798962f6170083b433bd8860c36f9ca8e8483e74c0c"
+    },
+    {
+      "operation": 10,
+      "result": 3,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          202,
+          1004,
+          6
+        ],
+        [
+          1,
+          1003,
+          1004,
+          7
+        ],
+        [
+          1,
+          303,
+          1004,
+          8
+        ]
+      ],
+      "state_sha256": "bd1619181905df27ea6d7c3927f5316f42eea149071a83db9a8686c5970eefdb"
+    },
+    {
+      "operation": 11,
+      "result": 4,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          202,
+          1005,
+          9
+        ],
+        [
+          1,
+          1004,
+          1005,
+          10
+        ],
+        [
+          1,
+          1003,
+          1005,
+          11
+        ],
+        [
+          1,
+          303,
+          1005,
+          12
+        ]
+      ],
+      "state_sha256": "02381364a1247f2084a53d4a1d7f3b0b28aa9379d1e5f5758653c74e2633ab85"
+    },
+    {
+      "operation": 12,
+      "result": 5,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          202,
+          1006,
+          13
+        ],
+        [
+          1,
+          1005,
+          1006,
+          14
+        ],
+        [
+          1,
+          1004,
+          1006,
+          15
+        ],
+        [
+          1,
+          1003,
+          1006,
+          16
+        ],
+        [
+          1,
+          303,
+          1006,
+          17
+        ]
+      ],
+      "state_sha256": "965ef41373f33b7951e21545a37fdafc523f2af04dee471e2337f775aa6157ef"
+    },
+    {
+      "operation": 13,
+      "result": 6,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          202,
+          1007,
+          18
+        ],
+        [
+          1,
+          1006,
+          1007,
+          19
+        ],
+        [
+          1,
+          1005,
+          1007,
+          20
+        ],
+        [
+          1,
+          1004,
+          1007,
+          21
+        ],
+        [
+          1,
+          1003,
+          1007,
+          22
+        ],
+        [
+          1,
+          303,
+          1007,
+          23
+        ]
+      ],
+      "state_sha256": "b06610f9ac326e754e0661d19d628abc9330293664d7f40d7554bf0f23c50be8"
+    },
+    {
+      "operation": 14,
+      "result": 7,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          202,
+          1008,
+          24
+        ],
+        [
+          1,
+          1007,
+          1008,
+          25
+        ],
+        [
+          1,
+          1006,
+          1008,
+          26
+        ],
+        [
+          1,
+          1005,
+          1008,
+          27
+        ],
+        [
+          1,
+          1004,
+          1008,
+          28
+        ],
+        [
+          1,
+          1003,
+          1008,
+          29
+        ],
+        [
+          1,
+          303,
+          1008,
+          30
+        ]
+      ],
+      "state_sha256": "60bbe47b1587ccc7d665a57a2047e28a6c89a731b195e441438626800c78c06a"
+    },
+    {
+      "operation": 15,
+      "result": 8,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          202,
+          1009,
+          31
+        ],
+        [
+          1,
+          1008,
+          1009,
+          32
+        ],
+        [
+          1,
+          1007,
+          1009,
+          33
+        ],
+        [
+          1,
+          1006,
+          1009,
+          34
+        ],
+        [
+          1,
+          1005,
+          1009,
+          35
+        ],
+        [
+          1,
+          1004,
+          1009,
+          36
+        ],
+        [
+          1,
+          1003,
+          1009,
+          37
+        ],
+        [
+          1,
+          303,
+          1009,
+          38
+        ]
+      ],
+      "state_sha256": "0f21bb2b0ccea7dcae50f90b5b308e1a4eac8238269a6b167125ef6652ca83b7"
+    },
+    {
+      "operation": 16,
+      "result": 9,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          202,
+          1010,
+          39
+        ],
+        [
+          1,
+          1009,
+          1010,
+          40
+        ],
+        [
+          1,
+          1008,
+          1010,
+          41
+        ],
+        [
+          1,
+          1007,
+          1010,
+          42
+        ],
+        [
+          1,
+          1006,
+          1010,
+          43
+        ],
+        [
+          1,
+          1005,
+          1010,
+          44
+        ],
+        [
+          1,
+          1004,
+          1010,
+          45
+        ],
+        [
+          1,
+          1003,
+          1010,
+          46
+        ],
+        [
+          1,
+          303,
+          1010,
+          47
+        ]
+      ],
+      "state_sha256": "89ab06f7900175f34e88f6ac8c09e361677f605f9ae57dee900b7b18183e016f"
+    },
+    {
+      "operation": 17,
+      "result": 10,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "9e488d3752dd68f7c656bcbefe04f9b6e695548a7a9aba7ca822489d304d14ce"
+    },
+    {
+      "operation": 18,
+      "result": 11,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "4e890eaeefa6b9ba618032a192fca577bafed7a854fb417fb37d1eef378a39bf"
+    },
+    {
+      "operation": 19,
+      "result": 12,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "acd500bbb15af4bb8c1620469b76c6f6ee065145bf0c445d60178e0df17557d3"
+    },
+    {
+      "operation": 20,
+      "result": 13,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "d01e625799561a9906421afbc5712828333b101c806846ed68771572d187fbf7"
+    },
+    {
+      "operation": 21,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "0722c5dea88a79fb7c504ab63157fc03b967c881f6a408a140538e6aea656c69"
+    },
+    {
+      "operation": 22,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "e5caa2063e90affc8f6d77b8fd428ed081471c95d0b3d8453b5691d3103196d0"
+    },
+    {
+      "operation": 23,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "8cf7ec95b17541f9a1f730ce3f19cc88178ecc7721a12624f27a26f12f6ffb9f"
+    },
+    {
+      "operation": 24,
+      "result": 0,
+      "queries": [],
+      "callbacks": [
+        [
+          2,
+          1003,
+          1010,
+          46
+        ],
+        [
+          2,
+          1005,
+          1010,
+          44
+        ],
+        [
+          2,
+          1007,
+          1010,
+          42
+        ],
+        [
+          2,
+          1009,
+          1010,
+          40
+        ],
+        [
+          2,
+          1008,
+          1010,
+          41
+        ],
+        [
+          2,
+          1006,
+          1010,
+          43
+        ],
+        [
+          2,
+          1004,
+          1010,
+          45
+        ],
+        [
+          2,
+          303,
+          1010,
+          47
+        ],
+        [
+          2,
+          202,
+          1010,
+          39
+        ]
+      ],
+      "state_sha256": "72495e2539fa2d885db06ef7e87d5996124153a96fa0ae6803a08e9caea0be75"
+    },
+    {
+      "operation": 25,
+      "result": 14,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "d296c47b64e1d65c359017447c727bbf3ec023780bc8fec95e74ac12733814bc"
+    },
+    {
+      "operation": 26,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "9aa374a6ffd7f4550f8c3bb8e2facb08683a4e22f2c830a96074fac9b0cecb1e"
+    },
+    {
+      "operation": 27,
+      "result": 0,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          1010,
+          10008,
+          48
+        ],
+        [
+          2,
+          202,
+          1007,
+          18
+        ],
+        [
+          2,
+          1007,
+          1009,
+          33
+        ],
+        [
+          2,
+          1007,
+          1008,
+          25
+        ],
+        [
+          2,
+          1006,
+          1007,
+          19
+        ],
+        [
+          2,
+          1005,
+          1007,
+          20
+        ],
+        [
+          2,
+          1004,
+          1007,
+          21
+        ],
+        [
+          2,
+          1003,
+          1007,
+          22
+        ],
+        [
+          2,
+          303,
+          1007,
+          23
+        ]
+      ],
+      "state_sha256": "a41a7a4763d191706f7c1d82c01e31d97c6bde43cc445afbe9056dfa2a0e58f0"
+    },
+    {
+      "operation": 28,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "32478871db89f669d3fa720e48998484cf56225f588df45f01df05d34cf8a416"
+    },
+    {
+      "operation": 29,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "a731381d4c4ba48461ae5f64c7d2e9a9a2e2e92e695e436d8c1b0871114e5af0"
+    },
+    {
+      "operation": 30,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "e11084883c5de33b32e6de894512da537a4710df22f884b477ca0e4779eefd09"
+    },
+    {
+      "operation": 31,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "146fedbd9e7f6caad6421fd39a1e4fd74f165f585b6435d67403207f22e15cfc"
+    },
+    {
+      "operation": 32,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "5c323e231fad9ee24b6be3edae37befa975ebd38782ddb29a42b35b7378d7572"
+    },
+    {
+      "operation": 33,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "57b5013bb5c1eb50a13a4ad69c33bdd7abb5aea5c52bb80b409b154514a54272"
+    },
+    {
+      "operation": 34,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "dfb143e3b153a32d80861bdcb6ab91b014c689f4b4abc4c35a4fd4b46bfc5b46"
+    },
+    {
+      "operation": 35,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "eaf34f4712bd4d95a4d1af1feddbc149e9215affacd70553744475e05fd49eca"
+    },
+    {
+      "operation": 36,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "90e9d6e08c8a41827e5af2677467364569c595c32c897dd205d8e75eff62a076"
+    },
+    {
+      "operation": 37,
+      "result": 6,
+      "queries": [],
+      "callbacks": [
+        [
+          2,
+          202,
+          1003,
+          4
+        ],
+        [
+          2,
+          202,
+          1005,
+          9
+        ],
+        [
+          2,
+          202,
+          1009,
+          31
+        ],
+        [
+          2,
+          202,
+          1008,
+          24
+        ],
+        [
+          2,
+          202,
+          1006,
+          13
+        ],
+        [
+          2,
+          202,
+          1004,
+          6
+        ],
+        [
+          2,
+          303,
+          202,
+          3
+        ],
+        [
+          2,
+          303,
+          1003,
+          5
+        ],
+        [
+          2,
+          303,
+          1005,
+          12
+        ],
+        [
+          2,
+          303,
+          1009,
+          38
+        ],
+        [
+          2,
+          303,
+          1008,
+          30
+        ],
+        [
+          2,
+          303,
+          1006,
+          17
+        ],
+        [
+          2,
+          303,
+          1004,
+          8
+        ],
+        [
+          2,
+          1010,
+          10008,
+          48
+        ]
+      ],
+      "state_sha256": "1a673cb2c7b07683e6e5575a8bf123b78718e6e795b9af235de99de2b78d86d2"
+    },
+    {
+      "operation": 38,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "284a817e7f636920e9033bce113dcf0f71b258d8ec4f230185ceb6e9711d02d0"
+    },
+    {
+      "operation": 39,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "c7981885d43289c153da24226908cddec21d6aa9c07256db5b50f98d6339e096"
+    },
+    {
+      "operation": 40,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "9e2ff12a8743c433abc7a6c8256d6d889ca4cd576d988583956ef9d9df5a021d"
+    },
+    {
+      "operation": 41,
+      "result": 0,
+      "queries": [],
+      "callbacks": [
+        [
+          2,
+          1003,
+          1008,
+          29
+        ],
+        [
+          2,
+          1005,
+          1008,
+          27
+        ],
+        [
+          2,
+          1008,
+          1009,
+          32
+        ],
+        [
+          2,
+          1006,
+          1008,
+          26
+        ],
+        [
+          2,
+          1004,
+          1008,
+          28
+        ]
+      ],
+      "state_sha256": "af7e27be57bfef8d94a55a118b003a46b6d09c77fbb31bf8649c8a5006a8fd73"
+    },
+    {
+      "operation": 42,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "4b71c97ecaed11fde4630be967ed299023c67a9182314fd8a8b26d6cbeb2688f"
+    },
+    {
+      "operation": 43,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "c13c15d6731fc83546f55135fa20fdbe2c14427c0bc766b0d40326b61844939d"
+    },
+    {
+      "operation": 44,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "7eae62ffc7d026df4ee8f9fefb2cb0847668b9fa3c264c75c40dcf4ece9cbd08"
+    },
+    {
+      "operation": 45,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "7eae62ffc7d026df4ee8f9fefb2cb0847668b9fa3c264c75c40dcf4ece9cbd08"
+    },
+    {
+      "operation": 46,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "9471d942f7fa6f04990d5ed927a4b472407f85c063a12292c78f2e3565da632e"
+    },
+    {
+      "operation": 47,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "c9a40b094b652308bb3608009f438901bfcd478de2e2a2892b889deaf0f9b362"
+    },
+    {
+      "operation": 48,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "72d9329f42c3945c8035e560ba311f9c5d1951ee8737a4537c8c66ed5b8890e7"
+    },
+    {
+      "operation": 49,
+      "result": 6,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "e8577e0d13313a37800693fe1224b068fde2c037c20ee4f3d008aad213e77a7f"
+    },
+    {
+      "operation": 50,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "84cb7ba940a07eea9ceadccaac6b191132fd8e0a26d2119cdf92dd7854abe851"
+    },
+    {
+      "operation": 51,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "84cb7ba940a07eea9ceadccaac6b191132fd8e0a26d2119cdf92dd7854abe851"
+    },
+    {
+      "operation": 52,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "bd16d0da62241df9c920ba94e6e2fb0d55e32dbebf1db766943691513f743293"
+    },
+    {
+      "operation": 53,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "bbca2c715ff5d0f336784e313986671ff1e72dc341b37133a06ddc3bccb78f4a"
+    },
+    {
+      "operation": 54,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "5a7f30ab2ff78d18c0aa8875d8d1e5ba286d26a093d8efb7ff840c8099394b81"
+    },
+    {
+      "operation": 55,
+      "result": 13,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "5257077c727586ef38767925c484558bfd7eaf7874fc95bd00c9579ee230b18f"
+    },
+    {
+      "operation": 56,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "1ec6bdba1c473dbf3bec8541db61eb40421fd21d8fce12473be20ab6ceac42cb"
+    },
+    {
+      "operation": 57,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "dce6deec815aa86acad08b5cb10a6dd1203a636934a57070a962192d28ab6e98"
+    },
+    {
+      "operation": 58,
+      "result": 0,
+      "queries": [],
+      "callbacks": [
+        [
+          2,
+          1006,
+          1009,
+          34
+        ],
+        [
+          2,
+          1005,
+          1009,
+          35
+        ],
+        [
+          2,
+          1004,
+          1009,
+          36
+        ],
+        [
+          2,
+          1003,
+          1009,
+          37
+        ]
+      ],
+      "state_sha256": "7fe4c150e6fac69327e2ca6446050601aaf002f11d825775ef533a5759067d2e"
+    },
+    {
+      "operation": 59,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "b0d57139d551928caacb1d7f7bccce3053b8b87e9b03e3b6f545efd4b8c14a34"
+    },
+    {
+      "operation": 60,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "342d634e838ed9eb47fb311a05dd22376262fd9be10a29cddf8bfdb2f94daadd"
+    },
+    {
+      "operation": 61,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "d81972eae2436abf1e1ec00db3a2c62a3ce22d9ad64a25f2c2f866d72134edc2"
+    },
+    {
+      "operation": 62,
+      "result": 0,
+      "queries": [],
+      "callbacks": [
+        [
+          2,
+          1003,
+          1005,
+          11
+        ],
+        [
+          2,
+          1005,
+          1006,
+          14
+        ],
+        [
+          2,
+          1004,
+          1005,
+          10
+        ]
+      ],
+      "state_sha256": "2d82c48f9970610e87a837b58f0a9fd9337419d42136466ee3953efcd516398f"
+    },
+    {
+      "operation": 63,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "1ce766c99af583d9357c7c044452ef1f872cb4917f7775637eba9fa7c44ef546"
+    },
+    {
+      "operation": 64,
+      "result": 10,
+      "queries": [],
+      "callbacks": [
+        [
+          2,
+          1003,
+          1006,
+          16
+        ],
+        [
+          2,
+          1004,
+          1006,
+          15
+        ]
+      ],
+      "state_sha256": "dca18895cd0882b559541e09969fc1018529256a1483ebe6334c889503dd7281"
+    },
+    {
+      "operation": 65,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "cd29bc4d1d1e6a34b602446f9c9de9485389bf10046fcb8b498fff17cced88fd"
+    },
+    {
+      "operation": 66,
+      "result": 12,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "35f5894f43ac555cdcfa42defaaa27c95d34ce71107a625b277b20dc1301d6b3"
+    },
+    {
+      "operation": 67,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "893820a618552789cbf0a40f88b0437db6aa52b239d8662e59df580aa7aa532a"
+    },
+    {
+      "operation": 68,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "8755346e0876a8f782a8e77f17a553db09e43a4b2d2cee9870b936d418990422"
+    },
+    {
+      "operation": 69,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "af940b8f3267c4df086e59a2d07b29e31a01786f035869bfa2313ef426d13204"
+    },
+    {
+      "operation": 70,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "b58196323c4d629d2819aecb2a0b18a11e961a0c845e114f74c78b48be45ef1d"
+    },
+    {
+      "operation": 71,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "d247d19db7eb3d93efb0699fd0b4611870a4f5a64d29c7267fb3b188198db50d"
+    },
+    {
+      "operation": 72,
+      "result": 0,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          1004,
+          1005,
+          49
+        ],
+        [
+          1,
+          1003,
+          1005,
+          50
+        ]
+      ],
+      "state_sha256": "02abba05e59ba589d8df9eff89f961c4874213f2b743c033772088c57c97eb49"
+    },
+    {
+      "operation": 73,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "02abba05e59ba589d8df9eff89f961c4874213f2b743c033772088c57c97eb49"
+    },
+    {
+      "operation": 74,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "a6495522969d89980b56d0b994b1a8e273da0776637972cc0f556233186f1d59"
+    },
+    {
+      "operation": 75,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "1847fda02e54082c93e4d0cdb5a5722ec19ec33d92c607988e5eef79e4c0d28a"
+    },
+    {
+      "operation": 76,
+      "result": 11,
+      "queries": [],
+      "callbacks": [
+        [
+          2,
+          1004,
+          1005,
+          49
+        ],
+        [
+          2,
+          1003,
+          1005,
+          50
+        ],
+        [
+          2,
+          1003,
+          1004,
+          7
+        ]
+      ],
+      "state_sha256": "14b3baaa24c4d073efa45d7848c2dd82a9b01b7055ef736468f74be603099a5a"
+    },
+    {
+      "operation": 77,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "fdfc43d0decb6fbec3e37725ee8c367c45845a8502468a5631ad6f24041f7860"
+    },
+    {
+      "operation": 78,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "8496987aaded740aaa7cf5bf01873fa613c1b05ae2aaacbcbea9fda87d69282a"
+    },
+    {
+      "operation": 79,
+      "result": 0,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          303,
+          1003,
+          51
+        ]
+      ],
+      "state_sha256": "184f69a36a7dee8ff2a4faea521b6e2783e7a7478d62960754b873ca2ee25eb3"
+    },
+    {
+      "operation": 80,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "73d25bdf889d703718470314d52d8fdddbd56b2d749c66ddf8b487960db3a9a1"
+    },
+    {
+      "operation": 81,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "699b5edffd9b1e385432de5b687872665724d9c6a3b49942d6bf2b581f35c20a"
+    },
+    {
+      "operation": 82,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "699b5edffd9b1e385432de5b687872665724d9c6a3b49942d6bf2b581f35c20a"
+    },
+    {
+      "operation": 83,
+      "result": 1,
+      "queries": [
+        1003
+      ],
+      "callbacks": [],
+      "state_sha256": "911b1108417cd4f318de9bbb5512ecc9a56e4eaccbe6f398e8adfea1d7c685fc"
+    },
+    {
+      "operation": 84,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "77cef23f7a84de59b08a5cffa6e456ff2adf7a9f8a3cb261e698987f88830dc1"
+    },
+    {
+      "operation": 85,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "77cef23f7a84de59b08a5cffa6e456ff2adf7a9f8a3cb261e698987f88830dc1"
+    },
+    {
+      "operation": 86,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "252f1a55d88934e3f116dc51f3526f1f28f9d86bbaec48ea9bb5e0092adcdcf9"
+    },
+    {
+      "operation": 87,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "1ae4fb2df7d58a09e699c7e0af2a8fac0ca5799faf4348eab701cb8a7e5cdce9"
+    },
+    {
+      "operation": 88,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "1ae4fb2df7d58a09e699c7e0af2a8fac0ca5799faf4348eab701cb8a7e5cdce9"
+    },
+    {
+      "operation": 89,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "6f2a9a5733898165b2014a6f4308737ec18cb300a0c5d13c31d4a78d8bc0900d"
+    },
+    {
+      "operation": 90,
+      "result": 9,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          1009,
+          10008,
+          52
+        ],
+        [
+          1,
+          10032,
+          1009,
+          53
+        ]
+      ],
+      "state_sha256": "59cf8335b7fae8e847a93b8e1c0cfc8842f57ab9f02e0da5db5f9af54e04173e"
+    },
+    {
+      "operation": 91,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "980317e1aff5cf3bae4ef32ea4277dfcf00636d4af40be4fc96c583255a2ec05"
+    },
+    {
+      "operation": 92,
+      "result": 0,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          10059,
+          10038,
+          54
+        ]
+      ],
+      "state_sha256": "820f7714e02835914057c0fed093cbfd6b5b23039371777d93994fa9443ff305"
+    },
+    {
+      "operation": 93,
+      "result": 4,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "e039d27c327f542798bdb58e3e6ce4c16dab1e2dc9062376a7bedfa539447c4c"
+    },
+    {
+      "operation": 94,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "e039d27c327f542798bdb58e3e6ce4c16dab1e2dc9062376a7bedfa539447c4c"
+    },
+    {
+      "operation": 95,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "48a6c6eaa5c46c0a113fa0a79d5e8fe3a6f7397211009aec4763e1e425da804d"
+    },
+    {
+      "operation": 96,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "19717d0e3a711474eff96aedc31fe6d43937a869f86f06a05b9d126c568fb0f7"
+    },
+    {
+      "operation": 97,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "19717d0e3a711474eff96aedc31fe6d43937a869f86f06a05b9d126c568fb0f7"
+    },
+    {
+      "operation": 98,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "446e35055b9599849287bc09bd21f4096188fed537de1e044ec830eb09313cac"
+    },
+    {
+      "operation": 99,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "e4dc2e7ea1a3c214820f2ef6d1e43e84fb045676040d06b713db2fbe30df26b9"
+    },
+    {
+      "operation": 100,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "55ccd3c74d54651c40be22eff4982e49575bf8bd847337f0ca849feba5da113d"
+    },
+    {
+      "operation": 101,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "dc330f386817b4dd11fabe5e9858d741bda623976af0de5b5762531a3671cd8e"
+    },
+    {
+      "operation": 102,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "9faacf3786c6022320a4d86e603806ae450c5e2ca650b9b2b95fe6321eb8f860"
+    },
+    {
+      "operation": 103,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "99e52f9dd9f8a358d35c83edf79d4a7c802a9058c4798d7b1d07a01f68276093"
+    },
+    {
+      "operation": 104,
+      "result": 12,
+      "queries": [],
+      "callbacks": [
+        [
+          2,
+          10059,
+          10038,
+          54
+        ],
+        [
+          2,
+          10032,
+          1009,
+          53
+        ]
+      ],
+      "state_sha256": "e869976654aeba61da7bbba54de5df52399ea3d148915282efacbefb69734f1e"
+    },
+    {
+      "operation": 105,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "7a530a6cf164f6218b3ea64a6deef730eac3b8a89f35cecdef9742e58bc2738c"
+    },
+    {
+      "operation": 106,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "d6b64a93f2354e2510b7b682deea04996d62b243090d51f56b0f89dec3337c17"
+    },
+    {
+      "operation": 107,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "4aad9c86bbd9d465a7440e84122d1a9def24aec9461dc62ea15e291a41234751"
+    },
+    {
+      "operation": 108,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "e464627430b1a01e99fb988f47aa2818c6d87230dc45362022bf26502ccf8231"
+    },
+    {
+      "operation": 109,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "03e67f4c48b9f32cbbd40843ee7a5bf9902c1b5dea446927403945e698d6bf18"
+    },
+    {
+      "operation": 110,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "2538ea71783b7ffa8dc672809bc4bba4df6185e41d19633ca9a355545fc5afd2"
+    },
+    {
+      "operation": 111,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "6c08a46b7ca6028e897625bdca94d8dd66af938f61eda03261d40a073fd0d893"
+    },
+    {
+      "operation": 112,
+      "result": 5,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "4f7fa925287d0603106dc666da34133f687da2f4146f7af6548f73640e0993d4"
+    },
+    {
+      "operation": 113,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "ea37bdd76a79614e06a3dfe0fdd8cfe295af334217b85a58e4cd0f8c1b6420ee"
+    },
+    {
+      "operation": 114,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "f0e19415b8ae06cb64dc2db3aa7bcc9d9fa1e54427fda3c74c5b024ba18ec4ad"
+    },
+    {
+      "operation": 115,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "d7dc01c5931f54b008eefbd1a8af0c7b6e8286f43d9db18853e6adfc2c45a9db"
+    },
+    {
+      "operation": 116,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "d7dc01c5931f54b008eefbd1a8af0c7b6e8286f43d9db18853e6adfc2c45a9db"
+    },
+    {
+      "operation": 117,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "209763c34b788b61641afcd19dfd7c71e59e05919903f718e54ad3382d47ca4d"
+    },
+    {
+      "operation": 118,
+      "result": 7,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "9fd1068434985e3999ba537f14714e88cfa1948b05f9be03da90c1841f65974f"
+    },
+    {
+      "operation": 119,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "9fd1068434985e3999ba537f14714e88cfa1948b05f9be03da90c1841f65974f"
+    },
+    {
+      "operation": 120,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "9fd1068434985e3999ba537f14714e88cfa1948b05f9be03da90c1841f65974f"
+    },
+    {
+      "operation": 121,
+      "result": 15,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          10059,
+          10104,
+          55
+        ]
+      ],
+      "state_sha256": "900fee2625cded90f05c9b83d183b88b437666c71cc1299fb9cd9a38eaf4ec58"
+    },
+    {
+      "operation": 122,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "1e16c2717cbc8a8ea960fd33acd0ce3cedbb5f7331f0d6bf1cd325c7d9a7e885"
+    },
+    {
+      "operation": 123,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "0f99542ccc105322e56b7ac065c61af8ba2e2c9e082e4bad97c10d1e9a59f7ac"
+    },
+    {
+      "operation": 124,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "0653536c73642b8365ad7d70d7a6d5d1caa6363048f167640a4acc3915eec9ba"
+    },
+    {
+      "operation": 125,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "fde663104ac6372148c40585b89ab12202b893e99742cc86203b8402d6904dae"
+    },
+    {
+      "operation": 126,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "7646386016c56e7026e0d1a1db6bb9912b7d5e53ef4df54e3bbfcc1e56257533"
+    },
+    {
+      "operation": 127,
+      "result": 0,
+      "queries": [],
+      "callbacks": [
+        [
+          2,
+          303,
+          1003,
+          51
+        ]
+      ],
+      "state_sha256": "35b427e4f1c559cdd96f13a903d5dce8f1ebd4e2068ea04acc8b2ef0eb877b2a"
+    },
+    {
+      "operation": 128,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "35b427e4f1c559cdd96f13a903d5dce8f1ebd4e2068ea04acc8b2ef0eb877b2a"
+    },
+    {
+      "operation": 129,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "0990f5691714cec8c8171368b5bddf9f17dbe09f992e8354dfd317bb95958bd4"
+    },
+    {
+      "operation": 130,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "5c593625886285daaf4629e04f6bca32952dfc24034fb4b0f682e81fd634e341"
+    },
+    {
+      "operation": 131,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "f81188f0dc797de9c8e9fd61c1dd96ea8940b24fb34c87d7219a29415d394994"
+    },
+    {
+      "operation": 132,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "edf03b8a5771a64902eccde2ec46908b7835f28158ce9121e839802e256b20c5"
+    },
+    {
+      "operation": 133,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "67555a6fc7f9a5d3631d7709c9fba1dc7e3ad620ddd08a9ef13e583bb0f123f8"
+    },
+    {
+      "operation": 134,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "0e81f3559539f16358f8d78936a44d427cc6f2f7acf5eb24c4008ce4f5e0a38b"
+    },
+    {
+      "operation": 135,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "3c10e8bebc27a3c3ab6264f63b6e36639841e32332f8f4d4a1b5f93332718b89"
+    },
+    {
+      "operation": 136,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "fcade13b865adc6cd65cd5a6b690ee37265192acd53ba79c99606c119c0647d5"
+    },
+    {
+      "operation": 137,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "56d3fab10edf114e9b06be29427265894249e4788c16bdeb6a69103c3f3c3dbb"
+    },
+    {
+      "operation": 138,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "f7a3215d198341b1bec8c2be3d50826beaac0343b52e03ecfe0e0bb793cb991e"
+    },
+    {
+      "operation": 139,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "a9f47b94a61de089b70bb0c13cd58e80356ea5f6252fe8ef0138b31882c3379d"
+    },
+    {
+      "operation": 140,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "21ee5612c5e2523119b984bd7ff6a9d26030b49e06ae5caf49309ca617da3e62"
+    },
+    {
+      "operation": 141,
+      "result": 0,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          10101,
+          1009,
+          56
+        ],
+        [
+          2,
+          10059,
+          10104,
+          55
+        ],
+        [
+          2,
+          1009,
+          10008,
+          52
+        ]
+      ],
+      "state_sha256": "04880a565aafa4b2fa8b51bdcfa742e8a9b043e1906510176c125b88a4ad2300"
+    },
+    {
+      "operation": 142,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "5903371b4ae2cf097c088347834e51e937ae4a5adb3b0032a9494dec81cfe423"
+    },
+    {
+      "operation": 143,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "ad42b5ff387255e77ebd096ef73a5f736eca83fccbc8e6bc7d4dd37d5a05e18e"
+    },
+    {
+      "operation": 144,
+      "result": 10,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          1003,
+          10032,
+          57
+        ]
+      ],
+      "state_sha256": "7f7b3a2d8bc42400e7067714a6c362930ff9e30bb4744d76f8b3cec1fb577cea"
+    },
+    {
+      "operation": 145,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "f224220f2b59dce8a779666813a75e6b850a9f4a264db61b55f1b53d6abe2058"
+    },
+    {
+      "operation": 146,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "95f8ec043a002381fdba0259113a5e423db589925c66ebfaaad83a9664d739d1"
+    },
+    {
+      "operation": 147,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "95f8ec043a002381fdba0259113a5e423db589925c66ebfaaad83a9664d739d1"
+    },
+    {
+      "operation": 148,
+      "result": 16,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "482878043368de5e1c516889370be4fc2b3b9c0df493aea4d581aa34aeaabac2"
+    },
+    {
+      "operation": 149,
+      "result": 17,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "836d5773e305bc3907dd94fba04b1c97d5183603489c27ffc0dffeefc98863ab"
+    },
+    {
+      "operation": 150,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "263a21459d2bd36d1981486ab0bd733ec04a01dfd08903ed46cad72dfc6b6a1d"
+    },
+    {
+      "operation": 151,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "263a21459d2bd36d1981486ab0bd733ec04a01dfd08903ed46cad72dfc6b6a1d"
+    },
+    {
+      "operation": 152,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "40ee53078da17ad68a23d5855627c16621137ab81addb2567a9ce6bf1587ec70"
+    },
+    {
+      "operation": 153,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "518c914d2ab1a327d0d419158802267eeb9c649a5cd457304279362bf1bf3d90"
+    },
+    {
+      "operation": 154,
+      "result": 18,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          10076,
+          10127,
+          58
+        ]
+      ],
+      "state_sha256": "eb4a5eceed6db5a6f681634bfd4ff144c362632d0e9671fcc63dd1f1ae0c5380"
+    },
+    {
+      "operation": 155,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "148a43e06a5dd110ad48a6d05882bef09833c3115c02c84cb3051dfa55cf790e"
+    },
+    {
+      "operation": 156,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "1f8bd8c9ee68b9285894b0ab40f527fa73ea622259e1fa5bfb1b00f8c384a471"
+    },
+    {
+      "operation": 157,
+      "result": 1,
+      "queries": [
+        10127
+      ],
+      "callbacks": [],
+      "state_sha256": "7edba0d23d15140eccf5dc22dfaae0f603bfcea4df4439abb53b1ebc7258e7fb"
+    },
+    {
+      "operation": 158,
+      "result": 0,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          10127,
+          10059,
+          59
+        ],
+        [
+          2,
+          10076,
+          10127,
+          58
+        ]
+      ],
+      "state_sha256": "4e5f6b5be0e165a5f0c9257d71d06f25f30e9433fc31e8cbc5c3149ca3da15e4"
+    },
+    {
+      "operation": 159,
+      "result": 19,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          10076,
+          10142,
+          60
+        ]
+      ],
+      "state_sha256": "7966482a7ab5f4159bfee548cd74a1cf7e3394bcf9824b13d0ee296a00804d6a"
+    },
+    {
+      "operation": 160,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "ea2997c4494b920689520f99acb3d1fd7deeb15e3e62a732da5d2d236cb3e93a"
+    },
+    {
+      "operation": 161,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "add1a59b6838551b20724e0f7ddafd5e5c264c4a2f7e1f8783ecd2312d52011b"
+    },
+    {
+      "operation": 162,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "61c5ca2b95f7f834f091fa136260e8bd078a6f11ce6543776a38ef722cea53ac"
+    },
+    {
+      "operation": 163,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "67521453a4958a8914797f98e55684a8eabdd2a42a30480fd6774e38a7f8ad3f"
+    },
+    {
+      "operation": 164,
+      "result": 0,
+      "queries": [],
+      "callbacks": [
+        [
+          2,
+          10127,
+          10059,
+          59
+        ]
+      ],
+      "state_sha256": "30b18c54d828697a5d085729bdaa97c1259bbf634b0efd66c852bd3f720787bc"
+    },
+    {
+      "operation": 165,
+      "result": 1,
+      "queries": [
+        10032
+      ],
+      "callbacks": [],
+      "state_sha256": "58d589b3d7be3a060ae77a58f0776d8ae6e600569e1d409731f3498e0f3d8f8f"
+    },
+    {
+      "operation": 166,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "2b9a5b4510ac530897d0492f8b556103254f439b85496c127999fd01de42c3e3"
+    },
+    {
+      "operation": 167,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "b01be95594abd5e55b56f1e0cea4f2ec20edf47c7ddbeb5fd7115a6bc116a508"
+    },
+    {
+      "operation": 168,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "78a93771c6921e9dc3295c9aedf465856cbf50f115aac187b4970f7fc719f8fe"
+    },
+    {
+      "operation": 169,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "12457c5b4b1805bc1294f1c52cefc43f2cccacf869ca6c54af597449f0aae3bc"
+    },
+    {
+      "operation": 170,
+      "result": 3,
+      "queries": [],
+      "callbacks": [
+        [
+          2,
+          1003,
+          10032,
+          57
+        ]
+      ],
+      "state_sha256": "1d4800826bc12486ead484a4b0a155904c6ae04b8207d4e31720160ef54f2d35"
+    },
+    {
+      "operation": 171,
+      "result": 20,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "bf253b97893676d9630f6accff3080e94be66969b1ccbeb34d05788c30344f33"
+    },
+    {
+      "operation": 172,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "bf253b97893676d9630f6accff3080e94be66969b1ccbeb34d05788c30344f33"
+    },
+    {
+      "operation": 173,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "75623d69b7e102f754539360d1cf74c8978959e46c07de6ec64239ca2939d1c3"
+    },
+    {
+      "operation": 174,
+      "result": 21,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "f12fe3f693837d5657cf8224ba71280f4ebb3ba5da159dbf3097fb69eadbab39"
+    },
+    {
+      "operation": 175,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "e019f20f222367907c3984235cb96354717f3570755ba16a7bc09ee4d395aaf0"
+    },
+    {
+      "operation": 176,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "e019f20f222367907c3984235cb96354717f3570755ba16a7bc09ee4d395aaf0"
+    },
+    {
+      "operation": 177,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "bc25a33f3d02e5aa4c2fab8eeed943b456cc6ae4457999b25aab8ac9c45844c3"
+    },
+    {
+      "operation": 178,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "d8728aec8b6be2ffb66629767cd3f8c904e7775be884fd70cc3585c5d0205d7e"
+    },
+    {
+      "operation": 179,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "cd1b707913034e44797c63d0ab0ffab373403cbe22b0c17b637e87a322d18fe0"
+    },
+    {
+      "operation": 180,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "1ad345c633aec6c2d0219a8b845aedb50515a991d7896f2896ff4e29d6a7ae80"
+    },
+    {
+      "operation": 181,
+      "result": 11,
+      "queries": [],
+      "callbacks": [
+        [
+          2,
+          10076,
+          10142,
+          60
+        ]
+      ],
+      "state_sha256": "04b8c3b8a9cd01c1c5dd9ae36018e649aa7fd7e1aa0fcf0fcf6a28aa9d3838ca"
+    },
+    {
+      "operation": 182,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "23c46f4851c4c3c623b7703eaea587df0be5e320e992c2ab2ffafc7148040b56"
+    },
+    {
+      "operation": 183,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "381cbb45c6c230b6c696c0d8923c1493956670d2c51cf4a95d2df47741944525"
+    },
+    {
+      "operation": 184,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "8e38f0375286d2aff0eb660958131b2a20e04c8e6114d1b379528e52117c109a"
+    },
+    {
+      "operation": 185,
+      "result": 21,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "4bd342fabce468d1bffcbfbf497344b1c238586145a12dd20455a809e4a0bafb"
+    },
+    {
+      "operation": 186,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "6a4464692370da7e11d5e048cc9ea7f9da2744671ad6bdea7c8898012b144b6b"
+    },
+    {
+      "operation": 187,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "baa19f251c887e5416e4657bd043905b923122493f210d7d04ccc5ee627ab2c7"
+    },
+    {
+      "operation": 188,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "2646574bf0251f519ee0b0d0239c88c05c5995a5cbc90d445e984f0218c26bd8"
+    },
+    {
+      "operation": 189,
+      "result": 0,
+      "queries": [],
+      "callbacks": [
+        [
+          1,
+          1003,
+          10095,
+          61
+        ]
+      ],
+      "state_sha256": "936e5930df4a47a32be7e2bd6483b1733f7e2a216479534486750a52a01922d9"
+    },
+    {
+      "operation": 190,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "a429b79ff8aade65c8794d64376616628846a0d819fb38d4d25cb02ddc89b49b"
+    },
+    {
+      "operation": 191,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "a429b79ff8aade65c8794d64376616628846a0d819fb38d4d25cb02ddc89b49b"
+    },
+    {
+      "operation": 192,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "53fdc55d897cbf32f7dbf8279253a11f6817120e3d99c980272c2279c06aa05d"
+    },
+    {
+      "operation": 193,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "2524d07f6c0da5f9477b8c096656b4849aeffdcb4f6e26c35f69211a657f816e"
+    },
+    {
+      "operation": 194,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "c575566481fa96c4b826ad496086efa2d21fe6e6221d1661363d29db0bad127e"
+    },
+    {
+      "operation": 195,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "108db2e9e6a4d54a797ce87115d10b616936a6967e5114186424aae49619dd1e"
+    },
+    {
+      "operation": 196,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "3dd244e717ef7b233c1b57167ecb3cfbbdf88fb8a3ddda672514b492f671d7de"
+    },
+    {
+      "operation": 197,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "fca56104659bf335bf1c3d3a79ed6c64b23737cbc8c8510e842715b34727197c"
+    },
+    {
+      "operation": 198,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "702e7d54172eb855877719967cdf16ac4f0510791a00cfad18150cc72019ad0b"
+    },
+    {
+      "operation": 199,
+      "result": 1,
+      "queries": [
+        10142
+      ],
+      "callbacks": [],
+      "state_sha256": "2f5a1df59cb52003144b3c3ca89789dd854647ceec915ae47946f431ab26f91e"
+    },
+    {
+      "operation": 200,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "6e4561501bcefd0b433b49c86d735fe81916dd7c166d4beb9b5a10deb4c021d9"
+    },
+    {
+      "operation": 201,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "58046700143362cee6333422d01cc4f388cfc6437b29223afd21136045389ea9"
+    },
+    {
+      "operation": 202,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "17ebddbeee7aab51189e6f30e3defced7dc4630e10d4e4fb8fac11360f037477"
+    },
+    {
+      "operation": 203,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "f807aa433a49bd63e2491990906a17589a385f6c10722bdbc9eeb1136ffe1f83"
+    },
+    {
+      "operation": 204,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "3bffaf188dfca2f487a04dd9fd298f63e9c8344d5c33e0f4e156c5a7082a1671"
+    },
+    {
+      "operation": 205,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "e42368e19ac02ccd713216bdc2da2ec79d5ab93f6306491885a032f9f802c089"
+    },
+    {
+      "operation": 206,
+      "result": 0,
+      "queries": [],
+      "callbacks": [
+        [
+          2,
+          1003,
+          10095,
+          61
+        ]
+      ],
+      "state_sha256": "af03fd5f225938d8e5df01ff1433e664a36be1e10c091c6e7ef05a2717f3b837"
+    },
+    {
+      "operation": 207,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "1ff18c33418f09f1951886e267114f74887e731b0b72b983e3cd2289fb305ef4"
+    },
+    {
+      "operation": 208,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "500c19542ff261b807ed9b2b39ff0cde56294edd6dd7bbd3dc657457af08522e"
+    },
+    {
+      "operation": 209,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "2d37385480fbbcec374387a7a36f9c65d06b43205e9a9a343bef3713135808f2"
+    },
+    {
+      "operation": 210,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "33f3378fee9ae4f32ac940b3d220a14a0b9dbae294022891c176e88fea08dbd7"
+    },
+    {
+      "operation": 211,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "0a88e86940b09299bf87348cba49c586dba944bf9260fcdc229c3165269d0e49"
+    },
+    {
+      "operation": 212,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "266bc3fec8e71274f9fbbe305dbd8fb25064e6d090002957f3e70f79882abd62"
+    },
+    {
+      "operation": 213,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "c4cf0770ad9b690841cdbc5844835418dce27c3902fa23b2fa3d5344c206d828"
+    },
+    {
+      "operation": 214,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "6dfaa1da003c4f8c9786beac1fad1d888ee72a2a821b97fce6d159411700518f"
+    },
+    {
+      "operation": 215,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "3e64c1571c125c31f7afe376e7e3c3f2e44046060e02084d72eee11951fd1514"
+    },
+    {
+      "operation": 216,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "ec53646ba1ebfce03aeae8ff42cbd8dcb37b124548713c40f748ac5176a7c25f"
+    },
+    {
+      "operation": 217,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "ec53646ba1ebfce03aeae8ff42cbd8dcb37b124548713c40f748ac5176a7c25f"
+    },
+    {
+      "operation": 218,
+      "result": 65535,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "71e3d7f256d9925343f1a5219cdc7c720025d1c5feb113f84897de958aa3230c"
+    },
+    {
+      "operation": 219,
+      "result": 18,
+      "queries": [
+        10073,
+        10095,
+        10131,
+        10087,
+        10008,
+        1009,
+        10101,
+        10032,
+        10076,
+        10104,
+        10164,
+        1003,
+        10153,
+        10142,
+        202,
+        10168,
+        10154,
+        10127
+      ],
+      "callbacks": [],
+      "state_sha256": "96ab6218122936b5e653261dea5ff3e37809e6e6d866cfcaa4934d214fc07a4e"
+    },
+    {
+      "operation": 220,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "7a85415c6950db01c3b14d61b8f31fb096e0a9a8b18c0f3e285f5822beaf5a8f"
+    },
+    {
+      "operation": 221,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "40a7ec702c5bfe416cda61838f186b8c7306d020d1e9d4d90b8a852d00d9f9e1"
+    },
+    {
+      "operation": 222,
+      "result": 0,
+      "queries": [],
+      "callbacks": [
+        [
+          2,
+          10101,
+          1009,
+          56
+        ]
+      ],
+      "state_sha256": "9363f0ccf2671d95256e78c59e03843485bdb8cd8e138abb2f6bacd45c9b56f5"
+    },
+    {
+      "operation": 223,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "49616fc32604c66efc883bfe3074ba818c13b37d1aad8e6c3093692bb0ead890"
+    },
+    {
+      "operation": 224,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "dfdf11bec4e5baa949549b35928dadf4219212c2f22d768290126a55cbc0274b"
+    },
+    {
+      "operation": 225,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "0582a11bd56541f03c8e8a0ee90714f3f1a9ccfff785e43bf0038061de82e6d9"
+    },
+    {
+      "operation": 226,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "475c795671a9ad2663d10744785b1a8f1664ff7bdd9b4325bee27f6c2e60ab0d"
+    },
+    {
+      "operation": 227,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "0c4810d5461158385d8a33ad628bdfe165f90d37286809dd7559ecbfe2572122"
+    },
+    {
+      "operation": 228,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "0862f1da7dbcfe754e542790aec0612df47bb6f3dd8c2c43e3e6417483fa2313"
+    },
+    {
+      "operation": 229,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "ef08b28cf00697fda5140be1987b35c222608fe6cc81134b98f018514b77217f"
+    },
+    {
+      "operation": 230,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "fe428944325d92b1e350d9a9e93a961d9c371b2cd1356b40540c3a2f32f916e6"
+    },
+    {
+      "operation": 231,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "83bfcfb385864ca498d8c0047182c87f11a0d7156f23d75a7142eaff40e2d88a"
+    },
+    {
+      "operation": 232,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "0f8b612f56652a26048a3b7df34a75f736929b6604d65b3cd6df824888b88384"
+    },
+    {
+      "operation": 233,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "3512ae1a315b2496d950044640f48a99e77a13e192c283f4398c65c782d31a90"
+    },
+    {
+      "operation": 234,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "d1dffbbf3deecdf27e1967650ccf5adf356825f47b36445ea99d788df17ab79e"
+    },
+    {
+      "operation": 235,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "cb7a24de33193e916d5d690045dd3d04757545200422cb3518023aa705177b59"
+    },
+    {
+      "operation": 236,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "89a42e864b2d556fcf49ba588200948ee28cbda24e62431b1dc57a807f5955cc"
+    },
+    {
+      "operation": 237,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "b43e466803b5ee6107d9ec2f5a88ace16b1ac40a905cffa958f01925fd33de5a"
+    },
+    {
+      "operation": 238,
+      "result": 0,
+      "queries": [],
+      "callbacks": [],
+      "state_sha256": "188f3ce816963b9712ad4b05b8b6b2258597b61fdc0c1a190ccf3c298cd9b697"
+    }
+  ],
+  "typed_parity": null,
+  "native_library_unchanged": true,
+  "source_sha256": {
+    "tools/cuda-native/oracle_broadphase.cpp": "945cc5d1f71b4262ad34fab5de2cdc844651fc46241759ebfdb038dfe6d407a1",
+    "tools/cuda-native/oracle_broadphase.py": "439b17d50b8eed4517c35c2bcba1a94d84a881c0ab209dae63f3b9cc57136919",
+    "tools/cuda-native/broadphase_wire.hpp": "f3b0f398e643b8c164c36d5b89c188d8d709f9a37e5d3228caa9e0192e41a13a",
+    "tools/cuda-native/oracle_native.h": "ffce80e395aa5655e2e52241cfff70fadc506dde423dc3ed1b864946dc40ef26"
+  },
+  "native_layout_audit": {
+    "bytes": 95292,
+    "proxy_pool": 73748,
+    "free_proxy": 81940,
+    "bounds": 81942,
+    "query_results": 94230,
+    "query_count": 95256,
+    "world_aabb": 95260,
+    "quantization": 95276,
+    "proxy_count": 95284,
+    "timestamp": 95288,
+    "evidence": "Actual native snapshots/disassembly; bound alignment2, padding after queryResults."
+  }
+}
