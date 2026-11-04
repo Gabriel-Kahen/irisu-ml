@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare complete GPU campaigns with identical work and native output."""
+"""Compare complete GPU campaigns with identical candidates and native output."""
 import argparse
 import hashlib
 import json
@@ -51,6 +51,7 @@ def main():
     report = dict(schema='irisu-paired-gpu-efficiency-v1', status='running', inputs=pins,
                   candidates=count, batches=args.batches, horizon=args.horizon,
                   prefix=args.prefix, future_ticks=count * args.batches * args.horizon,
+                  future_ticks_scope='Logical candidate ticks; shared execution is reported separately per run.',
                   cooldown_seconds_outside_timer=args.cooldown,
                   candidate_comparison=args.candidate_comparison,
                   timing_scope='Full child process including CUDA setup, output and teardown; '
@@ -108,12 +109,29 @@ def main():
         assert sum(s.get('batches', 1) for s in metadata['samples']) == batches
         if 'total_future_ticks' in metadata:
             assert metadata['total_future_ticks'] == count * args.horizon * batches
+        logical_ticks = count * args.horizon * batches
+        executed_ticks = metadata.get('measured_executed_future_ticks', logical_ticks)
+        assert 0 < executed_ticks <= logical_ticks
+        if 'planned_executed_future_ticks' in metadata:
+            planned_gpu_ticks = metadata['planned_executed_future_ticks']
+            if metadata.get('host_shared_checkpoints'):
+                assert metadata['host_shared_checkpoint_executions'] == 1
+                planned_gpu_ticks -= metadata['host_shared_checkpoint_ticks']
+                if 'shared_checkpoint_immutability_checks' in metadata:
+                    assert metadata['shared_checkpoint_immutability_checks']
+                    assert metadata['shared_checkpoint_guard_executions'] == batches
+                    assert not metadata['shared_checkpoint_immutability_errors']
+            assert metadata.get('planned_gpu_future_ticks_per_batch', planned_gpu_ticks) == planned_gpu_ticks
+            assert executed_ticks == planned_gpu_ticks * batches
+            assert metadata['executed_future_ticks'] * batches == executed_ticks
         expected_host_prefix = '--host-prefix' in flags
         assert metadata['host_prefix'] == expected_host_prefix and metadata['prefix_immutability_checks']
         assert not any(metadata[k] for k in ('failed_candidates', 'compaction_errors',
                                             'prefix_immutability_errors', 'guest_calls', 'fallback_calls'))
         row = dict(backend=backend, batches=batches, round=round_index, command=command,
                    wall_seconds=wall, output_sha256=digest, native_packet_equal=equal,
+                   logical_future_ticks=logical_ticks, executed_future_ticks=executed_ticks,
+                   host_shared_checkpoint_ticks=metadata.get('host_shared_checkpoint_ticks', 0),
                    native_discrete_results_and_ranks_equal=True, changed_hash_fields=differences,
                    cpu_pressure_before=before, cpu_pressure_after=after, metadata=metadata)
         row.update(gpu_before=gpu_before, gpu_after=gpu_after)

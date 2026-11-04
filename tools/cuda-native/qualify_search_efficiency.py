@@ -19,6 +19,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('native', 'runner', 'library', 'replay', 'output'):
         parser.add_argument('--' + name, type=Path, required=True)
+    parser.add_argument('--runner-flag', action='append', default=[])
+    parser.add_argument('--all-small-selected', action='store_true',
+                        help='Independently validate every leaf when candidate count is at most 512')
+    parser.add_argument('--late-prefixes', action='store_true')
+    parser.add_argument('--force-host-prefix', action='store_true')
+    parser.add_argument('--spread-small-candidates', action='store_true',
+                        help='Sample small fixtures across the mutation menu to exercise shared checkpoints')
     args = parser.parse_args()
     work = args.output.parent
     work.mkdir(parents=True, exist_ok=True)
@@ -53,6 +60,12 @@ def main():
     cases = [(8, 100, trace, host, 0) for trace in (False, True) for host in (False, True)]
     cases += [(8, 2000, True, True, 2), (512, 100, True, False, 0),
               (512, 100, False, False, 1), (12288, 100, False, False, 0)]
+    if args.late_prefixes:
+        cases += [(8, 96000, False, True, 1), (8, 97150, True, True, 2),
+                  (8, 97218, True, True, 0)]
+    if args.force_host_prefix:
+        cases = list(dict.fromkeys((count, prefix, trace, True, poison)
+                                   for count, prefix, trace, _, poison in cases))
     try:
         for count, prefix, trace, host, poison in cases:
             key = (count, prefix)
@@ -60,7 +73,15 @@ def main():
                 specs = work / f'specs-{count}-{prefix}.bin'
                 subprocess.run([sys.executable, 'tools/cuda-native/search_specs.py',
                                 str(args.replay), str(specs), '--prefix', str(prefix),
-                                '--horizon', '4', '--count', str(count)], check=True, capture_output=True)
+                                '--horizon', '4', '--count', str(512 if args.spread_small_candidates and count < 512 else count)],
+                               check=True, capture_output=True)
+                if args.spread_small_candidates and count < 512:
+                    pool = specs.read_bytes()
+                    indices = [i * 512 // count for i in range(count)]
+                    specs.write_bytes(b''.join(pool[i * 40:(i + 1) * 40] for i in indices))
+                    specs.with_suffix('.bin.json').write_text(json.dumps(dict(
+                        sampled_from=512, indices=indices, specifications=count,
+                        specs_sha256=sha(specs)), indent=2) + '\n')
                 inputs[key] = specs
             specs = inputs[key]
             common = [str(args.replay.resolve()), str(specs.resolve()), str(prefix), '4']
@@ -77,6 +98,9 @@ def main():
                 command += ['--host-prefix']
             if poison:
                 command += ['--scratch-poison', str(poison)]
+            command += args.runner_flag
+            if args.all_small_selected and count <= 512:
+                command += ['--keep', str(count)]
             packet, metadata = execute(command, gpu_env,
                                        work / f'gpu-{count}-{prefix}-{int(trace)}-{int(host)}-{poison}.bin')
             assert packet == expected[native_key], 'actual native Result/rank packet differs'
@@ -86,6 +110,13 @@ def main():
             assert metadata['prefix_executions'] == 1 and metadata['repeats'] == 3
             assert not any(metadata[k] for k in ('failed_candidates', 'compaction_errors',
                                                 'prefix_immutability_errors', 'guest_calls', 'fallback_calls'))
+            if args.spread_small_candidates and '--adaptive-shared-prefixes' in args.runner_flag:
+                assert metadata['shared_checkpoint_count'] > 1, 'fixture did not activate shared execution'
+                assert metadata['independent_selected_replays_per_batch'] == (count if count <= 512 and args.all_small_selected else metadata['keep'])
+                if metadata.get('host_shared_checkpoints'):
+                    assert metadata['shared_checkpoint_immutability_checks']
+                    assert metadata['shared_checkpoint_guard_executions'] == 3
+                    assert not metadata['shared_checkpoint_immutability_errors']
             row = dict(candidates=count, prefix=prefix, horizon=4, trace=trace, host_prefix=host,
                        scratch_poison=poison, native_packet_equal=True, packet_sha256=hashlib.sha256(packet).hexdigest(),
                        specs_sha256=sha(specs), command=command, metadata=metadata)

@@ -5,6 +5,30 @@
 #include "solver.hpp"
 #include "broadphase.hpp"
 #include "world_contacts.hpp"
+#ifndef IRISU_CUDA_NATIVE_CACHED_VELOCITY
+#define IRISU_CUDA_NATIVE_CACHED_VELOCITY 0
+#endif
+#if IRISU_CUDA_NATIVE_CACHED_VELOCITY
+#include "solver_velocity_cached.hpp"
+#endif
+#ifndef IRISU_CUDA_NATIVE_LOCAL_VELOCITY
+#define IRISU_CUDA_NATIVE_LOCAL_VELOCITY 0
+#endif
+#if IRISU_CUDA_NATIVE_LOCAL_VELOCITY
+#include "solver_velocity_local.hpp"
+#endif
+#ifndef IRISU_CUDA_NATIVE_LOCAL_POSITION
+#define IRISU_CUDA_NATIVE_LOCAL_POSITION 0
+#endif
+#if IRISU_CUDA_NATIVE_LOCAL_POSITION
+#include "solver_position_local.hpp"
+#endif
+#ifndef IRISU_CUDA_NATIVE_CONTACT_ANCHORS
+#define IRISU_CUDA_NATIVE_CONTACT_ANCHORS 0
+#endif
+#if IRISU_CUDA_NATIVE_CONTACT_ANCHORS
+#include "solver_velocity_contact.hpp"
+#endif
 #ifndef IRISU_CUDA_NATIVE_INTERLEAVED_SOLVER
 #define IRISU_CUDA_NATIVE_INTERLEAVED_SOLVER 0
 #endif
@@ -20,6 +44,9 @@ struct SceneScratch {
   ContactConstraint constraints[max_contacts]{};
   AABB swept[max_shapes]{};
   std::uint32_t shape_order[max_shapes]{},shape_count{};
+#if IRISU_CUDA_NATIVE_CACHED_VELOCITY
+  VelocityAnchor velocity_anchors[2*max_contacts]{};
+#endif
 };
 NATIVE_HD inline StageResult collide_world(World& world) {
   for(auto index=world.contact_head;index!=null_index;index=world.contacts[index].next){
@@ -182,7 +209,27 @@ NATIVE_HD inline StageResult step_pairs_impl(World& world,SceneScratch& scratch,
       scratch.body_order,body_count,scratch.constraints,constraint_count,iterations,interleaved_velocity);
     if(!solve)return {solve.status};
 #endif
-    if(!interleaved_velocity)for(unsigned i=0;i<iterations;++i){solve=solver_velocity(world.bodies,max_bodies,scratch.constraints,constraint_count);if(!solve)return {solve.status};}
+    if(!interleaved_velocity){
+#if IRISU_CUDA_NATIVE_CONTACT_ANCHORS && defined(__CUDA_ARCH__)
+    for(unsigned i=0;i<iterations;++i){solve=solver_velocity_contact<bool(IRISU_CUDA_NATIVE_LOCAL_VELOCITY)>(world.bodies,max_bodies,scratch.constraints,constraint_count);if(!solve)return {solve.status};}
+#elif IRISU_CUDA_NATIVE_CACHED_VELOCITY && defined(__CUDA_ARCH__)
+    const bool cached=iterations&&build_velocity_anchors(world.bodies,max_bodies,scratch.constraints,constraint_count,scratch.velocity_anchors);
+    for(unsigned i=0;i<iterations;++i){
+#if IRISU_CUDA_NATIVE_LOCAL_VELOCITY
+      solve=cached?solver_velocity_local<true>(world.bodies,max_bodies,scratch.constraints,constraint_count,scratch.velocity_anchors):
+                   solver_velocity_local<false>(world.bodies,max_bodies,scratch.constraints,constraint_count);
+#else
+      solve=cached?solver_velocity_cached(world.bodies,max_bodies,scratch.constraints,constraint_count,scratch.velocity_anchors):
+                   solver_velocity(world.bodies,max_bodies,scratch.constraints,constraint_count);
+#endif
+      if(!solve)return {solve.status};
+    }
+#elif IRISU_CUDA_NATIVE_LOCAL_VELOCITY && defined(__CUDA_ARCH__)
+    for(unsigned i=0;i<iterations;++i){solve=solver_velocity_local<false>(world.bodies,max_bodies,scratch.constraints,constraint_count);if(!solve)return {solve.status};}
+#else
+    for(unsigned i=0;i<iterations;++i){solve=solver_velocity(world.bodies,max_bodies,scratch.constraints,constraint_count);if(!solve)return {solve.status};}
+#endif
+    }
     for(unsigned i=0;i<body_count;++i){result=integrate_position(world.bodies[scratch.body_order[i]],dt,canonical_rotation);if(!result)return result;}
     bool interleaved_position=false;
 #if IRISU_CUDA_NATIVE_INTERLEAVED_SOLVER
@@ -190,7 +237,14 @@ NATIVE_HD inline StageResult step_pairs_impl(World& world,SceneScratch& scratch,
       scratch.body_order,body_count,scratch.constraints,constraint_count,iterations,interleaved_position,.2f,canonical_rotation);
     if(!solve)return {solve.status};
 #endif
-    if(!interleaved_position)for(unsigned i=0;i<iterations;++i){solve=solver_position(world.bodies,max_bodies,scratch.constraints,constraint_count,.2f,canonical_rotation);if(!solve)return {solve.status};if(solve.converged)break;}
+    if(!interleaved_position)for(unsigned i=0;i<iterations;++i){
+#if IRISU_CUDA_NATIVE_LOCAL_POSITION && defined(__CUDA_ARCH__)
+      solve=solver_position_local(world.bodies,max_bodies,scratch.constraints,constraint_count,.2f,canonical_rotation);
+#else
+      solve=solver_position(world.bodies,max_bodies,scratch.constraints,constraint_count,.2f,canonical_rotation);
+#endif
+      if(!solve)return {solve.status};if(solve.converged)break;
+    }
     solve=solver_postsolve(scratch.constraints,constraint_count,scratch.manifolds,contact_count);if(!solve)return {solve.status};
     for(unsigned i=0;i<contact_count;++i)world.contacts[scratch.contact_order[i]].manifold=scratch.manifolds[i];
     for(unsigned i=0;i<body_count;++i){

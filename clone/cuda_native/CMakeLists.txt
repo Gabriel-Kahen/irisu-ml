@@ -18,6 +18,11 @@ option(IRISU_CUDA_NATIVE_INLINE_STEP "Inline the typed game step forwarding wrap
 option(IRISU_CUDA_NATIVE_ENTRY_INDEX "Index typed game physics entries by body ID" OFF)
 option(IRISU_CUDA_NATIVE_WIDE_REBIND "Use aligned global u64 transport for GPU body-reference relocation" OFF)
 option(IRISU_CUDA_NATIVE_INTERLEAVED_SOLVER "Use interleaved hot solver workspace for configured GPU pools" OFF)
+option(IRISU_CUDA_NATIVE_CACHED_VELOCITY "Cache exact world-space solver anchors across velocity iterations" OFF)
+option(IRISU_CUDA_NATIVE_LOCAL_VELOCITY "Retain each contact's velocity state until the contact boundary" OFF)
+option(IRISU_CUDA_NATIVE_LOCAL_POSITION "Retain each contact's position state until the contact boundary" OFF)
+option(IRISU_CUDA_NATIVE_CONTACT_ANCHORS "Reuse each velocity contact's anchors between normal and tangent passes" OFF)
+option(IRISU_CUDA_NATIVE_SPLIT_CONSTRUCT "Separate rare body construction phases to reduce live registers" OFF)
 set(IRISU_CUDA_NATIVE_MAX_CONTACTS "4096" CACHE STRING "Typed World/solver contact capacity; native SAP remains 4096")
 set_property(CACHE IRISU_CUDA_NATIVE_MAX_CONTACTS PROPERTY STRINGS 512 1024 4096)
 if(NOT IRISU_CUDA_NATIVE_MAX_CONTACTS MATCHES "^(512|1024|4096)$")
@@ -58,12 +63,19 @@ function(irisu_native_cuda target source)
     IRISU_CUDA_NATIVE_ENTRY_INDEX=$<BOOL:${IRISU_CUDA_NATIVE_ENTRY_INDEX}>
     IRISU_CUDA_NATIVE_WIDE_REBIND=$<BOOL:${IRISU_CUDA_NATIVE_WIDE_REBIND}>
     IRISU_CUDA_NATIVE_INTERLEAVED_SOLVER=$<BOOL:${IRISU_CUDA_NATIVE_INTERLEAVED_SOLVER}>
+    IRISU_CUDA_NATIVE_CACHED_VELOCITY=$<BOOL:${IRISU_CUDA_NATIVE_CACHED_VELOCITY}>
+    IRISU_CUDA_NATIVE_LOCAL_VELOCITY=$<BOOL:${IRISU_CUDA_NATIVE_LOCAL_VELOCITY}>
+    IRISU_CUDA_NATIVE_LOCAL_POSITION=$<BOOL:${IRISU_CUDA_NATIVE_LOCAL_POSITION}>
+    IRISU_CUDA_NATIVE_CONTACT_ANCHORS=$<BOOL:${IRISU_CUDA_NATIVE_CONTACT_ANCHORS}>
+    IRISU_CUDA_NATIVE_SPLIT_CONSTRUCT=$<BOOL:${IRISU_CUDA_NATIVE_SPLIT_CONSTRUCT}>
     IRISU_CUDA_NATIVE_MAX_CONTACTS=${IRISU_CUDA_NATIVE_MAX_CONTACTS})
 endfunction()
 
 irisu_native_cuda(irisu-native-collision tools/cuda-native/collision_runner.cu)
 irisu_native_cuda(irisu-native-solver tools/cuda-native/solver_runner.cu)
 irisu_native_cuda(irisu-native-interleaved-solver-validate tools/cuda-native/solver_interleaved_validate.cu)
+irisu_native_cuda(irisu-native-cached-velocity-validate tools/cuda-native/solver_velocity_cached_validate.cu)
+irisu_native_cuda(irisu-native-local-position-validate tools/cuda-native/solver_position_local_validate.cu)
 irisu_native_cuda(irisu-native-bounded-math-validate tools/cuda-native/bounded_math_validate.cu)
 irisu_native_cuda(irisu-native-snapshot-validate tools/cuda-native/snapshot_validate.cu)
 irisu_native_cuda(irisu-native-search-accel-validate tools/cuda-native/search_accel_validate.cu)
@@ -97,11 +109,19 @@ endforeach()
 add_executable(irisu-native-domain "${PROJECT_SOURCE_DIR}/tools/cuda-native/collision_domain.cpp")
 target_include_directories(irisu-native-domain PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
 target_compile_options(irisu-native-domain PRIVATE -ffp-contract=off -fno-fast-math)
-foreach(proof cached_rotation compact_padding entry_index)
+foreach(proof cached_rotation compact_padding entry_index shared_future_plan shared_future)
   add_executable(irisu-native-${proof}-validate "${PROJECT_SOURCE_DIR}/tools/cuda-native/${proof}_validate.cpp")
   target_include_directories(irisu-native-${proof}-validate PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
   target_compile_options(irisu-native-${proof}-validate PRIVATE -ffp-contract=off -fno-fast-math)
 endforeach()
+foreach(proof shared_future_plan shared_future)
+  target_compile_options(irisu-native-${proof}-validate PRIVATE -UNDEBUG)
+  target_compile_definitions(irisu-native-${proof}-validate PRIVATE
+    IRISU_CUDA_NATIVE_MAX_CONTACTS=${IRISU_CUDA_NATIVE_MAX_CONTACTS}
+    IRISU_CUDA_NATIVE_SPARSE_RESET=0 IRISU_CUDA_NATIVE_INLINE_STEP=0
+    IRISU_CUDA_NATIVE_ENTRY_INDEX=0)
+endforeach()
+target_compile_options(irisu-native-shared_future-validate PRIVATE -O1)
 if(IRISU_BUILD_TESTS)
   add_test(NAME cuda-native-domain COMMAND irisu-native-domain)
 endif()

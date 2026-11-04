@@ -95,12 +95,44 @@ class NativePhysicsWorld {
     const auto y=m.div_store(m.mul_store(static_cast<float>(velocity.y),scale()),scale());
     if(!m.ok()){fail(m.status);return;}accept(scene_->set_velocity(slot,{x,y}));
   }
+#if defined(IRISU_CUDA_NATIVE_SPLIT_CONSTRUCT) && IRISU_CUDA_NATIVE_SPLIT_CONSTRUCT
+  // Separate the rare factory/SAP lifetimes without changing their store order.
+  GAME_HD NATIVE_GAME_CALL irisu::cuda_native::StageResult construct_state(
+      irisu::cuda_native::BodyState& body,irisu::cuda_native::ShapeState& shape,
+      const irisu::cuda_native::BodyDefinition& bd,const irisu::cuda_native::ShapeDefinition& sd){
+    return irisu::cuda_native::construct_body_shape(body,shape,bd,sd);
+  }
+  GAME_HD NATIVE_GAME_CALL irisu::cuda_native::StageResult install_state(
+      const irisu::cuda_native::BodyState& body,irisu::cuda_native::ShapeState& shape,std::uint32_t& slot){
+    using namespace irisu::cuda_native;auto& scene=*scene_;auto& world=scene.world;
+    unsigned index=0;while(index<max_shapes&&world.shapes[index].occupied)++index;
+    if(index==max_shapes)return scene.accept({Status::capacity});
+    auto result=world.create_body(body,slot);if(!result)return scene.accept(result);
+    shape.body=slot;shape.id=world.next_shape_id++;shape.occupied=true;
+    world.shapes[index]=shape;world.bodies[slot].shape_head=index;++world.shape_count;
+    AABB bounds{};result=shape_creation_bounds(bounds,shape);if(!result)return scene.accept(result);
+    if(scene.broadphase.InRange(bounds)){
+      WorldPairCallbacks callbacks{&world};
+      world.shapes[index].proxy_id=scene.broadphase.CreateProxy(bounds,index+1,callbacks);
+    }
+    if(world.shapes[index].proxy_id==0xffff){result=freeze_body(world,scene.broadphase,slot);if(!result)return scene.accept(result);}
+    return scene.check();
+  }
+#endif
   GAME_HD NATIVE_GAME_CALL std::uint32_t construct(unsigned kind,float width,float height,float x,float y,float angle,
                                   float density,float friction,float restitution,std::uint32_t tag){
     using namespace irisu::cuda_native;
     BodyDefinition bd{};ShapeDefinition sd{};std::uint32_t slot=null_index;
     if(!accept(wrapper_definition(bd,sd,kind,width,height,x,y,angle,density,friction,restitution,scale())))return slot;
-    bd.user_data=tag;accept(scene_->create_body_shape(bd,sd,slot));return slot;
+    bd.user_data=tag;
+#if defined(IRISU_CUDA_NATIVE_SPLIT_CONSTRUCT) && IRISU_CUDA_NATIVE_SPLIT_CONSTRUCT
+    if(!accept(scene_->check()))return slot;
+    BodyState body{};ShapeState shape{};
+    if(accept(construct_state(body,shape,bd,sd)))accept(install_state(body,shape,slot));
+#else
+    accept(scene_->create_body_shape(bd,sd,slot));
+#endif
+    return slot;
   }
   GAME_HD void boundary(BoundaryKind kind,double width,double height,double x,double y,double friction,double restitution){
     construct(1,float(width),float(height),float(x),float(y),0,0,float(friction),float(restitution),unsigned(kind));

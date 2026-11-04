@@ -266,3 +266,16 @@ interleaved solver, candidate ordering and alternative math remain optional
 experiments; none improved enough to select. See the
 [build and experiment guide](../tools/cuda-native/efficiency2_README.md) and
 [paired receipt](../benchmarks/results/cuda-native-efficiency2-2026-11-04.json).
+
+## Shared-future follow-up
+
+Exact shared partial futures and local solver state improve the capacity512
+campaign from **1.830195 to 1.379781 seconds (1.326x)** in three paired runs.
+Solver changes alone measure **1.035x** on identical simulated work. Preparing
+shared partial futures on GPU measures **1.214x**; the fastest hybrid prepares
+six additional checked CPU ticks once and executes 614,560 GPU future ticks
+instead of 983,040 logical candidate ticks. Complete native Result/rank packets
+remain unchanged. These are distinct execution modes and work counts.
+
+See the [implementation, commands and limits](../tools/cuda-native/efficiency3_README.md)
+and [third receipt](../benchmarks/results/cuda-native-efficiency3-2026-11-04.json).
