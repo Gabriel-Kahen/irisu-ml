@@ -155,8 +155,23 @@ source contains a safety patch. This initial condition must be stated rather
 than treating uninitialized bytes as universal native semantics. Default
 histories stay below64 simultaneously live proxies (at most2016pairs), keeping
 the original native fixed-capacity implementation safe even for all-overlap
-fixtures. Full512-proxy capacity and null callback-result cases need separate
-qualification before claiming them. Histories cover endpoint ties, pending
+fixtures. Full512-proxy capacity needs separate qualification. Optional
+`--null-callback` histories exercise zero callback tokens and need their own
+typed comparison before claiming that edge case. Histories cover endpoint ties, pending
 move/commit order, remove/reinsert, proxy free-list reuse, query limits,
 clamping and timestamp wrap. Every raw state byte and event/query word is
 compared, not only final pair sets or state hashes.
+
+Callback fixture policy: PairAdded returns/logs token0 if either proxy user ID
+is0; otherwise it returns the next positive token. PairRemoved must preserve
+the recorded token, including0. A null returned token still represents a final
+pair and must not suppress the later native removal callback. Normal corpus
+proxy IDs are nonzero, preserving earlier captures byte for byte.
+
+The opt-in `--capacity-512` fixture permits at most512 live proxies while
+conservatively checking `pairCount+active<=4096` and
+`bufferedCount+2*active<=4096` before native create/move/destroy calls. It
+qualifies a disjoint512-proxy history with query limits, destruction and reuse;
+it does not admit arbitrary dense512-proxy histories. Default64-proxy scope
+remains unchanged. Invalid513th allocation is tested on the typed implementation
+only, never by overflowing the original native fixed-size arrays.
