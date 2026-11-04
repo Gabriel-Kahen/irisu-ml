@@ -11,6 +11,10 @@ They preserve the original PC53 operation order and observed binary32 stores.
 This removes the emulated register machine without silently changing the
 physical model. Unsupported numerical domains fail explicitly.
 
+The scene pool has 512 bodies including the native shape-free ground, so its
+one-shape-per-body API admits at most 511 shaped bodies. The separate SAP stage
+has the native 512-proxy capacity. Joint creation is outside this implementation.
+
 ## Build
 
 Use a separate 64-bit build tree. The original production exact worker remains
@@ -26,7 +30,8 @@ cmake -S . -B build-cuda-native \
   -DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-14
 cmake --build build-cuda-native --target \
   irisu-native-collision irisu-native-solver irisu-native-broadphase \
-  irisu-cuda-native-factory-runner irisu-cuda-native-scene-runner irisu-native-domain -j 2
+  irisu-cuda-native-factory-runner irisu-cuda-native-scene-runner \
+  irisu-cuda-native-game-runner irisu-cuda-native-search-runner irisu-native-domain -j 2
 ```
 
 GPU commands below remove `CUDA_VISIBLE_DEVICES` only from the child process.
@@ -50,11 +55,15 @@ Current component gates cover:
 | Factory | 1,536 circle/box/triangle wrapper creations; mass, inertia, COM, transforms, material, vertices, normals, core vertices and local OBB |
 | Broadphase | Full 95,292-byte normalized state after operations; callback/query order, ties, timestamp wrap, quantization, all 512 proxies, removal and reuse |
 | Fixed scenes | 512 native contacted-circle frames plus independent integration, sleep and shape-cache stage fixtures |
+| Dynamic scenes | 3,072 native full-step frames, including mixed shapes, pair transitions, deletion/reuse, setters, partial bounds and freeze; initialized physical fields and live broadphase state |
+| Game adapter | Entire 97,220-row record digest on typed host; first 4,097 rows on GPU; native body/observation/event/transition digests |
 
 Factory comparison excludes allocation/proxy bookkeeping, qualified separately.
 Broadphase normalization removes only native owner/callback pointer words.
 Small stage proofs do not establish arbitrary full-world or full-game behavior.
-The fixed-pair scene entry rejects topology transitions explicitly.
+The fixed-pair scene entry rejects topology transitions explicitly. The separate
+`ScenePipelineState` implements real SAP callbacks, proxy changes, contact
+creation/removal, deferred cleanup, origin/velocity setters and freeze behavior.
 
 The checks and their native ABI contracts live in `tools/cuda-native`:
 
@@ -64,6 +73,28 @@ The checks and their native ABI contracts live in `tools/cuda-native`:
 
 `irisu-native-domain` checks invalid geometry/numerics, native pair-order
 requirements, preserved no-contact data, and transactional rejection.
+
+The game runner reuses the existing generated game rules through a new typed
+adapter. GPU initialization receives empty object storage prepared on the host;
+all physical reset/body creation and replay steps execute on the GPU. This
+avoids device compilation of giant aggregate default constructors. Game and
+physics calls have explicit function boundaries to control compilation size.
+`IRISU_CUDA_NATIVE_GAME_FAST_COMPILE=mid` controls frontend optimization work;
+the strict floating-point flags remain enabled. Components use ordinary O3.
+
+```sh
+python3 tools/cuda-native/qualify_game.py \
+  --native-oracle build-project-exact/irisu-game-oracle \
+  --runner build-cuda-native/clone/cuda_native/irisu-cuda-native-game-runner \
+  --library .local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so \
+  --replay irisu-high-score-4393101.rpy --steps 4096 --gpu \
+  --output artifacts/gpu-native-game-qualification.json
+```
+
+The full host record also passes same-input clone/rebind continuation from tick
+96,000. These game checks compare complete digest packets, not raw hidden native
+allocator memory. The original replay is unchanged. Full continuous GPU record
+and search performance are separate gates from the prefix qualification.
 
 ## Performance interpretation
 
