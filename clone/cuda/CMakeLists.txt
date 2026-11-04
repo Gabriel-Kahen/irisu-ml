@@ -166,8 +166,10 @@ if(IRISU_BUILD_TESTS)
 endif()
 
 add_executable(irisu-guest-memory-validate ../../tools/cuda-exact/guest_memory_validate.cpp)
+add_executable(irisu-guest-stride-validate ../../tools/cuda-exact/guest_stride_validate.cpp)
 if(IRISU_BUILD_TESTS)
   add_test(NAME irisu-guest-memory-validate COMMAND irisu-guest-memory-validate)
+  add_test(NAME irisu-guest-stride-validate COMMAND irisu-guest-stride-validate)
 endif()
 
 if(IRISU_BUILD_TESTS)
