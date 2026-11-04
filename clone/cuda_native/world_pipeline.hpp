@@ -35,6 +35,23 @@
 #if IRISU_CUDA_NATIVE_INTERLEAVED_SOLVER
 #include "solver_interleaved.hpp"
 #endif
+#ifndef IRISU_CUDA_NATIVE_PERSISTENT_SOLVER
+#define IRISU_CUDA_NATIVE_PERSISTENT_SOLVER 0
+#endif
+#if IRISU_CUDA_NATIVE_PERSISTENT_SOLVER
+#include "solver_persistent.hpp"
+#endif
+#ifndef IRISU_CUDA_NATIVE_PARALLEL_PHASES
+#define IRISU_CUDA_NATIVE_PARALLEL_PHASES 0
+#endif
+#ifndef IRISU_CUDA_NATIVE_COLLISION_CACHE
+#define IRISU_CUDA_NATIVE_COLLISION_CACHE 0
+#endif
+#if IRISU_CUDA_NATIVE_PARALLEL_PHASES
+#include "parallel_physics.cuh"
+#elif IRISU_CUDA_NATIVE_COLLISION_CACHE
+#include "collision_memo.cuh"
+#endif
 
 namespace irisu::cuda_native {
 struct SceneScratch {
@@ -49,6 +66,10 @@ struct SceneScratch {
 #endif
 };
 NATIVE_HD inline StageResult collide_world(World& world) {
+#if IRISU_CUDA_NATIVE_PARALLEL_PHASES
+  StageResult parallel_result{};bool parallel_handled=false;
+  parallel_physics::try_collide(world,parallel_result,parallel_handled);if(parallel_handled)return parallel_result;
+#endif
   for(auto index=world.contact_head;index!=null_index;index=world.contacts[index].next){
     if(index>=max_contacts)return {Status::invalid_snapshot};
     auto& c=world.contacts[index];
@@ -58,7 +79,11 @@ NATIVE_HD inline StageResult collide_world(World& world) {
     if(a.body>=max_bodies||b.body>=max_bodies)return {Status::invalid_body};
     if((world.bodies[a.body].flags&sleeping_body)&&(world.bodies[b.body].flags&sleeping_body))continue;
     const auto old=c.manifold_count;const auto previous=c.manifold;
+#if IRISU_CUDA_NATIVE_COLLISION_CACHE
+    const auto result=collision_memo::collide_exact(c.manifold,a,b);if(!result)return result;
+#else
     const auto result=collide(c.manifold,a,b);if(!result)return result;
+#endif
     if(a.kind==ShapeKind::polygon&&b.kind==ShapeKind::polygon){
       bool matched[2]{};
       for(int i=0;i<c.manifold.point_count;++i){
@@ -86,6 +111,10 @@ NATIVE_HD inline StageResult freeze_body(World& world,BroadPhase& broadphase,std
 }
 NATIVE_HD inline StageResult sync_body_shapes(World& world,SceneScratch& scratch,std::uint32_t body,BroadPhase* broadphase=nullptr,bool force_static=false,bool canonical_rotation=false) {
   auto& b=world.bodies[body];if(b.inv_mass==0&&!force_static)return {};
+#if IRISU_CUDA_NATIVE_PARALLEL_PHASES
+  StageResult parallel_result{};bool parallel_handled=false;
+  parallel_physics::try_sync_body_shapes(world,scratch.swept,body,broadphase,force_static,canonical_rotation,parallel_result,parallel_handled);if(parallel_handled)return parallel_result;
+#endif
 #if IRISU_CUDA_NATIVE_CACHED_ROTATION
   Mat22 previous_R;
   if(canonical_rotation&&math::sincos_input_supported(b.rotation)&&irisu::cuda_exact::bits_float(b.rotation0)==irisu::cuda_exact::bits_float(b.rotation))previous_R=b.R;
@@ -194,7 +223,11 @@ NATIVE_HD inline StageResult step_pairs_impl(World& world,SceneScratch& scratch,
         scratch.stack[stack_count++]=other;world.bodies[other].flags|=island_body;
       }
     }
-    for(unsigned i=0;i<body_count;++i){result=integrate_velocity(world.bodies[scratch.body_order[i]],dt,world.gravity);if(!result)return result;}
+    bool parallel_velocity=false;
+#if IRISU_CUDA_NATIVE_PARALLEL_PHASES
+    parallel_physics::try_integrate_velocity(world,scratch.body_order,body_count,dt,result,parallel_velocity);if(!result)return result;
+#endif
+    if(!parallel_velocity)for(unsigned i=0;i<body_count;++i){result=integrate_velocity(world.bodies[scratch.body_order[i]],dt,world.gravity);if(!result)return result;}
     for(unsigned i=0;i<contact_count;++i){
       const auto& c=world.contacts[scratch.contact_order[i]];scratch.manifolds[i]=c.manifold;
       scratch.solver_contacts[i]={world.shapes[c.shape1].body,world.shapes[c.shape2].body,i,c.friction,c.restitution};
@@ -202,6 +235,13 @@ NATIVE_HD inline StageResult step_pairs_impl(World& world,SceneScratch& scratch,
     unsigned constraint_count{};
     auto solve=solver_build_constraints(world.bodies,max_bodies,scratch.manifolds,contact_count,scratch.solver_contacts,contact_count,scratch.constraints,max_contacts,constraint_count);
     if(!solve)return {solve.status};
+    bool persistent_island=false;
+#if IRISU_CUDA_NATIVE_PERSISTENT_SOLVER
+    result=persistent_solver::try_island(&world,world.bodies,max_bodies,scratch.body_order,body_count,
+      scratch.constraints,constraint_count,scratch.manifolds,contact_count,dt,iterations,canonical_rotation,persistent_island);
+    if(!result)return result;
+#endif
+    if(!persistent_island){
     solve=solver_presolve(world.bodies,max_bodies,scratch.constraints,constraint_count,true);if(!solve)return {solve.status};
     bool interleaved_velocity=false;
 #if IRISU_CUDA_NATIVE_INTERLEAVED_SOLVER
@@ -230,7 +270,11 @@ NATIVE_HD inline StageResult step_pairs_impl(World& world,SceneScratch& scratch,
     for(unsigned i=0;i<iterations;++i){solve=solver_velocity(world.bodies,max_bodies,scratch.constraints,constraint_count);if(!solve)return {solve.status};}
 #endif
     }
-    for(unsigned i=0;i<body_count;++i){result=integrate_position(world.bodies[scratch.body_order[i]],dt,canonical_rotation);if(!result)return result;}
+    bool parallel_position=false;
+#if IRISU_CUDA_NATIVE_PARALLEL_PHASES
+    parallel_physics::try_integrate_position(world,scratch.body_order,body_count,dt,canonical_rotation,result,parallel_position);if(!result)return result;
+#endif
+    if(!parallel_position)for(unsigned i=0;i<body_count;++i){result=integrate_position(world.bodies[scratch.body_order[i]],dt,canonical_rotation);if(!result)return result;}
     bool interleaved_position=false;
 #if IRISU_CUDA_NATIVE_INTERLEAVED_SOLVER
     solve=interleaved_solver::try_iterate<interleaved_solver::Phase::position>(&world,world.bodies,max_bodies,
@@ -246,7 +290,11 @@ NATIVE_HD inline StageResult step_pairs_impl(World& world,SceneScratch& scratch,
       if(!solve)return {solve.status};if(solve.converged)break;
     }
     solve=solver_postsolve(scratch.constraints,constraint_count,scratch.manifolds,contact_count);if(!solve)return {solve.status};
+    }
     for(unsigned i=0;i<contact_count;++i)world.contacts[scratch.contact_order[i]].manifold=scratch.manifolds[i];
+#if IRISU_CUDA_NATIVE_PARALLEL_PHASES
+    parallel_physics::prepare_shape_bounds(world,scratch.body_order,body_count,canonical_rotation);
+#endif
     for(unsigned i=0;i<body_count;++i){
       const auto body=scratch.body_order[i];if(world.bodies[body].inv_mass==0)continue;
 #if IRISU_CUDA_NATIVE_CACHED_ROTATION

@@ -23,6 +23,9 @@ option(IRISU_CUDA_NATIVE_LOCAL_VELOCITY "Retain each contact's velocity state un
 option(IRISU_CUDA_NATIVE_LOCAL_POSITION "Retain each contact's position state until the contact boundary" OFF)
 option(IRISU_CUDA_NATIVE_CONTACT_ANCHORS "Reuse each velocity contact's anchors between normal and tangent passes" OFF)
 option(IRISU_CUDA_NATIVE_SPLIT_CONSTRUCT "Separate rare body construction phases to reduce live registers" OFF)
+option(IRISU_CUDA_NATIVE_PERSISTENT_SOLVER "Keep an optional GPU hot-state mirror across island solver phases" OFF)
+option(IRISU_CUDA_NATIVE_PARALLEL_PHASES "Enable optional worker-warp physics stages" OFF)
+option(IRISU_CUDA_NATIVE_COLLISION_CACHE "Enable optional exact device collision memoization" OFF)
 set(IRISU_CUDA_NATIVE_MAX_CONTACTS "4096" CACHE STRING "Typed World/solver contact capacity; native SAP remains 4096")
 set_property(CACHE IRISU_CUDA_NATIVE_MAX_CONTACTS PROPERTY STRINGS 512 1024 4096)
 if(NOT IRISU_CUDA_NATIVE_MAX_CONTACTS MATCHES "^(512|1024|4096)$")
@@ -68,12 +71,18 @@ function(irisu_native_cuda target source)
     IRISU_CUDA_NATIVE_LOCAL_POSITION=$<BOOL:${IRISU_CUDA_NATIVE_LOCAL_POSITION}>
     IRISU_CUDA_NATIVE_CONTACT_ANCHORS=$<BOOL:${IRISU_CUDA_NATIVE_CONTACT_ANCHORS}>
     IRISU_CUDA_NATIVE_SPLIT_CONSTRUCT=$<BOOL:${IRISU_CUDA_NATIVE_SPLIT_CONSTRUCT}>
+    IRISU_CUDA_NATIVE_PERSISTENT_SOLVER=$<BOOL:${IRISU_CUDA_NATIVE_PERSISTENT_SOLVER}>
+    IRISU_CUDA_NATIVE_PARALLEL_PHASES=$<BOOL:${IRISU_CUDA_NATIVE_PARALLEL_PHASES}>
+    IRISU_CUDA_NATIVE_COLLISION_CACHE=$<BOOL:${IRISU_CUDA_NATIVE_COLLISION_CACHE}>
     IRISU_CUDA_NATIVE_MAX_CONTACTS=${IRISU_CUDA_NATIVE_MAX_CONTACTS})
 endfunction()
 
 irisu_native_cuda(irisu-native-collision tools/cuda-native/collision_runner.cu)
 irisu_native_cuda(irisu-native-solver tools/cuda-native/solver_runner.cu)
 irisu_native_cuda(irisu-native-interleaved-solver-validate tools/cuda-native/solver_interleaved_validate.cu)
+irisu_native_cuda(irisu-native-persistent-solver-validate tools/cuda-native/solver_persistent_validate.cu)
+irisu_native_cuda(irisu-native-collision-memo-validate tools/cuda-native/collision_memo_validate.cu)
+irisu_native_cuda(irisu-native-parallel-physics-validate tools/cuda-native/parallel_physics_validate.cu)
 irisu_native_cuda(irisu-native-cached-velocity-validate tools/cuda-native/solver_velocity_cached_validate.cu)
 irisu_native_cuda(irisu-native-local-position-validate tools/cuda-native/solver_position_local_validate.cu)
 irisu_native_cuda(irisu-native-bounded-math-validate tools/cuda-native/bounded_math_validate.cu)
@@ -93,11 +102,14 @@ irisu_native_cuda(irisu-cuda-native-factory-runner tools/cuda-native/factory_run
 irisu_native_cuda(irisu-native-broadphase tools/cuda-native/broadphase_runner.cu)
 irisu_native_cuda(irisu-cuda-native-game-runner tools/cuda-native/game_runner.cu)
 irisu_native_cuda(irisu-cuda-native-search-runner tools/cuda-native/search_runner.cu)
+irisu_native_cuda(irisu-cuda-native-gpu-reference tools/cuda-native/gpu_search_reference_runner.cu)
+irisu_native_cuda(irisu-cuda-native-gpu-search tools/cuda-native/gpu_search_runner.cu)
+irisu_native_cuda(irisu-cuda-native-gpu-game-validate tools/cuda-native/gpu_game_validate.cu)
 irisu_native_cuda(irisu-cuda-native-batched-search-runner tools/cuda-native/batched_search_runner.cu)
 irisu_native_cuda(irisu-cuda-native-instrumented-runner tools/cuda-native/instrumented_runner.cu)
 irisu_native_cuda(irisu-cuda-native-instrumented-runner-v2 tools/cuda-native/instrumented_runner_v2.cu)
 irisu_native_cuda(irisu-cuda-native-instrumented-runner-v3 tools/cuda-native/instrumented_runner_v3.cu)
-foreach(target irisu-cuda-native-game-runner irisu-cuda-native-search-runner irisu-cuda-native-batched-search-runner irisu-cuda-native-instrumented-runner irisu-cuda-native-instrumented-runner-v2 irisu-cuda-native-instrumented-runner-v3 irisu-native-compact-game-validate)
+foreach(target irisu-cuda-native-game-runner irisu-cuda-native-search-runner irisu-cuda-native-gpu-reference irisu-cuda-native-gpu-search irisu-cuda-native-gpu-game-validate irisu-cuda-native-batched-search-runner irisu-cuda-native-instrumented-runner irisu-cuda-native-instrumented-runner-v2 irisu-cuda-native-instrumented-runner-v3 irisu-native-compact-game-validate)
   target_compile_options(${target} PRIVATE
     "$<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-constexpr;--Ofast-compile=${IRISU_CUDA_NATIVE_GAME_FAST_COMPILE}>")
   if(IRISU_CUDA_NATIVE_MAX_REGISTERS)
@@ -109,12 +121,12 @@ endforeach()
 add_executable(irisu-native-domain "${PROJECT_SOURCE_DIR}/tools/cuda-native/collision_domain.cpp")
 target_include_directories(irisu-native-domain PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
 target_compile_options(irisu-native-domain PRIVATE -ffp-contract=off -fno-fast-math)
-foreach(proof cached_rotation compact_padding entry_index shared_future_plan shared_future)
+foreach(proof cached_rotation compact_padding entry_index shared_future_plan shared_future gpu_search_plan)
   add_executable(irisu-native-${proof}-validate "${PROJECT_SOURCE_DIR}/tools/cuda-native/${proof}_validate.cpp")
   target_include_directories(irisu-native-${proof}-validate PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
   target_compile_options(irisu-native-${proof}-validate PRIVATE -ffp-contract=off -fno-fast-math)
 endforeach()
-foreach(proof shared_future_plan shared_future)
+foreach(proof shared_future_plan shared_future gpu_search_plan)
   target_compile_options(irisu-native-${proof}-validate PRIVATE -UNDEBUG)
   target_compile_definitions(irisu-native-${proof}-validate PRIVATE
     IRISU_CUDA_NATIVE_MAX_CONTACTS=${IRISU_CUDA_NATIVE_MAX_CONTACTS}

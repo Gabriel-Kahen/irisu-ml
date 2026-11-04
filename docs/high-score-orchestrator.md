@@ -38,6 +38,14 @@ batches across SMs; `--threads N` overrides it for profiling. The sample campaig
 uses 128 candidates and eight live survivors, with a 512-checkpoint device pool.
 The independent native verifier remains authoritative for exported records.
 
+The separate [GPU-first acceleration tools](../tools/cuda-native/gpu_first_README.md)
+provide wider sparse-input fanouts, GPU-prepared checkpoint banks and optional
+cooperative physics. Their batch runner uses binary candidate/result packets;
+the orchestrator's `engine` setting requires the resident JSON worker described
+above. Keep that worker and its existing hybrid profile for these campaigns.
+The acceleration guide's short-horizon timings do not establish end-to-end
+throughput for this orchestrator's closed-loop searches.
+
 Create the campaign, including the published record and intermediate checkpoints:
 
 ```sh

@@ -90,6 +90,14 @@ The optional [CUDA exact-host experiments](docs/cuda-exact.md) target the V100
 with translated MSVC physics, relocatable worlds and batched search. They carry
 a separate experimental identity and workload-specific parity evidence.
 
+The [GPU-first acceleration guide](tools/cuda-native/gpu_first_README.md) covers
+the typed V100 search backend, exact shared checkpoints, bounded resident
+frontiers, and optional cooperative physics. Matched GPU-only benchmarks showed
+6% higher throughput for the large frontier and 58% for the small batch. The
+existing hybrid remains faster on the large benchmark; experimental solver,
+cache, and scheduling modes remain opt-in. Native parity and timing receipts are
+linked from the guide.
+
 ## High-score orchestrator
 
 The [persistent high-score orchestrator](docs/high-score-orchestrator.md) explores
