@@ -2,9 +2,10 @@
 
 This optional layout keeps independent worlds in separate SIMD lanes and
 preserves each world's serial contact and point order. It does not parallelize
-dependent Gauss-Seidel impulses. The original `solver.hpp` routines remain the
-arithmetic implementation; no numerical expression or binary32 store boundary
-is rewritten.
+dependent Gauss-Seidel impulses. `solver_hot.hpp` mechanically specializes the
+original `solver.hpp` graph to 48-byte `BodyHot` objects; no numerical expression
+or binary32 store boundary is rewritten. `generate_hot_solver.py` reproduces
+the specialization and records the original source hash in its header.
 
 The 48-byte prefix of `BodyState` contains precisely the fields consumed or
 modified by these solver stages: position, velocity, rotation, angular
@@ -14,12 +15,19 @@ the analogous layout. Contiguous world lanes can therefore coalesce the same
 field accesses even when complete Scene objects are megabytes apart.
 
 Packing maps native body slots to dense island-local indices. A contact loads
-its complete constraint and its two hot bodies, calls the original single
-constraint stage, then commits every partial write before propagating an error.
+its complete constraint and its two 48-byte hot bodies, calls the specialized
+single-constraint stage, then commits every partial write before propagating an error.
 Unpacking restores original body indices and every constraint byte. Other
 BodyState fields remain untouched in their original allocation. Position-stage
 convergence is the conjunction of each contact's unchanged threshold result,
 which equals the original minimum-separation threshold.
+
+Iteration writeback is phase-specific. Velocity writes the two velocity
+components and angular velocity, plus normal/tangent impulses of active points.
+Position writes position, angle and rotation matrix, plus position impulses.
+PreSolve writes velocity/angular velocity and all three active-point impulses.
+Every other plane retains its exact packed word. Offset assertions guard this
+field list, and full-byte comparison checks omitted fields and inactive points.
 
 `IRISU_CUDA_NATIVE_INTERLEAVED_SOLVER` defaults off. Its optional bridge in
 `world_pipeline.hpp` stages only the repeated velocity and position loops;

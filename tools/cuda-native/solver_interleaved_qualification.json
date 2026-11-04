@@ -3,11 +3,13 @@
   "default_enabled": false,
   "scope": "Stage layout experiment only; no full rollout qualification or performance claim",
   "source_pins": {
-    "clone/cuda_native/solver_interleaved.hpp": "4373ce5e0ed4f3abd7d782dab95318da7a7a7cff78b7c8e6aefd16bd904786ee",
+    "clone/cuda_native/solver_interleaved.hpp": "93f6575c01c3f71eeaa890e174f25c7d7167b3f283da149d1caca4545a51074f",
     "clone/cuda_native/world_pipeline.hpp": "84ea00ff60c11c27dc0809e376bc65b02bdff98e96ee82a858b24a5408b81db2",
     "tools/cuda-native/solver_interleaved_validate.cu": "907206305fba07d42c8c0b09096d7085faa410041001226a953d5b3e515c719a",
     "tools/cuda-native/solver_interleaved_domain.cpp": "89cefb29e469f4aa579f20f01cdf50450dc34376f8d17199339ca1bc63a4a899",
-    "tools/cuda-native/solver_interleaved_contract.md": "f8320f65d2bd8d475b703bd4a2404f175a95bf1cfc357c5c8a4e5d6c0df99e74"
+    "tools/cuda-native/solver_interleaved_contract.md": "80672a0a41d22d31f01578af3d07eca1903cdcc264c09787c693947184083ea2",
+    "clone/cuda_native/solver_hot.hpp": "a84c06d596fafc85219e148f0ace53eee9597451a1ec6aa6bf028297c872c507",
+    "tools/cuda-native/generate_hot_solver.py": "5bbd3af7a3e4d496e493cd342ad8abae34283e1cd137078eb8ce6851fd851140"
   },
   "native_input": {
     "path": "artifacts/gpu-native-20261103/bounded-solver/cases.bin",
@@ -24,7 +26,7 @@
     "-I/opt/cuda/include"
   ],
   "host_stage_proof": {
-    "path": "artifacts/gpu-efficiency-20261104/solver-interleaved-host.json",
+    "path": "artifacts/gpu-efficiency2-20261104/solver-interleaved-hot-host.json",
     "sha256": "ad66201320216c5cd953de2e6128050d003a2db6e85dd35c704dca99db404212",
     "result": {
       "schema": "irisu-interleaved-solver-qualifier-v1",
@@ -43,7 +45,7 @@
     }
   },
   "host_domain_proof": {
-    "path": "artifacts/gpu-efficiency2-20261104/solver-interleaved-domain.json",
+    "path": "artifacts/gpu-efficiency2-20261104/solver-interleaved-hot-domain.json",
     "sha256": "cb4ff62c9f7b36e66595d52906ae3c94a717d96fee0d251cef546dc6c71f33a1",
     "result": {
       "schema": "irisu-interleaved-solver-domain-v1",
@@ -53,11 +55,12 @@
     }
   },
   "pending": [
-    "Actual bridge full-game/native scene/snapshot qualification with nonzero configured workspace use and descriptor address shortcut",
-    "Device memory checks",
+    "GPU generated-BodyHot stage differential and memory checks",
+    "Actual bridge native game/scene/snapshot qualification with nonzero configured workspace use",
     "Matched complete campaign performance"
   ],
-  "gpu_stage_proof": {
+  "implementation": "Generated 48-byte BodyHot stages and phase-specific word-plane writeback",
+  "previous_full_body_gpu_stage_proof": {
     "path": "artifacts/gpu-efficiency2-20261104/interleaved-gpu.json",
     "sha256": "08d85563fd7db8f4ab975ce2aa810b439c298dff27bf6d2d57df072893343bd2",
     "result": {
@@ -76,6 +79,6 @@
       "scope": "Temporary layout versus unchanged solver stages on native-captured and numeric failure inputs; no rollout performance claim"
     },
     "descriptor_fastpath_exercised": false,
-    "note": "Parent-produced GPU stage differential predates address shortcut; stage arithmetic/storage unchanged. Full bridge with configured descriptor remains pending."
+    "note": "Historical predecessor with full BodyState temporaries/full writeback; not qualification for generated BodyHot/selective-writeback version."
   }
 }

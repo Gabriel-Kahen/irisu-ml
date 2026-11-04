@@ -2,6 +2,7 @@
 // Experimental solver workspace. Original solver mathematics and native order
 // are reused; only temporary storage across independent worlds is interleaved.
 #include "solver.hpp"
+#include "solver_hot.hpp"
 #include <cstddef>
 #include <cstring>
 #ifndef IRISU_CUDA_NATIVE_INTERLEAVED_SOLVER
@@ -13,6 +14,8 @@ inline constexpr unsigned hot_body_words=offsetof(BodyState,force)/sizeof(std::u
 inline constexpr unsigned constraint_words=sizeof(ContactConstraint)/sizeof(std::uint32_t);
 static_assert(hot_body_words==12&&constraint_words==30);
 static_assert(std::is_standard_layout_v<BodyState>);
+static_assert(sizeof(ConstraintPoint)==44&&offsetof(ConstraintPoint,normal_impulse)==16&&
+ offsetof(ConstraintPoint,tangent_impulse)==20&&offsetof(ConstraintPoint,position_impulse)==24);
 
 // Allocate words_required(lanes,bodies,contacts) words outside the hot call.
 // All participating worlds must use the same capacities and distinct lanes.
@@ -32,10 +35,15 @@ struct View {
  }
  NATIVE_HD bool valid()const{return words&&lanes&&lane<lanes&&body_count<=body_capacity&&constraint_count<=constraint_capacity;}
  NATIVE_HD unsigned find(unsigned original)const{for(unsigned i=0;i<body_count;++i)if(body_id(i)==original)return i;return null_index;}
- NATIVE_HD void load_body(unsigned slot,BodyState& body)const{
+ template<class Body>NATIVE_HD void load_body(unsigned slot,Body& body)const{
+  static_assert(sizeof(Body)>=hot_body_words*4);
   for(unsigned field=0;field<hot_body_words;++field){const auto word=body_word(slot,field);std::memcpy(reinterpret_cast<unsigned char*>(&body)+field*4,&word,4);}
  }
- NATIVE_HD void store_body(unsigned slot,const BodyState& body)const{
+ template<class Body>NATIVE_HD void store_body_field(unsigned slot,unsigned field,const Body& body)const{
+  std::uint32_t word;std::memcpy(&word,reinterpret_cast<const unsigned char*>(&body)+field*4,4);body_word(slot,field)=word;
+ }
+ template<class Body>NATIVE_HD void store_body(unsigned slot,const Body& body)const{
+  static_assert(sizeof(Body)>=hot_body_words*4);
   for(unsigned field=0;field<hot_body_words;++field){std::uint32_t word;std::memcpy(&word,reinterpret_cast<const unsigned char*>(&body)+field*4,4);body_word(slot,field)=word;}
  }
  NATIVE_HD ContactConstraint load_constraint(unsigned slot)const{
@@ -45,6 +53,9 @@ struct View {
  }
  NATIVE_HD void store_constraint(unsigned slot,const ContactConstraint& constraint)const{
   for(unsigned field=0;field<constraint_words;++field){std::uint32_t word;std::memcpy(&word,reinterpret_cast<const unsigned char*>(&constraint)+field*4,4);constraint_word(slot,field)=word;}
+ }
+ NATIVE_HD void store_constraint_field(unsigned slot,unsigned field,const ContactConstraint& constraint)const{
+  std::uint32_t word;std::memcpy(&word,reinterpret_cast<const unsigned char*>(&constraint)+field*4,4);constraint_word(slot,field)=word;
  }
 };
 
@@ -111,6 +122,20 @@ NATIVE_HD inline SolverResult unpack(View view,BodyState* bodies,unsigned body_s
 }
 
 enum class Phase {presolve,velocity,position};
+template<Phase phase>NATIVE_HD inline void commit_body(View view,unsigned slot,const hot::BodyHot& body){
+ if constexpr(phase==Phase::position){
+  view.store_body_field(slot,0,body);view.store_body_field(slot,1,body);view.store_body_field(slot,4,body);
+  view.store_body_field(slot,8,body);view.store_body_field(slot,9,body);view.store_body_field(slot,10,body);view.store_body_field(slot,11,body);
+ }else{
+  view.store_body_field(slot,2,body);view.store_body_field(slot,3,body);view.store_body_field(slot,5,body);
+ }
+}
+template<Phase phase>NATIVE_HD inline void commit_constraint(View view,unsigned slot,const ContactConstraint& c){
+ for(int point=0;point<c.point_count;++point){const unsigned base=unsigned(point)*11;
+  if constexpr(phase!=Phase::position){view.store_constraint_field(slot,base+4,c);view.store_constraint_field(slot,base+5,c);}
+  if constexpr(phase!=Phase::velocity)view.store_constraint_field(slot,base+6,c);
+ }
+}
 // One constraint at a time preserves Gauss-Seidel dependence and both point
 // passes. Register temporaries carry only the two participants; every exit
 // commits their partial writes before reporting the original error position.
@@ -121,12 +146,12 @@ template<Phase phase>NATIVE_HD inline SolverResult solve(View view,float beta=.2
   if(c.body1>=view.body_count||c.body2>=view.body_count)return {Status::invalid_body,i};
   if(c.body1==c.body2||c.point_count<0||c.point_count>2)return {Status::invalid_snapshot,i};
   const auto first=c.body1,second=c.body2;
-  BodyState local[2];view.load_body(first,local[0]);view.load_body(second,local[1]);c.body1=0;c.body2=1;
+  hot::BodyHot local[2];view.load_body(first,local[0]);view.load_body(second,local[1]);c.body1=0;c.body2=1;
   SolverResult result;
-  if constexpr(phase==Phase::velocity)result=solver_velocity(local,2,&c,1);
-  else if constexpr(phase==Phase::presolve)result=solver_presolve(local,2,&c,1,option);
-  else result=solver_position(local,2,&c,1,beta,option);
-  view.store_body(first,local[0]);view.store_body(second,local[1]);c.body1=first;c.body2=second;view.store_constraint(i,c);
+  if constexpr(phase==Phase::velocity)result=hot::solver_velocity(local,2,&c,1);
+  else if constexpr(phase==Phase::presolve)result=hot::solver_presolve(local,2,&c,1,option);
+  else result=hot::solver_position(local,2,&c,1,beta,option);
+  commit_body<phase>(view,first,local[0]);commit_body<phase>(view,second,local[1]);commit_constraint<phase>(view,i,c);
   if(!result){result.constraint=i;return result;}
   converged&=result.converged;
  }
