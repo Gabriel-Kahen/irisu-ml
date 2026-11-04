@@ -83,9 +83,15 @@ struct World {
   Status status{Status::ok};
 
   NATIVE_HD void reset(Vec2 g={},bool sleeping=true) {
+#if defined(IRISU_CUDA_NATIVE_SPARSE_RESET) && IRISU_CUDA_NATIVE_SPARSE_RESET
+    for(auto& b:bodies)b.occupied=false;
+    for(auto& s:shapes)s.occupied=false;
+    for(auto& c:contacts)c.occupied=false;
+#else
     for(auto& b:bodies)b=BodyState{};
     for(auto& s:shapes)s=ShapeState{};
     for(auto& c:contacts)c=ContactState{};
+#endif
     gravity=g;body_head=destroy_head=contact_head=null_index;
     body_count=shape_count=contact_count=0;next_body_id=next_shape_id=next_contact_id=1;tick=0;
     allow_sleeping=sleeping;destroy_immediate=false;status=Status::ok;
