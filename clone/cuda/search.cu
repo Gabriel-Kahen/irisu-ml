@@ -62,6 +62,43 @@ __global__ void clone_kernel(World* worlds,unsigned char* arenas,const World* so
   if(!threadIdx.x)worlds[index].bind(arenas+std::size_t(index)*arena_bytes);
 }
 
+unsigned arena_storage_lanes(unsigned count,unsigned stride){return stride==32?(count+31)&~31U:count;}
+GAME_HD std::size_t arena_lane_offset(unsigned lane,unsigned bytes,unsigned stride) {
+  return stride==1?std::size_t(lane)*bytes:std::size_t(lane/32)*bytes*32+(lane%32)*4;
+}
+__global__ void clone_worlds_kernel(World* worlds,unsigned char* arenas,const World* source,
+ unsigned bytes,unsigned count,const std::uint32_t* selection,unsigned stride) {
+  const unsigned lane=blockIdx.x;if(lane>=count)return;
+  const auto parent=selection?selection[lane]:0;
+  auto* out=reinterpret_cast<unsigned char*>(worlds+lane);
+  const auto* in=reinterpret_cast<const unsigned char*>(source+parent);
+  for(std::size_t i=threadIdx.x;i<sizeof(World);i+=blockDim.x)out[i]=in[i];
+  __syncthreads();
+  if(!threadIdx.x){worlds[lane].guest.word_stride=stride;worlds[lane].bind(arenas+arena_lane_offset(lane,bytes,stride));}
+}
+// Each warp transports one logical word across32worlds. Parent beams remain
+// dense; packed future cohorts can therefore share parent reads and stores.
+__global__ void clone_arena_words_kernel(unsigned char* out,const unsigned char* in,
+ unsigned bytes,unsigned count,const std::uint32_t* selection,unsigned source_stride,unsigned destination_stride) {
+  const unsigned lane=blockIdx.x*32+(threadIdx.x&31);if(lane>=count)return;
+  const auto parent=selection?selection[lane]:0;
+  const auto* src=in+arena_lane_offset(parent,bytes,source_stride);
+  auto* dst=out+arena_lane_offset(lane,bytes,destination_stride);
+  for(std::size_t word=threadIdx.x/32;word<bytes/4;word+=blockDim.x/32)
+    *reinterpret_cast<std::uint32_t*>(dst+word*4*destination_stride)=
+      *reinterpret_cast<const std::uint32_t*>(src+word*4*source_stride);
+}
+void clone_layout(World* worlds,unsigned char* arenas,const World* source,
+ const unsigned char* source_arenas,unsigned bytes,unsigned count,const std::uint32_t* selection,
+ unsigned source_stride,unsigned destination_stride) {
+  if(source_stride==1&&destination_stride==1)
+    clone_kernel<<<count,256>>>(worlds,arenas,source,source_arenas,bytes,count,selection);
+  else {
+    clone_worlds_kernel<<<count,256>>>(worlds,arenas,source,bytes,count,selection,destination_stride);
+    clone_arena_words_kernel<<<(count+31)/32,256>>>(arenas,source_arenas,bytes,count,selection,source_stride,destination_stride);
+  }
+}
+
 __global__ void future_kernel(World* worlds,Options options,const std::uint32_t* replay,
  unsigned replay_size,const Candidate* candidates,unsigned count,const Result* prefix,
  Result* results,std::uint32_t* heaps) {
@@ -125,14 +162,19 @@ void rank_results(const Result* results,unsigned count,std::uint32_t* ranks) {
 
 __global__ void verify_compact_kernel(const World* selected,const unsigned char* selected_arenas,
  const World* worlds,const unsigned char* arenas,const std::uint32_t* ranks,
- unsigned count,unsigned arena_bytes,unsigned* errors) {
+ unsigned count,unsigned arena_bytes,unsigned* errors,unsigned source_stride=1,unsigned selected_stride=1) {
   const auto lane=blockIdx.x;if(lane>=count)return;
   const auto source=ranks[lane];
-  for(std::size_t i=threadIdx.x;i<arena_bytes;i+=blockDim.x)
-    if(selected_arenas[std::size_t(lane)*arena_bytes+i]!=arenas[std::size_t(source)*arena_bytes+i])atomicAdd(errors,1U);
+  const auto* a_bytes=selected_arenas+arena_lane_offset(lane,arena_bytes,selected_stride);
+  const auto* b_bytes=arenas+arena_lane_offset(source,arena_bytes,source_stride);
+  for(std::size_t i=threadIdx.x;i<arena_bytes;i+=blockDim.x) {
+    const auto a_offset=(i&~std::size_t(3))*selected_stride+(i&3);
+    const auto b_offset=(i&~std::size_t(3))*source_stride+(i&3);
+    if(a_bytes[a_offset]!=b_bytes[b_offset])atomicAdd(errors,1U);
+  }
   if(!threadIdx.x) {
     const auto& a=selected[lane];const auto& b=worlds[source];
-    if(a.guest.memory!=selected_arenas+std::size_t(lane)*arena_bytes ||
+    if(a.guest.memory!=a_bytes ||b.guest.memory!=b_bytes||a.guest.word_stride!=selected_stride||b.guest.word_stride!=source_stride||
        a.guest.heap!=b.guest.heap || a.simulator.tick_!=b.simulator.tick_ ||
        a.simulator.score_!=b.simulator.score_ || a.state_hash()!=b.state_hash())
       atomicAdd(errors,1U);
@@ -179,6 +221,8 @@ void run(const Options& options,const unsigned char* image,std::size_t image_byt
      !options.block_threads||options.block_threads>256||
      (options.isolated_warps&&options.block_threads>32&&options.block_threads%32)||
      options.stack_bytes<(16U<<10)||options.stack_bytes>(128U<<10)||
+     (options.arena_word_stride!=1&&options.arena_word_stride!=32)||
+     (options.arena_word_stride==32&&(options.arena_bytes&3))||
      options.arena_bytes>(512U<<20)||!options.keep||options.keep>count)
     throw std::invalid_argument("invalid bounded search arguments");
   for(unsigned i=0;i<count;++i)if(!valid(candidates[i],options.horizon))
@@ -195,7 +239,7 @@ void run(const Options& options,const unsigned char* image,std::size_t image_byt
   auto* prefix_arena=memory.allocate<unsigned char>(options.arena_bytes);
   auto* prefix_result=memory.allocate<Result>(1);
   auto* worlds=memory.allocate<World>(count);
-  auto* arenas=memory.allocate<unsigned char>(std::size_t(count)*options.arena_bytes);
+  auto* arenas=memory.allocate<unsigned char>(std::size_t(arena_storage_lanes(count,options.arena_word_stride))*options.arena_bytes);
   auto* results_gpu=memory.allocate<Result>(count);
   const auto rank_count=padded_rank_count(count);
   auto* ranks_gpu=memory.allocate<std::uint32_t>(rank_count);
@@ -236,17 +280,17 @@ void run(const Options& options,const unsigned char* image,std::size_t image_byt
   if(options.host_prefix)bind_prefix_kernel<<<1,1>>>(prefix_world,prefix_arena);
   else prefix_kernel<<<1,1>>>(prefix_world,prefix_arena,options,image_gpu,image_bytes,replay_gpu,prefix_result);
   b.record();
-  clone_kernel<<<count,256>>>(worlds,arenas,prefix_world,prefix_arena,options.arena_bytes,count,nullptr);c.record();
+  clone_layout(worlds,arenas,prefix_world,prefix_arena,options.arena_bytes,count,nullptr,1,options.arena_word_stride);c.record();
   const auto future_threads=count*(options.isolated_warps?32U:1U);
   const auto block=options.isolated_warps?std::max(32U,options.block_threads):options.block_threads;
   future_kernel<<<(future_threads+block-1)/block,block>>>(worlds,options,replay_gpu,replay_size,specs_gpu,count,prefix_result,results_gpu,heaps_gpu);d.record();
   rank_results(results_gpu,count,ranks_gpu);
-  clone_kernel<<<options.keep,256>>>(compact_worlds,compact_arenas,worlds,arenas,options.arena_bytes,options.keep,ranks_gpu);
+  clone_layout(compact_worlds,compact_arenas,worlds,arenas,options.arena_bytes,options.keep,ranks_gpu,options.arena_word_stride,1);
   e.record();
   if(options.validate_compaction) {
-    verify_compact_kernel<<<options.keep,256>>>(compact_worlds,compact_arenas,worlds,arenas,ranks_gpu,options.keep,options.arena_bytes,errors);
+    verify_compact_kernel<<<options.keep,256>>>(compact_worlds,compact_arenas,worlds,arenas,ranks_gpu,options.keep,options.arena_bytes,errors,options.arena_word_stride,1);
     continue_compact_kernel<<<(options.keep+31)/32,32>>>(compact_worlds,worlds,ranks_gpu,options.keep,errors,options.cache_guest);
-    verify_compact_kernel<<<options.keep,256>>>(compact_worlds,compact_arenas,worlds,arenas,ranks_gpu,options.keep,options.arena_bytes,errors);
+    verify_compact_kernel<<<options.keep,256>>>(compact_worlds,compact_arenas,worlds,arenas,ranks_gpu,options.keep,options.arena_bytes,errors,options.arena_word_stride,1);
   }
   check(cudaGetLastError());f.record();check(cudaEventSynchronize(f.value));
   check(cudaMemcpy(results,results_gpu,std::size_t(count)*sizeof(Result),cudaMemcpyDeviceToHost));
@@ -258,7 +302,8 @@ void run(const Options& options,const unsigned char* image,std::size_t image_byt
   timings->rollout_ms=elapsed(c,d);timings->rank_compact_ms=elapsed(d,e);
   timings->validation_ms=elapsed(e,f);
   timings->total_ms=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-begin).count();
-  timings->allocation_bytes=(std::uint64_t(count)+options.keep+1)*(sizeof(World)+options.arena_bytes)+
+  timings->allocation_bytes=(std::uint64_t(count)+options.keep+1)*sizeof(World)+
+    (std::uint64_t(arena_storage_lanes(count,options.arena_word_stride))+options.keep+1)*options.arena_bytes+
     image_bytes+std::uint64_t(replay_size)*4+std::uint64_t(count)*(sizeof(Candidate)+sizeof(Result)+4)+std::uint64_t(rank_count)*4+sizeof(Result)+4;
   for(auto heap:heaps)if(heap>timings->peak_guest_bytes)timings->peak_guest_bytes=heap;
   timings->compaction_errors=compact_errors;

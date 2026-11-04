@@ -82,6 +82,8 @@ void run_session(const SessionOptions& options,const unsigned char* image,
      !game.block_threads||game.block_threads>256||
      (game.isolated_warps&&game.block_threads>32&&game.block_threads%32)||
      game.stack_bytes<(16U<<10)||game.stack_bytes>(128U<<10)||
+     (game.arena_word_stride!=1&&game.arena_word_stride!=32)||
+     (game.arena_word_stride==32&&(game.arena_bytes&3))||
      std::uint64_t(game.prefix)+std::uint64_t(game.horizon)*options.depths>UINT32_MAX)
     throw std::invalid_argument("invalid bounded resident session arguments");
   for(unsigned i=0;i<fanout;++i)if(!valid(candidates[i],game.horizon))
@@ -107,7 +109,7 @@ void run_session(const SessionOptions& options,const unsigned char* image,
   auto* parent_results=memory.allocate<Result>(options.beam);
   auto* root_result=memory.allocate<Result>(1);
   auto* children=memory.allocate<World>(capacity);
-  auto* child_arenas=memory.allocate<unsigned char>(std::size_t(capacity)*game.arena_bytes);
+  auto* child_arenas=memory.allocate<unsigned char>(std::size_t(arena_storage_lanes(capacity,game.arena_word_stride))*game.arena_bytes);
   auto* indices=memory.allocate<std::uint32_t>(capacity);
   auto* all_results=memory.allocate<Result>(total);
   auto* all_lifecycle=memory.allocate<std::uint32_t>(total);
@@ -152,7 +154,7 @@ void run_session(const SessionOptions& options,const unsigned char* image,
     auto* lifecycle=all_lifecycle+offsets[depth];
     auto* selected=all_selected+selection_offsets[depth];
     session_parent_indices<<<(count+127)/128,128>>>(indices,count,fanout);
-    clone_kernel<<<count,256>>>(children,child_arenas,parents,parent_arenas,game.arena_bytes,count,indices);
+    clone_layout(children,child_arenas,parents,parent_arenas,game.arena_bytes,count,indices,1,game.arena_word_stride);
     event->branched.record();const auto threads=count*(game.isolated_warps?32U:1U);
     const auto block=game.isolated_warps?std::max(32U,game.block_threads):game.block_threads;
     session_future_kernel<<<(threads+block-1)/block,block>>>(children,game,replay_gpu,replay_size,specs_gpu,
@@ -160,15 +162,15 @@ void run_session(const SessionOptions& options,const unsigned char* image,
     event->simulated.record();rank_results(results,count,ranks);
     session_select_children<<<1,1>>>(results,ranks,lifecycle,count,keep,fanout,options.greedy_beam,options.protect_incumbent,
       protected_parent,selected,protected_history+depth,errors);
-    clone_kernel<<<keep,256>>>(parents,parent_arenas,children,child_arenas,game.arena_bytes,keep,selected);
+    clone_layout(parents,parent_arenas,children,child_arenas,game.arena_bytes,keep,selected,game.arena_word_stride,1);
     session_compact_results<<<(keep+31)/32,32>>>(parent_results,results,selected,keep);
     event->selected.record();events.push_back(std::move(event));
   }
   session_winner_info<<<1,1>>>(children,all_ranks+rank_offsets.back(),chain);end.record();
   if(game.validate_compaction){const auto keep=output->round_kept.back();const auto* selected=all_selected+selection_offsets.back();
-    verify_compact_kernel<<<keep,256>>>(parents,parent_arenas,children,child_arenas,selected,keep,game.arena_bytes,errors);
+    verify_compact_kernel<<<keep,256>>>(parents,parent_arenas,children,child_arenas,selected,keep,game.arena_bytes,errors,game.arena_word_stride,1);
     continue_compact_kernel<<<(keep+31)/32,32>>>(parents,children,selected,keep,errors,game.cache_guest);
-    verify_compact_kernel<<<keep,256>>>(parents,parent_arenas,children,child_arenas,selected,keep,game.arena_bytes,errors);
+    verify_compact_kernel<<<keep,256>>>(parents,parent_arenas,children,child_arenas,selected,keep,game.arena_bytes,errors,game.arena_word_stride,1);
   }
   check(cudaGetLastError());validation_end.record();check(cudaEventSynchronize(validation_end.value));
   output->results.resize(total);output->ranks.resize(total);
@@ -202,7 +204,8 @@ void run_session(const SessionOptions& options,const unsigned char* image,
   auto& t=output->timings;t.host_prefix_ms=host_prefix_ms;t.prefix_ms=elapsed(start,prefix_end);
   for(const auto& e:events){t.branch_ms+=elapsed(e->before,e->branched);t.rollout_ms+=elapsed(e->branched,e->simulated);t.rank_compact_ms+=elapsed(e->simulated,e->selected);}
   t.validation_ms=elapsed(end,validation_end);t.compaction_errors=compact_errors;t.peak_guest_bytes=heap;
-  t.allocation_bytes=std::uint64_t(capacity+options.beam)*(sizeof(World)+game.arena_bytes)+image_bytes+
+  t.allocation_bytes=std::uint64_t(capacity+options.beam)*sizeof(World)+
+    (std::uint64_t(arena_storage_lanes(capacity,game.arena_word_stride))+options.beam)*game.arena_bytes+image_bytes+
     std::uint64_t(replay_size)*4+std::uint64_t(fanout)*sizeof(Candidate)+std::uint64_t(options.beam)*sizeof(Result)+
     std::uint64_t(capacity)*4+total*(sizeof(Result)+4)+total_ranks*4+32+sizeof(Result)+
     total_selected*4+std::uint64_t(options.depths)*4+4;

@@ -144,6 +144,7 @@ def main():
     p.add_argument("--final-only",action="store_true",help="compare prefix and final frames; omit per-tick digest overhead on both backends")
     p.add_argument("--global-guest",action="store_true",help="disable per-thread cached guest registers for measured comparison")
     p.add_argument("--block-threads",type=int,default=4);p.add_argument("--stack-kib",type=int,default=16)
+    p.add_argument("--word-stride",type=int,choices=[1,32],default=1)
     args=p.parse_args()
     if args.horizon<1 or not 1<=args.candidates<=16384 or not 1<=args.keep<=args.candidates or args.repeats<1:
         p.error("invalid bounded workload")
@@ -161,7 +162,7 @@ def main():
     if args.isolated_warps:gpu_command.append("--isolated-warps")
     if args.final_only:gpu_command.append("--final-only")
     if args.global_guest:gpu_command.append("--global-guest")
-    gpu_command.extend(["--block-threads",args.block_threads,"--stack-kib",args.stack_kib])
+    gpu_command.extend(["--block-threads",args.block_threads,"--stack-kib",args.stack_kib,"--word-stride",args.word_stride])
     commands.append(("cuda",0,gpu_command))
     baseline=None;cases=[]
     report={"schema":"irisu-full-game-search-benchmark-v2","promotion_eligible":False,
@@ -172,7 +173,7 @@ def main():
       "inputs":{"replay_sha256":sha(args.replay),"specs_sha256":sha(specs),"image_sha256":sha(args.image)},
       "binaries":{"oracle_sha256":sha(args.oracle),"gpu_sha256":sha(args.gpu)},
       "prefix":args.prefix,"horizon":args.horizon,"candidates":args.candidates,"host_prefix":args.host_prefix,"isolated_warps":args.isolated_warps,
-      "trace_every_tick":not args.final_only,"cache_guest":not args.global_guest,"block_threads":args.block_threads,"stack_kib":args.stack_kib,
+      "trace_every_tick":not args.final_only,"cache_guest":not args.global_guest,"block_threads":args.block_threads,"stack_kib":args.stack_kib,"arena_word_stride":args.word_stride,
       "timing_contract":{"warmups":1,"timed_repeats":args.repeats,
         "wall":"process startup, runtime initialization, prefix preparation/upload, branches, complete futures, stable ranking, GPU selected-state compaction and result download; Python parity comparison excluded",
         "gpu_component":"CUDA events; setup/prefix, snapshot copy, future rollout, rank+compact+verification separately",

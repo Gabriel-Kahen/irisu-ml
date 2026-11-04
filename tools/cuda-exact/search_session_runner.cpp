@@ -16,7 +16,7 @@ void word(std::FILE* stream,std::uint32_t value) {
 }
 int main(int argc,char** argv) {
   try {
-    if(argc<12)throw std::runtime_error("usage: search-session image replay specs prefix horizon arena-mib beam depths target winner.rpy lineage.json [--host-prefix] [--isolated-warps] [--final-only] [--global-guest] [--block-threads N] [--stack-kib N] [--skip-compaction-check] [--no-protect-incumbent] [--greedy-beam]");
+    if(argc<12)throw std::runtime_error("usage: search-session image replay specs prefix horizon arena-mib beam depths target winner.rpy lineage.json [--host-prefix] [--isolated-warps] [--final-only] [--global-guest] [--block-threads N] [--stack-kib N] [--skip-compaction-check] [--word-stride 1|32] [--no-protect-incumbent] [--greedy-beam]");
     const auto image=search::read_bytes(argv[1]);
     const auto source_replay=search::read_bytes(argv[2]),source_specs=search::read_bytes(argv[3]);
     auto in=search::load_inputs(argv[2],argv[3],argv[4],argv[5]);
@@ -32,6 +32,7 @@ int main(int argc,char** argv) {
       else if(flag=="--final-only")options.game.trace_every_tick=false;
       else if(flag=="--global-guest")options.game.cache_guest=false;
       else if(flag=="--block-threads"&&i+1<argc){const auto n=std::stoul(argv[++i]);if(!n||n>256)throw std::runtime_error("invalid session block size");options.game.block_threads=n;}
+      else if(flag=="--word-stride"&&i+1<argc){const auto n=std::stoul(argv[++i]);if(n!=1&&n!=32)throw std::runtime_error("invalid session arena word stride");options.game.arena_word_stride=n;}
       else if(flag=="--stack-kib"&&i+1<argc){const auto n=std::stoul(argv[++i]);if(n<16||n>128)throw std::runtime_error("invalid session stack size");options.game.stack_bytes=n*1024;}
       else if(flag=="--skip-compaction-check")options.game.validate_compaction=false;
       else if(flag=="--no-protect-incumbent")options.protect_incumbent=false;
@@ -49,9 +50,9 @@ int main(int argc,char** argv) {
     std::fprintf(stderr,"{\"selection_policy\":\"%s\",\"protect_incumbent\":%s}\n",
       policy,
       options.protect_incumbent?"true":"false");
-    std::fprintf(stderr,"{\"identity\":\"experimental-cuda-game-search-session-v4\",\"promotion_eligible\":false,\"depths\":%lu,\"beam\":%lu,\"fanout\":%zu,\"candidate_nodes\":%zu,\"actual_simulated_branches\":%llu,\"actual_simulated_ticks\":%llu,\"failed_candidates\":%llu,\"trace_every_tick\":%s,\"cache_guest\":%s,\"block_threads\":%u,\"stack_kib\":%u,\"host_prefix_ms\":%.9f,\"prefix_ms\":%.9f,\"branch_ms\":%.9f,\"rollout_ms\":%.9f,\"rank_compact_ms\":%.9f,\"validation_ms\":%.9f,\"total_ms\":%.9f,\"allocated_bytes\":%llu,\"compaction_errors\":%llu,\"winner_tick\":%llu,\"winner_live_score\":%llu,\"winner_canonical_score\":%llu,\"winner_canonical_level\":%llu,\"winner_canonical_chain\":%llu,\"winner_natural\":%llu}\n",
+    std::fprintf(stderr,"{\"identity\":\"experimental-cuda-game-search-session-v4\",\"promotion_eligible\":false,\"depths\":%lu,\"beam\":%lu,\"fanout\":%zu,\"candidate_nodes\":%zu,\"actual_simulated_branches\":%llu,\"actual_simulated_ticks\":%llu,\"failed_candidates\":%llu,\"trace_every_tick\":%s,\"cache_guest\":%s,\"block_threads\":%u,\"stack_kib\":%u,\"word_stride\":%u,\"host_prefix_ms\":%.9f,\"prefix_ms\":%.9f,\"branch_ms\":%.9f,\"rollout_ms\":%.9f,\"rank_compact_ms\":%.9f,\"validation_ms\":%.9f,\"total_ms\":%.9f,\"allocated_bytes\":%llu,\"compaction_errors\":%llu,\"winner_tick\":%llu,\"winner_live_score\":%llu,\"winner_canonical_score\":%llu,\"winner_canonical_level\":%llu,\"winner_canonical_chain\":%llu,\"winner_natural\":%llu}\n",
       depths,beam,in.candidates.size(),output.results.size(),(unsigned long long)output.actual_simulated_branches,(unsigned long long)output.actual_simulated_ticks,(unsigned long long)failed,
-      options.game.trace_every_tick?"true":"false",options.game.cache_guest?"true":"false",options.game.block_threads,options.game.stack_bytes/1024,
+      options.game.trace_every_tick?"true":"false",options.game.cache_guest?"true":"false",options.game.block_threads,options.game.stack_bytes/1024,options.game.arena_word_stride,
       t.host_prefix_ms,t.prefix_ms,t.branch_ms,t.rollout_ms,t.rank_compact_ms,t.validation_ms,t.total_ms,
       (unsigned long long)t.allocation_bytes,(unsigned long long)t.compaction_errors,
       (unsigned long long)winner.final.tick,(unsigned long long)winner.final.score,(unsigned long long)winner.canonical_score,
@@ -67,7 +68,7 @@ int main(int argc,char** argv) {
     for(auto value:output.winner_words)word(replay,value);
     if(std::fclose(replay))throw std::runtime_error("cannot close winner replay");
     std::ofstream lineage(argv[11]);if(!lineage)throw std::runtime_error("cannot create lineage manifest");
-    lineage<<"{\n  \"schema\":\"irisu-experimental-cuda-search-lineage-v4\",\n  \"promotion_eligible\":false,\n  \"native_replay_verified\":false,\n  \"replay_sha256\":\""<<digest(source_replay)<<"\",\n  \"specs_sha256\":\""<<digest(source_specs)<<"\",\n  \"image_sha256\":\""<<digest(image)<<"\",\n  \"seed\":"<<options.game.seed<<",\n  \"prefix\":"<<options.game.prefix<<",\n  \"horizon\":"<<options.game.horizon<<",\n  \"fanout\":"<<in.candidates.size()<<",\n  \"beam\":"<<beam<<",\n  \"candidate_specs\":[";
+    lineage<<"{\n  \"schema\":\"irisu-experimental-cuda-search-lineage-v4\",\n  \"promotion_eligible\":false,\n  \"native_replay_verified\":false,\n  \"replay_sha256\":\""<<digest(source_replay)<<"\",\n  \"specs_sha256\":\""<<digest(source_specs)<<"\",\n  \"image_sha256\":\""<<digest(image)<<"\",\n  \"seed\":"<<options.game.seed<<",\n  \"prefix\":"<<options.game.prefix<<",\n  \"horizon\":"<<options.game.horizon<<",\n  \"arena_word_stride\":"<<options.game.arena_word_stride<<",\n  \"fanout\":"<<in.candidates.size()<<",\n  \"beam\":"<<beam<<",\n  \"candidate_specs\":[";
     for(unsigned c=0;c<in.candidates.size();++c){lineage<<(c?",":"")<<"[";
       for(unsigned m=0;m<in.candidates[c].count;++m)lineage<<(m?",":"")<<"["<<in.candidates[c].mutations[m].offset<<","<<in.candidates[c].mutations[m].input<<"]";
       lineage<<"]";}

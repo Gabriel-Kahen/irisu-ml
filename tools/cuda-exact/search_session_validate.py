@@ -132,6 +132,7 @@ def main():
                    help="allow up to16 resident depths; validate stable ranks/lineage and independently replay the winner, omitting flattened native checks for every leaf")
     p.add_argument("--no-protect-incumbent",action="store_true",help="allow the zero-edit source lineage to be pruned")
     p.add_argument("--greedy-beam",action="store_true",help="use legacy canonical top-K survivors instead of retaining the best child plus live futures")
+    p.add_argument("--word-stride",type=int,choices=[1,32],default=1)
     args=p.parse_args();args.output.parent.mkdir(parents=True,exist_ok=True)
     if not 1<=args.fanout<=16384 or not 1<=args.beam<=64 or args.fanout*args.beam>16384 or not 1<=args.horizon<=100000:
         p.error("invalid bounded session fanout, beam or horizon")
@@ -148,7 +149,7 @@ def main():
     if args.global_guest:command.append("--global-guest")
     if args.no_protect_incumbent:command.append("--no-protect-incumbent")
     if args.greedy_beam:command.append("--greedy-beam")
-    command.extend(["--block-threads",args.block_threads,"--stack-kib",args.stack_kib])
+    command.extend(["--block-threads",args.block_threads,"--stack-kib",args.stack_kib,"--word-stride",args.word_stride])
     with Telemetry() as telemetry:data,run=invoke(command,args.timeout)
     rounds=decode_session(data,args.depths)
     args.output.with_suffix(".results.bin").write_bytes(data)
@@ -158,6 +159,7 @@ def main():
       "command":list(map(str,command)),"gpu":run,"rounds":[],"all_candidate_parity":False,
       "prefix":args.prefix,"horizon":args.horizon,"beam":args.beam,"fanout":args.fanout,"depths":args.depths}
     report["trace_every_tick"]=not args.final_only
+    report["arena_word_stride"]=args.word_stride
     report["protect_incumbent"]=not args.no_protect_incumbent
     report["greedy_beam"]=args.greedy_beam
     report["distinct_normalized_specs"]=len(set(specs))
