@@ -20,8 +20,10 @@ After building `irisu-native-search-campaign` in the native exact configuration
 and `irisu-cuda-native-search-runner` in the separate CUDA-native configuration:
 
 ```sh
-build-project-exact/irisu-native-search-campaign irisu-high-score-4393101.rpy /tmp/search-distinct.bin 100 4 8 12 4393102 --final-only > /tmp/search-native.bin
-build-cuda-native-bounded/clone/cuda_native/irisu-cuda-native-search-runner irisu-high-score-4393101.rpy /tmp/search-distinct.bin 100 4 --copy-u64 --reuse-prefix --warmups 0 --repeats 12 --final-only > /tmp/search-gpu.bin
+env LD_LIBRARY_PATH="$PWD/.local/exact-runtime-20260824/exact-runtime/guest" \
+  build-project-exact/irisu-native-search-campaign irisu-high-score-4393101.rpy /tmp/search-distinct.bin 100 4 8 20 4393102 --final-only > /tmp/search-native.bin
+env -u CUDA_VISIBLE_DEVICES \
+  build-cuda-native-bounded/clone/cuda_native/irisu-cuda-native-search-runner irisu-high-score-4393101.rpy /tmp/search-distinct.bin 100 4 --copy-u64 --reuse-prefix --physical-snapshot --warmups 0 --repeats 20 --final-only --skip-compaction-check > /tmp/search-gpu.bin
 cmp /tmp/search-native.bin /tmp/search-gpu.bin
 ```
 
@@ -31,7 +33,7 @@ the default. Both use strict RN operations and observed binary32 stores.
 
 `--reuse-prefix` prepares one immutable checkpoint per process. Without
 `--host-prefix`, initialization, reset, prefix and every future execute on GPU.
-All Game and Scene bytes, including scratch, are retained in every clone.
+By default all Game and Scene bytes, including scratch, are retained in every clone.
 `--copy-u64` uses aligned global 64-bit PTX transport; byte copying stays default.
 `--split-rebind` is an optional scheduling control that showed no benefit.
 Default prefix behavior replays the prefix for every batch.
@@ -55,10 +57,31 @@ GPU prefix-guard costs remain included. Keep one-shot and campaign results
 separate; a warm phase divided by native process wall is not matched timing.
 
 Qualification receipts preserve source/binary/input hashes and raw samples.
-Later CPU media contention invalidated headline claims from the older campaign
-measurements; unrelated processes were not modified. New fair CPU comparisons
-require a quiet window and repeated paired campaigns. The tools remain
-experimental; these fixtures do not establish universal speedup or admission.
+Earlier CPU media contention invalidated headline claims from older campaign
+measurements; unrelated processes were not modified. The final paired campaign
+measured **6.458x**: best verification-free CPU median 30.062683 s versus GPU
+full-wall median 4.655091 s. It has three runs per CPU worker configuration and
+six GPU runs. Both retain one prefix per process. Native v2 excludes parent-only
+verification buffers from candidate forks using dedicated MADV_DONTFORK
+mappings. All 12 final packets match native execution. Small cold searches
+still favor CPU; this result does not establish universal speedup or admission.
+
+Reproduce paired timing with the native output above as the expected packet:
+
+```sh
+python3 tools/cuda-native/benchmark_campaign.py \
+  --native build-project-exact/irisu-native-search-campaign \
+  --gpu build-cuda-native-bounded/clone/cuda_native/irisu-cuda-native-search-runner \
+  --replay irisu-high-score-4393101.rpy --specs /tmp/search-distinct.bin \
+  --expected /tmp/search-native.bin \
+  --library .local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so \
+  --output /tmp/search-paired.json
+```
+
+See [the final receipt](../../benchmarks/results/cuda-native-final-campaign-2026-11-04.json)
+for all samples, input/binary pins and limits. Build with
+`IRISU_CUDA_NATIVE_BOUNDED_MATH=ON` in a separate directory; see
+[the build guide](../../docs/cuda-native.md).
 
 ## Optional physical snapshot
 
@@ -76,9 +99,9 @@ validation-only; the actual fast path leaves workspace untouched. Selected-state
 checks in reduced mode compare every Game and persistent Scene byte, while the
 cached-prefix guard continues comparing the **entire** source checkpoint.
 
-For the final pure-GPU campaign command above, add `--physical-snapshot` and
-use `--repeats 20` with native `batches=20`. CPU workers must remain unrestricted;
+The final pure-GPU campaign command above uses `--physical-snapshot` and
+`--repeats 20` with native `batches=20`. CPU workers remain unrestricted;
 physical-core pinning was slower and was rejected. Final speedup claims require
 the paired native v2 cached controller with parent verification buffers excluded
 from candidate forks. See `search_physical_qualification.json` for exact gates;
-the one-sample GPU pilot is not a final 5x claim.
+the earlier one-sample GPU pilot is superseded by the repeated paired campaign.

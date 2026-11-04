@@ -119,6 +119,40 @@ Build it in a separate directory using the build options above plus this flag.
 
 ## Performance interpretation
 
+The final paired search campaign reached **6.46x** on the V100 versus the
+native cached-prefix CPU controller. Both prepare one 100-tick prefix, then
+execute 20 batches of 12,288 distinct four-tick futures: 983,040 future physics
+ticks per process. GPU initialization, prefix and future physics all execute
+on the device. External wall includes loading, allocation, output and teardown.
+
+| Backend | Runs | Median seconds | Range seconds |
+| --- | --- | --- | --- |
+| Native, 8 workers | 3 | 30.101 | 29.823–30.830 |
+| Native, 16 workers | 3 | 30.146 | 30.094–31.126 |
+| GPU | 6 | 4.655 | 4.623–4.658 |
+
+The conservative ratio uses the best CPU median after subtracting its internal
+verification cost: 30.0627 / 4.65509 = 6.4580. GPU prefix-guard costs remain
+included. The final 16-worker sample saw increased CPU pressure; retaining it
+does not determine the winning CPU denominator. Even the fastest individual
+CPU sample, with verification removed, exceeds the slowest GPU sample by 6.39x.
+Every output matches the same complete 3,194,896-byte native packet; every batch
+executes its futures and compares its results and ranks internally.
+
+This uses opt-in bounded arithmetic, aligned 64-bit transport, prefix reuse and
+physical snapshots. Snapshots preserve every Game, World and broadphase byte,
+including warm impulses, while omitting transient SceneScratch at completed
+call boundaries. Poison, independent continuation, memcheck and virgin-scratch
+initcheck gates qualify that omission. Timing skips only the extra selected-state
+continuation checks, which pass separately. Existing implementations and
+defaults remain intact.
+
+See the [search commands](../tools/cuda-native/search_README.md) and
+[final receipt](../benchmarks/results/cuda-native-final-campaign-2026-11-04.json).
+This is a large batched-search result, not a universal 5x claim: small cold
+searches still favor CPU, and a single game has not demonstrated this speedup.
+The run allocates about 27.85 GB of device storage. The backend is experimental.
+
 A million independent circle pairs are a component benchmark, not a game or
 search benchmark. The native denominator uses persistent pthread pools with
 PC53 set in each worker, and identical input/output bytes. CUDA event samples
@@ -128,8 +162,8 @@ The initial matrix measured 2.397216 ms on V100 versus 10.089557 ms for the
 fastest native CPU pool (8 threads): **4.2089x for the collision stage**. Whole
 process medians were 0.235628 s GPU versus 0.220160 s for the fastest CPU
 configuration (16 threads), so GPU process wall time was about 7% higher.
-All runs matched 60,000,000 native output bytes. These figures do not establish
-a full-game or search speedup, or the requested 5x target.
+All runs matched 60,000,000 native output bytes. These component figures are
+separate from the complete search campaign above.
 
 Scene qualification hashes every frame; its kernel timings include validation
 instrumentation. Performance runs must keep complete worlds resident, omit
