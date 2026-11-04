@@ -66,12 +66,62 @@ NATIVE_HD inline void copy_game(Game& destination,const Game& source,const GameP
 NATIVE_HD inline bool rebind_game(Game& destination,ScenePipelineState& scene,const GamePlan& plan){
   return destination.rebind(&scene,plan.old_body_base);
 }
+// Only live element padding is dispensable. Inactive poisoned storage can
+// become live through a memberwise copy constructor which leaves ABI padding
+// untouched. Enumerate every value field, retaining all bytes of nested Vec2.
+// Unknown element types default to byte-exact comparison, never silent omission.
+template<class T>NATIVE_HD constexpr bool element_value_byte(std::size_t byte){
+#define VALUE(field) if(byte>=offsetof(T,field)&&byte<offsetof(T,field)+sizeof(((T*)nullptr)->field))return true;
+  if constexpr(std::is_same_v<T,irisu::cuda_game::Body>){
+    VALUE(id) VALUE(kind) VALUE(shape) VALUE(lifecycle) VALUE(color)
+    VALUE(position) VALUE(velocity) VALUE(angle) VALUE(angular_velocity)
+    VALUE(native_position) VALUE(native_center) VALUE(native_velocity)
+    VALUE(native_angle) VALUE(native_angular_velocity) VALUE(native_state_valid) VALUE(native_center_valid)
+    VALUE(size) VALUE(density) VALUE(friction) VALUE(restitution) VALUE(inverse_mass) VALUE(inverse_inertia)
+    VALUE(chain_id) VALUE(actor_slot) VALUE(size_slot) VALUE(projectile_hits) VALUE(age_ticks) VALUE(remaining_lifetime)
+    VALUE(scripted_velocity) VALUE(rot_timer) VALUE(physics_owned) VALUE(special) VALUE(freshness_state)
+    VALUE(grouped) VALUE(successful_clear_pending) VALUE(non_wall_contacts) VALUE(top_contact_pending)
+    VALUE(top_contact_enabled) VALUE(physics_update_count) VALUE(rule_guard_f0) VALUE(delete_marked)
+    VALUE(pending_delete) VALUE(sleeping) VALUE(sleep_time)
+    return false;
+  }else if constexpr(std::is_same_v<T,irisu::cuda_game::Contact>){
+    VALUE(a) VALUE(b) VALUE(boundary) VALUE(point) VALUE(normal) VALUE(penetration)
+    return false;
+  }else if constexpr(std::is_same_v<T,irisu::cuda_game::ScriptedOrigin>){
+    VALUE(id) VALUE(position) VALUE(angle)
+    return false;
+  }else if constexpr(std::is_same_v<T,irisu::cuda_game::NativePhysicsWorld::Entry>){
+    VALUE(id) VALUE(slot) VALUE(shape) VALUE(size) VALUE(density) VALUE(friction) VALUE(restitution)
+    VALUE(position) VALUE(velocity) VALUE(angle) VALUE(pending)
+    return false;
+  }else return true; // GroupState, uint64 and pointer elements have no padding.
+#undef VALUE
+}
+struct LivePadding {
+  const unsigned char* base;std::size_t offset;bool padding{};
+  template<class T>NATIVE_HD void operator()(const irisu::cuda_game::vector<T>& vector){
+    const auto begin=std::size_t(vector.storage-base),end=begin+std::size_t(vector.count)*sizeof(T);
+    if(offset>=begin&&offset<end)padding=!element_value_byte<T>((offset-begin)%sizeof(T));
+  }
+};
+NATIVE_HD inline bool live_padding_at(const Game& game,std::size_t offset){
+  LivePadding visit{reinterpret_cast<const unsigned char*>(&game),offset};const auto& s=game.simulator;
+  s.physics_.snapshot_vectors(visit);visit(s.bodies_);visit(s.groups_);visit(s.active_contact_pairs_);
+  visit(s.scripted_origins_scratch_);visit(s.current_contacts_scratch_);visit(s.actor_refs_scratch_);return visit.padding;
+}
+static_assert(element_value_byte<irisu::cuda_game::Contact>(offsetof(irisu::cuda_game::Contact,boundary)));
+static_assert(!element_value_byte<irisu::cuda_game::Contact>(offsetof(irisu::cuda_game::Contact,boundary)+1));
 // Both games must first have equal scene bindings and address-normalized live
 // body references. Inactive pointer tails need not match; restore makes them0.
-NATIVE_HD inline std::uint32_t first_game_difference(const Game& a,const Game& b,const GamePlan& plan){
+// Every scalar/header byte remains exact; only listed LIVE element padding is
+// ignored. The optional counter makes that narrower comparison explicit.
+NATIVE_HD inline std::uint32_t first_game_difference(const Game& a,const Game& b,const GamePlan& plan,std::uint64_t* padding_ignored=nullptr){
   const auto* first=reinterpret_cast<const unsigned char*>(&a);const auto* second=reinterpret_cast<const unsigned char*>(&b);
   for(unsigned range=0;range<plan.span_count;++range){const auto span=plan.spans[range];
-    for(std::size_t i=span.begin;i<std::size_t(span.begin)+span.size;++i)if(first[i]!=second[i])return std::uint32_t(i);
+    for(std::size_t i=span.begin;i<std::size_t(span.begin)+span.size;++i)if(first[i]!=second[i]){
+      if(!live_padding_at(a,i))return std::uint32_t(i);
+      if(padding_ignored)++*padding_ignored;
+    }
   }
   return null_index;
 }

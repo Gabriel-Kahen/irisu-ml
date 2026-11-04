@@ -17,14 +17,14 @@ using Game=c::Game;using Scene=p::ScenePipelineState;using Frame=irisu::game_dig
 namespace {
 struct Result {
   unsigned failure{},phase{},offset{},snapshots{},native_frames{},warm{},pending{},sleeping{},frozen{};
-  std::uint64_t game_bytes{},scene_bytes{};
+  std::uint64_t game_bytes{},scene_bytes{},padding_ignored{};
 };
 __device__ bool compare_games(Game& a,Scene& sa,Game& b,Scene& sb,c::GamePlan& plan,Result& result,unsigned phase){
   if(!c::build_game_plan(a,plan)){result.failure=1;result.phase=phase;return false;}
   constexpr std::uintptr_t canonical=0x100000;
   bool valid=a.relocate_body_pointers(reinterpret_cast<std::uintptr_t>(a.simulator.bodies_.data()),canonical)&&
     b.relocate_body_pointers(reinterpret_cast<std::uintptr_t>(b.simulator.bodies_.data()),canonical);
-  a.bind(nullptr);b.bind(nullptr);const auto offset=c::first_game_difference(a,b,plan);
+  a.bind(nullptr);b.bind(nullptr);const auto offset=c::first_game_difference(a,b,plan,&result.padding_ignored);
   valid=a.rebind(&sa,canonical)&&b.rebind(&sb,canonical)&&valid;
   if(!valid||offset!=p::null_index){result.failure=1;result.phase=phase;result.offset=offset;return false;}
   return true;
@@ -130,8 +130,8 @@ int main(int argc,char** argv){try{
     inputs,expected,prefix,ticks,virgin,game_plan,scene_plan,result);check(cudaGetLastError());check(cudaDeviceSynchronize());
   Result observed{};check(cudaMemcpy(&observed,result,sizeof(observed),cudaMemcpyDeviceToHost));
   if(observed.failure||observed.snapshots!=ticks||observed.native_frames!=ticks){std::fprintf(stderr,"phase%u offset%u snapshots%u native_frames%u\n",observed.phase,observed.offset,observed.snapshots,observed.native_frames);throw std::runtime_error("compact game continuation mismatch");}
-  std::printf("{\"pass\":true,\"performance_claim\":false,\"prefix_backend\":\"typed-host-checked\",\"prefix\":%u,\"snapshots\":%u,\"actual_native_frame_checks\":%u,\"virgin\":%s,\"warm_point_witnesses\":%u,\"pending_delete_snapshots\":%u,\"sleeping_body_witnesses\":%u,\"frozen_body_witnesses\":%u,\"game_transport_bytes_sum\":%llu,\"scene_transport_bytes_sum\":%llu,\"live_game_and_active_scene_equal_before_after\":true,\"pointer_tails_zero_restored\":true,\"inactive_payload_equality\":false,\"full_SAP_bytes_preserved\":true,\"fallback_calls\":0}\n",
+  std::printf("{\"pass\":true,\"performance_claim\":false,\"prefix_backend\":\"typed-host-checked\",\"prefix\":%u,\"snapshots\":%u,\"actual_native_frame_checks\":%u,\"virgin\":%s,\"warm_point_witnesses\":%u,\"pending_delete_snapshots\":%u,\"sleeping_body_witnesses\":%u,\"frozen_body_witnesses\":%u,\"game_transport_bytes_sum\":%llu,\"scene_transport_bytes_sum\":%llu,\"live_game_value_fields_and_active_scene_equal_before_after\":true,\"live_element_padding_mismatches_ignored\":%llu,\"pointer_tails_zero_restored\":true,\"inactive_payload_equality\":false,\"full_SAP_bytes_preserved\":true,\"fallback_calls\":0}\n",
     prefix,observed.snapshots,observed.native_frames,virgin?"true":"false",observed.warm,observed.pending,observed.sleeping,observed.frozen,
-    static_cast<unsigned long long>(observed.game_bytes),static_cast<unsigned long long>(observed.scene_bytes));
+    static_cast<unsigned long long>(observed.game_bytes),static_cast<unsigned long long>(observed.scene_bytes),static_cast<unsigned long long>(observed.padding_ignored));
   return 0;
 }catch(const std::exception& error){std::fprintf(stderr,"compact-game-snapshot-validate: %s\n",error.what());return 1;}}

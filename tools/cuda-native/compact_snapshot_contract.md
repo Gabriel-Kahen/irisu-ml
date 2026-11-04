@@ -40,7 +40,16 @@ tails are explicitly zero-written before calling unchanged `rebind`, including
 for virgin destinations. Live pointers retain the original relocation checks.
 
 Game equality compares preserved spans after equal scene bindings and pointer
-normalization. Scene equality compares occupied flags, occupied records and
+normalization, ignoring only explicit ABI padding within live Body, Contact,
+ScriptedOrigin and adapter Entry elements. Every named value field remains
+byte-compared. A poisoned first restore exposed Contact[17] byte9 at complete
+Game offset51505: padding between boundary@8 and point@16. Memberwise creation
+can retain those poisoned padding bytes when an inactive slot becomes live.
+The optional comparison counter reports ignored padding mismatches explicitly.
+`compact_padding_validate.cpp` perturbs every byte of those four element types
+and checks the mask against scalar-field hashes; Body coverage uses the
+independent `game_digest::visit_body` field enumeration. Unknown element types
+retain byte-exact comparison. Scene equality compares occupied flags, occupied records and
 the entire metadata/SAP suffix. Neither claims equality for inactive payloads
 or SceneScratch. Full-size runtime allocations remain: reduced transport alone
 does not reduce VRAM reservation. Batching/reusing runtime lane storage is a
