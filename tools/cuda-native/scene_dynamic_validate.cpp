@@ -1,7 +1,9 @@
 #include "scene_native.hpp"
+#include "scene_dynamic_native.hpp"
 #include "../../clone/cuda_native/world_scene.hpp"
 #include <cfenv>
 #include <memory>
+#include <fstream>
 
 using namespace irisu::cuda_native;
 namespace {
@@ -94,19 +96,28 @@ void compare_broadphase(const ScenePipelineState& scene,void* handle,const scene
 struct Actor {void* native{};std::uint32_t slot{},tag{};};
 }
 int main(int argc,char** argv){try{
-  if(argc!=2)throw std::runtime_error("usage: scene-dynamic-validate pinned-native-library");
+  if(argc!=2&&argc!=3)throw std::runtime_error("usage: scene-dynamic-validate pinned-native-library [GPU-packets.bin]");
   std::fesetround(FE_TONEAREST);const unsigned short cw=0x027f;asm volatile("fldcw %0"::"m"(cw));
   scene_oracle::Api api(argv[1]);auto scene=std::make_unique<ScenePipelineState>();auto expected=std::make_unique<World>();
+  auto expected_bp=std::make_unique<BroadPhase>();std::ofstream packet;
+  if(argc==3){packet.open(argv[2],std::ios::binary);if(!packet)throw std::runtime_error("cannot open dynamic packets");}
+  const auto write=[&](std::uint32_t v){packet.write(reinterpret_cast<const char*>(&v),4);};
+  if(packet){write(dynamic_magic);write(dynamic_version);write(16);write(192);write(dynamic_case_words);write(0x3c83126f);write(8);write(0);}
   for(scene_index=0;scene_index<16;++scene_index){
     const float scale=scene_index%2?30:1;math::Context m;
     const bool boundary=scene_index>=12;const float extent=boundary?20:1000,gravity_y=boundary?0:300;
     const AABB bounds{{m.store(m.div(-extent,scale)),m.store(m.div(-extent,scale))},{m.store(m.div(extent,scale)),m.store(m.div(extent,scale))}};
     const Vec2 gravity{0,m.store(m.div(gravity_y,scale))};
+    SceneCase program{};program.extent=extent;program.gravity_y=gravity_y;program.scale=scale;
+    bool initial_setup=true;std::vector<std::uint64_t> hashes;
     void* handle=api.create(-extent,-extent,extent,extent,gravity_y,scale);if(!handle)throw std::runtime_error("native dynamic world failed");
     if(!scene->initialize(bounds,gravity))throw std::runtime_error("typed dynamic initialization failed");
     BodyState ground{};ground.flags=static_body|allow_sleep;rotation_matrix(ground);std::uint32_t ground_slot{};
     if(!scene->world.create_body(ground,ground_slot))throw std::runtime_error("typed ground creation failed");
     const auto create=[&](unsigned kind,float width,float height,float x,float y,float angle,float density,unsigned tag){
+      const SceneActor descriptor{{kind,width,height,x,y,angle,density,.6f,0,scale},tag};
+      if(initial_setup)program.actors[program.actor_count++]=descriptor;
+      else {auto& op=program.ops[program.op_count++];op.tick=tick_index;op.kind=SceneOpKind::create;op.actor=descriptor;}
       Actor actor{};actor.tag=tag;actor.native=kind==0?api.circle(handle,width,x,y,density,.6f,0):
         (kind==1?api.box:api.triangle)(handle,width,height,x,y,angle,density,.6f,0);
       if(!actor.native)throw std::runtime_error("native dynamic actor failed");api.set_tag(handle,actor.native,reinterpret_cast<void*>(std::uintptr_t(tag)));
@@ -124,6 +135,11 @@ int main(int argc,char** argv){try{
          !(scene->world.bodies[actors[2].slot].flags&frozen_body))throw std::runtime_error("boundary fixture admission failed");
       ++partial_proxy_creations;
     }
+    initial_setup=false;
+    auto& velocity_op=program.ops[program.op_count++];velocity_op.tick=16;velocity_op.kind=SceneOpKind::velocity;velocity_op.actor.tag=actors[0].tag;velocity_op.x=3*scale;velocity_op.y=-2*scale;
+    if(boundary){auto& op=program.ops[program.op_count++];op.tick=32;op.kind=SceneOpKind::origin;op.actor.tag=actors[2].tag;op.angle=.1f;}
+    auto& origin_op=program.ops[program.op_count++];origin_op.tick=40;origin_op.kind=SceneOpKind::origin;origin_op.actor.tag=actors[1].tag;origin_op.x=origin_op.y=80;origin_op.angle=.37f;
+    auto& destroy_op=program.ops[program.op_count++];destroy_op.tick=64;destroy_op.kind=SceneOpKind::destroy;destroy_op.actor.tag=actors[2].tag;
     for(tick_index=0;tick_index<192;++tick_index){
       if(tick_index==16){api.set_velocity(handle,actors[0].native,3*scale,-2*scale);if(!scene->set_velocity(actors[0].slot,{3,-2}))throw std::runtime_error("typed velocity failed");}
       if(boundary&&tick_index==32){api.set_origin(handle,actors[2].native,0,0,.1f);
@@ -135,8 +151,15 @@ int main(int argc,char** argv){try{
       api.step(handle,.016f,8);const auto result=scene->step(.016f,8);
       if(!result){std::fprintf(stderr,"scene%u tick%u status%u\n",scene_index,tick_index,unsigned(result.status));throw std::runtime_error("typed dynamic step failed");}
       const auto map=scene_oracle::import_scene(*expected,handle,tick_index+1);compare_world(scene->world,*expected);compare_broadphase(*scene,handle,map);++frames;
+      scene_oracle::import_broadphase(*expected_bp,handle,map);
+      const auto hash=dynamic_scene_hash(*expected,*expected_bp);
+      if(hash!=dynamic_scene_hash(*scene))throw std::runtime_error("canonical native scene digest mismatch");
+      hashes.push_back(hash);
     }
+    if(packet){std::uint32_t words[dynamic_case_words];std::memcpy(words,&program,sizeof(program));for(auto word:words)write(word);
+      for(auto hash:hashes){write(std::uint32_t(hash));write(std::uint32_t(hash>>32));}}
     api.destroy(handle);
   }
+  if(packet&&!packet.good())throw std::runtime_error("dynamic packet write failed");
   std::printf("{\"pass\":true,\"dynamic_scenes\":16,\"steps_each\":192,\"native_fullstep_frames\":%u,\"field_comparisons\":%u,\"all_shape_pairs\":true,\"pair_add_remove\":true,\"destroy_reuse\":true,\"origin_velocity_setters\":true,\"partial_proxy_creations\":%u,\"frozen_origin_calls\":%u,\"broadphase_live_state_and_free_lists\":true,\"fallback_calls\":0}\n",frames,comparisons,partial_proxy_creations,frozen_origin_calls);return 0;
 }catch(const std::exception& e){std::fprintf(stderr,"scene-dynamic-validate: %s\n",e.what());return 1;}}
