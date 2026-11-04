@@ -1,4 +1,5 @@
 find_package(CUDAToolkit 12.9 REQUIRED)
+option(IRISU_CUDA_NATIVE_BOUNDED_MATH "Experimental device math for qualified bounded graphs" OFF)
 set(IRISU_CUDA_NATIVE_ARCHITECTURES "70" CACHE STRING "Architectures for separate typed GPU physics")
 set(IRISU_CUDA_NATIVE_GAME_FAST_COMPILE "mid" CACHE STRING "Typed game frontend optimization tradeoff: 0, min, mid, max")
 set_property(CACHE IRISU_CUDA_NATIVE_GAME_FAST_COMPILE PROPERTY STRINGS 0 min mid max)
@@ -17,10 +18,13 @@ function(irisu_native_cuda target source)
   target_compile_options(${target} PRIVATE
     "$<$<COMPILE_LANGUAGE:CUDA>:--extended-lambda;--fmad=false;--ftz=false;--prec-div=true;--prec-sqrt=true;-Xcompiler=-ffp-contract=off,-fno-fast-math;-Xptxas=-v>")
   target_link_libraries(${target} PRIVATE CUDA::cudart)
+  target_compile_definitions(${target} PRIVATE
+    IRISU_CUDA_NATIVE_BOUNDED_MATH=$<BOOL:${IRISU_CUDA_NATIVE_BOUNDED_MATH}>)
 endfunction()
 
 irisu_native_cuda(irisu-native-collision tools/cuda-native/collision_runner.cu)
 irisu_native_cuda(irisu-native-solver tools/cuda-native/solver_runner.cu)
+irisu_native_cuda(irisu-native-bounded-math-validate tools/cuda-native/bounded_math_validate.cu)
 irisu_native_cuda(irisu-cuda-native-scene-runner tools/cuda-native/scene_runner.cu)
 irisu_native_cuda(irisu-cuda-native-dynamic-scene-runner tools/cuda-native/scene_dynamic_runner.cu)
 irisu_native_cuda(irisu-cuda-native-factory-runner tools/cuda-native/factory_runner.cu)

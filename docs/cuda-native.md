@@ -56,7 +56,7 @@ Current component gates cover:
 | Broadphase | Full 95,292-byte normalized state after operations; callback/query order, ties, timestamp wrap, quantization, all 512 proxies, removal and reuse |
 | Fixed scenes | 512 native contacted-circle frames plus independent integration, sleep and shape-cache stage fixtures |
 | Dynamic scenes | 3,072 native full-step frames, including mixed shapes, pair transitions, deletion/reuse, setters, partial bounds and freeze; initialized physical fields and live broadphase state |
-| Game adapter | Entire 97,220-row record digest on typed host; first 4,097 rows on GPU; native body/observation/event/transition digests |
+| Game adapter | Entire 97,220-row record digest on typed host and bounded-math GPU; first 4,097 rows on checked GPU; native body/observation/event/transition digests |
 
 Factory comparison excludes allocation/proxy bookkeeping, qualified separately.
 Broadphase normalization removes only native owner/callback pointer words.
@@ -92,9 +92,30 @@ python3 tools/cuda-native/qualify_game.py \
 ```
 
 The full host record also passes same-input clone/rebind continuation from tick
-96,000. These game checks compare complete digest packets, not raw hidden native
-allocator memory. The original replay is unchanged. Full continuous GPU record
-and search performance are separate gates from the prefix qualification.
+96,000. The bounded-math GPU run executes all 97,219 steps in one continuous
+kernel, including physical reset and body creation, with zero fallback calls.
+Its 9,333,120-byte digest packet matches actual native execution. Recorded score
+remains 4,393,101, level 100, chain 70; live score is separately 4,393,699.
+These checks compare complete digest packets, not raw hidden native allocator
+memory. The original replay is unchanged. The GPU record qualifier took about
+139 seconds including per-frame hashes; it is a correctness run, not a batch
+throughput benchmark.
+
+## Optional bounded arithmetic
+
+`IRISU_CUDA_NATIVE_BOUNDED_MATH=ON` is an experiment for the current qualified
+physics graphs. It removes redundant add/sub/mul binary64 range checks on the
+device while preserving the same separately rounded operations. Host arithmetic
+stays checked. F32 store checks, division/sqrt domains, trig qualification,
+sticky failure, structural guards and strict floating-point flags remain.
+The checked implementation stays the default.
+
+This is not a generic unchecked `Context`: the finite F32 store-to-store graph
+bounds are essential. See the [contract and counterexample](../tools/cuda-native/bounded_math_contract.md).
+Both numerical modes pass the 1,072-case GPU boundary qualifier, including 23
+rejections. The opt-in profile also passes native collision, solver, factory,
+dynamic world, game and search fixtures, with actual-device memory checks.
+Build it in a separate directory using the build options above plus this flag.
 
 ## Performance interpretation
 
