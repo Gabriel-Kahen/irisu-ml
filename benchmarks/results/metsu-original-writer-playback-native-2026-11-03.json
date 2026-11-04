@@ -1,0 +1,127 @@
+{
+  "schema": "irisu-metsu-original-state-comparison-v1",
+  "mode": 1,
+  "scope": "complete-replay",
+  "diagnostic_only": false,
+  "replay_sha256": "c445ae72494ac25599b2aea5629772548b0a6daba8c357ccddf69f75c2ac38cc",
+  "qualification": "saved-replay-interchange",
+  "require_natural_terminal": true,
+  "original_trace_sha256": "c3c6e6e15b52bbc3c388cf750c291b5d3d12690c101ca6a6029f9631e9be8d59",
+  "candidate_trace_sha256": "f69ed41a292e9894018153d6542ba45bf984a4e216d5cf52f1b5e9ca3f7bec07",
+  "replay_header": {
+    "seed": 45541046,
+    "level": 1,
+    "score": 0,
+    "chain": 0
+  },
+  "requested_last_frame": 2994,
+  "scalar_fields": [
+    "tick",
+    "score",
+    "gauge",
+    "level",
+    "qualifying_clears",
+    "highest_chain",
+    "rng_calls",
+    "pool_colors"
+  ],
+  "actor_fields": [
+    "role",
+    "ex",
+    "ex_timer",
+    "color",
+    "size_slot",
+    "size_bits",
+    "x_bits",
+    "y_bits",
+    "angle_bits",
+    "vx_bits",
+    "vy_bits",
+    "physics_updates",
+    "age",
+    "remaining_lifetime",
+    "freshness",
+    "grouped",
+    "physics_owned",
+    "special",
+    "rot_timer",
+    "projectile_hits",
+    "clear_pending",
+    "delete_marked",
+    "non_wall_contacts",
+    "gate_seen",
+    "gate_enabled",
+    "group_chain",
+    "group_shadow",
+    "group_num"
+  ],
+  "excluded_static_roles": [
+    2,
+    3,
+    6
+  ],
+  "compared_frames": 2995,
+  "compared_actor_states": 41999,
+  "compared_group_partitions": 2995,
+  "group_identity": "live non-null links, including pending EX: original group_ptr versus native group_id",
+  "first_mismatch": null,
+  "coverage_complete": true,
+  "state_parity_passed": true,
+  "interop_passed": true,
+  "passed": true,
+  "original_receipt_sha256": "fda1d3472292a955622f13f9629119e1a02496e39b28fd6cfc82817ab37533d4",
+  "provenance_complete": true,
+  "environment": {
+    "original_observer_preload_cw": "137f",
+    "candidate_x87_cw": 639
+  },
+  "candidate_identity": {
+    "physics_backend": "exact-msvc9-r58-metsu-forward",
+    "config_hash": "1958987580749614460",
+    "tracer_sha256": "a9143db60e18cb840343d5c66f79b3043317b57a6d9c9d7b4b8a6ce7076e1a97",
+    "x87_cw": 639
+  },
+  "last_state": {
+    "tick": 2994,
+    "score": 0,
+    "gauge": 1,
+    "level": 1,
+    "qualifying_clears": 0,
+    "highest_chain": 0,
+    "rng_calls": 299
+  },
+  "candidate_natural_terminal": true,
+  "original_bootstrap": {
+    "type": "bootstrap",
+    "title_passes": 61,
+    "first_title_cw": "137f",
+    "warm_title_cw": "137f"
+  },
+  "original_finish_events": [
+    {
+      "type": "finish",
+      "finish_call": 1,
+      "scene_frame": 2993,
+      "input_index": 2994,
+      "score": 0,
+      "gauge": -200,
+      "level": 1,
+      "highest_chain": 0,
+      "qualifying_clears": 0
+    }
+  ],
+  "compared_finish_fields": [
+    "finish_call_count",
+    "terminal_metadata_recorded",
+    "recorded_final_score",
+    "recorded_final_level",
+    "recorded_final_chain",
+    "recorded_final_clears"
+  ],
+  "original_first_finish_source": "original-process-finish-hook-entry",
+  "canonical_first_finish": {
+    "score": 0,
+    "level": 1,
+    "chain": 0
+  }
+}

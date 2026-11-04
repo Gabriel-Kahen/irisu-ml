@@ -1,0 +1,49 @@
+{
+  "schema": "metsu-original-setter-component-oracle-v1",
+  "original_executable_sha256": "0636d3e44439d88807d0c00aeb1bb072316c69fc13a21f79d67e53affad28255",
+  "harness_source_sha256": "666dec6c006ea707b02a1b0dd3a536d58d164d23e54c868882cfb93242c9844f",
+  "x87_control_word": "0x137f",
+  "normal_calibration_control_word": "0x027f",
+  "selected_profile_normal_scale_differences": [
+    6,
+    7,
+    12,
+    15,
+    26,
+    33,
+    36,
+    37,
+    38,
+    45,
+    47,
+    50,
+    52,
+    76,
+    82,
+    90,
+    91,
+    92,
+    93,
+    94,
+    97,
+    98
+  ],
+  "selected_profile_normal_descent_differences": [],
+  "normal_reference_scale_rows_matched": 99,
+  "normal_reference_descent_rows_matched": 99,
+  "metsu_level_rows": 99,
+  "table_sha256": "d28a00cb359853665dda5a2faf0ad5c16b5b4fbe6617ebfcb1475ab38faba4f5",
+  "original_routines": {
+    "normal_setter": "0x415624",
+    "metsu_setter": "0x415800",
+    "power_wrapper": "0x41a5e0",
+    "power": "0x427110",
+    "absolute": "0x41a578"
+  },
+  "stubs": {
+    "0x416268": "config lookup: shipped float -0.05 and int120 only",
+    "0x418964": "debug logging: return",
+    "0x40ffc4": "normal shape RNG: zero (not used by Metsu setter)"
+  },
+  "scope": "Original pure parameter component execution; no game entrypoint, scene, physics or replay parity claim."
+}

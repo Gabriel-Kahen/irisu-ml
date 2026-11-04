@@ -21,18 +21,24 @@ ROOT = Path(__file__).resolve().parents[2]
 EXE_SHA256 = "0636d3e44439d88807d0c00aeb1bb072316c69fc13a21f79d67e53affad28255"
 
 
-def dump(executable: Path) -> tuple[str, dict[str, object]]:
+def dump(executable: Path, control_word: int = 0x027f) -> tuple[str, dict[str, object]]:
     if hashlib.sha256(executable.read_bytes()).hexdigest() != EXE_SHA256:
         raise ValueError("the hash-pinned v2.03 original executable is required")
+    if control_word not in (0x027f, 0x137f):
+        raise ValueError("only calibrated PC53 or observed original PC64 profiles are supported")
     source = Path(__file__).with_name("level_probe.c")
     with tempfile.TemporaryDirectory(prefix="irisu-metsu-levels-") as tmp:
         probe = Path(tmp) / "probe"
         subprocess.run(["gcc", "-m32", "-std=c11", "-O2", "-Wall", "-Wextra", "-Werror",
                         str(source), "-o", str(probe)], check=True)
-        result = subprocess.run([str(probe), str(executable.resolve())], check=True,
-                                capture_output=True, text=True, timeout=10)
+        calibration = subprocess.run([str(probe), str(executable.resolve()), "0x027f"], check=True,
+                                     capture_output=True, text=True, timeout=10)
+        result = calibration if control_word == 0x027f else subprocess.run(
+            [str(probe), str(executable.resolve()), hex(control_word)], check=True,
+            capture_output=True, text=True, timeout=10)
+    calibration_rows = list(csv.DictReader(io.StringIO(calibration.stdout), delimiter="\t"))
     rows = list(csv.DictReader(io.StringIO(result.stdout), delimiter="\t"))
-    normal, metsu = rows[:99], rows[99:]
+    normal, metsu = calibration_rows[:99], rows[99:]
     if len(rows) != 198 or any(row["mode"] != str(i // 99) or int(row["level"]) != i % 99 + 1
                                for i, row in enumerate(rows)):
         raise AssertionError("unexpected setter row inventory")
@@ -59,7 +65,12 @@ def dump(executable: Path) -> tuple[str, dict[str, object]]:
         "schema": "metsu-original-setter-component-oracle-v1",
         "original_executable_sha256": EXE_SHA256,
         "harness_source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
-        "x87_control_word": "0x027f",
+        "x87_control_word": f"0x{control_word:04x}",
+        "normal_calibration_control_word": "0x027f",
+        "selected_profile_normal_scale_differences": [int(row["level"]) for row, oracle in zip(rows[:99], original_scale, strict=True)
+            if int(row["score_scale_bits"], 16) != int(oracle["binary64_bits"], 16)],
+        "selected_profile_normal_descent_differences": [int(row["level"]) for row, oracle in zip(rows[:99], original_descent, strict=True)
+            if int(row["descent_bits"], 16) != int(oracle, 16)],
         "normal_reference_scale_rows_matched": len(normal),
         "normal_reference_descent_rows_matched": len(normal),
         "metsu_level_rows": len(metsu),
@@ -79,8 +90,9 @@ def main() -> None:
     parser.add_argument("executable", type=Path)
     parser.add_argument("--table", type=Path, required=True)
     parser.add_argument("--report", type=Path)
+    parser.add_argument("--control-word", type=lambda value: int(value, 0), choices=[0x027f, 0x137f], default=0x027f)
     args = parser.parse_args()
-    table, report = dump(args.executable)
+    table, report = dump(args.executable, args.control_word)
     args.table.parent.mkdir(parents=True, exist_ok=True)
     args.table.write_text(table)
     encoded = json.dumps(report, indent=2) + "\n"

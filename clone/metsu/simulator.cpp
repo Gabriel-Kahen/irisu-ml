@@ -2756,7 +2756,7 @@ std::uint64_t Simulator::calculate_config_hash() const {
     if constexpr (std::is_same_v<T, double>) append_double(bytes, value);
     else append_integer(bytes, value);
   };
-  add(std::uint32_t{1});  // Metsu rules revision; distinct even with identical numeric overrides.
+  add(std::uint32_t{2});  // Metsu rules revision; distinct even with identical numeric overrides.
   add(kSnapshotMagic);
   add(MechanicsConfig::schema_version);
   add(MechanicsConfig::target_game_version);

@@ -32,15 +32,17 @@ static void jump(uintptr_t address, uintptr_t target) {
   memcpy(p + 1, &displacement, 4);
 }
 
-static void run_setter(uint32_t level, uintptr_t entry) {
-  unsigned short control = 0x027f;
+static void run_setter(uint32_t level, uintptr_t entry, unsigned short control) {
   __asm__ volatile("fninit; fldcw %0" : : "m"(control) : "memory");
   __asm__ volatile("call *%1" : "+a"(level) : "m"(entry)
                    : "ecx", "edx", "memory", "cc", "st", "st(1)", "st(2)", "st(3)");
 }
 
 int main(int argc, char **argv) {
-  if (argc != 2) die("usage: level_probe pinned-irisu.exe");
+  if (argc != 2 && argc != 3) die("usage: level_probe pinned-irisu.exe [control-word]");
+  unsigned long selected = argc == 3 ? strtoul(argv[2], NULL, 0) : 0x027f;
+  if (selected != 0x027f && selected != 0x137f) die("unsupported control word");
+  const unsigned short control = (unsigned short)selected;
   FILE *stream = fopen(argv[1], "rb");
   if (!stream) die("cannot open original image");
   if (fseek(stream, 0, SEEK_END)) die("cannot size original image");
@@ -76,7 +78,7 @@ int main(int argc, char **argv) {
   puts("mode\tlevel\tdrain\tdescent_bits\tex_rise_bits\trot_penalty\tmaximum_color_id\tspawn_interval\tex_spawn_interval\tscore_scale_bits\tclear_reward\tshape_cutoff");
   for (unsigned mode = 0; mode < 2; ++mode) {
     for (unsigned level = 1; level <= 99; ++level) {
-      run_setter(level, mode ? 0x415800 : 0x415624);
+      run_setter(level, mode ? 0x415800 : 0x415624, control);
       printf("%u\t%u\t%u\t%08" PRIx32 "\t%08" PRIx32 "\t%u\t%u\t%u\t%u\t%016" PRIx64 "\t%u\t%u\n",
              mode, level, u32(globals), u32(globals + 4), u32(globals + 8), u32(globals + 12),
              u32(globals + 16), u32(globals + 20), u32(globals + 24), u64(globals + 32),

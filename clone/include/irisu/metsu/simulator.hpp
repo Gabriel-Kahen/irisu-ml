@@ -85,6 +85,7 @@ class Simulator {
 
  private:
   friend struct SimulatorTestAccess;
+  friend struct ReplayTraceAccess;
   void tick_once(bool left_level, bool right_level, double cursor_x,
                  double cursor_y, bool suppress_fresh_edges,
                  std::vector<Event>& events);

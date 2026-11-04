@@ -64,24 +64,54 @@ rot, score, six-clear level progression, bonus clears, and level-100 finish.
 It preserves the original EX sampler's use of the ordinary 70-ticket bound.
 
 All 99 level parameter rows were measured by executing the pinned original
-setter, including its power/sine routines and float stores. The extraction
-first reproduces all 99 recorded normal score and descent rows. Separate
+setter, including its power/sine routines and float stores. Metsu rules
+revision 2 selects the stores measured at the actual original process's
+`0x137f` control word; the earlier PC53 table is retained as calibration
+history. Normal's calibration and tables remain unchanged. Separate
 original-machine-code component probes cover EX contacts and countdowns.
 See [the audit](../reference/metsu-rules-analysis.md) for addresses, reproduction
 commands, stubs, hashes, and scope.
 
-These are component and implementation checks. A complete original-game
-mode-1 replay comparison has not been demonstrated. Browser/native parity
-establishes that both execute the same Metsu implementation; it does not by
-itself establish unrestricted fidelity to the original game. Portable physics
-retains the same long-horizon numerical limitations as normal's portable build.
+Actual original-game qualification now covers three complete recorded inputs:
 
-The [implementation validation receipt](../benchmarks/results/metsu-implementation-validation-2026-11-03.json)
-records passing native/client tests, sanitizer scope, original component checks,
-and the unchanged 97,219-tick normal replay. The
-[browser/native report](../benchmarks/results/metsu-web-native-v86-2026-11-03.json)
-compares three complete seeded episodes plus terminal tails: 5,663 responses
-and 214,754,473 bytes, with no mismatches.
+| Input origin | Inputs | Reset/update boundaries checked | Canonical score / level / chain |
+|---|---:|---:|---|
+| Actual browser Save download | 3,942 | 3,943 | 40 / 1 / 2 |
+| Actual original-game recorder output | 2,994 | 2,995 | 0 / 1 / 0 |
+| Deterministic active-input coverage policy | 4,652 | 4,653 | 426 / 4 / 3 |
+
+Each original/native comparison checks 8 scalar/pool fields, 28 actor fields
+including raw float32 positions and velocities, live actor-slot identity,
+normalized group sharing including pending EX links, and first-finish metadata.
+All measured states match. Natural termination and saved headers are checked
+separately from input exhaustion. The original-recorder and controlled files
+were also loaded through the real browser file chooser and visibly completed
+without error.
+The [interoperability report](../benchmarks/results/metsu-replay-interoperability-2026-11-03.json)
+binds the browser actions, original-process receipts, input hashes, and
+per-run comparisons.
+
+The controlled replay reaches level 4, three level transitions, held weak/strong
+shots, and EX chains. Reproduce its exact bytes with
+`build-metsu-exact/irisu-metsu-generate-controlled 1 OUTPUT.rpy`. Stable inputs
+are under [`tests/fixtures/metsu`](../tests/fixtures/metsu/README.md); the
+[comparison guide](../tools/metsu/REPLAY_INTERCHANGE.md) gives the strict commands.
+
+This is finite observational qualification for those inputs and fields, not
+proof that every possible run or rare contact state matches. The full-run
+special-orb scheduler and levels beyond 4 are not covered by these completed
+replay samples. Component probes retain their smaller scopes. Original-game
+trajectory qualification applies to the exact backend; portable physics retains
+normal's long-horizon numerical limitations.
+
+The current
+[native/v86 transport report](../benchmarks/results/metsu-replay-browser-native-v86-2026-11-03.json)
+compares three complete seeded episodes plus terminal tails: 5,834 responses
+and 223,000,797 bytes, with no mismatches. It establishes that the packaged
+browser engine executes those native workloads identically; it does not replace
+the separate actual-original evidence above. Historical component and initial
+implementation receipts are retained, including the rejected premature browser
+export that matched a final score while the original game was still active.
 
 ## Protect normal
 
@@ -90,3 +120,11 @@ both modes' tests. It compares the published 97,219-tick normal replay against
 the released worker, rather than comparing two newly modified workers.
 The [development separation contract](metsu-development.md) records ownership
 of the mode boundaries.
+
+The [final normal replay gate](../benchmarks/results/metsu-final-normal-regression-2026-11-03.json)
+passed all 97,219 ticks and 188,356,329 response bytes with zero mismatches;
+its canonical result remains 4,393,101 points, level 100, chain 70. The final
+normal worker is byte-identical to the pristine pre-Metsu baseline build. The
+[protected-source check](../benchmarks/results/metsu-protected-normal-source-2026-11-03.json)
+confirms that normal gameplay/physics sources, headers, browser assets and
+normal web build/runtime scripts remain unchanged from `13023da`.

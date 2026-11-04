@@ -1,8 +1,9 @@
 # Metsu mode: original-binary evidence
 
 Audit date: 2026-11-03. This ledger began as a bounded planning checkpoint and
-now includes implementation-ready contact rules and native original-component
-execution receipts. It does not establish complete original-game replay parity.
+now includes contact rules, original-component receipts, and measured actual
+original-process replay comparisons. Qualification is finite and covers the
+recorded inputs and fields described below, not every possible game state.
 Addresses below refer to the original v2.03 engine.
 
 ## Original recovered and identified
@@ -22,8 +23,9 @@ from the Internet Archive item already recorded in `manifest.md`:
 
 Both hashes match the existing pinned manifest. The base Japanese executable is
 the same engine as the English-patched research installation. The archive,
-executable, and original assets remain ignored. This checkpoint used static
-`objdump -D -Mintel` inspection; it did not run the original game. Local full
+executable, and original assets remain ignored. The initial recovery checkpoint
+used static `objdump -D -Mintel` inspection; later actual-process runs are
+documented below. Local full
 disassembly is cached in `.tmp/metsu-original-disassembly.txt`.
 
 ## Architectural distinction: scene mode and EX actor flag
@@ -168,16 +170,16 @@ update audit. Implementing it as an ordinary grouped boolean would be premature.
    admission only after the mechanics model is established. Keep normal-mode
    golden behavior and exact runtime identity checks intact.
 
-No complete original-game mode-1 replay parity, long-run trajectory fidelity,
-EX sampling distribution, browser behavior, or Metsu simulator is claimed here.
-The pinned original is now available locally for the next audit phase.
+At that initial checkpoint no complete original-game mode-1 replay parity or
+Metsu simulator was claimed. Subsequent implementation and measured results
+are recorded below; retain the distinction between those scopes.
 
 ## Implementation audit continuation (2026-11-03)
 
 The following supersedes the bounded checkpoint's unresolved static mechanics
 where explicit pseudocode is now supplied. Evidence remains original-machine-code
-inspection unless an execution receipt is named. Original full-game mode-1
-replay parity has not yet been established.
+inspection unless an execution receipt is named. Actual-process replay evidence
+is documented in the final qualification section.
 
 ### World and terminal scene behavior
 
@@ -441,16 +443,40 @@ counter beyond the existing `hits`.
 
 ### Original-byte execution receipts and clone comparisons
 
-The original level setters were executed natively under Linux with x87 control
-word `0x027f`, using the pinned PE image at its original addresses. The harness
-first reproduced all99 prior normal score-scale and all99 normal descent bit
-patterns, then dumped all99 Metsu parameter rows. The new authoritative table
-is [`metsu-level-parameters.tsv`](metsu-level-parameters.tsv), SHA-256
+The first parameter-component extraction ran the pinned original setters at
+x87 control word `0x027f`. It reproduced all 99 prior normal score-scale and
+descent rows, then produced the historical PC53 Metsu table
+[`metsu-level-parameters.tsv`](metsu-level-parameters.tsv), SHA-256
 `d1786c82eec4583f71cb23be664b879038b2929be262bb2726430025c3f73d1a`.
-Reproduction tool: `tools/metsu/dump_level_parameters.py`; execution receipt:
-`benchmarks/results/metsu-level-parameters-2026-11-03.json`.
-The original `fsin` and power routines remained unmodified. Level1's EX cadence
-is176, illustrating why ideal-trigonometry recomputation (175) is insufficient.
+That component table reports a level-1 EX cadence of 176. It is retained for
+calibration; it is **not the currently selected Metsu table**.
+
+Actual original-process captures under Wine observed `0x137f` before observer
+loading and throughout gameplay, including after title warmup. They spawn the
+next EX actor on update 176, using cadence 175. The earlier PC53 implementation
+used cadence 176 and first diverged on that update by six RNG calls. Merely
+matching the replay's final score had concealed the incorrect trajectory.
+
+The promoted table is now
+[`metsu-level-parameters-pc64.tsv`](metsu-level-parameters-pc64.tsv), SHA-256
+`d28a00cb359853665dda5a2faf0ad5c16b5b4fbe6617ebfcb1475ab38faba4f5`.
+It runs the same original setter, sine, power, and float-store code under the
+observed `0x137f`; its harness still calibrates normal's 99 rows separately at
+`0x027f`. Compared with the historical PC53 Metsu table, 25 EX cadence rows and
+33 score-scale bit patterns differ, while descent bits do not.
+Reproduce with `tools/metsu/dump_level_parameters.py --control-word 0x137f`;
+the receipt is `benchmarks/results/metsu-level-parameters-pc64-2026-11-03.json`.
+Metsu rules revision 2 selects these stores and has configuration hash
+`1958987580749614460`. Normal's tables and the physics host's `0x027f` profile
+remain unchanged. Parameter-component evidence alone does not prove that
+choice: the actual per-update comparisons below test its observable results.
+
+```sh
+python3 tools/metsu/dump_level_parameters.py \
+  reference/game/irisu-v2.03-jp/irisu203/irisu.exe \
+  --control-word 0x137f --table reference/metsu-level-parameters-pc64.tsv \
+  --report benchmarks/results/metsu-level-parameters-pc64-2026-11-03.json
+```
 
 The isolated original contact and actor timer routines also execute natively:
 `tools/metsu/dump_original_contacts.py` builds `original_contacts_probe.c`,
@@ -475,8 +501,8 @@ Component-probe exclusions are material: native physics, base actor integration,
 full actor post-contact cleanup, rendering, particles, and audio are stubbed or
 omitted. The original clear-pending routine and shared reward hook execute.
 This establishes direct original-code component evidence and clone agreement
-on the listed projections; it does not establish complete mode-1 replay or
-long-run trajectory parity.
+on the listed projections. Complete recorded-run comparisons are a separate
+body of evidence below; neither establishes unrestricted trajectory parity.
 
 Dispatcher orientation is verified at `0x40ab3c–0x40ab48`: native contact(A,B)
 is pushed as arguments(B,A) to the pair helper. The pair helper itself reverses
@@ -484,3 +510,66 @@ again for its first directional grouping call. Therefore the implementation's
 first directional target is nativeA, source nativeB; its second target is
 nativeB. The burst wrapper has the same net target order. Do not reverse the
 implementation after reading only the bare helper argument order.
+
+## Actual original-process replay qualification (2026-11-03)
+
+The later full-game audit found that the original process uses x87 CW `0x137f`
+in the recovered runtime. At level1 its genuine EX cadence is175, whereas the
+older PC53-only component dump produced176. Sixty ordinary title render passes,
+Wine11.13/11.21 and classic/WoW64 checks, and eager authentic DLL loading before
+D startup retain the observed CW/cadence. Metsu's parameter table was therefore
+recovered under its measured original-process control word, separately from
+normal mode. `metsu-level-parameters-pc64.tsv` records that component evidence;
+normal's implementation and qualification remain separate.
+
+Actual original-process instrumentation, including owning addresses and
+transparent hooks, is documented in `tools/metsu/ORIGINAL_STATE_TRACE.md`.
+The observer executes the complete original game with the shipped authentic
+physics DLL, reads every post-actor boundary, and captures canonical ending
+metadata at entry to the authentic finish routine. It does not substitute the
+component harness for the original process.
+
+A deterministic active-input native-policy replay (seed1,4652 input words)
+reaches level4,18 qualifying clears, score426, and chain3, with weak and strong
+shots held for3 updates and EX-chain interactions. Its complete replay passes
+strict original-process comparison:4653 frame boundaries,271122 actor states,
+all 28 measured actor fields, scalar/RNG/pool state, the live group-sharing
+partition at every boundary, and 6 canonical finish fields.
+Both processes naturally finish on the same input; the actual original first
+finish tuple426/4/3 matches the saved header. The original receipt and strict
+comparison are linked in the instrumentation document. This controlled replay
+is distinct from the independently captured browser-export and genuine
+original-recorder interoperability routes.
+
+The initial bounded-audit/component-only claim limits earlier in this ledger
+are superseded **only** for these explicitly executed, hash-bound full-game
+captures. Unbounded and all-path Metsu fidelity is not claimed. In particular,
+the active-input completed run does not reach the special-orb scheduler.
+
+The actual original recorder also created the 2,994-input fixture
+`tests/fixtures/metsu/original-generated.rpy`. Both its live recording and its
+subsequent original-engine self-playback match all 2,995 boundaries and 41,999
+actor states with the native engine, including raw float bits and normalized
+group sharing. The latter run captures the actual finish entry and verifies
+canonical 0 / 1 / 0 against the file header. Reports:
+`benchmarks/results/metsu-original-writer-native-2026-11-03.json` and
+`benchmarks/results/metsu-original-writer-playback-native-2026-11-03.json`.
+
+This is recorded-input observational qualification, not proof of all-path
+equivalence. A replay that merely exhausts its inputs while both games remain
+active cannot pass saved-replay interchange: the comparator separately requires
+natural termination and matching canonical first-finish headers. The initial
+premature browser export is retained as that negative case in
+`benchmarks/results/metsu-premature-browser-replay-rejected-2026-11-03.json`.
+The browser-action routes and final report are collected in
+`benchmarks/results/metsu-replay-interoperability-2026-11-03.json`.
+
+The corrected actual browser Save file
+`tests/fixtures/metsu/browser-export.rpy` (seed 1274909209, 3,942 inputs) is the
+positive browser-origin case. The actual original process and native engine
+match all 3,943 boundaries and 57,778 actor states, including every live group
+partition and canonical finish fields. Both naturally finish at input 3,942
+with canonical 40 / 1 / 2. The hash-bound report is
+`benchmarks/results/metsu-browser-export-original-2026-11-03.json`. These
+additional observations do not enlarge the claim to arbitrary inputs or
+unobserved levels.
