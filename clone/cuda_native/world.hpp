@@ -76,9 +76,10 @@ struct World {
   Vec2 gravity{};
   AABB bounds{{-1e6f,-1e6f},{1e6f,1e6f}};
   std::uint32_t body_head{null_index},destroy_head{null_index},contact_head{null_index};
-  std::uint32_t body_count{},shape_count{},contact_count{},next_body_id{1},next_shape_id{1};
+  std::uint32_t body_count{},shape_count{},contact_count{},next_body_id{1},next_shape_id{1},next_contact_id{1};
   alignas(8) std::uint64_t tick{};
   bool allow_sleeping{true};
+  bool destroy_immediate{};
   Status status{Status::ok};
 
   NATIVE_HD void reset(Vec2 g={},bool sleeping=true) {
@@ -86,8 +87,8 @@ struct World {
     for(auto& s:shapes)s=ShapeState{};
     for(auto& c:contacts)c=ContactState{};
     gravity=g;body_head=destroy_head=contact_head=null_index;
-    body_count=shape_count=contact_count=0;next_body_id=next_shape_id=1;tick=0;
-    allow_sleeping=sleeping;status=Status::ok;
+    body_count=shape_count=contact_count=0;next_body_id=next_shape_id=next_contact_id=1;tick=0;
+    allow_sleeping=sleeping;destroy_immediate=false;status=Status::ok;
   }
   NATIVE_HD StageResult validate_snapshot() const {
     if(body_count>max_bodies||shape_count>max_shapes||contact_count>max_contacts)

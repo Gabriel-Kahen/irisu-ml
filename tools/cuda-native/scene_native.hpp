@@ -20,12 +20,20 @@ struct Circle {
   std::uint32_t type,user_data,body;float friction,restitution,max_radius;
   std::uint16_t proxy_id,category,mask;std::int16_t group;Vec2 local_position;float radius;
 };
+struct Polygon {
+  std::uint32_t vptr,next;Mat22 R;Vec2 position;
+  std::uint32_t type,user_data,body;float friction,restitution,max_radius;
+  std::uint16_t proxy_id,category,mask;std::int16_t group;Vec2 local_centroid;
+  Mat22 local_obb_R;Vec2 local_obb_center,local_obb_extents,vertices[8],core_vertices[8];
+  std::int32_t vertex_count;Vec2 normals[8];
+};
 struct Edge {std::uint32_t other,contact,prev,next;};
 struct Contact {
   std::uint32_t vptr,flags,prev,next;Edge edges[2];std::uint32_t shape1,shape2;
   std::int32_t manifold_count;float friction,restitution;Manifold manifold;
 };
 static_assert(sizeof(Body)==136&&sizeof(Circle)==76&&sizeof(Contact)==128);
+static_assert(sizeof(Polygon)==300&&offsetof(Polygon,vertex_count)==232);
 static_assert(offsetof(Contact,manifold)==68);
 template<class T>const T& at(const void* p,std::size_t offset){return *reinterpret_cast<const T*>(static_cast<const unsigned char*>(p)+offset);}
 template<class T>T* pointer(std::uint32_t p){return reinterpret_cast<T*>(std::uintptr_t(p));}
@@ -40,12 +48,16 @@ struct Api {
   void* (*create)(float,float,float,float,float,float){};
   void (*destroy)(void*){};void (*step)(void*,float,int){};
   void* (*circle)(void*,float,float,float,float,float,float){};
+  void* (*box)(void*,float,float,float,float,float,float,float,float){};
+  void* (*triangle)(void*,float,float,float,float,float,float,float,float){};
   Api(const char* path):native(oracle_open(path)){
     create=reinterpret_cast<decltype(create)>(dlsym(native.library,"b2d_world_create"));
     destroy=reinterpret_cast<decltype(destroy)>(dlsym(native.library,"b2d_world_destroy"));
     step=reinterpret_cast<decltype(step)>(dlsym(native.library,"b2d_world_step"));
     circle=reinterpret_cast<decltype(circle)>(dlsym(native.library,"b2d_world_create_circle"));
-    if(!create||!destroy||!step||!circle)throw std::runtime_error("native scene API missing");
+    box=reinterpret_cast<decltype(box)>(dlsym(native.library,"b2d_world_create_box"));
+    triangle=reinterpret_cast<decltype(triangle)>(dlsym(native.library,"b2d_world_create_triangle"));
+    if(!create||!destroy||!step||!circle||!box||!triangle)throw std::runtime_error("native scene API missing");
   }
   ~Api(){oracle_close(&native);}
 };
@@ -72,7 +84,7 @@ inline Mapping import_scene(World& world,void* handle,std::uint64_t tick=0){
   for(auto* b=pointer<Body>(at<std::uint32_t>(native_world,102952));b;b=pointer<Body>(b->next)){
     if(map.bodies.size()==max_bodies)throw std::runtime_error("native scene body capacity exceeded");map.bodies.push_back(b);
     for(auto* s=pointer<Circle>(b->shape_list);s;s=pointer<Circle>(s->next)){
-      if(s->type!=0||map.shapes.size()==max_shapes)throw std::runtime_error("scene importer requires circles");map.shapes.push_back(s);
+      if((s->type!=0&&s->type!=2)||map.shapes.size()==max_shapes)throw std::runtime_error("scene importer requires circles or polygons");map.shapes.push_back(s);
     }
   }
   for(auto* c=pointer<Contact>(at<std::uint32_t>(native_world,102956));c;c=pointer<Contact>(c->next)){
@@ -88,10 +100,18 @@ inline Mapping import_scene(World& world,void* handle,std::uint64_t tick=0){
     if(n.joint_list)throw std::runtime_error("native scene has joints");
   }
   for(unsigned i=0;i<map.shapes.size();++i){
-    const auto& n=*map.shapes[i];auto& s=world.shapes[i];s.occupied=true;s.kind=ShapeKind::circle;s.id=i+1;
+    const auto& n=*map.shapes[i];auto& s=world.shapes[i];s.occupied=true;s.kind=n.type==0?ShapeKind::circle:ShapeKind::polygon;s.id=i+1;
     s.next=Mapping::index(map.shapes,n.next);s.body=Mapping::index(map.bodies,n.body);s.R=n.R;s.position=n.position;
     s.user_data=n.user_data;s.friction=n.friction;s.restitution=n.restitution;s.max_radius=n.max_radius;
-    s.proxy_id=n.proxy_id;s.category_bits=n.category;s.mask_bits=n.mask;s.group_index=n.group;s.local_position=n.local_position;s.radius=n.radius;
+    s.proxy_id=n.proxy_id;s.category_bits=n.category;s.mask_bits=n.mask;s.group_index=n.group;
+    if(s.kind==ShapeKind::circle){s.local_position=n.local_position;s.radius=n.radius;}
+    else {
+      const auto& poly=*reinterpret_cast<const Polygon*>(&n);s.local_centroid=poly.local_centroid;
+      s.local_obb_R=poly.local_obb_R;s.local_obb_center=poly.local_obb_center;s.local_obb_extents=poly.local_obb_extents;
+      if(poly.vertex_count<0||poly.vertex_count>8)throw std::runtime_error("native polygon vertex capacity exceeded");
+      s.vertex_count=poly.vertex_count;
+      for(unsigned j=0;j<s.vertex_count;++j){s.vertices[j]=poly.vertices[j];s.normals[j]=poly.normals[j];s.core_vertices[j]=poly.core_vertices[j];}
+    }
   }
   for(unsigned i=0;i<map.contacts.size();++i){
     const auto& n=*map.contacts[i];auto& c=world.contacts[i];c.occupied=true;c.id=i+1;c.flags=n.flags;

@@ -53,6 +53,8 @@ struct ShapeState {
   std::uint16_t proxy_id{0xffff};
   std::int16_t group_index{};
   bool occupied{};
+  Mat22 local_obb_R{};
+  Vec2 local_obb_center{},local_obb_extents{},core_vertices[8]{};
 };
 struct ManifoldPoint {
   Vec2 position{};

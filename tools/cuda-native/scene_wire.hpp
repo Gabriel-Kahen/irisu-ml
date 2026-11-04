@@ -4,10 +4,13 @@
 namespace irisu::cuda_native {
 // Versioned semantic words, never sizeof(BodyState)/sizeof(ShapeState). This
 // visitor also defines the pointer-free host/device comparison digest.
-template<class W,class V> NATIVE_HD void visit_scene(W& w,V& v){
+template<class W,class V> NATIVE_HD void visit_scene(W& w,V& v,unsigned version=2){
   v(w.gravity.x);v(w.gravity.y);v(w.bounds.min.x);v(w.bounds.min.y);v(w.bounds.max.x);v(w.bounds.max.y);
   v(w.body_head);v(w.destroy_head);v(w.contact_head);v(w.body_count);v(w.shape_count);v(w.contact_count);
-  v(w.next_body_id);v(w.next_shape_id);v(w.tick);v(w.allow_sleeping);v(w.status);
+  v(w.next_body_id);v(w.next_shape_id);
+  if(version>=2)v(w.next_contact_id);
+  v(w.tick);v(w.allow_sleeping);v(w.status);
+  if(version>=2)v(w.destroy_immediate);
   for(auto& b:w.bodies){v(b.occupied);if(!b.occupied)continue;
 #define F(x) v(b.x)
     F(position.x);F(position.y);F(velocity.x);F(velocity.y);F(rotation);F(angular_velocity);F(inv_mass);F(inv_i);
@@ -22,6 +25,11 @@ template<class W,class V> NATIVE_HD void visit_scene(W& w,V& v){
     F(position.x);F(position.y);F(R.col1.x);F(R.col1.y);F(R.col2.x);F(R.col2.y);
     for(auto& p:s.vertices){v(p.x);v(p.y);}for(auto& p:s.normals){v(p.x);v(p.y);}
     F(radius);F(max_radius);F(friction);F(restitution);F(category_bits);F(mask_bits);F(proxy_id);F(group_index);
+    if(version>=2){
+      F(local_obb_R.col1.x);F(local_obb_R.col1.y);F(local_obb_R.col2.x);F(local_obb_R.col2.y);
+      F(local_obb_center.x);F(local_obb_center.y);F(local_obb_extents.x);F(local_obb_extents.y);
+      for(auto& p:s.core_vertices){v(p.x);v(p.y);}
+    }
 #undef F
   }
   for(auto& c:w.contacts){v(c.occupied);if(!c.occupied)continue;
@@ -42,13 +50,13 @@ struct SceneHash {
     else word(std::uint32_t(v));
   }
 };
-NATIVE_HD inline std::uint64_t scene_hash(const World& world){SceneHash hash;visit_scene(world,hash);return hash.value;}
+NATIVE_HD inline std::uint64_t scene_hash(const World& world,unsigned version=2){SceneHash hash;visit_scene(world,hash,version);return hash.value;}
 } // namespace irisu::cuda_native
 
 #include <vector>
 #include <stdexcept>
 namespace irisu::cuda_native {
-inline constexpr std::uint32_t scene_wire_magic=0x4e435349,scene_wire_version=1;
+inline constexpr std::uint32_t scene_wire_magic=0x4e435349,scene_wire_version=2;
 struct SceneEncode {
   std::vector<std::uint32_t>& words;
   template<class T>void operator()(const T& v){
@@ -67,9 +75,9 @@ struct SceneDecode {
     else v=T(a);
   }
 };
-inline std::vector<std::uint32_t> encode_scene(const World& world){std::vector<std::uint32_t> words;SceneEncode v{words};visit_scene(world,v);return words;}
-inline void decode_scene(World& world,const std::vector<std::uint32_t>& words){
-  world.reset();SceneDecode v{words};visit_scene(world,v);
+inline std::vector<std::uint32_t> encode_scene(const World& world,unsigned version=2){std::vector<std::uint32_t> words;SceneEncode v{words};visit_scene(world,v,version);return words;}
+inline void decode_scene(World& world,const std::vector<std::uint32_t>& words,unsigned version=2){
+  world.reset();SceneDecode v{words};visit_scene(world,v,version);
   if(v.offset!=words.size()||!world.validate_snapshot())throw std::runtime_error("invalid scene snapshot words");
 }
 } // namespace irisu::cuda_native

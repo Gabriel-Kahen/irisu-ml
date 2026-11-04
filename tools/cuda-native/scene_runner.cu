@@ -14,13 +14,13 @@ using namespace irisu::cuda_native;
 namespace {
 struct Step {float dt;std::uint32_t iterations;};
 struct Frame {std::uint64_t hash;std::uint32_t status;};
-__global__ void scenes(World* worlds,SceneScratch* scratch,const Step* steps,Frame* output,unsigned count,unsigned ticks){
+__global__ void scenes(World* worlds,SceneScratch* scratch,const Step* steps,Frame* output,unsigned count,unsigned ticks,unsigned version){
   const unsigned lane=blockIdx.x*blockDim.x+threadIdx.x;if(lane>=count)return;
   StageResult result{};
   for(unsigned tick=0;tick<ticks;++tick){
     const auto index=std::size_t(lane)*ticks+tick;
     if(result)result=step_fixed_circle_pairs(worlds[lane],scratch[lane],steps[index].dt,steps[index].iterations);
-    output[index]={scene_hash(worlds[lane]),std::uint32_t(result.status)};
+    output[index]={scene_hash(worlds[lane],version),std::uint32_t(result.status)};
   }
 }
 void check(cudaError_t code){if(code!=cudaSuccess)throw std::runtime_error(cudaGetErrorString(code));}
@@ -34,14 +34,15 @@ int main(int argc,char** argv){try{
   if(argc!=2)throw std::runtime_error("usage: scene-runner native-circle-packets.bin");
   std::ifstream input(argv[1],std::ios::binary);if(!input)throw std::runtime_error("cannot open scene packets");
   const auto read=[&](){std::uint32_t w{};if(!input.read(reinterpret_cast<char*>(&w),4))throw std::runtime_error("truncated scene packet");return w;};
-  if(read()!=scene_wire_magic||read()!=scene_wire_version)throw std::runtime_error("scene wire identity mismatch");
+  if(read()!=scene_wire_magic)throw std::runtime_error("scene wire identity mismatch");
+  const auto version=read();if(version<1||version>scene_wire_version)throw std::runtime_error("scene wire version unsupported");
   const unsigned count=read(),ticks=read();
   if(!count||count>1024||!ticks||ticks>100000||std::uint64_t(count)*ticks>1000000)throw std::runtime_error("unbounded scene workload");
   auto worlds=std::make_unique<World[]>(count);std::vector<Step> steps(std::size_t(count)*ticks);
   std::vector<std::uint64_t> expected(steps.size());
   for(unsigned lane=0;lane<count;++lane){
     const auto size=read();if(size>1000000)throw std::runtime_error("oversize scene snapshot");
-    std::vector<std::uint32_t> words(size);for(auto& w:words)w=read();decode_scene(worlds[lane],words);
+    std::vector<std::uint32_t> words(size);for(auto& w:words)w=read();decode_scene(worlds[lane],words,version);
     for(unsigned tick=0;tick<ticks;++tick){
       const auto index=std::size_t(lane)*ticks+tick;union{std::uint32_t u;float f;}bits{read()};
       steps[index]={bits.f,read()};if(steps[index].iterations>1000)throw std::runtime_error("unbounded solver iterations");
@@ -56,7 +57,7 @@ int main(int argc,char** argv){try{
   check(cudaMemset(scratch,0,std::size_t(count)*sizeof(SceneScratch)));
   check(cudaMemcpy(gpu_steps,steps.data(),steps.size()*sizeof(Step),cudaMemcpyHostToDevice));
   cudaEvent_t before{},after{};check(cudaEventCreate(&before));check(cudaEventCreate(&after));
-  check(cudaEventRecord(before));scenes<<<(count+31)/32,32>>>(gpu_worlds,scratch,gpu_steps,gpu_frames,count,ticks);
+  check(cudaEventRecord(before));scenes<<<(count+31)/32,32>>>(gpu_worlds,scratch,gpu_steps,gpu_frames,count,ticks,version);
   check(cudaGetLastError());check(cudaEventRecord(after));check(cudaEventSynchronize(after));
   float elapsed{};check(cudaEventElapsedTime(&elapsed,before,after));cudaEventDestroy(before);cudaEventDestroy(after);
   std::vector<Frame> actual(expected.size());check(cudaMemcpy(actual.data(),gpu_frames,actual.size()*sizeof(Frame),cudaMemcpyDeviceToHost));
