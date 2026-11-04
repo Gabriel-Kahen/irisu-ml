@@ -89,6 +89,8 @@ class NativePhysicsWorld {
   }
  public:
   GAME_HD explicit NativePhysicsWorld(MechanicsConfig config={}):config_(config){}
+  template<class Visitor> GAME_HD void snapshot_vectors(Visitor& visit){visit(entries_);visit(contacts_);visit(ordered_);}
+  template<class Visitor> GAME_HD void snapshot_vectors(Visitor& visit)const{visit(entries_);visit(contacts_);visit(ordered_);}
   GAME_HD void bind(Scene* scene){scene_=scene;}
   GAME_HD void initialize_pointer_storage(){for(auto& byte:ordered_.storage)byte=0;}
   GAME_HD bool relocate_body_pointers(std::uintptr_t old_base,std::uintptr_t new_base){
