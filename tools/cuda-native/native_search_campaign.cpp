@@ -23,16 +23,23 @@ irisu::game_digest::Frame frame(const irisu::Simulator& sim,const irisu::StepRes
   return irisu::game_digest::make_frame(sim.bodies(),sim.observation(),
     irisu::game_digest::native_events(step.events),step.events.size(),step);
 }
-template<class T> struct Shared {
+template<class T,bool inherited> struct Mapping {
   T* data;std::size_t count;
-  explicit Shared(std::size_t size):count(size){
-    data=static_cast<T*>(mmap(nullptr,count*sizeof(T),PROT_READ|PROT_WRITE,MAP_SHARED|MAP_ANONYMOUS,-1,0));
+  explicit Mapping(std::size_t size):count(size){
+    data=static_cast<T*>(mmap(nullptr,count*sizeof(T),PROT_READ|PROT_WRITE,
+      (inherited?MAP_SHARED:MAP_PRIVATE)|MAP_ANONYMOUS,-1,0));
     if(data==MAP_FAILED)throw std::runtime_error("shared result mmap failed");
+    if constexpr(!inherited)if(madvise(data,count*sizeof(T),MADV_DONTFORK)){
+      const auto error=errno;munmap(data,count*sizeof(T));
+      throw std::runtime_error(std::string("MADV_DONTFORK failed: ")+std::strerror(error));
+    }
     for(std::size_t i=0;i<count;++i)::new(static_cast<void*>(data+i)) T{};
   }
-  ~Shared(){munmap(data,count*sizeof(T));}
-  Shared(const Shared&)=delete;Shared& operator=(const Shared&)=delete;
+  ~Mapping(){munmap(data,count*sizeof(T));}
+  Mapping(const Mapping&)=delete;Mapping& operator=(const Mapping&)=delete;
 };
+template<class T>using Shared=Mapping<T,true>;
+template<class T>using ParentOnly=Mapping<T,false>;
 struct ChildMetric {double rollout_ms{};std::uint32_t ready{};};
 struct Children {
   std::vector<pid_t> running;
@@ -59,9 +66,9 @@ template<class T> void hash_bytes(irisu::game_digest::Hash& hash,const T* values
   const auto* bytes=reinterpret_cast<const unsigned char*>(values);
   for(std::size_t i=0;i<count*sizeof(T);++i)hash.byte(bytes[i]);
 }
-std::uint64_t packet_hash(const std::vector<Result>& results,const std::vector<std::uint32_t>& ranks){
-  irisu::game_digest::Hash hash;const std::uint32_t header[]={result_magic,result_version,std::uint32_t(results.size()),sizeof(Result)};
-  hash_bytes(hash,header,4);hash_bytes(hash,results.data(),results.size());hash_bytes(hash,ranks.data(),ranks.size());return hash.value;
+std::uint64_t packet_hash(const Result* results,const std::uint32_t* ranks,std::size_t count){
+  irisu::game_digest::Hash hash;const std::uint32_t header[]={result_magic,result_version,std::uint32_t(count),sizeof(Result)};
+  hash_bytes(hash,header,4);hash_bytes(hash,results,count);hash_bytes(hash,ranks,count);return hash.value;
 }
 std::uint64_t input_hash(const Inputs& in){
   irisu::game_digest::Hash hash;hash_bytes(hash,in.replay.data(),in.replay.size());
@@ -87,6 +94,11 @@ int main(int argc,char** argv){
     const auto in=std::move(loaded);const auto count=in.candidates.size();
     const auto loaded_input_hash=input_hash(in);
     Shared<Result> output(count);Shared<ChildMetric> metrics(count);
+    // Dedicated, page-owned mappings only. Children never consume ranking,
+    // verification or reporting storage, so do not copy those VMAs/PTEs at fork.
+    ParentOnly<Result> baseline(count);ParentOnly<std::uint32_t> ranks(count),baseline_ranks(count);
+    ParentOnly<Timing> timings(batches);
+    const auto parent_only_bytes=count*(sizeof(Result)+2*sizeof(std::uint32_t))+batches*sizeof(Timing);
     const std::uint16_t cw=0x027f;__asm__ __volatile__("fldcw %0"::"m"(cw));
     const auto prefix_start=Clock::now();
     irisu::Simulator sim;sim.reset(in.options.seed);irisu::StepResult prefix_step{};
@@ -96,8 +108,7 @@ int main(int argc,char** argv){
     }
     if(prefix_step.terminated||prefix_step.truncated)throw std::runtime_error("cannot branch terminal prefix");
     const auto prefix_frame=frame(sim,prefix_step);const double prefix_ms=elapsed(prefix_start);
-    const pid_t owner=getpid();std::vector<Timing> timings;timings.reserve(batches);
-    std::vector<Result> baseline,results;std::vector<std::uint32_t> baseline_ranks,ranks(count);
+    const pid_t owner=getpid();
     std::uint64_t all_ticks=0,baseline_packet_hash=0;
     for(unsigned batch=0;batch<batches;++batch){
       Timing timing;const auto batch_start=Clock::now();
@@ -140,31 +151,38 @@ int main(int argc,char** argv){
         while(!children.running.empty())timing.wait_ms+=children.reap();
       }
       timing.fork_and_rollout_ms=elapsed(future_start);
-      const auto rank_start=Clock::now();results.assign(output.data,output.data+count);
-      std::iota(ranks.begin(),ranks.end(),0);
-      std::sort(ranks.begin(),ranks.end(),[&](auto a,auto b){return better(results[a],a,results[b],b);});
+      const auto rank_start=Clock::now();std::iota(ranks.data,ranks.data+count,0);
+      std::sort(ranks.data,ranks.data+count,[&](auto a,auto b){return better(output.data[a],a,output.data[b],b);});
       timing.rank_ms=elapsed(rank_start);const auto verify_start=Clock::now();
       for(std::size_t i=0;i<count;++i){
-        if(metrics.data[i].ready!=batch+1||results[i].failed)throw std::runtime_error("incomplete or failed native candidate result");
-        timing.ticks+=results[i].simulated_ticks;timing.child_rollout_sum_ms+=metrics.data[i].rollout_ms;
+        if(metrics.data[i].ready!=batch+1||output.data[i].failed)throw std::runtime_error("incomplete or failed native candidate result");
+        timing.ticks+=output.data[i].simulated_ticks;timing.child_rollout_sum_ms+=metrics.data[i].rollout_ms;
         timing.child_rollout_max_ms=std::max(timing.child_rollout_max_ms,metrics.data[i].rollout_ms);
       }
-      if(!batch){baseline=results;baseline_ranks=ranks;baseline_packet_hash=packet_hash(results,ranks);}
-      else if(std::memcmp(results.data(),baseline.data(),count*sizeof(Result))||ranks!=baseline_ranks)
+      if(!batch){std::memcpy(baseline.data,output.data,count*sizeof(Result));
+        std::memcpy(baseline_ranks.data,ranks.data,count*sizeof(std::uint32_t));
+        baseline_packet_hash=packet_hash(output.data,ranks.data,count);}
+      else if(std::memcmp(output.data,baseline.data,count*sizeof(Result))||
+              std::memcmp(ranks.data,baseline_ranks.data,count*sizeof(std::uint32_t)))
         throw std::runtime_error("repeated native batch packet/ranks changed");
       const auto checkpoint_frame=frame(sim,prefix_step);
       if(std::memcmp(&checkpoint_frame,&prefix_frame,sizeof(prefix_frame))||input_hash(in)!=loaded_input_hash)
         throw std::runtime_error("parent checkpoint or loaded candidate inputs changed");
       timing.verification_ms=elapsed(verify_start);timing.batch_ms=elapsed(batch_start);
-      all_ticks+=timing.ticks;timings.push_back(timing);
+      all_ticks+=timing.ticks;timings.data[batch]=timing;
     }
-    const auto output_start=Clock::now();emit_results(results,ranks);const double output_ms=elapsed(output_start);
+    // The shared wire helper takes vectors; materialize them only AFTER the last
+    // child is reaped, so no future fork inherits these private heap buffers.
+    const auto output_start=Clock::now();
+    const std::vector<Result> final_results(output.data,output.data+count);
+    const std::vector<std::uint32_t> final_ranks(ranks.data,ranks.data+count);
+    emit_results(final_results,final_ranks);const double output_ms=elapsed(output_start);
     const double process_ms=elapsed(process_start);
-    std::fprintf(stderr,"{\"identity\":\"experimental-native-exact-cached-prefix-campaign-v1\",\"candidates\":%zu,\"workers\":%u,\"batches\":%u,\"prefix_ticks\":%u,\"prefix_preparations\":1,\"horizon\":%u,\"simulated_future_ticks\":%llu,\"trace_every_tick\":%s,\"prefix_ms\":%.9f,\"cold_process_wall_ms\":%.9f,\"cold_wall_scope\":\"main entry through last packet flush; excludes dynamic-loader startup and final stderr reporting\",\"output_ms\":%.9f,\"all_batch_packets_and_ranks_identical\":true,\"parent_checkpoint_frame_unchanged\":true,\"loaded_inputs_unchanged\":true,\"packet_fnv1a64\":\"%016llx\",\"loaded_inputs_fnv1a64\":\"%016llx\",\"packet_bytes\":%zu,\"winner\":%u,\"timing_scope\":\"fork_syscall/wait and child rollout times overlap fork_and_rollout wall; do not add them\",\"batch_timings\":[",
+    std::fprintf(stderr,"{\"identity\":\"experimental-native-exact-cached-prefix-campaign-v2\",\"candidates\":%zu,\"workers\":%u,\"batches\":%u,\"prefix_ticks\":%u,\"prefix_preparations\":1,\"horizon\":%u,\"simulated_future_ticks\":%llu,\"trace_every_tick\":%s,\"prefix_ms\":%.9f,\"cold_process_wall_ms\":%.9f,\"cold_wall_scope\":\"main entry through last packet flush; excludes dynamic-loader startup and final stderr reporting\",\"output_ms\":%.9f,\"parent_only_buffers\":\"dedicated MAP_PRIVATE MADV_DONTFORK mappings\",\"parent_only_bytes_excluded_from_fork\":%zu,\"all_batch_packets_and_ranks_identical\":true,\"parent_checkpoint_frame_unchanged\":true,\"loaded_inputs_unchanged\":true,\"packet_fnv1a64\":\"%016llx\",\"loaded_inputs_fnv1a64\":\"%016llx\",\"packet_bytes\":%zu,\"winner\":%u,\"timing_scope\":\"fork_syscall/wait and child rollout times overlap fork_and_rollout wall; do not add them\",\"batch_timings\":[",
       count,workers,batches,in.options.prefix,in.options.horizon,(unsigned long long)all_ticks,
-      in.options.trace_every_tick?"true":"false",prefix_ms,process_ms,output_ms,
-      (unsigned long long)baseline_packet_hash,(unsigned long long)loaded_input_hash,16+count*(sizeof(Result)+4),ranks[0]);
-    for(unsigned i=0;i<timings.size();++i){const auto& t=timings[i];
+      in.options.trace_every_tick?"true":"false",prefix_ms,process_ms,output_ms,parent_only_bytes,
+      (unsigned long long)baseline_packet_hash,(unsigned long long)loaded_input_hash,16+count*(sizeof(Result)+4),ranks.data[0]);
+    for(unsigned i=0;i<batches;++i){const auto& t=timings.data[i];
       std::fprintf(stderr,"%s{\"batch\":%u,\"initialize_ms\":%.9f,\"fork_syscall_ms\":%.9f,\"wait_ms\":%.9f,\"fork_and_rollout_ms\":%.9f,\"child_rollout_sum_ms\":%.9f,\"child_rollout_max_ms\":%.9f,\"rank_ms\":%.9f,\"verification_ms\":%.9f,\"batch_wall_ms\":%.9f,\"simulated_ticks\":%llu}",
         i?",":"",i,t.initialize_ms,t.fork_syscall_ms,t.wait_ms,t.fork_and_rollout_ms,t.child_rollout_sum_ms,
         t.child_rollout_max_ms,t.rank_ms,t.verification_ms,t.batch_ms,(unsigned long long)t.ticks);}

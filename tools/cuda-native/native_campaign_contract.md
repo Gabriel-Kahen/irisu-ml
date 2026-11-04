@@ -24,6 +24,17 @@ code as the original native oracle, stopping after terminal/truncated state.
 Wait-any scheduling keeps up to the requested number of workers active. The
 parent ranks the complete array with the same candidate-index tie breaker.
 
+Campaign identity v2 keeps the baseline packet, both rank arrays and batch
+reporting records in dedicated `MAP_PRIVATE` mappings marked `MADV_DONTFORK`.
+These page-owned regions are absent from candidate address spaces. The parent
+sorts indices directly against shared Results, avoiding private Result copies
+during candidate forks. The wire helper's final Result/rank vectors are created
+only after the last child has been reaped. No allocator-owned heap page is
+passed to `madvise`. Shared output/completion slots and actual native checkpoint
+and input memory remain inherited because candidates consume them.
+The JSON byte count is requested parent-only payload size; OS VMAs round these
+allocations to whole pages.
+
 Every batch's complete 256-byte Results and rank array must equal the first
 batch byte for byte. Completion slots prevent accepting stale shared output.
 The parent checks its unchanged prefix frame and loaded-input fingerprint after
@@ -51,9 +62,10 @@ The timing fields have explicit scopes:
 * `fork_syscall_ms` and `wait_ms`: parent-observed sums within that phase.
   `child_rollout_sum_ms` / `child_rollout_max_ms` measure child future/fold/key
   work. These overlap and must not be added to the elapsed phase.
-* `rank_ms`: result materialization and canonical rank sorting.
+* `rank_ms`: canonical index sorting against shared Results.
 * `batch_wall_ms`: output-slot reset through packet/input/checkpoint verification.
-* `output_ms`: one final binary packet emission, not one emission per batch.
+* `output_ms`: final wire-helper vector materialization and one binary packet
+  emission, not one emission per batch. These private vectors never cross fork.
 * `cold_process_wall_ms`: main entry through that final packet flush, including
   loading, one prefix and all batches. Dynamic-loader startup, final stderr
   reporting and process exit require an external launcher wall timer.
@@ -80,3 +92,17 @@ Forced candidate and owner SIGKILL tests both exit unsuccessfully, emit no resul
 packet and leave no living tracked descendants. This tiny gate does not qualify
 every checkpoint or lifecycle case. Its clocks are correctness diagnostics under
 desktop load, not uncontended performance evidence.
+That receipt belongs to the original v1 controller, before parent-only buffer
+inheritance was removed. It is preserved rather than relabelled as v2 evidence.
+
+`benchmarks/results/cuda-native-cached-prefix-dontfork-qualification-2026-11-04.json`
+repeats all four packet gates for v2 with exact equality, one prefix preparation
+and all immutability checks. During failure injection, the harness stops the
+owner and inspects its `VmFlags: dc` regions and candidate mappings: all 815,104
+bytes of page-rounded excluded VMAs are absent from all 13 inspected children
+across the two tests. This larger mapping includes a 10,000-batch timing table;
+the failure cases are interrupted before completing that workload. Candidate
+and owner SIGKILL cleanup pass again, with no success packet or remaining native
+jobs. Stopped children are resumed after owner death so the post-fork owner guard
+can run if a child had been stopped before installing its death signal. These
+are correctness/transport checks, not timing or speedup evidence.
