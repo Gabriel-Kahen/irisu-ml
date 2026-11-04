@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import statistics
+import struct
 import subprocess
 import time
 
@@ -29,6 +30,9 @@ def main():
     for name in ('baseline', 'candidate', 'replay', 'specs', 'expected', 'output'):
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--candidate-flag', action='append', default=[])
+    parser.add_argument('--baseline-flag', action='append', default=[])
+    parser.add_argument('--candidate-comparison', choices=('exact', 'outcome'), default='exact',
+                        help='outcome permits hash changes, but requires identical discrete results and ranks')
     parser.add_argument('--batches', type=int, default=20)
     parser.add_argument('--rounds', type=int, default=3)
     parser.add_argument('--prefix', type=int, default=100)
@@ -48,6 +52,7 @@ def main():
                   candidates=count, batches=args.batches, horizon=args.horizon,
                   prefix=args.prefix, future_ticks=count * args.batches * args.horizon,
                   cooldown_seconds_outside_timer=args.cooldown,
+                  candidate_comparison=args.candidate_comparison,
                   timing_scope='Full child process including CUDA setup, output and teardown; '
                                'native packet comparison and conditions sampled outside timer.',
                   warmups=[], runs=[])
@@ -62,8 +67,8 @@ def main():
                    str(args.prefix), str(args.horizon), '--final-only', '--copy-u64',
                    '--reuse-prefix', '--physical-snapshot', '--warmups', '0',
                    '--repeats', str(batches), '--skip-compaction-check']
-        if backend == 'candidate':
-            command += args.candidate_flag
+        flags = args.candidate_flag if backend == 'candidate' else args.baseline_flag
+        command += flags
         env = dict(os.environ)
         env.pop('CUDA_VISIBLE_DEVICES', None)
         time.sleep(args.cooldown)
@@ -78,19 +83,41 @@ def main():
             raise RuntimeError(process.stderr.decode()[-4000:])
         metadata = json.loads(process.stderr.decode().splitlines()[-1])
         digest = hashlib.sha256(process.stdout).hexdigest()
-        assert digest == pins['expected']['sha256'], 'native packet differs'
+        equal = digest == pins['expected']['sha256']
+        differences = {}
+        if backend == 'candidate' and args.candidate_comparison == 'outcome':
+            expected = args.expected.read_bytes()
+            assert len(process.stdout) == len(expected) == 16 + count * 260
+            assert process.stdout[:16] == expected[:16] == struct.pack('<4I', 0x32535249, 2, count, 256)
+            names = {1: 'body_hash', 2: 'observation_hash', 3: 'event_hash',
+                     5: 'transition_hash', 12: 'trace_hash'}
+            for candidate in range(count):
+                actual_words = struct.unpack_from('<32Q', process.stdout, 16 + candidate * 256)
+                expected_words = struct.unpack_from('<32Q', expected, 16 + candidate * 256)
+                for word, (actual, reference) in enumerate(zip(actual_words, expected_words)):
+                    if actual != reference:
+                        assert word in names, f'native discrete result differs: candidate {candidate}, word {word}'
+                        key = names[word]
+                        differences[key] = differences.get(key, 0) + 1
+            assert process.stdout[16 + count * 256:] == expected[16 + count * 256:], 'native ranking differs'
+        else:
+            assert equal, 'native packet differs'
         assert metadata['candidates'] == count and metadata['horizon'] == args.horizon
         assert metadata['prefix_ticks'] == args.prefix and metadata['prefix_executions'] == 1
         assert metadata['repeats'] == batches and metadata['simulated_ticks'] == count * args.horizon
-        expected_host_prefix = backend == 'candidate' and '--host-prefix' in args.candidate_flag
+        assert sum(s.get('batches', 1) for s in metadata['samples']) == batches
+        if 'total_future_ticks' in metadata:
+            assert metadata['total_future_ticks'] == count * args.horizon * batches
+        expected_host_prefix = '--host-prefix' in flags
         assert metadata['host_prefix'] == expected_host_prefix and metadata['prefix_immutability_checks']
         assert not any(metadata[k] for k in ('failed_candidates', 'compaction_errors',
                                             'prefix_immutability_errors', 'guest_calls', 'fallback_calls'))
         row = dict(backend=backend, batches=batches, round=round_index, command=command,
-                   wall_seconds=wall, output_sha256=digest, native_packet_equal=True,
+                   wall_seconds=wall, output_sha256=digest, native_packet_equal=equal,
+                   native_discrete_results_and_ranks_equal=True, changed_hash_fields=differences,
                    cpu_pressure_before=before, cpu_pressure_after=after, metadata=metadata)
         row.update(gpu_before=gpu_before, gpu_after=gpu_after)
-        phases = {key: statistics.median(s[key] for s in metadata['samples'])
+        phases = {key: statistics.median(s[key] / s.get('batches', 1) for s in metadata['samples'])
                   for key in ('branch_ms', 'rollout_ms', 'rank_compact_ms')}
         print(json.dumps(dict(backend=backend, round=round_index, wall_seconds=wall,
                               phase_medians=phases)), flush=True)
