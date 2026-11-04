@@ -1,0 +1,65 @@
+{
+  "schema": "irisu-complete-call-physical-snapshot-qualification-v1",
+  "date": "2026-11-04",
+  "promotion_eligible": false,
+  "performance_claim": false,
+  "scope": "At completed Scene public-call boundaries, preserve all World+BroadPhase bytes and separate actor mapping; omit only SceneScratch and trailing Scene padding. This independent fixture is physics-only; peer search runner separately preserves every Game byte and rebinds all pointers. No mid-island/individual-solver-phase resumption claim.",
+  "compile_profile": "IRISU_CUDA_NATIVE_BOUNDED_MATH=1; strictFP; sm70; CUDA12.9/GCC14",
+  "results": {
+    "pass": true,
+    "performance_claim": false,
+    "virgin_scratch": false,
+    "native_cases": 16,
+    "ticks_each": 192,
+    "lanes": 64,
+    "snapshots": 12288,
+    "native_frame_checks": 9216,
+    "zero_iteration_steps": 3072,
+    "warm_zero_iteration_steps": 1796,
+    "pending_destroy_witnesses": 64,
+    "origin_calls": 80,
+    "sleeping_body_witnesses": 4848,
+    "frozen_body_witnesses": 10328,
+    "scene_bytes": 1682584,
+    "persistent_prefix_bytes": 832656,
+    "scratch_bytes": 849924,
+    "all_preserved_bytes_equal_before_and_after": true,
+    "actor_mapping_bytes_equal": true,
+    "fallback_calls": 0
+  },
+  "virgin_scratch_initcheck_pass": true,
+  "memcheck_errors": 0,
+  "initcheck_errors": 0,
+  "cases_packet": "artifacts/cuda-native-20261103/dynamic-scene/packets.bin",
+  "cases_packet_sha256": "a37db52f06158ed949c927e813b792e6b5cb6615f548156fa6c455eb5d6e8011",
+  "binary_sha256": "04f93fde5fed8a9665fb11ed16e66633eeababa1478b11787328e988df65f73a",
+  "source_sha256": {
+    "tools/cuda-native/snapshot_validate.cu": "47c5149d8f362fcaf21ca552fb866abfa6e0fb605929bff3258f8d0bdb4f8df2",
+    "tools/cuda-native/scene_dynamic_wire.hpp": "49685605d7d156873e334a6d3e97d3d9cfba249fa1c45b89ef4ccd3d3e84d50c",
+    "clone/cuda_native/world_scene.hpp": "698e98b0682baba6c13414c3e5eb2ea7d1247aa1142bc26c33f7ded4a488cf13",
+    "clone/cuda_native/world_pipeline.hpp": "244ad2ca5f83b56d64f416803810cc7c5144cd4e1287b715afcfa4fc2b474fce",
+    "clone/cuda_native/world_contacts.hpp": "6f72e836de47b20d5e693121a873871af29ad720a4d86a99e3460f90f69c20fa",
+    "clone/cuda_native/world_shapes.hpp": "a57a96737d713765901e8735c28504465585c8906aeac122b8177b3d1d5f35d3",
+    "clone/cuda_native/world.hpp": "11ccd005afec41ac8c10ee2060a774cbe682dd297db0c233d7aae394122261b7",
+    "clone/cuda_native/types.hpp": "6764c26b03d10ecb29abdf6b8e0a0fbe57457549fdc8096b16e25ff0a21a39d7",
+    "clone/cuda_native/solver.hpp": "1d36a4f7e739af6958486121b88454c161bca267df4e96a11ee9a89b530823ff",
+    "clone/cuda_native/solver_math.hpp": "d93aeec682fe5968d5fc6c76f67f14f6c9e4ea2520ae5122ae71304d5c1f719b"
+  },
+  "log_sha256": {
+    "artifacts/gpu-native-20261103/snapshot-poison.json": "26169530b7509856e89ed6f4e461d7877521843862fa4048f1c692d044cc478f",
+    "artifacts/gpu-native-20261103/snapshot-poison-memcheck.log": "d561e521d326a5ad5ffdbaad2bf74e72d810ec409832e6613a734b985d910737",
+    "artifacts/gpu-native-20261103/snapshot-virgin-initcheck.log": "85f92042c766bd0c9bf95b203646e8c0266803e8a964b5fe0f1a16dc71ea1581"
+  },
+  "persistent_scene_bytes": 832656,
+  "omitted_bytes_per_scene": 849928,
+  "persistent_state": [
+    "AllBody/Shape/Contact caches, lists and pending deletes in World",
+    "AllSAP endpoints, pair/hash/free lists and queued pair callbacks in BroadPhase",
+    "Actor lookup mapping, copied separately"
+  ],
+  "transient_proof": "Constraintconstructor loads physicalmanifold impulses; unconditionalPreSolve resetspositionimpulse eveniterations0. Stack/order/manifold/constraint liveprefixes/sweptbounds rewrittenbeforeconsumption. Poisonandvirginallocation proofscoveredgewitnesses.",
+  "commands": [
+    "env -u CUDA_VISIBLE_DEVICES build-cuda-native-bounded/clone/cuda_native/irisu-native-snapshot-validate artifacts/cuda-native-20261103/dynamic-scene/packets.bin",
+    "env -u CUDA_VISIBLE_DEVICES /opt/cuda/compute-sanitizer/compute-sanitizer --tool initcheck --error-exitcode 98 build-cuda-native-bounded/clone/cuda_native/irisu-native-snapshot-validate artifacts/cuda-native-20261103/dynamic-scene/packets.bin --virgin-scratch"
+  ]
+}
