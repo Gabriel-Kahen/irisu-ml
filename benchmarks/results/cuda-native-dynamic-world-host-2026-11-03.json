@@ -1,0 +1,64 @@
+{
+  "schema": "irisu-independent-native-dynamic-world-host-v1",
+  "date": "2026-11-03",
+  "promotion_eligible": false,
+  "backend": "Distinct typed world, all three wrapper shapes, actual typed integer SAP/PairManager, no Guest/register interpreter/native fallback in implementation.",
+  "native_oracle_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+  "oracle_pin": "oracle_native.h held-FD SHA256 and dlopen same file, ELF32 actual MSVC methods/public wrappers.",
+  "result": {
+    "pass": true,
+    "dynamic_scenes": 16,
+    "steps_each": 192,
+    "native_fullstep_frames": 3072,
+    "field_comparisons": 54410190,
+    "all_shape_pairs": true,
+    "pair_add_remove": true,
+    "destroy_reuse": true,
+    "origin_velocity_setters": true,
+    "partial_proxy_creations": 4,
+    "frozen_origin_calls": 4,
+    "broadphase_live_state_and_free_lists": true,
+    "fallback_calls": 0
+  },
+  "corpus": "16 from-scratch native and typed worlds,192steps each; scales1/30; all circle/rectangle/triangle pairs, static floor and dynamic pieces, gravity, contact births/loss, stable DFS/edge order, velocity setter, origin teleport, deferred deletion, slot reuse/replacement. Four scenes add partial world-bound clamping and complete exits/freezing, including frozen-origin semantics.",
+  "compared": "Bitwise initialized body fields, flags, COM/current/prior transforms, independent cached matrices, physical velocities/forces/damping/mass/inertia/sleep; active shape vertices/normals/core/localOBB, proxy/material/filter data; canonical body/contact-list and contact-edge order; all active manifold points/impulses/IDs. Broadphase live endpoint/proxy/query fields, pair keys/status/next/normalized token order, entire hash table, free lists, counters/timestamps/world bounds/quantization.",
+  "not_compared": "Allocation addresses, custom trace IDs, padding, unused native shape/manifold slots, free-slot opaque userData and unused bounds/query/pairbuffer tails. These are not consumed by future physical execution. Full typed snapshot state is preserved within its own backend.",
+  "runtime_path": "ScenePipelineState::step cleans deferred contacts/bodies, collides, preserves DFS islands, builds/solves constraints, integrates/synchronizes, handles native InRange/Freeze, sleeps and commits SAP. Hot path walks live intrusive lists; maxpool validation/hash and fixed-pair guard are absent.",
+  "commands": {
+    "build": "c++ -m32 -std=c++20 -O2 -ffp-contract=off -fno-fast-math -I/opt/cuda/include tools/cuda-native/scene_dynamic_validate.cpp -ldl -lcrypto -o artifacts/cuda-native-20261103/dynamic-scene/validate",
+    "run": "timeout60s artifacts/cuda-native-20261103/dynamic-scene/validate pinned-native-library"
+  },
+  "source_snapshot": {
+    "path": "artifacts/cuda-native-20261103/dynamic-scene/source-snapshot",
+    "manifest_sha256": "eeaf8c8a25c7ed76636ab653e8e142210b12c894bb8ad145ab4ea55e76e6a2c0",
+    "source_sha256": {
+      "clone/cuda_native/types.hpp": "6764c26b03d10ecb29abdf6b8e0a0fbe57457549fdc8096b16e25ff0a21a39d7",
+      "clone/cuda_native/world.hpp": "11ccd005afec41ac8c10ee2060a774cbe682dd297db0c233d7aae394122261b7",
+      "clone/cuda_native/world_shapes.hpp": "a57a96737d713765901e8735c28504465585c8906aeac122b8177b3d1d5f35d3",
+      "clone/cuda_native/world_contacts.hpp": "6f72e836de47b20d5e693121a873871af29ad720a4d86a99e3460f90f69c20fa",
+      "clone/cuda_native/world_pipeline.hpp": "244ad2ca5f83b56d64f416803810cc7c5144cd4e1287b715afcfa4fc2b474fce",
+      "clone/cuda_native/world_scene.hpp": "698e98b0682baba6c13414c3e5eb2ea7d1247aa1142bc26c33f7ded4a488cf13",
+      "clone/cuda_native/solver_math.hpp": "8463aa8ab69d9af2f72b6fafee0ae378b3a7e00d8c6afd721bda7ee1902cb939",
+      "clone/cuda_native/solver.hpp": "1d36a4f7e739af6958486121b88454c161bca267df4e96a11ee9a89b530823ff",
+      "clone/cuda_native/collision.hpp": "38c8578f0ac64bf1ed2e2c3ae8f22e967a1ca992bad25e3ee85ec733d3008fa6",
+      "clone/cuda_native/factory.hpp": "3ab2cef30efa346baae00655b834cd27b5720573349f46817a12d57dbe37c688",
+      "clone/cuda_native/broadphase.hpp": "0678b3c434508301931daf35b0a1176a6ee46c825f498266420d96a6bc20c378",
+      "clone/cuda_native/broadphase_algorithm.inc": "d666412957b87b68722a72d3c014ceb227651961ed458794b4ff103283e99fb3",
+      "tools/cuda-exact/x87_numeric.cuh": "ce53bc2730e24227ebc83cf95699a75bb81b8f1739d8ead0d9764a25825b3a5e",
+      "tools/cuda-native/scene_native.hpp": "e0f32fd92e49589504c5da3128c791e9004b74e949e2c6f7aacac8847defd36a",
+      "tools/cuda-native/scene_dynamic_validate.cpp": "f4e16aee16f15af18efd7fdb7adb6723537f2099a29ed6d7982c4867d54c43a0",
+      "tools/cuda-native/oracle_native.h": "ffce80e395aa5655e2e52241cfff70fadc506dde423dc3ed1b864946dc40ef26"
+    }
+  },
+  "artifacts": {
+    "artifacts/cuda-native-20261103/dynamic-scene/build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/cuda-native-20261103/dynamic-scene/result.json": "1f28a7b9713ceb1e846399f6f30a81e1dd1b39b7670158784d4faccaaf199117",
+    "artifacts/cuda-native-20261103/dynamic-scene/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/cuda-native-20261103/dynamic-scene/validate": "326cbe2b6d99f5a21da653a4ad2470dec57dadc2e82b4d2044e6daf4b900bbba"
+  },
+  "limits": [
+    "This receipt is a host full-scene hidden-state gate; GPU dynamic scene qualification and throughput are separate.",
+    "Irisu wrapper construction domain: one shape per body, no joints. Numeric domain follows shared strict PC53 helpers and fails closed outside admission.",
+    "Historical fixed-circle GPU512frames+memcheck, all-shape collision/solver/factory/SAP GPU component gates and the full-game record are separately tracked; this gate does not replace them."
+  ]
+}

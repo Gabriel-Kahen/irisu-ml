@@ -50,6 +50,10 @@ struct Api {
   void* (*circle)(void*,float,float,float,float,float,float){};
   void* (*box)(void*,float,float,float,float,float,float,float,float){};
   void* (*triangle)(void*,float,float,float,float,float,float,float,float){};
+  void (*destroy_body)(void*,void*){};
+  void (*set_velocity)(void*,void*,float,float){};
+  void (*set_origin)(void*,void*,float,float,float){};
+  void (*set_tag)(void*,void*,void*){};
   Api(const char* path):native(oracle_open(path)){
     create=reinterpret_cast<decltype(create)>(dlsym(native.library,"b2d_world_create"));
     destroy=reinterpret_cast<decltype(destroy)>(dlsym(native.library,"b2d_world_destroy"));
@@ -57,7 +61,11 @@ struct Api {
     circle=reinterpret_cast<decltype(circle)>(dlsym(native.library,"b2d_world_create_circle"));
     box=reinterpret_cast<decltype(box)>(dlsym(native.library,"b2d_world_create_box"));
     triangle=reinterpret_cast<decltype(triangle)>(dlsym(native.library,"b2d_world_create_triangle"));
-    if(!create||!destroy||!step||!circle||!box||!triangle)throw std::runtime_error("native scene API missing");
+    destroy_body=reinterpret_cast<decltype(destroy_body)>(dlsym(native.library,"b2d_world_destroy_body"));
+    set_velocity=reinterpret_cast<decltype(set_velocity)>(dlsym(native.library,"b2d_world_set_v"));
+    set_origin=reinterpret_cast<decltype(set_origin)>(dlsym(native.library,"b2d_world_set_position"));
+    set_tag=reinterpret_cast<decltype(set_tag)>(dlsym(native.library,"b2d_world_set_user_data"));
+    if(!create||!destroy||!step||!circle||!box||!triangle||!destroy_body||!set_velocity||!set_origin||!set_tag)throw std::runtime_error("native scene API missing");
   }
   ~Api(){oracle_close(&native);}
 };

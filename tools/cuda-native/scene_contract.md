@@ -11,21 +11,30 @@ reclaims storage at the next cleanup stage. A copy needs no pointer rebinding.
 `restore` checks the body/deferred lists before replacing the destination.
 
 `step_shape_free` is an independent shape-free path. `step_fixed_circle_pairs`
-is the interim circle pipeline. The latter imports native-created geometry,
-mass/COM, caches, and initial contact topology before entering the hot path.
-It then runs typed collision, contact-graph transitions, DFS islands, force and
+retains the first, fixed-topology circle qualifier. The concrete
+`ScenePipelineState` in `world_scene.hpp` now owns the typed world, integer
+SAP/PairManager, and nonsemantic solver scratch. Its normal step runs typed
+collision, contact-graph transitions, DFS islands, force and
 damping integration, constraint construction, PreSolve, velocity iterations,
 position integration, position iterations, PostSolve, shape synchronization,
 force clearing, and island sleep. Warm starting and position correction use
-the pinned wrapper's enabled defaults. No joints are admitted.
+the pinned wrapper's enabled defaults, and native-order pair commit. No joints
+are admitted. Hot steps traverse live intrusive lists; full-pool validation
+and comparison hashes are outside the normal step.
 
-Pair creation/removal and out-of-range shapes return `bridge_required` and
-invalidate the advanced lane. The guard checks the complete eligible circle
-pair set against swept AABBs. It is intentionally conservative; it does not
-stand in for integer broadphase state, proxy ordering, or PairManager callback
-ordering. Native import is initialization, not a per-step fallback. Native
-shape construction, general broadphase, polygon scene steps, the Simulator
-adapter, and full-game parity remain separate qualification requirements.
+Only fixed-pair mode uses the conservative swept-pair guard and rejects pair
+transitions. The normal scene path creates/removes pairs through the actual
+typed SAP, preserves callback order, accepts partially out-of-range proxies
+under native InRange semantics, and freezes/destroys proxies when needed.
+Cold body/shape construction uses the independent factory. Native import is
+oracle access, not a runtime fallback.
+
+The scene API accepts world units. `initialize(bounds,gravity)` resets storage
+and SAP; the caller creates the native shape-free ground body explicitly.
+`create_body_shape` supports one shape per body, matching the Irisu wrappers.
+`queue_destroy` defers reclamation until step cleanup. `set_velocity` stores
+raw velocity without waking; `set_origin` includes the wrapper's unconditional
+zero linear velocity, even when the frozen body ignores the transform.
 
 The operation graph was checked against the pinned MSVC methods:
 
@@ -50,7 +59,16 @@ These pointer fields are mapped to indices outside the device hot path.
 `scene_wire.hpp` defines a versioned stream of semantic32-bit words. It does
 not use `sizeof(ShapeState)` as a wire contract. All active body fields, shape
 caches, contact-list/edge indices, and all60 manifold bytes enter the per-step
-digest, including unused manifold slots. Scratch arrays and padding do not.
+fixed-topology digest, including unused manifold slots. Scratch arrays and
+padding do not. Version2 appends polygon core/OBB and world bookkeeping; the
+reader retains version1 support.
+
+Dynamic native comparisons canonicalize allocation indices by body tags and
+contact-list/edge order. They compare active initialized manifold points and
+geometry, live broadphase endpoints/proxies/pairs, hash tables, free lists,
+timestamps and active queries. Opaque uninitialized native allocator contents
+are not a cross-backend equality requirement. Typed scene snapshots preserve
+their complete own state, including pending SAP buffers, without rebinding.
 
 The GPU qualifier hashes every step and scans fixed-capacity storage for
 comparison. Its measured kernel time includes that instrumentation and is not
