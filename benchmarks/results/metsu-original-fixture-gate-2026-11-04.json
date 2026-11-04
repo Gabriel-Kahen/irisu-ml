@@ -1,0 +1,166 @@
+{
+  "schema": "irisu-metsu-original-fixture-check-v1",
+  "scope": "recorded original-state regression; not a new original-process execution",
+  "manifest_sha256": "3cd26b33e0e1e75a5033c4323fb5387349be54bdf1220ee80a810a16d828f7de",
+  "tracer_sha256": "a9143db60e18cb840343d5c66f79b3043317b57a6d9c9d7b4b8a6ce7076e1a97",
+  "config_hash": "1958987580749614460",
+  "projection": {
+    "schema": "irisu-metsu-observed-frame-v1",
+    "scalar_fields": [
+      "tick",
+      "score",
+      "gauge",
+      "level",
+      "qualifying_clears",
+      "highest_chain",
+      "rng_calls",
+      "pool_colors"
+    ],
+    "actor_fields": [
+      "role",
+      "ex",
+      "ex_timer",
+      "color",
+      "size_slot",
+      "size_bits",
+      "x_bits",
+      "y_bits",
+      "angle_bits",
+      "vx_bits",
+      "vy_bits",
+      "physics_updates",
+      "age",
+      "remaining_lifetime",
+      "freshness",
+      "grouped",
+      "physics_owned",
+      "special",
+      "rot_timer",
+      "projectile_hits",
+      "clear_pending",
+      "delete_marked",
+      "non_wall_contacts",
+      "gate_seen",
+      "gate_enabled",
+      "group_chain",
+      "group_shadow",
+      "group_num"
+    ],
+    "finish_fields": [
+      "finish_call_count",
+      "terminal_metadata_recorded",
+      "recorded_final_score",
+      "recorded_final_level",
+      "recorded_final_chain",
+      "recorded_final_clears"
+    ],
+    "actor_identity": "ascending original actor-pool slot",
+    "group_identity": "partition of all live non-null group links, including pending EX",
+    "encoding": "SHA256 over uint32-le byte length then UTF-8 compact sorted-key JSON for each frame"
+  },
+  "fixtures": [
+    {
+      "name": "browser-export",
+      "passed": true,
+      "normalized_state_sha256": "a8965b6b5f64eeaa6e22e4060563f1e21df865eb5c1d5c1e947475b6f269ae21",
+      "frames": 3943,
+      "actor_states": 57778,
+      "group_partitions": 3943,
+      "canonical_first_finish": {
+        "score": 40,
+        "level": 1,
+        "chain": 2
+      },
+      "metadata": {
+        "boundary": "after-actor-pass",
+        "config_hash": "1958987580749614460",
+        "executed_command": [
+          "/home/gabe/.codex/worktrees/irisu-metsu/irisu/build-metsu-exact/irisu-metsu-trace",
+          "/home/gabe/.codex/worktrees/irisu-metsu/irisu/tests/fixtures/metsu/browser-export.rpy",
+          "18d630363610072e123182421353db9ef79a2df2fee4f9473c72d4499a545e9e"
+        ],
+        "mode": 1,
+        "physics_backend": "exact-msvc9-r58-metsu-forward",
+        "replay_bytes": 15820,
+        "replay_input_count": 3942,
+        "replay_sha256": "18d630363610072e123182421353db9ef79a2df2fee4f9473c72d4499a545e9e",
+        "requested_inputs": 3942,
+        "schema": "irisu-metsu-state-trace-v1",
+        "seed": 1274909209,
+        "source": "native",
+        "tracer_sha256": "a9143db60e18cb840343d5c66f79b3043317b57a6d9c9d7b4b8a6ce7076e1a97",
+        "type": "metadata",
+        "x87_cw": 639
+      }
+    },
+    {
+      "name": "original-generated",
+      "passed": true,
+      "normalized_state_sha256": "701de78298eb726dc1a5c37e55c8f3ac9ac3a882482316a6cd619ab89008010a",
+      "frames": 2995,
+      "actor_states": 41999,
+      "group_partitions": 2995,
+      "canonical_first_finish": {
+        "score": 0,
+        "level": 1,
+        "chain": 0
+      },
+      "metadata": {
+        "boundary": "after-actor-pass",
+        "config_hash": "1958987580749614460",
+        "executed_command": [
+          "/home/gabe/.codex/worktrees/irisu-metsu/irisu/build-metsu-exact/irisu-metsu-trace",
+          "/home/gabe/.codex/worktrees/irisu-metsu/irisu/tests/fixtures/metsu/original-generated.rpy",
+          "c445ae72494ac25599b2aea5629772548b0a6daba8c357ccddf69f75c2ac38cc"
+        ],
+        "mode": 1,
+        "physics_backend": "exact-msvc9-r58-metsu-forward",
+        "replay_bytes": 12028,
+        "replay_input_count": 2994,
+        "replay_sha256": "c445ae72494ac25599b2aea5629772548b0a6daba8c357ccddf69f75c2ac38cc",
+        "requested_inputs": 2994,
+        "schema": "irisu-metsu-state-trace-v1",
+        "seed": 45541046,
+        "source": "native",
+        "tracer_sha256": "a9143db60e18cb840343d5c66f79b3043317b57a6d9c9d7b4b8a6ce7076e1a97",
+        "type": "metadata",
+        "x87_cw": 639
+      }
+    },
+    {
+      "name": "controlled-level4",
+      "passed": true,
+      "normalized_state_sha256": "0b13c7ec4f31d4876ca34a6de70be180eff05d804315e9f6e8bb4441c299c651",
+      "frames": 4653,
+      "actor_states": 271122,
+      "group_partitions": 4653,
+      "canonical_first_finish": {
+        "score": 426,
+        "level": 4,
+        "chain": 3
+      },
+      "metadata": {
+        "boundary": "after-actor-pass",
+        "config_hash": "1958987580749614460",
+        "executed_command": [
+          "/home/gabe/.codex/worktrees/irisu-metsu/irisu/build-metsu-exact/irisu-metsu-trace",
+          "/home/gabe/.codex/worktrees/irisu-metsu/irisu/tests/fixtures/metsu/controlled-level4.rpy",
+          "c76a26c0f1b5a8526efaf53f41d704e5275c608077d07cb1d6ca4d782d632fa8"
+        ],
+        "mode": 1,
+        "physics_backend": "exact-msvc9-r58-metsu-forward",
+        "replay_bytes": 18660,
+        "replay_input_count": 4652,
+        "replay_sha256": "c76a26c0f1b5a8526efaf53f41d704e5275c608077d07cb1d6ca4d782d632fa8",
+        "requested_inputs": 4652,
+        "schema": "irisu-metsu-state-trace-v1",
+        "seed": 1,
+        "source": "native",
+        "tracer_sha256": "a9143db60e18cb840343d5c66f79b3043317b57a6d9c9d7b4b8a6ce7076e1a97",
+        "type": "metadata",
+        "x87_cw": 639
+      }
+    }
+  ],
+  "passed": true
+}

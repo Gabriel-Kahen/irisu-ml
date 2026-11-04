@@ -28,3 +28,21 @@ See [the comparison workflow](../../../tools/metsu/REPLAY_INTERCHANGE.md)
 and [the qualification report](../../../benchmarks/results/metsu-replay-interoperability-2026-11-03.json)
 for full state coverage, provenance, browser actions, and limits. A finite set
 of matching replays is not proof that every possible run matches.
+
+Qualify a newly compiled exact tracer against the recorded original states:
+
+```sh
+python3 tools/metsu/check_replay_fixtures.py \
+  --tracer build-metsu-exact/irisu-metsu-trace \
+  --output .tmp/metsu-original-fixture-check.json
+```
+
+The read-only check uses `original-state-digests.json`, derived exclusively from
+the three complete original-process traces pinned there by SHA-256, along with
+their capture receipts, comparison reports and replay inputs. It checks every
+reset/update row: eight scalar fields (including all 200 pool colors), 28 actor
+fields with exact float32 bits, six finish fields and normalized live group
+sharing. It also requires complete input coverage, a natural finish and the
+canonical replay header. Original executables and raw traces are not needed
+to run the gate. This guards the recorded coverage when changing compilers;
+it does not extend that coverage or repeat an original-game execution.

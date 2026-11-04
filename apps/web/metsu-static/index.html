@@ -6,12 +6,18 @@
   <meta name="theme-color" content="#070a0b">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; style-src 'self'; connect-src 'self'; img-src 'self'">
   <title>irisu · Metsu</title>
-  <link rel="stylesheet" href="./styles.css?v=metsu-20261103d">
+  <link rel="stylesheet" href="./styles.css?v=metsu-20261104a">
 </head>
 <body>
   <main class="app">
     <header>
-      <div class="brand">irisu</div>
+      <div class="brand-group">
+        <div class="brand">irisu</div>
+        <nav class="mode-switch" aria-label="Game mode">
+          <a href="../normal/">normal</a>
+          <a href="./" aria-current="page">metsu</a>
+        </nav>
+      </div>
       <div class="header-actions">
         <button id="openReplayButton" type="button" disabled>play replay</button>
         <input id="replayFileInput" type="file" accept=".rpy,application/octet-stream" hidden>

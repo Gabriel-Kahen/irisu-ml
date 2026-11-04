@@ -10,6 +10,8 @@ if(IRISU_BUILD_TESTS)
       "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_metsu_state_comparison.py")
     add_test(NAME irisu-metsu-original-capture-tests COMMAND
       "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_original_replay_runner.py")
+    add_test(NAME irisu-metsu-replay-fixture-tests COMMAND
+      "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/test_metsu_replay_fixtures.py")
   endif()
 endif()
 

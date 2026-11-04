@@ -1,9 +1,9 @@
 # Separate Metsu web client
 
 Metsu uses `metsu-static/`, a separate mode-1 exact worker, and a separate
-runtime manifest/cache. The normal `static/`, build scripts, pinned runtime,
-and deployment workflow are unchanged. This is a local build path; it does
-not publish the site.
+runtime manifest/cache. The normal gameplay, standalone build scripts and
+pinned runtime remain separate. The shared site build adds mode navigation
+and includes both clients in the Pages artifact. Local builds do not publish.
 
 The client keeps normal's controls, run recording, original-format replay
 transport, seeking, pause/restart, and fast-forward. It accepts and saves only
@@ -33,20 +33,19 @@ IRISU_METSU_RUNTIME_DIR="$PWD/build-metsu-web/runtime" \
 python3 -m http.server 8001 --directory build-metsu-web/site
 ```
 
-Open `http://127.0.0.1:8001/metsu/`. To preview both clients together, build
-normal into the parent site directory first, then stage Metsu beneath it:
+Open `http://127.0.0.1:8001/metsu/`. To preview both clients and all three
+routes, use the combined builder:
 
 ```sh
 IRISU_EXACT_RUNTIME_DIR="$PWD/.local/normal-web-runtime" \
-  apps/web/build-static.sh build-metsu-web/combined-site
 IRISU_METSU_RUNTIME_DIR="$PWD/build-metsu-web/runtime" \
-  apps/web/build-metsu-static.sh build-metsu-web/combined-site/metsu
+  apps/web/build-site.sh build-metsu-web/combined-site
 python3 -m http.server 8001 --directory build-metsu-web/combined-site
 ```
 
-Normal remains at `/`; Metsu is at `/metsu/`. Rebuilding the parent site
-requires staging Metsu again afterwards. Neither command changes the source
-of the other client.
+Normal opens at `/` and `/normal/`; Metsu opens at `/metsu/`. Header links
+switch modes. The normal alias reuses the root's runtime rather than copying
+it. The standalone builders remain available for each client independently.
 
 ## Runtime verification and provenance
 

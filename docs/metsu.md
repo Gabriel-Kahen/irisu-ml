@@ -50,7 +50,8 @@ magic/schema and preserve EX countdowns explicitly.
 
 Follow [the separate web build guide](../apps/web/METSU.md) to prepare the
 Metsu runtime and stage it under `/metsu/`. The normal static build and runtime
-stay at `/`. Metsu has its own cache namespace and content-derived runtime
+stay at `/`, with `/normal/` as a direct alias. The header links switch between
+normal and Metsu. Metsu has its own cache namespace and content-derived runtime
 identity, nine colors, EX-circle markers, and mode-1 replay loading/saving.
 Runtime preparation verifies native/v86 response parity before marking the
 artifact ready. Local builds do not publish or replace the deployed normal site.
@@ -121,10 +122,13 @@ the released worker, rather than comparing two newly modified workers.
 The [development separation contract](metsu-development.md) records ownership
 of the mode boundaries.
 
-The [final normal replay gate](../benchmarks/results/metsu-final-normal-regression-2026-11-03.json)
+The [replay-qualification checkpoint's normal gate](../benchmarks/results/metsu-final-normal-regression-2026-11-03.json)
 passed all 97,219 ticks and 188,356,329 response bytes with zero mismatches;
 its canonical result remains 4,393,101 points, level 100, chain 70. The final
 normal worker is byte-identical to the pristine pre-Metsu baseline build. The
 [protected-source check](../benchmarks/results/metsu-protected-normal-source-2026-11-03.json)
-confirms that normal gameplay/physics sources, headers, browser assets and
-normal web build/runtime scripts remain unchanged from `13023da`.
+confirmed that normal gameplay/physics sources, headers, browser assets and
+normal web build/runtime scripts were unchanged from `13023da` at that checkpoint.
+Subsequent shared-site routing adds header links and styles to both clients,
+a normal alias and combined deployment packaging. It does not change normal
+gameplay, replay handling, worker bytes, or the pinned runtime.

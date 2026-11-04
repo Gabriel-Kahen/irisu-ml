@@ -1,0 +1,45 @@
+{
+  "schema": "irisu-site-mode-routing-v1",
+  "date_local": "2026-11-04",
+  "routes": {
+    "/": "normal",
+    "/normal/": "normal",
+    "/metsu/": "metsu"
+  },
+  "bare_route_behavior": "/normal and /metsu redirect to directory URLs, then load their clients directly",
+  "mode_switch": "Normal / Metsu links beside the site name; current mode marked with aria-current",
+  "normal_alias": "Generated index with base ../ reuses all root scripts, soundtrack, worker and cache",
+  "runtime_isolation": "Metsu remains under /metsu/exact-runtime with its own identity and cache namespace",
+  "normal_worker_sha256": "8ef81521e81a5b2a764c305ac48dad997b28476bcd2fccbd1c9aed9603322854",
+  "metsu_source_worker_sha256": "b603cae7f0714709b1de14162ff897940fc503224d4bf5c98beb12f0ff51fd02",
+  "normal_and_metsu_runtime_inputs_unchanged": true,
+  "browser_checks": [
+    "Root loads normal exact-v86 and marks Normal active",
+    "Metsu link opens /metsu/ and boots its exact-v86 runtime",
+    "Normal link opens /normal/ and boots the root normal runtime",
+    "Normal alias loads root app.js and soundtrack assets without nested runtime copies"
+  ],
+  "tests": {
+    "web_cases": 84,
+    "passed": 84,
+    "combined_build_cases": 3,
+    "workflow_yaml": "parsed successfully",
+    "shell_syntax": "passed",
+    "original_fixture_checker_cases": 5,
+    "original_state_gate": {
+      "passed": true,
+      "fixtures": 3,
+      "frames": 11591,
+      "actor_states": 370899,
+      "group_partitions": 11591,
+      "report": "benchmarks/results/metsu-original-fixture-gate-2026-11-04.json"
+    }
+  },
+  "deployment": "Pages workflow updated; no GitHub Actions run or production deployment performed in this task",
+  "preview": "http://127.0.0.1:8768/",
+  "screenshots": [
+    "artifacts/mode-route-normal.png",
+    "artifacts/mode-route-metsu.png",
+    "artifacts/mode-route-default-normal.png"
+  ]
+}
