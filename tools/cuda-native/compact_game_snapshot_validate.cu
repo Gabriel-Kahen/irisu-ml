@@ -123,6 +123,10 @@ int main(int argc,char** argv){try{
   auto* game_plan=memory.allocate<c::GamePlan>();auto* scene_plan=memory.allocate<c::Plan>();auto* result=memory.allocate<Result>();
   auto* inputs=memory.allocate<std::uint32_t>(words.size());auto* expected=memory.allocate<Frame>(ticks);
   check(cudaMemcpy(current,source.get(),sizeof(Game),cudaMemcpyHostToDevice));check(cudaMemcpy(current_scene,scene.get(),sizeof(Scene),cudaMemcpyHostToDevice));
+  // Match the runner's real cold storage. Initcheck tests virgin SceneScratch,
+  // not uninitialized persistent padding consumed by representation checks.
+  // Default poison mode still overwrites the whole compact Game each snapshot.
+  check(cudaMemset(compact,0,sizeof(Game)));check(cudaMemset(compact_scene,0,offsetof(Scene,scratch)));
   check(cudaMemcpy(inputs,words.data(),words.size()*4,cudaMemcpyHostToDevice));
   check(cudaMemcpy(expected,native.data()+(std::size_t(prefix)+1)*sizeof(Frame),ticks*sizeof(Frame),cudaMemcpyHostToDevice));
   check(cudaMemset(result,0,sizeof(Result)));
@@ -130,8 +134,8 @@ int main(int argc,char** argv){try{
     inputs,expected,prefix,ticks,virgin,game_plan,scene_plan,result);check(cudaGetLastError());check(cudaDeviceSynchronize());
   Result observed{};check(cudaMemcpy(&observed,result,sizeof(observed),cudaMemcpyDeviceToHost));
   if(observed.failure||observed.snapshots!=ticks||observed.native_frames!=ticks){std::fprintf(stderr,"phase%u offset%u snapshots%u native_frames%u\n",observed.phase,observed.offset,observed.snapshots,observed.native_frames);throw std::runtime_error("compact game continuation mismatch");}
-  std::printf("{\"pass\":true,\"performance_claim\":false,\"prefix_backend\":\"typed-host-checked\",\"prefix\":%u,\"snapshots\":%u,\"actual_native_frame_checks\":%u,\"virgin\":%s,\"warm_point_witnesses\":%u,\"pending_delete_snapshots\":%u,\"sleeping_body_witnesses\":%u,\"frozen_body_witnesses\":%u,\"game_transport_bytes_sum\":%llu,\"scene_transport_bytes_sum\":%llu,\"live_game_value_fields_and_active_scene_equal_before_after\":true,\"live_element_padding_mismatches_ignored\":%llu,\"pointer_tails_zero_restored\":true,\"inactive_payload_equality\":false,\"full_SAP_bytes_preserved\":true,\"fallback_calls\":0}\n",
-    prefix,observed.snapshots,observed.native_frames,virgin?"true":"false",observed.warm,observed.pending,observed.sleeping,observed.frozen,
+  std::printf("{\"pass\":true,\"performance_claim\":false,\"prefix_backend\":\"typed-host-checked\",\"prefix\":%u,\"snapshots\":%u,\"actual_native_frame_checks\":%u,\"virgin\":%s,\"virgin_scope\":\"%s\",\"all_persistent_storage_initialized_once\":true,\"warm_point_witnesses\":%u,\"pending_delete_snapshots\":%u,\"sleeping_body_witnesses\":%u,\"frozen_body_witnesses\":%u,\"game_transport_bytes_sum\":%llu,\"scene_transport_bytes_sum\":%llu,\"live_game_value_fields_and_active_scene_equal_before_after\":true,\"live_element_padding_mismatches_ignored\":%llu,\"pointer_tails_zero_restored\":true,\"inactive_payload_equality\":false,\"full_SAP_bytes_preserved\":true,\"fallback_calls\":0}\n",
+    prefix,observed.snapshots,observed.native_frames,virgin?"true":"false",virgin?"SceneScratch only; all persistent Game/Scene storage initialized once":"none; Game and SceneScratch poisoned each snapshot",observed.warm,observed.pending,observed.sleeping,observed.frozen,
     static_cast<unsigned long long>(observed.game_bytes),static_cast<unsigned long long>(observed.scene_bytes),static_cast<unsigned long long>(observed.padding_ignored));
   return 0;
 }catch(const std::exception& error){std::fprintf(stderr,"compact-game-snapshot-validate: %s\n",error.what());return 1;}}

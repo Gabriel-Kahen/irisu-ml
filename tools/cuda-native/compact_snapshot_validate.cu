@@ -157,10 +157,12 @@ int main(int argc,char** argv){try{
   auto* physical_actors=memory.allocate<SceneActors>(lanes);auto* programs=memory.allocate<SceneCase>(count);
   auto* native_hashes=memory.allocate<std::uint64_t>(expected.size());auto* failures=memory.allocate<Failure>(1);
   auto* counters=memory.allocate<Counts>(lanes);auto* plans=memory.allocate<compact_snapshot::Plan>(lanes);
-  // Only host construction produces the empty template. The physical scratch
-  // allocation is deliberately never initialized in --virgin-scratch mode.
+  // Match the actual fast path: persistent pool payload/padding is initialized
+  // once; only SceneScratch stays virgin in --virgin-scratch mode. A new live
+  // slot may retain memberwise-copy padding, which byte comparisons also read.
   const auto empty=std::make_unique<ScenePipelineState>();
   for(unsigned i=0;i<lanes;++i)check(cudaMemcpy(current+i,empty.get(),sizeof(*empty),cudaMemcpyHostToDevice));
+  check(cudaMemset2D(physical,sizeof(ScenePipelineState),0,persistent_bytes,lanes));
   check(cudaMemset(current_actors,0,lanes*sizeof(SceneActors)));
   check(cudaMemset(failures,0,sizeof(Failure)));check(cudaMemset(counters,0,lanes*sizeof(Counts)));
   check(cudaMemcpy(programs,cases.data(),cases.size()*sizeof(SceneCase),cudaMemcpyHostToDevice));
@@ -190,8 +192,8 @@ int main(int argc,char** argv){try{
   }
   if(total.snapshots!=lanes*ticks||total.native_frames!=count*ticks*3||!total.zero_steps||!total.warm_zero_steps||
      !total.pending_destroy||!total.origin_calls||!total.sleeping||!total.frozen)throw std::runtime_error("required snapshot edge-case witness missing");
-  std::printf("{\"pass\":true,\"snapshot_profile\":\"active-World-and-full-SAP\",\"performance_claim\":false,\"virgin_scratch\":%s,\"native_cases\":%u,\"ticks_each\":%u,\"lanes\":%u,\"snapshots\":%u,\"native_frame_checks\":%u,\"zero_iteration_steps\":%u,\"warm_zero_iteration_steps\":%u,\"pending_destroy_witnesses\":%u,\"origin_calls\":%u,\"sleeping_body_witnesses\":%u,\"frozen_body_witnesses\":%u,\"scene_bytes\":%zu,\"full_physical_prefix_bytes\":%zu,\"scratch_bytes\":%zu,\"all_active_bytes_and_metadata_equal_before_and_after\":true,\"inactive_payload_equality\":false,\"actor_mapping_bytes_equal\":true,\"pool_scan_and_reachable_list_clear\":true,\"summed_scene_transport_bytes\":%llu,\"fallback_calls\":0}\n",
-    virgin?"true":"false",count,ticks,lanes,total.snapshots,total.native_frames,total.zero_steps,total.warm_zero_steps,
+  std::printf("{\"pass\":true,\"snapshot_profile\":\"active-World-and-full-SAP\",\"performance_claim\":false,\"virgin_scratch\":%s,\"virgin_scope\":\"%s\",\"persistent_prefix_initialized_once\":true,\"native_cases\":%u,\"ticks_each\":%u,\"lanes\":%u,\"snapshots\":%u,\"native_frame_checks\":%u,\"zero_iteration_steps\":%u,\"warm_zero_iteration_steps\":%u,\"pending_destroy_witnesses\":%u,\"origin_calls\":%u,\"sleeping_body_witnesses\":%u,\"frozen_body_witnesses\":%u,\"scene_bytes\":%zu,\"full_physical_prefix_bytes\":%zu,\"scratch_bytes\":%zu,\"all_active_bytes_and_metadata_equal_before_and_after\":true,\"inactive_payload_equality\":false,\"actor_mapping_bytes_equal\":true,\"pool_scan_and_reachable_list_clear\":true,\"summed_scene_transport_bytes\":%llu,\"fallback_calls\":0}\n",
+    virgin?"true":"false",virgin?"SceneScratch only; persistent pool storage initialized once":"none; SceneScratch poisoned",count,ticks,lanes,total.snapshots,total.native_frames,total.zero_steps,total.warm_zero_steps,
     total.pending_destroy,total.origin_calls,total.sleeping,total.frozen,sizeof(ScenePipelineState),persistent_bytes,sizeof(SceneScratch),static_cast<unsigned long long>(total.scene_transport_bytes));
   return 0;
 }catch(const std::exception& error){std::fprintf(stderr,"compact-snapshot-validate: %s\n",error.what());return 1;}}
