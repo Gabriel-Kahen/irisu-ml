@@ -91,8 +91,8 @@ class NativePhysicsWorld {
   GAME_HD void set_wrapped_velocity(std::uint32_t slot,Vec2 velocity){
     irisu::cuda_native::math::Context m;
     // Preserve both the caller's scale multiplication and wrapper's division.
-    const auto x=m.store(m.div(m.mul_store(static_cast<float>(velocity.x),scale()),scale()));
-    const auto y=m.store(m.div(m.mul_store(static_cast<float>(velocity.y),scale()),scale()));
+    const auto x=m.div_store(m.mul_store(static_cast<float>(velocity.x),scale()),scale());
+    const auto y=m.div_store(m.mul_store(static_cast<float>(velocity.y),scale()),scale());
     if(!m.ok()){fail(m.status);return;}accept(scene_->set_velocity(slot,{x,y}));
   }
   GAME_HD NATIVE_GAME_CALL std::uint32_t construct(unsigned kind,float width,float height,float x,float y,float angle,
@@ -121,7 +121,7 @@ class NativePhysicsWorld {
     const auto requested=b.native_velocity;
     if(!same(b.position,e.position)||b.angle!=e.angle){
       irisu::cuda_native::math::Context m;
-      const NativeVec origin{m.store(m.div(float(b.position.x),scale())),m.store(m.div(float(b.position.y),scale()))};
+      const NativeVec origin{m.div_store(float(b.position.x),scale()),m.div_store(float(b.position.y),scale())};
       if(!m.ok()){fail(m.status);return;}
       if(!accept(scene_->set_origin(e.slot,origin,float(b.angle))))return;
       b.native_position={static_cast<double>(float(b.position.x))/scale(),static_cast<double>(float(b.position.y))/scale()};
@@ -142,9 +142,9 @@ class NativePhysicsWorld {
   GAME_HD bool failed() const {return !scene_||scene_->world.status!=irisu::cuda_native::Status::ok||entries_.overflow||contacts_.overflow;}
   GAME_HD NATIVE_GAME_CALL void reset(){
     if(!scene_)return;using namespace irisu::cuda_native;math::Context m;
-    const AABB bounds{{m.store(m.div(float(config_.world_min_x),scale())),m.store(m.div(float(config_.world_min_y),scale()))},
-      {m.store(m.div(float(config_.world_max_x),scale())),m.store(m.div(float(config_.world_max_y),scale()))}};
-    const NativeVec gravity{0,m.store(m.div(float(config_.gravity_y),scale()))};
+    const AABB bounds{{m.div_store(float(config_.world_min_x),scale()),m.div_store(float(config_.world_min_y),scale())},
+      {m.div_store(float(config_.world_max_x),scale()),m.div_store(float(config_.world_max_y),scale())}};
+    const NativeVec gravity{0,m.div_store(float(config_.gravity_y),scale())};
     entries_.clear();contacts_.clear();ordered_.clear();
 #if defined(IRISU_CUDA_NATIVE_ENTRY_INDEX) && IRISU_CUDA_NATIVE_ENTRY_INDEX
     entry_index_.reset();

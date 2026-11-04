@@ -44,7 +44,7 @@ NATIVE_HD inline Vec2 inverse_rotate(math::Context& m,const Mat22& R,Vec2 v){
 NATIVE_HD inline float normalize(math::Context& m,Vec2& v){
   const float length=m.store(m.sqrt(dot(m,v,v)));
   if(length<0x1p-23f)return 0.0f;
-  const float inverse=m.store(m.div(1,length));v=scale(m,inverse,v);return length;
+  const float inverse=m.div_store(1,length);v=scale(m,inverse,v);return length;
 }
 NATIVE_HD inline bool finite(Vec2 v){return math::finite(v.x)&&math::finite(v.y);}
 NATIVE_HD inline void point(math::Context& m,Manifold& out,const ShapeState& circle,float separation){
@@ -57,7 +57,7 @@ NATIVE_HD inline unsigned clip(math::Context& m,ClipVertex* out,const ClipVertex
   const float b=m.sub_store(dot(m,normal,in[1].position),offset);
   unsigned count=0;if(a<=0)out[count++]=in[0];if(b<=0)out[count++]=in[1];
   if(m.mul(a,b)<0){
-    const float fraction=m.store(m.div(a,m.sub(a,b)));
+    const float fraction=m.div_store(a,m.sub(a,b));
     out[count].position=add(m,in[0].position,scale(m,fraction,subtract(m,in[1].position,in[0].position)));
     out[count++].id=a>0?in[0].id:in[1].id;
   }
@@ -128,7 +128,7 @@ NATIVE_HD inline StageResult collide_circle(Manifold& manifold,const ShapeState&
   }else{
     const float distance=m.store(m.sqrt(distance_squared));
     separation=m.sub_store(distance,radius_sum);
-    const float inverse=m.store(m.div(1,distance));
+    const float inverse=m.div_store(1,distance);
     out.normal={m.mul_store(inverse,dx),m.mul_store(inverse,dy)};
   }
   // Native vector multiplication stores both components before subtraction.

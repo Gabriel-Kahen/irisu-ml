@@ -8,6 +8,9 @@
 #ifndef IRISU_CUDA_NATIVE_F32_STORE
 #define IRISU_CUDA_NATIVE_F32_STORE 0
 #endif
+#ifndef IRISU_CUDA_NATIVE_F32_DIV_STORE
+#define IRISU_CUDA_NATIVE_F32_DIV_STORE 0
+#endif
 #ifndef IRISU_CUDA_NATIVE_BOUNDED_STORE
 #define IRISU_CUDA_NATIVE_BOUNDED_STORE 0
 #endif
@@ -94,6 +97,29 @@ struct Context {
  template<class A,class B>NATIVE_HD float mul_store(A a,B b){return store(mul(double(a),double(b)));}
  template<class A,class B>NATIVE_HD float add_store(A a,B b){return store(add(double(a),double(b)));}
  template<class A,class B>NATIVE_HD float sub_store(A a,B b){return store(sub(double(a),double(b)));}
+ // Adjacent quotient stores only. Finite F32 ratios cannot double-round
+ // differently through RN53; keep zero/nonfinite inputs on the checked path.
+ NATIVE_HD float div_store(float a,float b){
+#if IRISU_CUDA_NATIVE_F32_DIV_STORE
+  if(math::finite(a)&&math::finite(b)&&b!=0){
+#ifdef __CUDA_ARCH__
+   const float value=__fdiv_rn(a,b);
+#else
+   volatile float value=a/b;
+#endif
+   if(!math::finite(value))status=Status::unsupported_numeric;return value;
+  }
+#endif
+  return store(div(double(a),double(b)));
+ }
+ template<class I,std::enable_if_t<std::is_integral_v<I>,int> =0>NATIVE_HD float div_store(I a,float b){
+#if IRISU_CUDA_NATIVE_F32_DIV_STORE
+  const float numerator=irisu::cuda_exact::float_rn(double(a));
+  if(double(numerator)==double(a))return div_store(numerator,b);
+#endif
+  return store(div(double(a),double(b)));
+ }
+ template<class A,class B>NATIVE_HD float div_store(A a,B b){return store(div(double(a),double(b)));}
 
 };
 }

@@ -99,7 +99,7 @@ struct BroadPhase {
   error=Status::ok;if(!valid_aabb(world)||world.min.x>=world.max.x||world.min.y>=world.max.y){error=Status::unsupported_numeric;return error;}
   m_pairManager.Initialize();m_worldAABB=world;m_proxyCount=m_queryResultCount=0;m_freeProxy=0;m_timeStamp=1;
   math::Context m;const float dx=m.sub_store(world.max.x,world.min.x),dy=m.sub_store(world.max.y,world.min.y);
-  m_quantizationFactor={m.store(m.div(65535,dx)),m.store(m.div(65535,dy))};if(!m.ok()){error=m.status;return error;}
+  m_quantizationFactor={m.div_store(65535,dx),m.div_store(65535,dy)};if(!m.ok()){error=m.status;return error;}
   for(uint16 i=0;i<b2_maxProxies;++i){auto& p=m_proxyPool[i];p.SetNext(i+1);p.timeStamp=0;p.overlapCount=b2_invalid;p.userData=0;}m_proxyPool[b2_maxProxies-1].SetNext(b2_nullProxy);return error;
  }
  NATIVE_HD bool InRange(const AABB& a){math::Context m;const float ax=m.sub_store(a.min.x,m_worldAABB.max.x),ay=m.sub_store(a.min.y,m_worldAABB.max.y),bx=m.sub_store(m_worldAABB.min.x,a.max.x),by=m.sub_store(m_worldAABB.min.y,a.max.y);const float x=ax>bx?ax:bx,y=ay>by?ay:by;if(!m.ok())error=m.status;return (x>y?x:y)<0;}

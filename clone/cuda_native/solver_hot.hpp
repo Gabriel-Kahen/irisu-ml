@@ -17,7 +17,7 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 // Altered generated specialization: 48-byte hot bodies, unchanged arithmetic.
-// Source solver.hpp SHA256: ee00e16b69741b59b28aebcba45594a2fa2cf522849e95ca5a35b6c01b845f12
+// Source solver.hpp SHA256: b18dbf0356d32fe798be74ab9e62bb34747064554ee9bbe983e6f3ce0ce05e60
 // Regenerate: python tools/cuda-native/generate_hot_solver.py
 #include "solver.hpp"
 #include <cstddef>

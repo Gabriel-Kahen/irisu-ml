@@ -54,7 +54,7 @@ NATIVE_HD inline MassData polygon_mass(math::Context& m,const ShapeDefinition& s
     inertia=m.add_store(inertia,m.mul(D,m.add(x2,y2)));
   }
   if(!(area>0x1p-23f)){m.status=Status::invalid_shape;return {};}
-  out.mass=m.mul_store(s.density,area);center=scale(m,m.store(m.div(1,area)),center);out.center=center;
+  out.mass=m.mul_store(s.density,area);center=scale(m,m.div_store(1,area),center);out.center=center;
   out.inertia=m.mul_store(s.density,m.sub(inertia,m.mul(area,dot(m,center,center))));return out;
 }
 NATIVE_HD inline Vec2 polygon_centroid(math::Context& m,const ShapeDefinition& s){
@@ -65,7 +65,7 @@ NATIVE_HD inline Vec2 polygon_centroid(math::Context& m,const ShapeDefinition& s
     center=add(m,center,scale(m,m.mul_store(triangle_area,inverse3),add(m,add(m,zero,s.vertices[i]),s.vertices[i+1<s.vertex_count?i+1:0])));
   }
   if(!(area>0x1p-23f)){m.status=Status::invalid_shape;return {};}
-  return scale(m,m.store(m.div(1,area)),center);
+  return scale(m,m.div_store(1,area),center);
 }
 NATIVE_HD inline bool finite_definition(const ShapeDefinition& s,const BodyDefinition& b){
   if(!finite(s.local_position)||!math::finite(s.local_rotation)||!math::finite(s.density)||
@@ -102,12 +102,12 @@ NATIVE_HD inline StageResult construct_body_shape(BodyState& body,ShapeState& sh
   b.linear_damping=linear<0?0:linear>1?1:linear;b.angular_damping=angular<0?0:angular>1?1:angular;
   b.mass=m.add_store(0,mass.mass);b.center=add(m,{},scale(m,mass.mass,add(m,sd.local_position,mass.center)));
   b.flags=0;
-  if(b.mass>0){b.center=scale(m,m.store(m.div(1,b.mass)),b.center);b.position=add(m,b.position,rotate(m,b.R,b.center));}
+  if(b.mass>0){b.center=scale(m,m.div_store(1,b.mass),b.center);b.position=add(m,b.position,rotate(m,b.R,b.center));}
   else b.flags|=static_body;
   const auto r=subtract(m,add(m,sd.local_position,mass.center),b.center);
   b.inertia=m.add_store(m.add_store(0,mass.inertia),m.mul(mass.mass,dot(m,r,r)));
-  b.inv_mass=b.mass>0?m.store(m.div(1,b.mass)):0;
-  if(b.inertia>0&&!bd.prevent_rotation)b.inv_i=m.store(m.div(1,b.inertia));else b.inertia=b.inv_i=0;
+  b.inv_mass=b.mass>0?m.div_store(1,b.mass):0;
+  if(b.inertia>0&&!bd.prevent_rotation)b.inv_i=m.div_store(1,b.inertia);else b.inertia=b.inv_i=0;
   const Vec2 angular_velocity{m.mul_store(-double(bd.angular_velocity),b.center.y),m.mul_store(bd.angular_velocity,b.center.x)};
   b.velocity=add(m,bd.velocity,angular_velocity);b.angular_velocity=bd.angular_velocity;
   b.flags|=bd.allow_sleep?allow_sleep:0;b.flags|=bd.is_sleeping?sleeping_body:0;b.user_data=bd.user_data;
@@ -124,7 +124,7 @@ NATIVE_HD inline StageResult construct_body_shape(BodyState& body,ShapeState& sh
     s.vertex_count=sd.vertex_count;Vec2 minimum{0x1.fffffep127f,0x1.fffffep127f},maximum{-0x1.fffffep127f,-0x1.fffffep127f};
     for(unsigned i=0;i<sd.vertex_count;++i){
       const auto v=rotate(m,local.R,subtract(m,sd.vertices[i],centroid));s.vertices[i]=v;
-      auto unit=v;const float length=m.store(m.sqrt(dot(m,v,v)));if(length>0x1p-23f)unit=scale(m,m.store(m.div(1,length)),unit);
+      auto unit=v;const float length=m.store(m.sqrt(dot(m,v,v)));if(length>0x1p-23f)unit=scale(m,m.div_store(1,length),unit);
       s.core_vertices[i]=subtract(m,v,scale(m,0.01f,unit));
       minimum={minimum.x<v.x?minimum.x:v.x,minimum.y<v.y?minimum.y:v.y};
       maximum={maximum.x>v.x?maximum.x:v.x,maximum.y>v.y?maximum.y:v.y};
@@ -142,11 +142,11 @@ NATIVE_HD inline StageResult construct_body_shape(BodyState& body,ShapeState& sh
 NATIVE_HD inline StageResult wrapper_definition(BodyDefinition& body,ShapeDefinition& shape,unsigned kind,
   float width,float height,float x,float y,float rotation,float density,float friction,float restitution,float magnification){
   math::Context m;if(!(magnification>0)||!math::finite(magnification)||kind>2)return {Status::invalid_shape};
-  body={};shape={};body.position={m.store(m.div(x,magnification)),m.store(m.div(y,magnification))};
+  body={};shape={};body.position={m.div_store(x,magnification),m.div_store(y,magnification)};
   body.rotation=kind?rotation:0;shape.density=density;shape.friction=friction;shape.restitution=restitution;
-  if(kind==0){shape.kind=ShapeKind::circle;shape.radius=m.store(m.div(width,magnification));}
+  if(kind==0){shape.kind=ShapeKind::circle;shape.radius=m.div_store(width,magnification);}
   else{
-    shape.kind=ShapeKind::polygon;const float hx=m.store(m.div(m.div(width,2),magnification)),hy=m.store(m.div(m.div(height,2),magnification));
+    shape.kind=ShapeKind::polygon;const float hx=m.div_store(m.div(width,2),magnification),hy=m.div_store(m.div(height,2),magnification);
     shape.vertices[0]={-hx,hy};shape.vertices[1]={-hx,-hy};
     if(kind==1){shape.vertex_count=4;shape.vertices[2]={hx,-hy};shape.vertices[3]={hx,hy};}
     else{shape.vertex_count=3;shape.vertices[2]={hx,hy};}

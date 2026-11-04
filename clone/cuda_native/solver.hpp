@@ -127,12 +127,12 @@ NATIVE_HD inline SolverResult solver_build_constraints(const BodyState* bodies,s
    const double rotational1=m.mul(m.sub(r1_sqr,m.mul(rn1,rn1)),a.inv_i);
    const double rotational2=m.mul(m.sub(r2_sqr,m.mul(rn2,rn2)),b.inv_i);
    const float normal_k=m.add_store(m.add(rotational1,rotational2),mass_sum);
-   p.normal_mass=m.store(m.div(1,normal_k));
+   p.normal_mass=m.div_store(1,normal_k);
    const float rt1=solver_detail::dot_store(m,tangent,r1),rt2=solver_detail::dot_store(m,tangent,r2);
    const double tangent1=m.mul(m.sub(r1_sqr,m.mul(rt1,rt1)),a.inv_i);
    const double tangent2=m.mul(m.sub(r2_sqr,m.mul(rt2,rt2)),b.inv_i);
    const float tangent_k=m.add_store(m.add(tangent1,tangent2),mass_sum);
-   p.tangent_mass=m.store(m.div(1,tangent_k));p.velocity_bias=0.0f;
+   p.tangent_mass=m.div_store(1,tangent_k);p.velocity_bias=0.0f;
    if(p.separation>0)p.velocity_bias=m.mul_store(p.separation,-60);
    const Vec2 dv=solver_detail::relative_velocity(m,a,b,r1,r2);
    const float relative=solver_detail::dot_store(m,c.normal,dv);
