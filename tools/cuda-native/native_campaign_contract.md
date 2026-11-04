@@ -65,3 +65,18 @@ Report cold wall and prefix separately from repeated future work. Keep original
 one-shot end-to-end anchors; this control neither replaces them nor establishes
 a speedup by itself. An independent native packet gate and cleanup check are
 required before uncontended timing. No performance result is claimed here.
+
+## Initial qualification
+
+`benchmarks/results/cuda-native-cached-prefix-control-qualification-2026-11-04.json`
+records the actual ELF32 gate at prefix100, 16 candidates, horizon4, batches3,
+workers1/8, with both full-trace and final-only folding. All four final 4,176-byte
+packets exactly match the corresponding original native oracle. Every campaign
+reports one prefix preparation, 192 future ticks and unchanged parent frame and
+loaded inputs. The explicit native DSO mapping/pin and unchanged original replay
+SHA-256 were checked.
+
+Forced candidate and owner SIGKILL tests both exit unsuccessfully, emit no result
+packet and leave no living tracked descendants. This tiny gate does not qualify
+every checkpoint or lifecycle case. Its clocks are correctness diagnostics under
+desktop load, not uncontended performance evidence.
