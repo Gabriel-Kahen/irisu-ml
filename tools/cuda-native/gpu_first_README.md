@@ -39,6 +39,11 @@ runtime descriptors are inactive; use the lean build for the large configuration
 The [machine-readable receipt](../../benchmarks/results/cuda-native-gpu-first-2026-11-04.json)
 records source/binary pins, raw paired runs, rejected experiments and qualification.
 Its artifact paths refer to this worktree's ignored `artifacts/gpu-first-20261104/`.
+The [release review and integration receipt](../../benchmarks/results/cuda-native-gpu-first-release-2026-11-04.json)
+records reconciliation with the resident orchestrator, the queue scratch-poison
+fix, and fresh compatibility checks. The original queue sanitizer runs above
+exercised retained-state continuation poisoning; the release checks additionally
+poison execution-slot scratch before queue futures.
 
 `irisu-cuda-native-gpu-search` executes reset, root prefixes, partial checkpoints,
 futures, ranking, and retained-state continuation on GPU. CPU work prepares empty
@@ -155,6 +160,11 @@ and checkpoint work, futures, retention, guards, output, and teardown. Compare
 identical logical candidates, roots, horizons, trace settings, and repeat counts.
 Report both candidate futures/second and actual executed GPU ticks. Checkpoint
 reuse is a work reduction and must be distinguished from faster identical work.
+
+Portable CI runs the planner through CTest and tests native-reference packet
+ranking through pytest. GPU replay, retained-state and sanitizer checks require
+the separate CUDA/native development environment; CI success alone does not
+establish device qualification.
 
 Required correctness evidence is separate from timing:
 

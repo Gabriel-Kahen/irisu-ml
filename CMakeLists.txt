@@ -670,6 +670,12 @@ if(IRISU_BUILD_TESTS)
 
   endif()
 
+  # Planning is CPU-only, including in builds without a CUDA toolkit.
+  add_executable(irisu-gpu-search-plan-tests
+    tools/cuda-native/gpu_search_plan_validate.cpp)
+  add_test(NAME irisu-gpu-search-plan-tests COMMAND irisu-gpu-search-plan-tests)
+  list(APPEND irisu_native_test_targets irisu-gpu-search-plan-tests)
+
   # These executables use assert() as their test primitive. Keep assertions
   # active even when the product is compiled with an optimized configuration.
   foreach(irisu_test_target IN LISTS irisu_native_test_targets)

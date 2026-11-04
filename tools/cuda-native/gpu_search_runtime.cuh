@@ -69,10 +69,15 @@ __global__ void retain_kernel(Device d,const Selection* selection,const World* p
  if(!threadIdx.x){ids[k]=pick.id;if(!retained[k].rebind(retained_scenes+k,body_base(*source)))reject(d.errors,15,k);}
 }
 __device__ inline bool clone_serial(Device d,unsigned slot,unsigned logical,bool initialized){
- const auto cp=d.jobs[logical_id(d,logical)].checkpoint;
+ const auto job=d.jobs[logical_id(d,logical)];const auto cp=job.checkpoint;
  if(!d.game_plans[cp].valid||(initialized&&!compact::clear_reachable(d.scenes[slot]))){reject(d.errors,16,slot);return false;}
  compact::copy_game(d.worlds[slot],d.bank[cp],d.game_plans[cp]);compact::copy_active(d.scenes[slot],d.bank_scenes[cp],d.scene_plans[cp]);
- if(!compact::rebind_game(d.worlds[slot],d.scenes[slot],d.game_plans[cp])){reject(d.errors,17,slot);return false;}return true;
+ if(!compact::rebind_game(d.worlds[slot],d.scenes[slot],d.game_plans[cp])){reject(d.errors,17,slot);return false;}
+ if(const auto kind=d.options[job.root].scratch_poison){
+  auto* bytes=reinterpret_cast<unsigned char*>(d.scenes+slot)+physical_scene_bytes;
+  for(std::size_t i=0;i<(sizeof(Scene)-physical_scene_bytes)/4;++i){const std::uint32_t word=(kind==2?0x7fc08000U:0xa5a58000U)|((unsigned(i)+17*slot)&0x7fffU);std::memcpy(bytes+4*i,&word,4);}
+ }
+ return true;
 }
 __device__ inline bool copy_state_serial(World& out,Scene& scene,const World& source,const Scene& source_scene){
  for(std::size_t i=0;i<sizeof(World);i+=8)copy_word64<>(reinterpret_cast<unsigned char*>(&out)+i,reinterpret_cast<const unsigned char*>(&source)+i);
