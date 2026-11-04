@@ -3620,5 +3620,6 @@
     "artifacts/cuda-native-20261103/search/u64-source-pin-after.json": "b2b2aa1fbc0193ad2ad486234b95bf41f4565767fed7cee31a95122792f52b5b",
     "artifacts/cuda-native-20261103/search/u64-memcheck8.sanitizer": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
     "artifacts/cuda-native-20261103/search/search-u64": "b7ad93ab77a2426dc653a81f7cd8b69e96cea40adccb380712f216353944fe65"
-  }
+  },
+  "timing_validity_followup": "LaterpairedcampaignsdetectedunrelatedCPUmediajobsandhighCPUpressure; teamexclusivecomputeisnotproofthatdesktopwasgloballyidle. EarlierCPUbackgroundloadwasnotcontinuouslyaudited. Preserveobservedtimingsascontext; deferrobust5xheadlineuntilquietunrestrictedCPU8/16pairedcampaigns. Correctness/nativepacketandmemorygatesunaffected."
 }

@@ -4581,5 +4581,6 @@
     "env -u CUDA_VISIBLE_DEVICES build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner irisu-high-score-4393101.rpy repeated-specs.bin 100 4 --final-only --stack-kib 4 --warmups 0 --repeats 1",
     "Add --host-prefix for explicit typed CPUcheckpoint preparation; remove it for defaultGPUinitialize/prefix. Timingcommands include --skip-compaction-check onlyafter fullcopy/continuation qualification.",
     "Compare entirestdout to fresh build-project-exact/irisu-search-oracle with workers8/16 and target4393102. Native oracle pinned library SHA remains in baseline receipt."
-  ]
+  ],
+  "timing_validity_followup": "LaterpairedcampaignsdetectedunrelatedCPUmediajobsandhighCPUpressure; teamexclusivecomputeisnotproofthatdesktopwasgloballyidle. EarlierCPUbackgroundloadwasnotcontinuouslyaudited. Preserveobservedtimingsascontext; deferrobust5xheadlineuntilquietunrestrictedCPU8/16pairedcampaigns. Correctness/nativepacketandmemorygatesunaffected."
 }

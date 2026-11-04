@@ -1880,5 +1880,6 @@
     "env -u CUDA_VISIBLE_DEVICES build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner irisu-high-score-4393101.rpy specs.bin 100 4 --final-only --warmups 0 --repeats 1 > gpu.bin",
     "cmp native.bin gpu.bin; add --isolated-warps for independentwarps, or --host-prefix for explicitly separate typed-host-prefix variant.",
     "Timing commands in raw sample entries retain full precise arguments. Remove --skip-compaction-check to re-run complete selected-state validation. Artifacts include every stdout packet, stderr metadata, buildlog and paired samples."
-  ]
+  ],
+  "timing_validity_followup": "LaterpairedcampaignsdetectedunrelatedCPUmediajobsandhighCPUpressure; teamexclusivecomputeisnotproofthatdesktopwasgloballyidle. EarlierCPUbackgroundloadwasnotcontinuouslyaudited. Preserveobservedtimingsascontext; deferrobust5xheadlineuntilquietunrestrictedCPU8/16pairedcampaigns. Correctness/nativepacketandmemorygatesunaffected."
 }
