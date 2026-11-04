@@ -250,3 +250,19 @@ Scene qualification hashes every frame; its kernel timings include validation
 instrumentation. Performance runs must keep complete worlds resident, omit
 per-frame qualification hashes from the timed physics path, and compare the
 same work against actual native CPU execution.
+
+## Capacity512 follow-up
+
+The next 2x target was not reached. A separate optional 512-contact profile
+improved the preceding hybrid campaign from **2.167 to 1.831 seconds** in
+three paired runs: **1.184x**, with the same 983,040 GPU future ticks and one
+shared 100-tick CPU prefix. Allocation fell from 27.85 GB to 13.40 GB.
+Default capacity remains 4096; the smaller profile explicitly rejects overflow.
+
+The full 97,220-frame GPU replay, dynamic physical/SAP state, search and selected
+continuation matrix, compact snapshots, memcheck and scratch initcheck all pass.
+The selected profile retains exact native output. Concurrent batches, an
+interleaved solver, candidate ordering and alternative math remain optional
+experiments; none improved enough to select. See the
+[build and experiment guide](../tools/cuda-native/efficiency2_README.md) and
+[paired receipt](../benchmarks/results/cuda-native-efficiency2-2026-11-04.json).

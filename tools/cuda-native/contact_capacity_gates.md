@@ -85,6 +85,7 @@ env -u CUDA_VISIBLE_DEVICES \
   "$IRISU_CAP_BIN/irisu-cuda-native-dynamic-scene-runner" "$IRISU_CAP_PACKETS" \
   > "$IRISU_CAP_OUT/dynamic.json" 2> "$IRISU_CAP_OUT/dynamic.stderr"
 env -u CUDA_VISIBLE_DEVICES "$IRISU_CAP_SANITIZER" --tool memcheck --error-exitcode 77 \
+  --log-file "$IRISU_CAP_OUT/dynamic-memcheck.sanitizer" \
   "$IRISU_CAP_BIN/irisu-cuda-native-dynamic-scene-runner" "$IRISU_CAP_PACKETS" \
   > "$IRISU_CAP_OUT/dynamic-memcheck.json" 2> "$IRISU_CAP_OUT/dynamic-memcheck.log"
 ```
@@ -101,6 +102,7 @@ stopped before those targets. Once available, execute:
 env -u CUDA_VISIBLE_DEVICES "$IRISU_CAP_BIN/irisu-native-compact-snapshot-validate" \
   "$IRISU_CAP_PACKETS" > "$IRISU_CAP_OUT/compact-scene.json"
 env -u CUDA_VISIBLE_DEVICES "$IRISU_CAP_SANITIZER" --tool initcheck --error-exitcode 77 \
+  --log-file "$IRISU_CAP_OUT/compact-scene-initcheck.sanitizer" \
   "$IRISU_CAP_BIN/irisu-native-compact-snapshot-validate" \
   "$IRISU_CAP_PACKETS" --virgin-scratch \
   > "$IRISU_CAP_OUT/compact-scene-initcheck.json" 2> "$IRISU_CAP_OUT/compact-scene-initcheck.log"
@@ -113,6 +115,7 @@ for IRISU_CAP_PREFIX in 100 96000 97150; do
     > "$IRISU_CAP_OUT/compact-game-$IRISU_CAP_PREFIX.json"
 done
 env -u CUDA_VISIBLE_DEVICES "$IRISU_CAP_SANITIZER" --tool initcheck --error-exitcode 77 \
+  --log-file "$IRISU_CAP_OUT/compact-game-initcheck.sanitizer" \
   "$IRISU_CAP_BIN/irisu-native-compact-game-validate" \
   "$IRISU_CAP_REPLAY" "$IRISU_CAP_OUT/full-record.native.frames.bin" 100 192 --virgin \
   > "$IRISU_CAP_OUT/compact-game-initcheck.json" 2> "$IRISU_CAP_OUT/compact-game-initcheck.log"
@@ -169,8 +172,11 @@ these full-work checks with recycled result packets or a warm phase ratio.
 
 Run one8-candidate selected-continuation launch group under memcheck and
 initcheck using the exact same flags, with outputs and native comparison saved.
-Record batch partition/selection guards, not merely equality of the final
-packet. Batched binaries require their own before/after hash pin in addition to
+Use `--log-file` with a separate sanitizer log for every binary packet
+comparison: Compute Sanitizer otherwise writes its banner and summary to
+stdout. Compare the complete clean child packet; require zero errors in that
+separate log. Record batch partition/selection guards, not merely equality
+of the final packet. Batched binaries require their own before/after hash pin in addition to
 the three setup binaries above. Finally verify those initial binaries were not
 replaced during the gates:
 

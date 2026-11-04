@@ -169,3 +169,12 @@ separately. Keep the device free of competing work during comparison.
 Actual-native search and continuation gates are reproducible with
 `qualify_search_efficiency.py`; raw sample pins and the selected/rejected
 experiments are in the [efficiency receipt](../../benchmarks/results/cuda-native-efficiency-2026-11-04.json).
+
+## Capacity512 follow-up
+
+Another 2x was not achieved: the final matched hybrid medians were
+**2.166970 → 1.830900 seconds (1.184x)**. This is an optional smaller physical
+contact pool, with explicit overflow failure and default capacity 4096 preserved.
+All 983,040 GPU future ticks still execute and the complete native packet matches.
+See the [current experiment guide](efficiency2_README.md) for the exact build,
+matched runtime flags, capacity boundary, qualification and rejected trials.
