@@ -5,6 +5,12 @@
 #include "solver.hpp"
 #include "broadphase.hpp"
 #include "world_contacts.hpp"
+#ifndef IRISU_CUDA_NATIVE_INTERLEAVED_SOLVER
+#define IRISU_CUDA_NATIVE_INTERLEAVED_SOLVER 0
+#endif
+#if IRISU_CUDA_NATIVE_INTERLEAVED_SOLVER
+#include "solver_interleaved.hpp"
+#endif
 
 namespace irisu::cuda_native {
 struct SceneScratch {
@@ -170,9 +176,21 @@ NATIVE_HD inline StageResult step_pairs_impl(World& world,SceneScratch& scratch,
     auto solve=solver_build_constraints(world.bodies,max_bodies,scratch.manifolds,contact_count,scratch.solver_contacts,contact_count,scratch.constraints,max_contacts,constraint_count);
     if(!solve)return {solve.status};
     solve=solver_presolve(world.bodies,max_bodies,scratch.constraints,constraint_count,true);if(!solve)return {solve.status};
-    for(unsigned i=0;i<iterations;++i){solve=solver_velocity(world.bodies,max_bodies,scratch.constraints,constraint_count);if(!solve)return {solve.status};}
+    bool interleaved_velocity=false;
+#if IRISU_CUDA_NATIVE_INTERLEAVED_SOLVER
+    solve=interleaved_solver::try_iterate<interleaved_solver::Phase::velocity>(&world,world.bodies,max_bodies,
+      scratch.body_order,body_count,scratch.constraints,constraint_count,iterations,interleaved_velocity);
+    if(!solve)return {solve.status};
+#endif
+    if(!interleaved_velocity)for(unsigned i=0;i<iterations;++i){solve=solver_velocity(world.bodies,max_bodies,scratch.constraints,constraint_count);if(!solve)return {solve.status};}
     for(unsigned i=0;i<body_count;++i){result=integrate_position(world.bodies[scratch.body_order[i]],dt,canonical_rotation);if(!result)return result;}
-    for(unsigned i=0;i<iterations;++i){solve=solver_position(world.bodies,max_bodies,scratch.constraints,constraint_count,.2f,canonical_rotation);if(!solve)return {solve.status};if(solve.converged)break;}
+    bool interleaved_position=false;
+#if IRISU_CUDA_NATIVE_INTERLEAVED_SOLVER
+    solve=interleaved_solver::try_iterate<interleaved_solver::Phase::position>(&world,world.bodies,max_bodies,
+      scratch.body_order,body_count,scratch.constraints,constraint_count,iterations,interleaved_position,.2f,canonical_rotation);
+    if(!solve)return {solve.status};
+#endif
+    if(!interleaved_position)for(unsigned i=0;i<iterations;++i){solve=solver_position(world.bodies,max_bodies,scratch.constraints,constraint_count,.2f,canonical_rotation);if(!solve)return {solve.status};if(solve.converged)break;}
     solve=solver_postsolve(scratch.constraints,constraint_count,scratch.manifolds,contact_count);if(!solve)return {solve.status};
     for(unsigned i=0;i<contact_count;++i)world.contacts[scratch.contact_order[i]].manifold=scratch.manifolds[i];
     for(unsigned i=0;i<body_count;++i){
