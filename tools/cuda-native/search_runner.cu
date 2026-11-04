@@ -20,11 +20,13 @@ namespace game=irisu::cuda_game;namespace physics=irisu::cuda_native;namespace w
 using World=game::NativeGameWorld;using Scene=physics::ScenePipelineState;
 struct Options {
  std::uint32_t seed{},prefix{},horizon{},keep{2},threads{32},stack_kib{16};
- std::int64_t target{4393102};bool host_prefix{},trace{true},validate{true},cpu{},isolated{},copy_u64{},split_rebind{},reuse_prefix{};
- unsigned warmups{1},repeats{3};
+ std::int64_t target{4393102};bool host_prefix{},trace{true},validate{true},cpu{},isolated{},copy_u64{},split_rebind{},reuse_prefix{},physical_snapshot{};
+ unsigned warmups{1},repeats{3},scratch_poison{};
 };
 struct Sample {double host_prefix_ms{},prefix_ms{},branch_ms{},rollout_ms{},rank_compact_ms{},validation_ms{},total_ms{};};
 struct Validation {unsigned errors{},first_section{},first_offset{~0U},prefix_errors{};};
+constexpr std::size_t physical_scene_bytes=offsetof(Scene,scratch);
+static_assert(physical_scene_bytes%8==0);
 constexpr std::size_t prefix_guard_bytes=sizeof(World)+sizeof(Scene)+sizeof(wire::Result);
 GAME_HD inline std::uintptr_t body_base(const World& w){return reinterpret_cast<std::uintptr_t>(w.simulator.bodies_.data());}
 GAME_HD void prepare_prefix(World* world,Scene* scene,const Options& options,const std::uint32_t* replay,wire::Result* result){
@@ -61,18 +63,28 @@ struct Environment {
  }
  ~Environment(){std::fesetenv(&previous);}
 };
-void host_clone(World& destination,Scene& scene,const World& source,const Scene& source_scene){
- std::memcpy(&destination,&source,sizeof(World));std::memcpy(&scene,&source_scene,sizeof(Scene));
+void host_clone(World& destination,Scene& scene,const World& source,const Scene& source_scene,std::size_t scene_bytes=sizeof(Scene)){
+ std::memcpy(&destination,&source,sizeof(World));std::memcpy(&scene,&source_scene,scene_bytes);
  if(!destination.rebind(&scene,body_base(source)))throw std::runtime_error("host snapshot pointer rebind failed");
 }
 // Normalize only address representations. Every byte of both objects, including
 // all scratch and inactive container storage, is retained and compared.
-bool host_equal(World& a,Scene& sa,World& b,Scene& sb){
+bool host_equal(World& a,Scene& sa,World& b,Scene& sb,std::size_t scene_bytes=sizeof(Scene)){
  constexpr std::uintptr_t canonical=0x100000;bool valid=a.relocate_body_pointers(body_base(a),canonical)&&b.relocate_body_pointers(body_base(b),canonical);
- a.bind(nullptr);b.bind(nullptr);const bool equal=!std::memcmp(&a,&b,sizeof(World))&&!std::memcmp(&sa,&sb,sizeof(Scene));
+ a.bind(nullptr);b.bind(nullptr);const bool equal=!std::memcmp(&a,&b,sizeof(World))&&!std::memcmp(&sa,&sb,scene_bytes);
  valid=a.rebind(&sa,canonical)&&b.rebind(&sb,canonical)&&valid;return valid&&equal;
 }
+void host_poison_scratch(Scene& scene,unsigned kind,unsigned lane=0){
+ auto* bytes=reinterpret_cast<unsigned char*>(&scene)+physical_scene_bytes;
+ for(std::size_t i=0;i<(sizeof(Scene)-physical_scene_bytes)/4;++i){const std::uint32_t word=(kind==2?0x7fc08000U:0xa5a58000U)|((unsigned(i)+17*lane)&0x7fffU);std::memcpy(bytes+4*i,&word,4);}
+}
 #ifdef __CUDACC__
+__global__ void poison_scratch_kernel(Scene* scenes,unsigned count,const unsigned* selection,unsigned kind){
+ const unsigned lane=blockIdx.x;if(lane>=count)return;const unsigned index=selection?selection[lane]:lane;
+ auto* bytes=reinterpret_cast<unsigned char*>(scenes+index)+physical_scene_bytes;
+ static_assert((sizeof(Scene)-physical_scene_bytes)%4==0);
+ for(std::size_t i=threadIdx.x;i<(sizeof(Scene)-physical_scene_bytes)/4;i+=blockDim.x){const std::uint32_t word=(kind==2?0x7fc08000U:0xa5a58000U)|((unsigned(i)+17*index)&0x7fffU);std::memcpy(bytes+4*i,&word,4);}
+}
 __global__ void prefix_kernel(World* world,Scene* scene,const World* empty_world,const Scene* empty_scene,Options options,const std::uint32_t* replay,wire::Result* result){
  auto* w=reinterpret_cast<unsigned char*>(world);auto* s=reinterpret_cast<unsigned char*>(scene);const auto* ew=reinterpret_cast<const unsigned char*>(empty_world);const auto* es=reinterpret_cast<const unsigned char*>(empty_scene);
  for(std::size_t i=threadIdx.x;i<sizeof(World);i+=blockDim.x)w[i]=ew[i];for(std::size_t i=threadIdx.x;i<sizeof(Scene);i+=blockDim.x)s[i]=es[i];__syncthreads();
@@ -87,17 +99,17 @@ __device__ __forceinline__ void copy_word64(unsigned char* destination,const uns
  asm volatile("ld.global.u64 %0, [%1];":"=l"(word):"l"(__cvta_generic_to_global(source)):"memory");
  asm volatile("st.global.u64 [%0], %1;"::"l"(__cvta_generic_to_global(destination)),"l"(word):"memory");
 }
-template<bool wide,bool bind=true> __global__ void clone_kernel(World* worlds,Scene* scenes,const World* source_worlds,const Scene* source_scenes,unsigned count,const unsigned* selection,Validation* validation){
+template<bool wide,bool bind=true> __global__ void clone_kernel(World* worlds,Scene* scenes,const World* source_worlds,const Scene* source_scenes,unsigned count,const unsigned* selection,Validation* validation,std::size_t scene_bytes){
  const unsigned lane=blockIdx.x;if(lane>=count)return;const unsigned source=selection?selection[lane]:0;
  auto* w=reinterpret_cast<unsigned char*>(worlds+lane);const auto* sw=reinterpret_cast<const unsigned char*>(source_worlds+source);
  auto* s=reinterpret_cast<unsigned char*>(scenes+lane);const auto* ss=reinterpret_cast<const unsigned char*>(source_scenes+source);
  static_assert(alignof(World)>=8&&alignof(Scene)>=8&&sizeof(World)%8==0&&sizeof(Scene)%8==0);
  if constexpr(wide){
   for(std::size_t i=threadIdx.x;i<sizeof(World)/8;i+=blockDim.x)copy_word64(w+8*i,sw+8*i);
-  for(std::size_t i=threadIdx.x;i<sizeof(Scene)/8;i+=blockDim.x)copy_word64(s+8*i,ss+8*i);
+  for(std::size_t i=threadIdx.x;i<scene_bytes/8;i+=blockDim.x)copy_word64(s+8*i,ss+8*i);
  }else{
   for(std::size_t i=threadIdx.x;i<sizeof(World);i+=blockDim.x)w[i]=sw[i];
-  for(std::size_t i=threadIdx.x;i<sizeof(Scene);i+=blockDim.x)s[i]=ss[i];
+  for(std::size_t i=threadIdx.x;i<scene_bytes;i+=blockDim.x)s[i]=ss[i];
  }
  if constexpr(bind){
   __syncthreads();
@@ -113,11 +125,11 @@ __global__ void rebind_clones_kernel(World* worlds,Scene* scenes,const World* so
 // same rebind API runs with packed worlds. Selected sources use their rank.
 void launch_clones(World* worlds,Scene* scenes,const World* source_worlds,const Scene* source_scenes,unsigned count,const unsigned* selection,Validation* validation,const Options& options){
  if(options.split_rebind){
-  if(options.copy_u64)clone_kernel<true,false><<<count,256>>>(worlds,scenes,source_worlds,source_scenes,count,selection,validation);
-  else clone_kernel<false,false><<<count,256>>>(worlds,scenes,source_worlds,source_scenes,count,selection,validation);
+  if(options.copy_u64)clone_kernel<true,false><<<count,256>>>(worlds,scenes,source_worlds,source_scenes,count,selection,validation,options.physical_snapshot?physical_scene_bytes:sizeof(Scene));
+  else clone_kernel<false,false><<<count,256>>>(worlds,scenes,source_worlds,source_scenes,count,selection,validation,options.physical_snapshot?physical_scene_bytes:sizeof(Scene));
   rebind_clones_kernel<<<(count+127)/128,128>>>(worlds,scenes,source_worlds,count,selection,validation);
- }else if(options.copy_u64)clone_kernel<true><<<count,256>>>(worlds,scenes,source_worlds,source_scenes,count,selection,validation);
- else clone_kernel<false><<<count,256>>>(worlds,scenes,source_worlds,source_scenes,count,selection,validation);
+ }else if(options.copy_u64)clone_kernel<true><<<count,256>>>(worlds,scenes,source_worlds,source_scenes,count,selection,validation,options.physical_snapshot?physical_scene_bytes:sizeof(Scene));
+ else clone_kernel<false><<<count,256>>>(worlds,scenes,source_worlds,source_scenes,count,selection,validation,options.physical_snapshot?physical_scene_bytes:sizeof(Scene));
 }
 __device__ __forceinline__ void compare_prefix_region(const void* current,const void* saved,std::size_t bytes,unsigned section,Validation* validation){
  const auto* a=static_cast<const unsigned char*>(current);const auto* b=static_cast<const unsigned char*>(saved);unsigned first=~0U;
@@ -137,13 +149,13 @@ __global__ void future_kernel(World* worlds,Scene* scenes,Options options,const 
 __global__ void rank_kernel(const wire::Result* results,unsigned count,unsigned* ranks){
  const unsigned lane=blockIdx.x*blockDim.x+threadIdx.x;if(lane>=count)return;unsigned rank=0;for(unsigned j=0;j<count;++j)rank+=wire::better(results[j],j,results[lane],lane);ranks[rank]=lane;
 }
-__global__ void verify_kernel(World* selected,Scene* selected_scenes,World* source,Scene* source_scenes,const unsigned* ranks,unsigned count,Validation* validation){
+__global__ void verify_kernel(World* selected,Scene* selected_scenes,World* source,Scene* source_scenes,const unsigned* ranks,unsigned count,Validation* validation,std::size_t scene_bytes){
  const unsigned lane=blockIdx.x;if(lane>=count)return;auto& a=selected[lane];auto& b=source[ranks[lane]];constexpr std::uintptr_t canonical=0x100000;
  if(!threadIdx.x){if(!a.relocate_body_pointers(body_base(a),canonical)||!b.relocate_body_pointers(body_base(b),canonical))atomicAdd(&validation->errors,1U);a.bind(nullptr);b.bind(nullptr);}__syncthreads();
  const auto* ga=reinterpret_cast<const unsigned char*>(&a);const auto* gb=reinterpret_cast<const unsigned char*>(&b);
  for(std::size_t i=threadIdx.x;i<sizeof(World);i+=blockDim.x)if(ga[i]!=gb[i]){atomicAdd(&validation->errors,1U);atomicCAS(&validation->first_section,0U,1U);atomicMin(&validation->first_offset,unsigned(i));}
  const auto* sa=reinterpret_cast<const unsigned char*>(selected_scenes+lane);const auto* sb=reinterpret_cast<const unsigned char*>(source_scenes+ranks[lane]);
- for(std::size_t i=threadIdx.x;i<sizeof(Scene);i+=blockDim.x)if(sa[i]!=sb[i]){atomicAdd(&validation->errors,1U);atomicCAS(&validation->first_section,0U,2U);atomicMin(&validation->first_offset,unsigned(i));}__syncthreads();
+ for(std::size_t i=threadIdx.x;i<scene_bytes;i+=blockDim.x)if(sa[i]!=sb[i]){atomicAdd(&validation->errors,1U);atomicCAS(&validation->first_section,0U,2U);atomicMin(&validation->first_offset,unsigned(i));}__syncthreads();
  if(!threadIdx.x)if(!a.rebind(selected_scenes+lane,canonical)||!b.rebind(source_scenes+ranks[lane],canonical))atomicAdd(&validation->errors,1U);
 }
 __global__ void continue_kernel(World* selected,World* source,const unsigned* ranks,unsigned count,Validation* validation){
@@ -161,16 +173,17 @@ double elapsed(const Event& a,const Event& b){float ms{};check(cudaEventElapsedT
 #endif
 void print_sample(const Sample& s){std::fprintf(stderr,"{\"host_prefix_ms\":%.9f,\"prefix_ms\":%.9f,\"branch_ms\":%.9f,\"rollout_ms\":%.9f,\"rank_compact_ms\":%.9f,\"validation_ms\":%.9f,\"total_ms\":%.9f}",s.host_prefix_ms,s.prefix_ms,s.branch_ms,s.rollout_ms,s.rank_compact_ms,s.validation_ms,s.total_ms);}
 int main(int argc,char** argv){try{
- const auto started=std::chrono::steady_clock::now();if(argc<5)throw std::runtime_error("usage: native-search replay specs prefix horizon [--host-prefix] [--final-only] [--repeats N] [--warmups N] [--keep N] [--threads N] [--stack-kib N] [--target N] [--skip-compaction-check] [--isolated-warps] [--copy-u64] [--split-rebind] [--reuse-prefix] [--cpu]");
+ const auto started=std::chrono::steady_clock::now();if(argc<5)throw std::runtime_error("usage: native-search replay specs prefix horizon [--host-prefix] [--final-only] [--repeats N] [--warmups N] [--keep N] [--threads N] [--stack-kib N] [--target N] [--skip-compaction-check] [--isolated-warps] [--copy-u64] [--split-rebind] [--reuse-prefix] [--physical-snapshot] [--scratch-poison 1|2] [--cpu]");
  auto input=wire::load_inputs(argv[1],argv[2],argv[3],argv[4]);Options options;options.seed=input.options.seed;options.prefix=input.options.prefix;options.horizon=input.options.horizon;const unsigned count=input.candidates.size();options.keep=std::min(2U,count);
- for(int i=5;i<argc;++i){const std::string arg=argv[i];if(arg=="--host-prefix")options.host_prefix=true;else if(arg=="--final-only")options.trace=false;else if(arg=="--skip-compaction-check")options.validate=false;else if(arg=="--isolated-warps")options.isolated=true;else if(arg=="--copy-u64")options.copy_u64=true;else if(arg=="--split-rebind")options.split_rebind=true;else if(arg=="--reuse-prefix")options.reuse_prefix=true;else if(arg=="--cpu")options.cpu=true;
-  else if(arg=="--repeats"&&i+1<argc)options.repeats=std::stoul(argv[++i]);else if(arg=="--warmups"&&i+1<argc)options.warmups=std::stoul(argv[++i]);else if(arg=="--keep"&&i+1<argc)options.keep=std::stoul(argv[++i]);else if((arg=="--threads"||arg=="--block-threads")&&i+1<argc)options.threads=std::stoul(argv[++i]);else if(arg=="--stack-kib"&&i+1<argc)options.stack_kib=std::stoul(argv[++i]);else if(arg=="--target"&&i+1<argc)options.target=std::stoll(argv[++i]);else throw std::runtime_error("unknown native-search option");}
- if(!options.repeats||options.repeats>20||options.warmups>10||!options.keep||options.keep>count||!options.threads||options.threads>256||options.stack_kib<4||options.stack_kib>128)throw std::runtime_error("invalid bounded search options");
+ for(int i=5;i<argc;++i){const std::string arg=argv[i];if(arg=="--host-prefix")options.host_prefix=true;else if(arg=="--final-only")options.trace=false;else if(arg=="--skip-compaction-check")options.validate=false;else if(arg=="--isolated-warps")options.isolated=true;else if(arg=="--copy-u64")options.copy_u64=true;else if(arg=="--split-rebind")options.split_rebind=true;else if(arg=="--reuse-prefix")options.reuse_prefix=true;else if(arg=="--physical-snapshot")options.physical_snapshot=true;else if(arg=="--cpu")options.cpu=true;
+  else if(arg=="--scratch-poison"&&i+1<argc)options.scratch_poison=std::stoul(argv[++i]);else if(arg=="--repeats"&&i+1<argc)options.repeats=std::stoul(argv[++i]);else if(arg=="--warmups"&&i+1<argc)options.warmups=std::stoul(argv[++i]);else if(arg=="--keep"&&i+1<argc)options.keep=std::stoul(argv[++i]);else if((arg=="--threads"||arg=="--block-threads")&&i+1<argc)options.threads=std::stoul(argv[++i]);else if(arg=="--stack-kib"&&i+1<argc)options.stack_kib=std::stoul(argv[++i]);else if(arg=="--target"&&i+1<argc)options.target=std::stoll(argv[++i]);else throw std::runtime_error("unknown native-search option");}
+ if(!options.repeats||options.repeats>20||options.warmups>10||!options.keep||options.keep>count||!options.threads||options.threads>256||options.stack_kib<4||options.stack_kib>128||options.scratch_poison>2)throw std::runtime_error("invalid bounded search options");
 #if defined(IRISU_CUDA_NATIVE_BOUNDED_MATH) && IRISU_CUDA_NATIVE_BOUNDED_MATH
  constexpr const char* device_numeric_profile="bounded-device-add-sub-mul";
 #else
  constexpr const char* device_numeric_profile="checked";
 #endif
+ const std::size_t scene_copy_bytes=options.physical_snapshot?physical_scene_bytes:sizeof(Scene);
  std::vector<wire::Result> results(count),previous;std::vector<unsigned> ranks(count),previous_ranks;std::vector<Sample> samples;Validation validation;std::uint64_t allocation_bytes=0;unsigned registers=0,prefix_executions=0;std::size_t local_bytes=0,effective_stack_bytes=0;double cold_storage_ms=0;
  if(options.cpu){
   Environment environment;auto prefix=std::make_unique<World>();auto prefix_scene=std::make_unique<Scene>();std::unique_ptr<World[]> worlds(new World[count]);std::unique_ptr<Scene[]> scenes(new Scene[count]);auto selected=std::make_unique<World>();auto selected_scene=std::make_unique<Scene>();
@@ -179,9 +192,9 @@ int main(int argc,char** argv){try{
    if(execute_prefix){cold_storage(prefix.get(),prefix_scene.get());prepare_prefix(prefix.get(),prefix_scene.get(),options,input.replay.data(),&prefix_result);++prefix_executions;
     if(options.reuse_prefix){std::memcpy(prefix_guard.data(),prefix.get(),sizeof(World));std::memcpy(prefix_guard.data()+sizeof(World),prefix_scene.get(),sizeof(Scene));std::memcpy(prefix_guard.data()+sizeof(World)+sizeof(Scene),&prefix_result,sizeof(prefix_result));}}
    const auto a=std::chrono::steady_clock::now();sample.prefix_ms=execute_prefix?std::chrono::duration<double,std::milli>(a-begin).count():0;
-   for(unsigned i=0;i<count;++i)host_clone(worlds[i],scenes[i],*prefix,*prefix_scene);const auto b=std::chrono::steady_clock::now();sample.branch_ms=std::chrono::duration<double,std::milli>(b-a).count();
+   for(unsigned i=0;i<count;++i){host_clone(worlds[i],scenes[i],*prefix,*prefix_scene,scene_copy_bytes);if(options.scratch_poison)host_poison_scratch(scenes[i],options.scratch_poison,i);}const auto b=std::chrono::steady_clock::now();sample.branch_ms=std::chrono::duration<double,std::milli>(b-a).count();
    for(unsigned i=0;i<count;++i)future(worlds[i],scenes[i],options,input.replay.data(),input.replay.size(),input.candidates[i],prefix_result,results[i]);const auto c=std::chrono::steady_clock::now();sample.rollout_ms=std::chrono::duration<double,std::milli>(c-b).count();std::iota(ranks.begin(),ranks.end(),0U);std::sort(ranks.begin(),ranks.end(),[&](unsigned a,unsigned b){return wire::better(results[a],a,results[b],b);});const auto d=std::chrono::steady_clock::now();sample.rank_compact_ms=std::chrono::duration<double,std::milli>(d-c).count();
-   if(options.validate)for(unsigned k=0;k<options.keep;++k){const unsigned i=ranks[k];host_clone(*selected,*selected_scene,worlds[i],scenes[i]);if(!host_equal(*selected,*selected_scene,worlds[i],scenes[i]))++validation.errors;const auto sa=selected->step({}),sb=worlds[i].step({});const auto fa=selected->frame(sa),fb=worlds[i].frame(sb);if(selected->failed()||worlds[i].failed()||std::memcmp(&fa,&fb,sizeof(fa))||!host_equal(*selected,*selected_scene,worlds[i],scenes[i]))++validation.errors;}
+   if(options.validate)for(unsigned k=0;k<options.keep;++k){const unsigned i=ranks[k];host_clone(*selected,*selected_scene,worlds[i],scenes[i],scene_copy_bytes);if(!host_equal(*selected,*selected_scene,worlds[i],scenes[i],scene_copy_bytes))++validation.errors;if(options.physical_snapshot){host_poison_scratch(*selected_scene,1);host_poison_scratch(scenes[i],2);}const auto sa=selected->step({}),sb=worlds[i].step({});const auto fa=selected->frame(sa),fb=worlds[i].frame(sb);if(selected->failed()||worlds[i].failed()||std::memcmp(&fa,&fb,sizeof(fa))||!host_equal(*selected,*selected_scene,worlds[i],scenes[i],scene_copy_bytes))++validation.errors;}
    if(options.reuse_prefix&&(std::memcmp(prefix_guard.data(),prefix.get(),sizeof(World))||std::memcmp(prefix_guard.data()+sizeof(World),prefix_scene.get(),sizeof(Scene))||std::memcmp(prefix_guard.data()+sizeof(World)+sizeof(Scene),&prefix_result,sizeof(prefix_result))))throw std::runtime_error("typed host reused checkpoint changed");
    const auto end=std::chrono::steady_clock::now();sample.validation_ms=std::chrono::duration<double,std::milli>(end-d).count();sample.total_ms=std::chrono::duration<double,std::milli>(end-begin).count();if(run>=options.warmups)samples.push_back(sample);
    if(!previous.empty()&&(std::memcmp(previous.data(),results.data(),count*sizeof(results[0]))||previous_ranks!=ranks))throw std::runtime_error("typed host repeated search differs");previous=results;previous_ranks=ranks;
@@ -200,9 +213,9 @@ int main(int argc,char** argv){try{
    Event a,b,c,d,e,f;a.record();
    if(execute_prefix){if(options.host_prefix)rebind_prefix_kernel<<<1,1>>>(prefix,prefix_scene,old_base,errors);else prefix_kernel<<<1,256>>>(prefix,prefix_scene,empty_world,empty_scene,options,replay,prefix_result);++prefix_executions;
     if(options.reuse_prefix){check(cudaMemcpyAsync(saved_prefix,prefix,sizeof(World),cudaMemcpyDeviceToDevice));check(cudaMemcpyAsync(saved_prefix_scene,prefix_scene,sizeof(Scene),cudaMemcpyDeviceToDevice));check(cudaMemcpyAsync(saved_prefix_result,prefix_result,sizeof(wire::Result),cudaMemcpyDeviceToDevice));}}
-   b.record();launch_clones(worlds,scenes,prefix,prefix_scene,count,nullptr,errors,options);c.record();
+   b.record();launch_clones(worlds,scenes,prefix,prefix_scene,count,nullptr,errors,options);if(options.scratch_poison)poison_scratch_kernel<<<count,256>>>(scenes,count,nullptr,options.scratch_poison);c.record();
    const unsigned threads=options.isolated?std::max(32U,options.threads):options.threads,total=count*(options.isolated?32U:1U);future_kernel<<<(total+threads-1)/threads,threads>>>(worlds,scenes,options,replay,input.replay.size(),candidates,count,prefix_result,output);d.record();rank_kernel<<<(count+127)/128,128>>>(output,count,order);launch_clones(selected,selected_scenes,worlds,scenes,options.keep,order,errors,options);e.record();
-   if(options.validate){verify_kernel<<<options.keep,256>>>(selected,selected_scenes,worlds,scenes,order,options.keep,errors);continue_kernel<<<(options.keep+31)/32,32>>>(selected,worlds,order,options.keep,errors);verify_kernel<<<options.keep,256>>>(selected,selected_scenes,worlds,scenes,order,options.keep,errors);}
+   if(options.validate){verify_kernel<<<options.keep,256>>>(selected,selected_scenes,worlds,scenes,order,options.keep,errors,scene_copy_bytes);if(options.physical_snapshot){poison_scratch_kernel<<<options.keep,256>>>(selected_scenes,options.keep,nullptr,1);poison_scratch_kernel<<<options.keep,256>>>(scenes,options.keep,order,2);}continue_kernel<<<(options.keep+31)/32,32>>>(selected,worlds,order,options.keep,errors);verify_kernel<<<options.keep,256>>>(selected,selected_scenes,worlds,scenes,order,options.keep,errors,scene_copy_bytes);}
    if(options.reuse_prefix)verify_prefix_kernel<<<1,256>>>(prefix,prefix_scene,prefix_result,saved_prefix,saved_prefix_scene,saved_prefix_result,errors);
    check(cudaGetLastError());f.record();check(cudaEventSynchronize(f.value));check(cudaMemcpy(results.data(),output,count*sizeof(wire::Result),cudaMemcpyDeviceToHost));check(cudaMemcpy(ranks.data(),order,count*4,cudaMemcpyDeviceToHost));check(cudaMemcpy(&validation,errors,sizeof(validation),cudaMemcpyDeviceToHost));sample.prefix_ms=execute_prefix?elapsed(a,b):0;sample.branch_ms=elapsed(b,c);sample.rollout_ms=elapsed(c,d);sample.rank_compact_ms=elapsed(d,e);sample.validation_ms=elapsed(e,f);sample.total_ms=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-begin).count();if(run>=options.warmups)samples.push_back(sample);
    if(validation.errors)throw std::runtime_error("CUDA selected full-state check failed: errors="+std::to_string(validation.errors)+" section="+std::to_string(validation.first_section)+" offset="+std::to_string(validation.first_offset));
@@ -213,7 +226,7 @@ int main(int argc,char** argv){try{
 #endif
  }
  unsigned failed=0;std::uint64_t ticks=0;for(const auto& result:results){failed+=bool(result.failed);ticks+=result.simulated_ticks;}
- std::fprintf(stderr,"{\"identity\":\"experimental-independent-typed-game-search-v1\",\"backend\":\"%s\",\"numeric_profile\":\"%s\",\"host_prefix_numeric_profile\":\"checked\",\"promotion_eligible\":false,\"candidates\":%u,\"prefix_ticks\":%u,\"horizon\":%u,\"simulated_ticks\":%llu,\"failed_candidates\":%u,\"trace_every_tick\":%s,\"host_prefix\":%s,\"threads\":%u,\"isolated_warps\":%s,\"copy_u64\":%s,\"split_rebind\":%s,\"reuse_prefix\":%s,\"prefix_executions\":%u,\"prefix_immutability_checks\":%s,\"prefix_immutability_errors\":%u,\"prefix_guard_bytes\":%zu,\"keep\":%u,\"warmups\":%u,\"repeats\":%u,\"selected_state_checks\":%s,\"compaction_errors\":%u,\"first_error_section\":%u,\"first_error_offset\":%u,\"world_bytes\":%zu,\"scene_bytes\":%zu,\"cold_storage\":\"host-prepared-empty-template\",\"cold_storage_host_physics_calls\":0,\"cold_storage_ms\":%.9f,\"allocated_bytes\":%llu,\"registers\":%u,\"local_bytes\":%zu,\"requested_stack_kib\":%u,\"effective_stack_bytes\":%zu,\"guest_calls\":0,\"fallback_calls\":0,\"elapsed_before_stdout_ms\":%.9f,\"winner\":%u,\"samples\":[",options.cpu?"typed-host":"cuda-native",options.cpu?"checked":device_numeric_profile,count,options.prefix,options.horizon,(unsigned long long)ticks,failed,options.trace?"true":"false",options.host_prefix?"true":"false",options.threads,options.isolated?"true":"false",options.copy_u64?"true":"false",options.split_rebind?"true":"false",options.reuse_prefix?"true":"false",prefix_executions,options.reuse_prefix?"true":"false",validation.prefix_errors,options.reuse_prefix?prefix_guard_bytes:std::size_t(0),options.keep,options.warmups,options.repeats,options.validate?"true":"false",validation.errors,validation.first_section,validation.first_offset,sizeof(World),sizeof(Scene),cold_storage_ms,(unsigned long long)allocation_bytes,registers,local_bytes,options.stack_kib,effective_stack_bytes,std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-started).count(),ranks[0]);
+ std::fprintf(stderr,"{\"identity\":\"experimental-independent-typed-game-search-v1\",\"backend\":\"%s\",\"numeric_profile\":\"%s\",\"host_prefix_numeric_profile\":\"checked\",\"promotion_eligible\":false,\"candidates\":%u,\"prefix_ticks\":%u,\"horizon\":%u,\"simulated_ticks\":%llu,\"failed_candidates\":%u,\"trace_every_tick\":%s,\"host_prefix\":%s,\"threads\":%u,\"isolated_warps\":%s,\"copy_u64\":%s,\"split_rebind\":%s,\"reuse_prefix\":%s,\"physical_snapshot\":%s,\"scene_transport_bytes\":%zu,\"scene_scratch_omitted_bytes\":%zu,\"scratch_poison\":%u,\"snapshot_comparison_scope\":\"%s\",\"prefix_executions\":%u,\"prefix_immutability_checks\":%s,\"prefix_immutability_errors\":%u,\"prefix_guard_bytes\":%zu,\"keep\":%u,\"warmups\":%u,\"repeats\":%u,\"selected_state_checks\":%s,\"compaction_errors\":%u,\"first_error_section\":%u,\"first_error_offset\":%u,\"world_bytes\":%zu,\"scene_bytes\":%zu,\"cold_storage\":\"host-prepared-empty-template\",\"cold_storage_host_physics_calls\":0,\"cold_storage_ms\":%.9f,\"allocated_bytes\":%llu,\"registers\":%u,\"local_bytes\":%zu,\"requested_stack_kib\":%u,\"effective_stack_bytes\":%zu,\"guest_calls\":0,\"fallback_calls\":0,\"elapsed_before_stdout_ms\":%.9f,\"winner\":%u,\"samples\":[",options.cpu?"typed-host":"cuda-native",options.cpu?"checked":device_numeric_profile,count,options.prefix,options.horizon,(unsigned long long)ticks,failed,options.trace?"true":"false",options.host_prefix?"true":"false",options.threads,options.isolated?"true":"false",options.copy_u64?"true":"false",options.split_rebind?"true":"false",options.reuse_prefix?"true":"false",options.physical_snapshot?"true":"false",scene_copy_bytes,sizeof(Scene)-scene_copy_bytes,options.scratch_poison,options.physical_snapshot?"all-Game-and-all-World-BroadPhase-bytes":"all-Game-and-all-Scene-bytes",prefix_executions,options.reuse_prefix?"true":"false",validation.prefix_errors,options.reuse_prefix?prefix_guard_bytes:std::size_t(0),options.keep,options.warmups,options.repeats,options.validate?"true":"false",validation.errors,validation.first_section,validation.first_offset,sizeof(World),sizeof(Scene),cold_storage_ms,(unsigned long long)allocation_bytes,registers,local_bytes,options.stack_kib,effective_stack_bytes,std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-started).count(),ranks[0]);
  for(unsigned i=0;i<samples.size();++i){if(i)std::fputc(',',stderr);print_sample(samples[i]);}std::fprintf(stderr,"]}\n");
  if(failed||validation.errors)return 2;wire::emit_results(results,ranks);return 0;
 }catch(const std::exception& e){std::fprintf(stderr,"native-search: %s\n",e.what());return 1;}}

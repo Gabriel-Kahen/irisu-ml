@@ -59,3 +59,26 @@ Later CPU media contention invalidated headline claims from the older campaign
 measurements; unrelated processes were not modified. New fair CPU comparisons
 require a quiet window and repeated paired campaigns. The tools remain
 experimental; these fixtures do not establish universal speedup or admission.
+
+## Optional physical snapshot
+
+`--physical-snapshot` retains every Game byte and the complete World and
+broad-phase state, copying Scene bytes `[0, offsetof(Scene, scratch))`. It omits
+only transient SceneScratch plus its trailing padding. This reduces transported
+checkpoint bytes from 2,265,064 to 1,415,136; full allocation strides remain
+unchanged. All warm impulses, pending deletes and SAP buffers remain intact.
+The default still copies all scratch.
+
+This option applies only after complete public calls. Its source audit, native
+edge fixtures, two workspace poisons, full persistent-byte continuation checks,
+memcheck and virgin-workspace initcheck passed. `--scratch-poison 1` or `2` is
+validation-only; the actual fast path leaves workspace untouched. Selected-state
+checks in reduced mode compare every Game and persistent Scene byte, while the
+cached-prefix guard continues comparing the **entire** source checkpoint.
+
+For the final pure-GPU campaign command above, add `--physical-snapshot` and
+use `--repeats 20` with native `batches=20`. CPU workers must remain unrestricted;
+physical-core pinning was slower and was rejected. Final speedup claims require
+the paired native v2 cached controller with parent verification buffers excluded
+from candidate forks. See `search_physical_qualification.json` for exact gates;
+the one-sample GPU pilot is not a final 5x claim.
