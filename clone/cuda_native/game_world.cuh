@@ -12,13 +12,13 @@ namespace irisu::cuda_game {
 struct NativeGameWorld {
   Simulator<NativePhysicsWorld> simulator{};
   GAME_HD void bind(irisu::cuda_native::ScenePipelineState* scene){simulator.physics_.bind(scene);}
-  GAME_HD bool relocate_body_pointers(std::uintptr_t old_base,std::uintptr_t new_base){
-    const bool valid=relocate_native_body_refs(simulator.actor_refs_scratch_,old_base,new_base)&&
-      simulator.physics_.relocate_body_pointers(old_base,new_base);
+  GAME_HD bool relocate_body_pointers(std::uintptr_t old_base,std::uintptr_t new_base,bool live_only=false){
+    const bool valid=relocate_native_body_refs(simulator.actor_refs_scratch_,old_base,new_base,live_only)&&
+      simulator.physics_.relocate_body_pointers(old_base,new_base,live_only);
     if(!valid)simulator.failed_=true;return valid;
   }
-  GAME_HD bool rebind(irisu::cuda_native::ScenePipelineState* scene,std::uintptr_t old_body_base){
-    bind(scene);return relocate_body_pointers(old_body_base,reinterpret_cast<std::uintptr_t>(simulator.bodies_.data()));
+  GAME_HD bool rebind(irisu::cuda_native::ScenePipelineState* scene,std::uintptr_t old_body_base,bool live_only=false){
+    bind(scene);return relocate_body_pointers(old_body_base,reinterpret_cast<std::uintptr_t>(simulator.bodies_.data()),live_only);
   }
   GAME_HD bool failed() const {return simulator.failed();}
   GAME_HD void initialize(irisu::cuda_native::ScenePipelineState* scene,std::uint32_t seed){

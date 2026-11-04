@@ -61,10 +61,12 @@ NATIVE_HD inline void copy_game(Game& destination,const Game& source,const GameP
     for(std::size_t i=worker;i<tail.size;i+=workers)out[tail.begin+i]=0;
   }
 }
-// Call only after all copy workers finish. It retains the existing adapter's
-// explicit scene binding and body-reference relocation contract.
+// Call only after copy_game has zero-restored inactive pointer tails and all
+// copy workers finish. That precondition allows skipping the zero tails here;
+// all live pointer range/alignment checks remain. Default/full copies and
+// address normalizations retain the old capacity-wide scan.
 NATIVE_HD inline bool rebind_game(Game& destination,ScenePipelineState& scene,const GamePlan& plan){
-  return destination.rebind(&scene,plan.old_body_base);
+  return destination.rebind(&scene,plan.old_body_base,true);
 }
 // Only live element padding is dispensable. Inactive poisoned storage can
 // become live through a memberwise copy constructor which leaves ABI padding

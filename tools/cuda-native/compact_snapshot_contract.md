@@ -36,8 +36,13 @@ The generated group's `back()` use follows `push_back`; overflow preserves an
 existing live last element and the overflow flag, so existing failure behavior
 is retained. The sole capacity-wide consumers are body-pointer relocation in
 the adapter's `ordered_` and Simulator's `actor_refs_scratch_`. Their omitted
-tails are explicitly zero-written before calling unchanged `rebind`, including
-for virgin destinations. Live pointers retain the original relocation checks.
+tails are explicitly zero-written before calling `rebind`, including for virgin
+destinations. Compact `rebind_game` selects the optional `live_only=true` path
+only after `copy_game` and its worker barrier: it scans each vector's `count`
+rather than capacity. The zero-tail precondition is mandatory. Live pointer
+range/alignment checks remain, and invalid counts above capacity are rejected.
+All ordinary/default rebind calls and full-copy address normalizations retain
+the original capacity-wide scan (`live_only=false`).
 
 Game equality compares preserved spans after equal scene bindings and pointer
 normalization, ignoring only explicit ABI padding within live Body, Contact,

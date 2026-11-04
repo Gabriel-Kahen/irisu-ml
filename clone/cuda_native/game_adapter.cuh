@@ -9,8 +9,10 @@
 #endif
 
 namespace irisu::cuda_game {
-GAME_HD inline bool relocate_native_body_refs(vector<Body*>& refs,std::uintptr_t old_base,std::uintptr_t new_base){
-  for(unsigned i=0;i<refs.capacity;++i){
+GAME_HD inline bool relocate_native_body_refs(vector<Body*>& refs,std::uintptr_t old_base,std::uintptr_t new_base,bool live_only=false){
+  if(live_only&&refs.count>refs.capacity)return false;
+  const auto count=live_only?refs.count:refs.capacity;
+  for(unsigned i=0;i<count;++i){
     std::uintptr_t word{};std::memcpy(&word,refs.storage+i*sizeof(Body*),sizeof(word));
     if(word>=old_base&&word-old_base<sizeof(Body)*vector<Body>::capacity){
       if((word-old_base)%sizeof(Body))return false;
@@ -93,8 +95,8 @@ class NativePhysicsWorld {
   template<class Visitor> GAME_HD void snapshot_vectors(Visitor& visit)const{visit(entries_);visit(contacts_);visit(ordered_);}
   GAME_HD void bind(Scene* scene){scene_=scene;}
   GAME_HD void initialize_pointer_storage(){for(auto& byte:ordered_.storage)byte=0;}
-  GAME_HD bool relocate_body_pointers(std::uintptr_t old_base,std::uintptr_t new_base){
-    const bool valid=relocate_native_body_refs(ordered_,old_base,new_base);if(!valid)fail();return valid;
+  GAME_HD bool relocate_body_pointers(std::uintptr_t old_base,std::uintptr_t new_base,bool live_only=false){
+    const bool valid=relocate_native_body_refs(ordered_,old_base,new_base,live_only);if(!valid)fail();return valid;
   }
   GAME_HD bool failed() const {return !scene_||scene_->world.status!=irisu::cuda_native::Status::ok||entries_.overflow||contacts_.overflow;}
   GAME_HD NATIVE_GAME_CALL void reset(){
