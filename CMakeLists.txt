@@ -9,6 +9,7 @@ option(IRISU_BUILD_SHARED "Build the C ABI shared library" ON)
 option(IRISU_BUILD_BENCHMARKS "Build bounded native benchmark tools" ON)
 option(IRISU_BUILD_WEB "Build the single-threaded Emscripten module" OFF)
 option(IRISU_BUILD_CUDA_EXPERIMENTS "Build optional, non-promoting CUDA exact-host experiments" OFF)
+option(IRISU_BUILD_CUDA_NATIVE_EXPERIMENTS "Build separate typed GPU physics experiments" OFF)
 set(IRISU_PHYSICS_BACKEND "portable" CACHE STRING
     "Physics backend: portable or exact-msvc")
 set_property(CACHE IRISU_PHYSICS_BACKEND PROPERTY STRINGS portable exact-msvc)
@@ -681,12 +682,17 @@ endif()
 
 # CUDA binaries are 64-bit experiments. Keep the production 32-bit exact
 # worker in a separate build tree and compare it through explicit fixtures.
-if(IRISU_BUILD_CUDA_EXPERIMENTS)
+if(IRISU_BUILD_CUDA_EXPERIMENTS OR IRISU_BUILD_CUDA_NATIVE_EXPERIMENTS)
   if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
     message(FATAL_ERROR "CUDA experiments require a separate 64-bit build tree")
   endif()
   enable_language(CUDA)
+endif()
+if(IRISU_BUILD_CUDA_EXPERIMENTS)
   add_subdirectory(clone/cuda)
+endif()
+if(IRISU_BUILD_CUDA_NATIVE_EXPERIMENTS)
+  add_subdirectory(clone/cuda_native)
 endif()
 
 if(IRISU_BUILD_BENCHMARKS AND IRISU_PHYSICS_BACKEND STREQUAL "exact-msvc")
