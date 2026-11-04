@@ -1,0 +1,4585 @@
+{
+  "schema": "irisu-independent-typed-game-search-scaling-qualification-v1",
+  "promotion_eligible": false,
+  "five_times_best_measured_cpu_achieved": false,
+  "baseline_commit": "eae55d8",
+  "baseline_receipt": "tools/cuda-native/search_qualification.json",
+  "source_commit_context": "dcb654cd50ec3b843f0bb5b63ffa682776f596e2",
+  "source_changes": "Only allow explicit --stack-kib4/8 and report requested/effective cudaDeviceGetLimit. Default16KiB, complete state copies, strict math and all execution kernels unchanged semantically.",
+  "runner_sha256": "19c0f2d6f65ae133f779aa88080dcd7a17d38f0ff9b7f3b29f46afd42ff1f62f",
+  "binary_sha256": "436c69a6ff70eea17e7de46c1fa8e24021a9a536d009267dd61690e08a5ed661",
+  "core_dependency_sha256_unchanged_from_baseline": {
+    "clone/cuda/game.cuh": "454025dc78c0b7769f85c885d49576f19e2a610ce5fe779dd926336a7bbef507",
+    "clone/cuda/game_support.cuh": "a04980514e30cacd2b158622dfb072b4618b95c5b69b87d942ea505bcb9408c5",
+    "clone/cuda/game_tables.cuh": "3ddd4c93f2856cb779a964a82d23aae78aca826d03f3d64809fe56c9ea1cf330",
+    "clone/cuda/game_types.cuh": "654e1a2738ddb0ae7e1862e8a8d887a109fac908c5afb02f7fb0344c9202fac7",
+    "clone/cuda/search.hpp": "7665ee83ea1b216b6a6b9d529332ffe90d47ec2a68cad2f2862527506e5bc412",
+    "clone/cuda_native/broadphase.hpp": "0678b3c434508301931daf35b0a1176a6ee46c825f498266420d96a6bc20c378",
+    "clone/cuda_native/broadphase_algorithm.inc": "d666412957b87b68722a72d3c014ceb227651961ed458794b4ff103283e99fb3",
+    "clone/cuda_native/collision.hpp": "38c8578f0ac64bf1ed2e2c3ae8f22e967a1ca992bad25e3ee85ec733d3008fa6",
+    "clone/cuda_native/factory.hpp": "3ab2cef30efa346baae00655b834cd27b5720573349f46817a12d57dbe37c688",
+    "clone/cuda_native/game_adapter.cuh": "14ab6527e8522501c5405641ac6ff04a415967e6adab871e9a15c68eea03b964",
+    "clone/cuda_native/game_world.cuh": "a61d3169711d4b09154768c50efcf039fe7f951cf72dcca3788020acbeb1eabf",
+    "clone/cuda_native/solver.hpp": "1d36a4f7e739af6958486121b88454c161bca267df4e96a11ee9a89b530823ff",
+    "clone/cuda_native/solver_math.hpp": "8463aa8ab69d9af2f72b6fafee0ae378b3a7e00d8c6afd721bda7ee1902cb939",
+    "clone/cuda_native/types.hpp": "6764c26b03d10ecb29abdf6b8e0a0fbe57457549fdc8096b16e25ff0a21a39d7",
+    "clone/cuda_native/world.hpp": "11ccd005afec41ac8c10ee2060a774cbe682dd297db0c233d7aae394122261b7",
+    "clone/cuda_native/world_contacts.hpp": "6f72e836de47b20d5e693121a873871af29ad720a4d86a99e3460f90f69c20fa",
+    "clone/cuda_native/world_pipeline.hpp": "244ad2ca5f83b56d64f416803810cc7c5144cd4e1287b715afcfa4fc2b474fce",
+    "clone/cuda_native/world_scene.hpp": "698e98b0682baba6c13414c3e5eb2ea7d1247aa1142bc26c33f7ded4a488cf13",
+    "clone/cuda_native/world_shapes.hpp": "a57a96737d713765901e8735c28504465585c8906aeac122b8177b3d1d5f35d3",
+    "tools/cuda-exact/game_digest.hpp": "75a038839de86868b34c3ef319de3759663e31f96d8de65e00416f7c3552ae2a",
+    "tools/cuda-exact/search_io.hpp": "b9f3385f5d8b15f94d561645bddc8860f7a39774864e40dfb0b2b1bd8494d62d",
+    "tools/cuda-exact/x87_numeric.cuh": "ce53bc2730e24227ebc83cf95699a75bb81b8f1739d8ead0d9764a25825b3a5e",
+    "tools/cuda-exact/search_validate.py": "1591cf830c75c959c1d0271c55848bfb3a29b20c4518bd06ad3ce33d72265bd8",
+    "tools/cuda-exact/search_oracle.cpp": "6a05cac5d2959705a40d16e8fb51b841d82fe5e2cf3c93b057ad97e675ce7506"
+  },
+  "scope": "4096 and8192 independent complete worlds, repeating the original512 canonical candidate specifications8 and16times. These are not4096/8192distinct mutations. Prefix100,horizon4,final-only,packed32threads,keep2. All result and rank bytes compared to fresh actual native CPU8/16 outputs. Native rankings include stable index ordering among duplicate futures.",
+  "input_sha256": {
+    "artifacts/cuda-native-20261103/search/specs4096-repeated512.bin": "035865950f23c60b79886cad912dfc09c5b69b0689ca96161bca52c003eb844e",
+    "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin": "e2980dcdb59803f1a96c0a8861e1d8277c48c2ba80aa1f97f31fe84f51b94462"
+  },
+  "stack_safety": "Recorded ptxas cumulative maximum2968B (future2712B,prefix2624B,continuation2968B), so4KiB is an opt-in tested floor for this build, not a general guarantee for future code/toolchains. Full8192native result/rank and typedfullbyte clone+independent continuation gates passed under both4/8KiB and bothprefixmodes. 4KiB GPU-prefix and8KiB typed-host-prefix smallfulltrace memchecks pass0errors. Default16KiB retained because no useful performance gain.",
+  "timing_scope": "CPU:one warmup plus3 independent timed processes perworkers. GPU:warmup1+3iterations with resident allocations, separately reported from processwall; repeats reconstructprefix.4096has one cold process sample perprefix with extra fullstate validation enabled.8192has3interleaved matchedcoldprocess samples perstack/prefix with onlyvalidation-only extra continuation skipped; fullfanout,rank,selectedcopy retained. NativeCPUincludesfork/COW snapshot branching; GPUcoldprocess includes huge fullsnapshot allocation/context/teardown. Do not compare warmiteration to CPUprocess as identical lifecycle scope or divide4iteration processwall by4.",
+  "summary": {
+    "4096": {
+      "native_cpu": {
+        "8": {
+          "process_wall_seconds": [
+            0.46430809500452597,
+            0.4817718080012128,
+            0.4870885379932588
+          ],
+          "median_seconds": 0.4817718080012128
+        },
+        "16": {
+          "process_wall_seconds": [
+            0.4824929800015525,
+            0.4930475170040154,
+            0.47863681799935875
+          ],
+          "median_seconds": 0.4824929800015525
+        }
+      },
+      "gpu": {
+        "scaling4096-gpuprefix-validation": {
+          "process_wall_seconds": 1.1751153429941041,
+          "selected_state_checks": true,
+          "median_phase_ms": {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 837.82244873,
+            "branch_ms": 48.401409149,
+            "rollout_ms": 103.050239563,
+            "rank_compact_ms": 9.796607971,
+            "validation_ms": 37.39648056,
+            "total_ms": 1036.817471
+          }
+        },
+        "scaling4096-gpuprefix-warm": {
+          "process_wall_seconds": 4.115327573999821,
+          "selected_state_checks": false,
+          "median_phase_ms": {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 828.428283691,
+            "branch_ms": 47.049728394,
+            "rollout_ms": 103.413757324,
+            "rank_compact_ms": 9.785344124,
+            "validation_ms": 0.002048,
+            "total_ms": 988.999426
+          }
+        },
+        "scaling4096-hostprefix-validation": {
+          "process_wall_seconds": 0.39478575499379076,
+          "selected_state_checks": true,
+          "median_phase_ms": {
+            "host_prefix_ms": 31.602344,
+            "prefix_ms": 0.259072006,
+            "branch_ms": 53.355518341,
+            "rollout_ms": 112.398338318,
+            "rank_compact_ms": 9.877504349,
+            "validation_ms": 37.504001617,
+            "total_ms": 245.370305
+          }
+        },
+        "scaling4096-hostprefix-warm": {
+          "process_wall_seconds": 0.9226092210010393,
+          "selected_state_checks": false,
+          "median_phase_ms": {
+            "host_prefix_ms": 29.380971,
+            "prefix_ms": 0.200703993,
+            "branch_ms": 49.289215088,
+            "rollout_ms": 104.099838257,
+            "rank_compact_ms": 9.781248093,
+            "validation_ms": 0.003072,
+            "total_ms": 193.487542
+          }
+        }
+      },
+      "native_wire_sha256": "8c4a00a23fb7ee88d69a84a225bf5cf26109de36e056da2e667d2c44b28c2c60"
+    },
+    "8192": {
+      "native_cpu": {
+        "8": {
+          "process_wall_seconds": [
+            1.0087700550066074,
+            0.9780534349993104,
+            0.9587031850023777
+          ],
+          "median_seconds": 0.9780534349993104
+        },
+        "16": {
+          "process_wall_seconds": [
+            0.972600417000649,
+            0.9666440520013566,
+            0.9931181569991168
+          ],
+          "median_seconds": 0.972600417000649
+        }
+      },
+      "gpu": {
+        "scaling8192-gpuprefix-validation": {
+          "process_wall_seconds": 1.2907231450008112,
+          "selected_state_checks": true,
+          "median_phase_ms": {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 846.829528809,
+            "branch_ms": 94.374908447,
+            "rollout_ms": 136.195068359,
+            "rank_compact_ms": 16.491519928,
+            "validation_ms": 37.493759155,
+            "total_ms": 1131.899808
+          }
+        },
+        "scaling8192-gpuprefix-warm": {
+          "process_wall_seconds": 4.866238018999866,
+          "selected_state_checks": false,
+          "median_phase_ms": {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 828.099609375,
+            "branch_ms": 99.070976257,
+            "rollout_ms": 135.480316162,
+            "rank_compact_ms": 16.476160049,
+            "validation_ms": 0.002048,
+            "total_ms": 1079.373051
+          }
+        },
+        "scaling8192-hostprefix-validation": {
+          "process_wall_seconds": 0.8574557959946105,
+          "selected_state_checks": true,
+          "median_phase_ms": {
+            "host_prefix_ms": 31.664272,
+            "prefix_ms": 0.254976004,
+            "branch_ms": 101.434364319,
+            "rollout_ms": 137.240570068,
+            "rank_compact_ms": 16.624639511,
+            "validation_ms": 37.420032501,
+            "total_ms": 325.139829
+          }
+        },
+        "scaling8192-hostprefix-warm": {
+          "process_wall_seconds": 1.6606887300004018,
+          "selected_state_checks": false,
+          "median_phase_ms": {
+            "host_prefix_ms": 29.442668,
+            "prefix_ms": 0.200703993,
+            "branch_ms": 97.715202332,
+            "rollout_ms": 136.322052002,
+            "rank_compact_ms": 16.605184555,
+            "validation_ms": 0.003072,
+            "total_ms": 281.141496
+          }
+        }
+      },
+      "native_wire_sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027"
+    }
+  },
+  "stack_summary": {
+    "16": {
+      "gpuprefix": {
+        "cold_process_wall_seconds": [
+          1.6220157930001733,
+          1.6238264159983373,
+          1.6346444840019103
+        ],
+        "median_seconds": 1.6238264159983373
+      },
+      "hostprefix": {
+        "cold_process_wall_seconds": [
+          0.8184597250001389,
+          0.8192181470003561,
+          0.8243080039974302
+        ],
+        "median_seconds": 0.8192181470003561
+      },
+      "host_prefix_warmed_iteration_median_ms": 285.386427,
+      "effective_stack_bytes": 16384
+    },
+    "8": {
+      "gpuprefix": {
+        "cold_process_wall_seconds": [
+          1.629159776995948,
+          1.6241872219979996,
+          1.631656823999947
+        ],
+        "median_seconds": 1.629159776995948
+      },
+      "hostprefix": {
+        "cold_process_wall_seconds": [
+          0.8161342640014482,
+          0.8140501710004173,
+          0.8226882050003042
+        ],
+        "median_seconds": 0.8161342640014482
+      },
+      "host_prefix_warmed_iteration_median_ms": 287.038829,
+      "effective_stack_bytes": 8192
+    },
+    "4": {
+      "gpuprefix": {
+        "cold_process_wall_seconds": [
+          1.622808801002975,
+          1.6192634209946846,
+          1.6195670680026524
+        ],
+        "median_seconds": 1.6195670680026524
+      },
+      "hostprefix": {
+        "cold_process_wall_seconds": [
+          0.81872369699704,
+          0.8192206120002083,
+          0.8166157490049955
+        ],
+        "median_seconds": 0.81872369699704
+      },
+      "host_prefix_warmed_iteration_median_ms": 284.631572,
+      "effective_stack_bytes": 4096
+    }
+  },
+  "conclusion": {
+    "8192_best_native_workers": 16,
+    "8192_native_cpu_median_seconds": 0.972600417000649,
+    "8192_default_gpu_prefix_process_median_seconds": 1.6238264159983373,
+    "8192_explicit_typed_host_prefix_process_median_seconds": 0.8192181470003561,
+    "8192_host_prefix_process_speedup_vs_native": 1.1872300687697366,
+    "8192_host_prefix_warm_iteration_ms": 285.386427,
+    "five_times_target_met": false,
+    "note": "Checked default GPU-prefix completeprocess remains slower than nativeCPU. Explicittypedhostprefix has onlyabout1.19x coldprocess gain at8192, not5x. Warming allocations removes~0.53s lifecycleoverhead, but warmediteration285ms stilldoesnotmeet5xCPUprocess target.4096/8192scaling improvesfutures throughput but fullcopies andserialprefix remain material."
+  },
+  "full_scaling_samples": [
+    {
+      "name": "scaling4096-native-w8-r0",
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs4096-repeated512.bin",
+        "100",
+        "4",
+        "8",
+        "4393102",
+        "--final-only"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 0.468524151998281,
+      "bytes": 1064976,
+      "sha256": "8c4a00a23fb7ee88d69a84a225bf5cf26109de36e056da2e667d2c44b28c2c60",
+      "metadata": {
+        "identity": "experimental-native-exact-search-oracle-v2",
+        "candidates": 4096,
+        "workers": 8,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 16384,
+        "trace_every_tick": false,
+        "prefix_ms": 8.233845,
+        "branch_rollout_rank_ms": 454.147958,
+        "total_ms": 462.39047,
+        "winner": 0
+      },
+      "warmup": true
+    },
+    {
+      "name": "scaling4096-native-w16-r0",
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs4096-repeated512.bin",
+        "100",
+        "4",
+        "16",
+        "4393102",
+        "--final-only"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 0.45837900300102774,
+      "bytes": 1064976,
+      "sha256": "8c4a00a23fb7ee88d69a84a225bf5cf26109de36e056da2e667d2c44b28c2c60",
+      "metadata": {
+        "identity": "experimental-native-exact-search-oracle-v2",
+        "candidates": 4096,
+        "workers": 16,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 16384,
+        "trace_every_tick": false,
+        "prefix_ms": 8.219698,
+        "branch_rollout_rank_ms": 444.039389,
+        "total_ms": 452.267323,
+        "winner": 0
+      },
+      "native_packet_equal": true,
+      "warmup": true
+    },
+    {
+      "name": "scaling4096-native-w8-r1",
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs4096-repeated512.bin",
+        "100",
+        "4",
+        "8",
+        "4393102",
+        "--final-only"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 0.46430809500452597,
+      "bytes": 1064976,
+      "sha256": "8c4a00a23fb7ee88d69a84a225bf5cf26109de36e056da2e667d2c44b28c2c60",
+      "metadata": {
+        "identity": "experimental-native-exact-search-oracle-v2",
+        "candidates": 4096,
+        "workers": 8,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 16384,
+        "trace_every_tick": false,
+        "prefix_ms": 8.264092,
+        "branch_rollout_rank_ms": 450.133506,
+        "total_ms": 458.406295,
+        "winner": 0
+      },
+      "native_packet_equal": true,
+      "warmup": false
+    },
+    {
+      "name": "scaling4096-native-w16-r1",
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs4096-repeated512.bin",
+        "100",
+        "4",
+        "16",
+        "4393102",
+        "--final-only"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 0.4824929800015525,
+      "bytes": 1064976,
+      "sha256": "8c4a00a23fb7ee88d69a84a225bf5cf26109de36e056da2e667d2c44b28c2c60",
+      "metadata": {
+        "identity": "experimental-native-exact-search-oracle-v2",
+        "candidates": 4096,
+        "workers": 16,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 16384,
+        "trace_every_tick": false,
+        "prefix_ms": 8.291925,
+        "branch_rollout_rank_ms": 468.12898,
+        "total_ms": 476.429722,
+        "winner": 0
+      },
+      "native_packet_equal": true,
+      "warmup": false
+    },
+    {
+      "name": "scaling4096-native-w8-r2",
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs4096-repeated512.bin",
+        "100",
+        "4",
+        "8",
+        "4393102",
+        "--final-only"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 0.4817718080012128,
+      "bytes": 1064976,
+      "sha256": "8c4a00a23fb7ee88d69a84a225bf5cf26109de36e056da2e667d2c44b28c2c60",
+      "metadata": {
+        "identity": "experimental-native-exact-search-oracle-v2",
+        "candidates": 4096,
+        "workers": 8,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 16384,
+        "trace_every_tick": false,
+        "prefix_ms": 8.260515,
+        "branch_rollout_rank_ms": 467.629651,
+        "total_ms": 475.898903,
+        "winner": 0
+      },
+      "native_packet_equal": true,
+      "warmup": false
+    },
+    {
+      "name": "scaling4096-native-w16-r2",
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs4096-repeated512.bin",
+        "100",
+        "4",
+        "16",
+        "4393102",
+        "--final-only"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 0.4930475170040154,
+      "bytes": 1064976,
+      "sha256": "8c4a00a23fb7ee88d69a84a225bf5cf26109de36e056da2e667d2c44b28c2c60",
+      "metadata": {
+        "identity": "experimental-native-exact-search-oracle-v2",
+        "candidates": 4096,
+        "workers": 16,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 16384,
+        "trace_every_tick": false,
+        "prefix_ms": 8.329416,
+        "branch_rollout_rank_ms": 478.703556,
+        "total_ms": 487.041779,
+        "winner": 0
+      },
+      "native_packet_equal": true,
+      "warmup": false
+    },
+    {
+      "name": "scaling4096-native-w8-r3",
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs4096-repeated512.bin",
+        "100",
+        "4",
+        "8",
+        "4393102",
+        "--final-only"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 0.4870885379932588,
+      "bytes": 1064976,
+      "sha256": "8c4a00a23fb7ee88d69a84a225bf5cf26109de36e056da2e667d2c44b28c2c60",
+      "metadata": {
+        "identity": "experimental-native-exact-search-oracle-v2",
+        "candidates": 4096,
+        "workers": 8,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 16384,
+        "trace_every_tick": false,
+        "prefix_ms": 8.312314,
+        "branch_rollout_rank_ms": 473.112195,
+        "total_ms": 481.433526,
+        "winner": 0
+      },
+      "native_packet_equal": true,
+      "warmup": false
+    },
+    {
+      "name": "scaling4096-native-w16-r3",
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs4096-repeated512.bin",
+        "100",
+        "4",
+        "16",
+        "4393102",
+        "--final-only"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 0.47863681799935875,
+      "bytes": 1064976,
+      "sha256": "8c4a00a23fb7ee88d69a84a225bf5cf26109de36e056da2e667d2c44b28c2c60",
+      "metadata": {
+        "identity": "experimental-native-exact-search-oracle-v2",
+        "candidates": 4096,
+        "workers": 16,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 16384,
+        "trace_every_tick": false,
+        "prefix_ms": 8.374502,
+        "branch_rollout_rank_ms": 464.228334,
+        "total_ms": 472.616532,
+        "winner": 0
+      },
+      "native_packet_equal": true,
+      "warmup": false
+    },
+    {
+      "name": "scaling4096-gpuprefix-validation",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs4096-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 1.1751153429941041,
+      "bytes": 1064976,
+      "sha256": "8c4a00a23fb7ee88d69a84a225bf5cf26109de36e056da2e667d2c44b28c2c60",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 4096,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 16384,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": false,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": true,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 2.04601,
+        "allocated_bytes": 9288380344,
+        "registers": 254,
+        "local_bytes": 2712,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 1130.362426,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 837.82244873,
+            "branch_ms": 48.401409149,
+            "rollout_ms": 103.050239563,
+            "rank_compact_ms": 9.796607971,
+            "validation_ms": 37.39648056,
+            "total_ms": 1036.817471
+          }
+        ]
+      },
+      "native_packet_equal": true
+    },
+    {
+      "name": "scaling4096-gpuprefix-warm",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs4096-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "1",
+        "--repeats",
+        "3",
+        "--skip-compaction-check"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 4.115327573999821,
+      "bytes": 1064976,
+      "sha256": "8c4a00a23fb7ee88d69a84a225bf5cf26109de36e056da2e667d2c44b28c2c60",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 4096,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 16384,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": false,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 1,
+        "repeats": 3,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 1.652452,
+        "allocated_bytes": 9288380344,
+        "registers": 254,
+        "local_bytes": 2712,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 4070.417598,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 828.545043945,
+            "branch_ms": 46.749694824,
+            "rollout_ms": 103.283714294,
+            "rank_compact_ms": 9.785344124,
+            "validation_ms": 0.002048,
+            "total_ms": 988.693705
+          },
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 828.077026367,
+            "branch_ms": 47.950847626,
+            "rollout_ms": 104.455169678,
+            "rank_compact_ms": 9.782272339,
+            "validation_ms": 0.002048,
+            "total_ms": 990.593236
+          },
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 828.428283691,
+            "branch_ms": 47.049728394,
+            "rollout_ms": 103.413757324,
+            "rank_compact_ms": 9.78636837,
+            "validation_ms": 0.002048,
+            "total_ms": 988.999426
+          }
+        ]
+      },
+      "native_packet_equal": true
+    },
+    {
+      "name": "scaling4096-hostprefix-validation",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs4096-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--host-prefix"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 0.39478575499379076,
+      "bytes": 1064976,
+      "sha256": "8c4a00a23fb7ee88d69a84a225bf5cf26109de36e056da2e667d2c44b28c2c60",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 4096,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 16384,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": true,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": true,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 0.0,
+        "allocated_bytes": 9286115280,
+        "registers": 254,
+        "local_bytes": 2712,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 348.795395,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 31.602344,
+            "prefix_ms": 0.259072006,
+            "branch_ms": 53.355518341,
+            "rollout_ms": 112.398338318,
+            "rank_compact_ms": 9.877504349,
+            "validation_ms": 37.504001617,
+            "total_ms": 245.370305
+          }
+        ]
+      },
+      "native_packet_equal": true
+    },
+    {
+      "name": "scaling4096-hostprefix-warm",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs4096-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "1",
+        "--repeats",
+        "3",
+        "--skip-compaction-check",
+        "--host-prefix"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 0.9226092210010393,
+      "bytes": 1064976,
+      "sha256": "8c4a00a23fb7ee88d69a84a225bf5cf26109de36e056da2e667d2c44b28c2c60",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 4096,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 16384,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": true,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 1,
+        "repeats": 3,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 0.0,
+        "allocated_bytes": 9286115280,
+        "registers": 254,
+        "local_bytes": 2712,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 876.489344,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 29.380971,
+            "prefix_ms": 0.199680001,
+            "branch_ms": 49.799167633,
+            "rollout_ms": 104.099838257,
+            "rank_compact_ms": 9.776127815,
+            "validation_ms": 0.003072,
+            "total_ms": 193.564468
+          },
+          {
+            "host_prefix_ms": 29.011799,
+            "prefix_ms": 0.200703993,
+            "branch_ms": 49.289215088,
+            "rollout_ms": 104.867843628,
+            "rank_compact_ms": 9.794560432,
+            "validation_ms": 0.002048,
+            "total_ms": 193.487542
+          },
+          {
+            "host_prefix_ms": 29.602913,
+            "prefix_ms": 0.207872003,
+            "branch_ms": 46.478336334,
+            "rollout_ms": 103.811073303,
+            "rank_compact_ms": 9.781248093,
+            "validation_ms": 0.003072,
+            "total_ms": 190.206564
+          }
+        ]
+      },
+      "native_packet_equal": true
+    },
+    {
+      "name": "scaling8192-native-w8-r0",
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "8",
+        "4393102",
+        "--final-only"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 0.9440721669961931,
+      "bytes": 2129936,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-native-exact-search-oracle-v2",
+        "candidates": 8192,
+        "workers": 8,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "trace_every_tick": false,
+        "prefix_ms": 8.204609,
+        "branch_rollout_rank_ms": 927.107834,
+        "total_ms": 935.321109,
+        "winner": 0
+      },
+      "warmup": true
+    },
+    {
+      "name": "scaling8192-native-w16-r0",
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "16",
+        "4393102",
+        "--final-only"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 0.9782870089984499,
+      "bytes": 2129936,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-native-exact-search-oracle-v2",
+        "candidates": 8192,
+        "workers": 16,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "trace_every_tick": false,
+        "prefix_ms": 8.364132,
+        "branch_rollout_rank_ms": 961.942523,
+        "total_ms": 970.316194,
+        "winner": 0
+      },
+      "native_packet_equal": true,
+      "warmup": true
+    },
+    {
+      "name": "scaling8192-native-w8-r1",
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "8",
+        "4393102",
+        "--final-only"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 1.0087700550066074,
+      "bytes": 2129936,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-native-exact-search-oracle-v2",
+        "candidates": 8192,
+        "workers": 8,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "trace_every_tick": false,
+        "prefix_ms": 8.391184,
+        "branch_rollout_rank_ms": 991.690042,
+        "total_ms": 1000.090333,
+        "winner": 0
+      },
+      "native_packet_equal": true,
+      "warmup": false
+    },
+    {
+      "name": "scaling8192-native-w16-r1",
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "16",
+        "4393102",
+        "--final-only"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 0.972600417000649,
+      "bytes": 2129936,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-native-exact-search-oracle-v2",
+        "candidates": 8192,
+        "workers": 16,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "trace_every_tick": false,
+        "prefix_ms": 8.286395,
+        "branch_rollout_rank_ms": 956.10782,
+        "total_ms": 964.403032,
+        "winner": 0
+      },
+      "native_packet_equal": true,
+      "warmup": false
+    },
+    {
+      "name": "scaling8192-native-w8-r2",
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "8",
+        "4393102",
+        "--final-only"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 0.9780534349993104,
+      "bytes": 2129936,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-native-exact-search-oracle-v2",
+        "candidates": 8192,
+        "workers": 8,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "trace_every_tick": false,
+        "prefix_ms": 8.287266,
+        "branch_rollout_rank_ms": 961.145688,
+        "total_ms": 969.441972,
+        "winner": 0
+      },
+      "native_packet_equal": true,
+      "warmup": false
+    },
+    {
+      "name": "scaling8192-native-w16-r2",
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "16",
+        "4393102",
+        "--final-only"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 0.9666440520013566,
+      "bytes": 2129936,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-native-exact-search-oracle-v2",
+        "candidates": 8192,
+        "workers": 16,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "trace_every_tick": false,
+        "prefix_ms": 8.473901,
+        "branch_rollout_rank_ms": 950.48994,
+        "total_ms": 958.972487,
+        "winner": 0
+      },
+      "native_packet_equal": true,
+      "warmup": false
+    },
+    {
+      "name": "scaling8192-native-w8-r3",
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "8",
+        "4393102",
+        "--final-only"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 0.9587031850023777,
+      "bytes": 2129936,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-native-exact-search-oracle-v2",
+        "candidates": 8192,
+        "workers": 8,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "trace_every_tick": false,
+        "prefix_ms": 8.52055,
+        "branch_rollout_rank_ms": 942.533583,
+        "total_ms": 951.063359,
+        "winner": 0
+      },
+      "native_packet_equal": true,
+      "warmup": false
+    },
+    {
+      "name": "scaling8192-native-w16-r3",
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "16",
+        "4393102",
+        "--final-only"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 0.9931181569991168,
+      "bytes": 2129936,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-native-exact-search-oracle-v2",
+        "candidates": 8192,
+        "workers": 16,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "trace_every_tick": false,
+        "prefix_ms": 8.473952,
+        "branch_rollout_rank_ms": 977.005472,
+        "total_ms": 985.489854,
+        "winner": 0
+      },
+      "native_packet_equal": true,
+      "warmup": false
+    },
+    {
+      "name": "scaling8192-gpuprefix-validation",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 1.2907231450008112,
+      "bytes": 2129936,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": false,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": true,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 1.656469,
+        "allocated_bytes": 18567311288,
+        "registers": 254,
+        "local_bytes": 2712,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 1245.059857,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 846.829528809,
+            "branch_ms": 94.374908447,
+            "rollout_ms": 136.195068359,
+            "rank_compact_ms": 16.491519928,
+            "validation_ms": 37.493759155,
+            "total_ms": 1131.899808
+          }
+        ]
+      },
+      "native_packet_equal": true
+    },
+    {
+      "name": "scaling8192-gpuprefix-warm",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "1",
+        "--repeats",
+        "3",
+        "--skip-compaction-check"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 4.866238018999866,
+      "bytes": 2129936,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": false,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 1,
+        "repeats": 3,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 1.854346,
+        "allocated_bytes": 18567311288,
+        "registers": 254,
+        "local_bytes": 2712,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 4819.821498,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 828.174316406,
+            "branch_ms": 96.78540802,
+            "rollout_ms": 135.550979614,
+            "rank_compact_ms": 16.476160049,
+            "validation_ms": 0.002048,
+            "total_ms": 1077.481725
+          },
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 827.997192383,
+            "branch_ms": 99.070976257,
+            "rollout_ms": 135.348220825,
+            "rank_compact_ms": 16.476160049,
+            "validation_ms": 0.002048,
+            "total_ms": 1079.373051
+          },
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 828.099609375,
+            "branch_ms": 100.909057617,
+            "rollout_ms": 135.480316162,
+            "rank_compact_ms": 16.474111557,
+            "validation_ms": 0.002048,
+            "total_ms": 1081.447215
+          }
+        ]
+      },
+      "native_packet_equal": true
+    },
+    {
+      "name": "scaling8192-hostprefix-validation",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--host-prefix"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 0.8574557959946105,
+      "bytes": 2129936,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": true,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": true,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 0.0,
+        "allocated_bytes": 18565046224,
+        "registers": 254,
+        "local_bytes": 2712,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 811.140398,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 31.664272,
+            "prefix_ms": 0.254976004,
+            "branch_ms": 101.434364319,
+            "rollout_ms": 137.240570068,
+            "rank_compact_ms": 16.624639511,
+            "validation_ms": 37.420032501,
+            "total_ms": 325.139829
+          }
+        ]
+      },
+      "native_packet_equal": true
+    },
+    {
+      "name": "scaling8192-hostprefix-warm",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "1",
+        "--repeats",
+        "3",
+        "--skip-compaction-check",
+        "--host-prefix"
+      ],
+      "returncode": 0,
+      "process_wall_seconds": 1.6606887300004018,
+      "bytes": 2129936,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": true,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 1,
+        "repeats": 3,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 0.0,
+        "allocated_bytes": 18565046224,
+        "registers": 254,
+        "local_bytes": 2712,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 1613.484071,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 30.274971,
+            "prefix_ms": 0.201728001,
+            "branch_ms": 97.715202332,
+            "rollout_ms": 137.339904785,
+            "rank_compact_ms": 16.605184555,
+            "validation_ms": 0.002048,
+            "total_ms": 282.610409
+          },
+          {
+            "host_prefix_ms": 29.442668,
+            "prefix_ms": 0.200703993,
+            "branch_ms": 99.291137695,
+            "rollout_ms": 135.124984741,
+            "rank_compact_ms": 16.602111816,
+            "validation_ms": 0.003072,
+            "total_ms": 281.141496
+          },
+          {
+            "host_prefix_ms": 29.224804,
+            "prefix_ms": 0.200703993,
+            "branch_ms": 96.77721405,
+            "rollout_ms": 136.322052002,
+            "rank_compact_ms": 16.611328125,
+            "validation_ms": 0.003072,
+            "total_ms": 279.703232
+          }
+        ]
+      },
+      "native_packet_equal": true
+    }
+  ],
+  "full_stack_samples": [
+    {
+      "name": "stack8-8192-gpuprefix-validation",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--stack-kib",
+        "8"
+      ],
+      "process_wall_seconds": 1.2992641250020824,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": false,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": true,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 1.28331,
+        "allocated_bytes": 18567311288,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 8,
+        "effective_stack_bytes": 8192,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 1252.167431,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 842.985473633,
+            "branch_ms": 100.951042175,
+            "rollout_ms": 136.73677063,
+            "rank_compact_ms": 16.476160049,
+            "validation_ms": 37.428222656,
+            "total_ms": 1135.097149
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack8-8192-hostprefix-validation",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--stack-kib",
+        "8",
+        "--host-prefix"
+      ],
+      "process_wall_seconds": 0.8458677640010137,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": true,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": true,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 0.0,
+        "allocated_bytes": 18565046224,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 8,
+        "effective_stack_bytes": 8192,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 799.473136,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 31.648412,
+            "prefix_ms": 0.250880003,
+            "branch_ms": 93.61920166,
+            "rollout_ms": 136.723449707,
+            "rank_compact_ms": 16.46387291,
+            "validation_ms": 37.405696869,
+            "total_ms": 316.623197
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack4-8192-gpuprefix-validation",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--stack-kib",
+        "4"
+      ],
+      "process_wall_seconds": 1.6526102220013854,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": false,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": true,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 1.371328,
+        "allocated_bytes": 18567311288,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 4,
+        "effective_stack_bytes": 4096,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 1606.011885,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 832.295959473,
+            "branch_ms": 93.285377502,
+            "rollout_ms": 135.795715332,
+            "rank_compact_ms": 16.595968246,
+            "validation_ms": 37.341182709,
+            "total_ms": 1117.736972
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack4-8192-hostprefix-validation",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--stack-kib",
+        "4",
+        "--host-prefix"
+      ],
+      "process_wall_seconds": 0.8535722529995837,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": true,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": true,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 0.0,
+        "allocated_bytes": 18565046224,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 4,
+        "effective_stack_bytes": 4096,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 806.834372,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 29.930777,
+            "prefix_ms": 0.226303995,
+            "branch_ms": 97.510398865,
+            "rollout_ms": 135.969787598,
+            "rank_compact_ms": 16.470016479,
+            "validation_ms": 37.454849243,
+            "total_ms": 318.073535
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack16-8192-hostprefix-warm",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--host-prefix",
+        "--warmups",
+        "1",
+        "--repeats",
+        "3",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "16"
+      ],
+      "process_wall_seconds": 1.6707876029977342,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": true,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 1,
+        "repeats": 3,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 0.0,
+        "allocated_bytes": 18565046224,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 16,
+        "effective_stack_bytes": 16384,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 1625.684348,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 30.008795,
+            "prefix_ms": 0.200703993,
+            "branch_ms": 100.714492798,
+            "rollout_ms": 137.513977051,
+            "rank_compact_ms": 16.475135803,
+            "validation_ms": 0.002048,
+            "total_ms": 285.386427
+          },
+          {
+            "host_prefix_ms": 29.152236,
+            "prefix_ms": 0.200703993,
+            "branch_ms": 102.248451233,
+            "rollout_ms": 136.304641724,
+            "rank_compact_ms": 16.485376358,
+            "validation_ms": 0.002048,
+            "total_ms": 284.884503
+          },
+          {
+            "host_prefix_ms": 29.377595,
+            "prefix_ms": 0.200703993,
+            "branch_ms": 105.250816345,
+            "rollout_ms": 136.401916504,
+            "rank_compact_ms": 16.480255127,
+            "validation_ms": 0.002048,
+            "total_ms": 288.181551
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack8-8192-hostprefix-warm",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--host-prefix",
+        "--warmups",
+        "1",
+        "--repeats",
+        "3",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "8"
+      ],
+      "process_wall_seconds": 1.6702371549981763,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": true,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 1,
+        "repeats": 3,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 0.0,
+        "allocated_bytes": 18565046224,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 8,
+        "effective_stack_bytes": 8192,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 1624.387763,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 29.909577,
+            "prefix_ms": 0.201728001,
+            "branch_ms": 105.455619812,
+            "rollout_ms": 136.223739624,
+            "rank_compact_ms": 16.457727432,
+            "validation_ms": 0.003072,
+            "total_ms": 288.720507
+          },
+          {
+            "host_prefix_ms": 29.207341,
+            "prefix_ms": 0.201728001,
+            "branch_ms": 104.270851135,
+            "rollout_ms": 136.398849487,
+            "rank_compact_ms": 16.483327866,
+            "validation_ms": 0.003072,
+            "total_ms": 287.038829
+          },
+          {
+            "host_prefix_ms": 29.471293,
+            "prefix_ms": 0.201728001,
+            "branch_ms": 94.221313477,
+            "rollout_ms": 134.792190552,
+            "rank_compact_ms": 16.462848663,
+            "validation_ms": 0.002048,
+            "total_ms": 275.622203
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack4-8192-hostprefix-warm",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--host-prefix",
+        "--warmups",
+        "1",
+        "--repeats",
+        "3",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "4"
+      ],
+      "process_wall_seconds": 1.6765631830057828,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": true,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 1,
+        "repeats": 3,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 0.0,
+        "allocated_bytes": 18565046224,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 4,
+        "effective_stack_bytes": 4096,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 1630.727908,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 30.106741,
+            "prefix_ms": 0.200703993,
+            "branch_ms": 99.27986908,
+            "rollout_ms": 138.087417603,
+            "rank_compact_ms": 16.483327866,
+            "validation_ms": 0.002048,
+            "total_ms": 284.631572
+          },
+          {
+            "host_prefix_ms": 29.226808,
+            "prefix_ms": 0.200703993,
+            "branch_ms": 101.831680298,
+            "rollout_ms": 136.786941528,
+            "rank_compact_ms": 16.471040726,
+            "validation_ms": 0.002048,
+            "total_ms": 284.990054
+          },
+          {
+            "host_prefix_ms": 29.269579,
+            "prefix_ms": 0.199680001,
+            "branch_ms": 98.237442017,
+            "rollout_ms": 137.63583374,
+            "rank_compact_ms": 16.471040726,
+            "validation_ms": 0.002048,
+            "total_ms": 282.282756
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack16-8192-gpuprefix-process-r0",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "16"
+      ],
+      "process_wall_seconds": 1.6220157930001733,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": false,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 2.068052,
+        "allocated_bytes": 18567311288,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 16,
+        "effective_stack_bytes": 16384,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 1576.182893,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 829.356018066,
+            "branch_ms": 101.679107666,
+            "rollout_ms": 135.485443115,
+            "rank_compact_ms": 16.483327866,
+            "validation_ms": 0.002048,
+            "total_ms": 1085.277167
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack16-8192-hostprefix-process-r0",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "16",
+        "--host-prefix"
+      ],
+      "process_wall_seconds": 0.8184597250001389,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": true,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 0.0,
+        "allocated_bytes": 18565046224,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 16,
+        "effective_stack_bytes": 16384,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 772.687349,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 31.630127,
+            "prefix_ms": 0.253951997,
+            "branch_ms": 104.197120667,
+            "rollout_ms": 135.378936768,
+            "rank_compact_ms": 16.471040726,
+            "validation_ms": 0.002048,
+            "total_ms": 288.434883
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack8-8192-gpuprefix-process-r0",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "8"
+      ],
+      "process_wall_seconds": 1.629159776995948,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": false,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 1.95685,
+        "allocated_bytes": 18567311288,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 8,
+        "effective_stack_bytes": 8192,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 1583.43994,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 833.366027832,
+            "branch_ms": 104.22681427,
+            "rollout_ms": 136.885253906,
+            "rank_compact_ms": 16.483327866,
+            "validation_ms": 0.002048,
+            "total_ms": 1093.361599
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack8-8192-hostprefix-process-r0",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "8",
+        "--host-prefix"
+      ],
+      "process_wall_seconds": 0.8161342640014482,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": true,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 0.0,
+        "allocated_bytes": 18565046224,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 8,
+        "effective_stack_bytes": 8192,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 770.536891,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 31.62102,
+            "prefix_ms": 0.252927989,
+            "branch_ms": 99.357696533,
+            "rollout_ms": 135.44960022,
+            "rank_compact_ms": 16.475135803,
+            "validation_ms": 0.002048,
+            "total_ms": 283.64673
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack4-8192-gpuprefix-process-r0",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "4"
+      ],
+      "process_wall_seconds": 1.622808801002975,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": false,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 1.687709,
+        "allocated_bytes": 18567311288,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 4,
+        "effective_stack_bytes": 4096,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 1576.377784,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 831.939575195,
+            "branch_ms": 97.977340698,
+            "rollout_ms": 137.359359741,
+            "rank_compact_ms": 16.473087311,
+            "validation_ms": 0.002048,
+            "total_ms": 1086.152662
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack4-8192-hostprefix-process-r0",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "4",
+        "--host-prefix"
+      ],
+      "process_wall_seconds": 0.81872369699704,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": true,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 0.0,
+        "allocated_bytes": 18565046224,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 4,
+        "effective_stack_bytes": 4096,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 771.533676,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 29.941677,
+            "prefix_ms": 0.237568006,
+            "branch_ms": 101.727233887,
+            "rollout_ms": 136.928253174,
+            "rank_compact_ms": 16.459775925,
+            "validation_ms": 0.002048,
+            "total_ms": 285.814341
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack16-8192-gpuprefix-process-r1",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "16"
+      ],
+      "process_wall_seconds": 1.6238264159983373,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": false,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 1.74107,
+        "allocated_bytes": 18567311288,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 16,
+        "effective_stack_bytes": 16384,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 1577.728662,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 829.030395508,
+            "branch_ms": 102.094848633,
+            "rollout_ms": 136.070144653,
+            "rank_compact_ms": 16.484352112,
+            "validation_ms": 0.003072,
+            "total_ms": 1086.110572
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack16-8192-hostprefix-process-r1",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "16",
+        "--host-prefix"
+      ],
+      "process_wall_seconds": 0.8192181470003561,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": true,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 0.0,
+        "allocated_bytes": 18565046224,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 16,
+        "effective_stack_bytes": 16384,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 773.26103,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 31.656617,
+            "prefix_ms": 0.244736001,
+            "branch_ms": 103.134208679,
+            "rollout_ms": 135.224319458,
+            "rank_compact_ms": 16.46387291,
+            "validation_ms": 0.002048,
+            "total_ms": 287.225403
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack8-8192-gpuprefix-process-r1",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "8"
+      ],
+      "process_wall_seconds": 1.6241872219979996,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": false,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 1.976498,
+        "allocated_bytes": 18567311288,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 8,
+        "effective_stack_bytes": 8192,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 1578.339984,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 833.655822754,
+            "branch_ms": 96.969726562,
+            "rollout_ms": 136.690689087,
+            "rank_compact_ms": 16.473087311,
+            "validation_ms": 0.002048,
+            "total_ms": 1086.2197
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack8-8192-hostprefix-process-r1",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "8",
+        "--host-prefix"
+      ],
+      "process_wall_seconds": 0.8140501710004173,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": true,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 0.0,
+        "allocated_bytes": 18565046224,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 8,
+        "effective_stack_bytes": 8192,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 768.581613,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 29.898355,
+            "prefix_ms": 0.236543998,
+            "branch_ms": 92.853248596,
+            "rollout_ms": 136.454147339,
+            "rank_compact_ms": 16.473087311,
+            "validation_ms": 0.002048,
+            "total_ms": 276.419619
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack4-8192-gpuprefix-process-r1",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "4"
+      ],
+      "process_wall_seconds": 1.6192634209946846,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": false,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 1.158923,
+        "allocated_bytes": 18567311288,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 4,
+        "effective_stack_bytes": 4096,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 1590.145871,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 831.714294434,
+            "branch_ms": 107.857917786,
+            "rollout_ms": 136.371200562,
+            "rank_compact_ms": 16.491519928,
+            "validation_ms": 0.002048,
+            "total_ms": 1094.840009
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack4-8192-hostprefix-process-r1",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "4",
+        "--host-prefix"
+      ],
+      "process_wall_seconds": 0.8192206120002083,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": true,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 0.0,
+        "allocated_bytes": 18565046224,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 4,
+        "effective_stack_bytes": 4096,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 790.130603,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 30.639094,
+            "prefix_ms": 0.232447997,
+            "branch_ms": 101.445632935,
+            "rollout_ms": 135.940093994,
+            "rank_compact_ms": 16.52633667,
+            "validation_ms": 0.003072,
+            "total_ms": 285.293752
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack16-8192-gpuprefix-process-r2",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "16"
+      ],
+      "process_wall_seconds": 1.6346444840019103,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": false,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 1.23109,
+        "allocated_bytes": 18567311288,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 16,
+        "effective_stack_bytes": 16384,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 1589.843245,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 829.358093262,
+            "branch_ms": 96.370689392,
+            "rollout_ms": 136.397827148,
+            "rank_compact_ms": 16.467967987,
+            "validation_ms": 0.002048,
+            "total_ms": 1080.991109
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack16-8192-hostprefix-process-r2",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "16",
+        "--host-prefix"
+      ],
+      "process_wall_seconds": 0.8243080039974302,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": true,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 0.0,
+        "allocated_bytes": 18565046224,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 16,
+        "effective_stack_bytes": 16384,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 778.554084,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 31.65766,
+            "prefix_ms": 0.237568006,
+            "branch_ms": 101.200897217,
+            "rollout_ms": 136.918014526,
+            "rank_compact_ms": 16.471040726,
+            "validation_ms": 0.002048,
+            "total_ms": 286.983474
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack8-8192-gpuprefix-process-r2",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "8"
+      ],
+      "process_wall_seconds": 1.631656823999947,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": false,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 2.028707,
+        "allocated_bytes": 18567311288,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 8,
+        "effective_stack_bytes": 8192,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 1585.666735,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 833.51348877,
+            "branch_ms": 99.997695923,
+            "rollout_ms": 137.101318359,
+            "rank_compact_ms": 16.482303619,
+            "validation_ms": 0.002048,
+            "total_ms": 1089.540343
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack8-8192-hostprefix-process-r2",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "8",
+        "--host-prefix"
+      ],
+      "process_wall_seconds": 0.8226882050003042,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": true,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 0.0,
+        "allocated_bytes": 18565046224,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 8,
+        "effective_stack_bytes": 8192,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 776.337699,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 31.64749,
+            "prefix_ms": 0.253951997,
+            "branch_ms": 104.076286316,
+            "rollout_ms": 136.177658081,
+            "rank_compact_ms": 16.465919495,
+            "validation_ms": 0.003072,
+            "total_ms": 289.166814
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack4-8192-gpuprefix-process-r2",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "4"
+      ],
+      "process_wall_seconds": 1.6195670680026524,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": false,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 1.626923,
+        "allocated_bytes": 18567311288,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 4,
+        "effective_stack_bytes": 4096,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 1573.927375,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 831.949829102,
+            "branch_ms": 98.975746155,
+            "rollout_ms": 134.25050354,
+            "rank_compact_ms": 16.470016479,
+            "validation_ms": 0.003072,
+            "total_ms": 1084.057379
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack4-8192-hostprefix-process-r2",
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8192-repeated512.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--skip-compaction-check",
+        "--stack-kib",
+        "4",
+        "--host-prefix"
+      ],
+      "process_wall_seconds": 0.8166157490049955,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "502bbabf3d544a9c9cea56ef9359f5da97eedbe5f53604145b3255c6dc6c3027",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8192,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32768,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "host_prefix": true,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": false,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 0.0,
+        "allocated_bytes": 18565046224,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 4,
+        "effective_stack_bytes": 4096,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 771.518166,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 29.820086,
+            "prefix_ms": 0.228351995,
+            "branch_ms": 98.601982117,
+            "rollout_ms": 136.470535278,
+            "rank_compact_ms": 16.473087311,
+            "validation_ms": 0.002048,
+            "total_ms": 282.103586
+          }
+        ]
+      }
+    },
+    {
+      "name": "stack8-memcheck",
+      "command": [
+        "/opt/cuda/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "91",
+        "--log-file",
+        "artifacts/cuda-native-20261103/search/stack8-memcheck.sanitizer",
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8.bin",
+        "100",
+        "4",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--stack-kib",
+        "8",
+        "--host-prefix"
+      ],
+      "process_wall_seconds": 3.694010741994134,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "edf303d60667f1b2555f1eaee3c08fed6acc1755461be642ddf3ddb014c2f852",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32,
+        "failed_candidates": 0,
+        "trace_every_tick": true,
+        "host_prefix": true,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": true,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 0.0,
+        "allocated_bytes": 25307248,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 8,
+        "effective_stack_bytes": 8192,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 3601.547253,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 31.598898,
+            "prefix_ms": 20.533248901,
+            "branch_ms": 85.158912659,
+            "rollout_ms": 2032.71472168,
+            "rank_compact_ms": 75.817985535,
+            "validation_ms": 1134.525390625,
+            "total_ms": 3380.627735
+          }
+        ]
+      },
+      "sanitizer": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n"
+    },
+    {
+      "name": "stack4-memcheck",
+      "command": [
+        "/opt/cuda/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "91",
+        "--log-file",
+        "artifacts/cuda-native-20261103/search/stack4-memcheck.sanitizer",
+        "build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/cuda-native-20261103/search/specs8.bin",
+        "100",
+        "4",
+        "--warmups",
+        "0",
+        "--repeats",
+        "1",
+        "--stack-kib",
+        "4"
+      ],
+      "process_wall_seconds": 29.826357669000572,
+      "returncode": 0,
+      "native_packet_equal": true,
+      "sha256": "edf303d60667f1b2555f1eaee3c08fed6acc1755461be642ddf3ddb014c2f852",
+      "metadata": {
+        "identity": "experimental-independent-typed-game-search-v1",
+        "backend": "cuda-native",
+        "promotion_eligible": false,
+        "candidates": 8,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 32,
+        "failed_candidates": 0,
+        "trace_every_tick": true,
+        "host_prefix": false,
+        "threads": 32,
+        "isolated_warps": false,
+        "keep": 2,
+        "warmups": 0,
+        "repeats": 1,
+        "selected_state_checks": true,
+        "compaction_errors": 0,
+        "first_error_section": 0,
+        "first_error_offset": 4294967295,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "cold_storage": "host-prepared-empty-template",
+        "cold_storage_host_physics_calls": 0,
+        "cold_storage_ms": 2.146802,
+        "allocated_bytes": 27572312,
+        "registers": 254,
+        "local_bytes": 2712,
+        "requested_stack_kib": 4,
+        "effective_stack_bytes": 4096,
+        "guest_calls": 0,
+        "fallback_calls": 0,
+        "elapsed_before_stdout_ms": 29732.919768,
+        "winner": 0,
+        "samples": [
+          {
+            "host_prefix_ms": 0.0,
+            "prefix_ms": 26234.59375,
+            "branch_ms": 100.373504639,
+            "rollout_ms": 2026.614746094,
+            "rank_compact_ms": 70.057983398,
+            "validation_ms": 1103.434692383,
+            "total_ms": 29535.207122
+          }
+        ]
+      },
+      "sanitizer": "========= COMPUTE-SANITIZER\n========= ERROR SUMMARY: 0 errors\n"
+    }
+  ],
+  "telemetry": {
+    "scaling_samples": [
+      {
+        "time": 1793765056.7005026,
+        "csv": "2026/11/03 23:04:16.678, 0, 0, 21, 24.95"
+      },
+      {
+        "time": 1793765056.9656076,
+        "csv": "2026/11/03 23:04:16.961, 45, 1, 11583, 40.81"
+      },
+      {
+        "time": 1793765057.2326138,
+        "csv": "2026/11/03 23:04:17.226, 100, 0, 11583, 41.00"
+      },
+      {
+        "time": 1793765057.497393,
+        "csv": "2026/11/03 23:04:17.493, 100, 0, 11583, 40.81"
+      },
+      {
+        "time": 1793765057.7626903,
+        "csv": "2026/11/03 23:04:17.758, 100, 16, 11583, 47.48"
+      },
+      {
+        "time": 1793765058.0275748,
+        "csv": "2026/11/03 23:04:18.023, 100, 12, 11583, 44.39"
+      },
+      {
+        "time": 1793765058.294779,
+        "csv": "2026/11/03 23:04:18.288, 100, 11, 11583, 41.29"
+      },
+      {
+        "time": 1793765058.5596514,
+        "csv": "2026/11/03 23:04:18.555, 100, 0, 11583, 41.28"
+      },
+      {
+        "time": 1793765058.8244889,
+        "csv": "2026/11/03 23:04:18.820, 100, 0, 11583, 107.50"
+      },
+      {
+        "time": 1793765059.0892966,
+        "csv": "2026/11/03 23:04:19.085, 100, 4, 11583, 41.29"
+      },
+      {
+        "time": 1793765059.354145,
+        "csv": "2026/11/03 23:04:19.349, 100, 0, 11583, 41.19"
+      },
+      {
+        "time": 1793765059.6191003,
+        "csv": "2026/11/03 23:04:19.614, 100, 0, 11583, 41.18"
+      },
+      {
+        "time": 1793765059.883841,
+        "csv": "2026/11/03 23:04:19.879, 100, 16, 11583, 70.45"
+      },
+      {
+        "time": 1793765060.1488264,
+        "csv": "2026/11/03 23:04:20.144, 100, 3, 11583, 41.28"
+      },
+      {
+        "time": 1793765060.4136875,
+        "csv": "2026/11/03 23:04:20.409, 100, 0, 11583, 41.29"
+      },
+      {
+        "time": 1793765060.6812649,
+        "csv": "2026/11/03 23:04:20.674, 100, 0, 11583, 41.29"
+      },
+      {
+        "time": 1793765060.9460626,
+        "csv": "2026/11/03 23:04:20.941, 100, 17, 11583, 42.35"
+      },
+      {
+        "time": 1793765061.2106926,
+        "csv": "2026/11/03 23:04:21.206, 100, 0, 11583, 41.29"
+      },
+      {
+        "time": 1793765061.475637,
+        "csv": "2026/11/03 23:04:21.471, 100, 0, 11583, 41.29"
+      },
+      {
+        "time": 1793765061.7435222,
+        "csv": "2026/11/03 23:04:21.736, 100, 0, 11583, 41.19"
+      },
+      {
+        "time": 1793765062.0118093,
+        "csv": "2026/11/03 23:04:22.009, 100, 17, 21, 44.28"
+      },
+      {
+        "time": 1793765062.2769754,
+        "csv": "2026/11/03 23:04:22.272, 100, 29, 11581, 45.23"
+      },
+      {
+        "time": 1793765062.544863,
+        "csv": "2026/11/03 23:04:22.538, 100, 24, 11581, 81.82"
+      },
+      {
+        "time": 1793765062.8099399,
+        "csv": "2026/11/03 23:04:22.805, 85, 18, 11581, 73.35"
+      },
+      {
+        "time": 1793765063.0747032,
+        "csv": "2026/11/03 23:04:23.070, 87, 20, 11581, 80.75"
+      },
+      {
+        "time": 1793765071.158197,
+        "csv": "2026/11/03 23:04:31.153, 0, 0, 15, 25.24"
+      },
+      {
+        "time": 1793765071.4232771,
+        "csv": "2026/11/03 23:04:31.418, 91, 1, 20431, 39.74"
+      },
+      {
+        "time": 1793765071.6880038,
+        "csv": "2026/11/03 23:04:31.683, 100, 0, 20431, 41.29"
+      },
+      {
+        "time": 1793765071.9542277,
+        "csv": "2026/11/03 23:04:31.948, 100, 0, 20431, 41.28"
+      },
+      {
+        "time": 1793765072.2191174,
+        "csv": "2026/11/03 23:04:32.214, 100, 0, 20431, 91.46"
+      },
+      {
+        "time": 1793765072.4849982,
+        "csv": "2026/11/03 23:04:32.480, 98, 8, 21, 44.38"
+      },
+      {
+        "time": 1793765072.9106417,
+        "csv": "2026/11/03 23:04:32.906, 100, 12, 20431, 44.38"
+      },
+      {
+        "time": 1793765073.1757088,
+        "csv": "2026/11/03 23:04:33.171, 100, 7, 20431, 41.38"
+      },
+      {
+        "time": 1793765073.440514,
+        "csv": "2026/11/03 23:04:33.436, 100, 0, 20431, 41.38"
+      },
+      {
+        "time": 1793765073.7055304,
+        "csv": "2026/11/03 23:04:33.701, 100, 0, 20431, 41.38"
+      },
+      {
+        "time": 1793765073.9703777,
+        "csv": "2026/11/03 23:04:33.966, 100, 35, 20431, 80.59"
+      },
+      {
+        "time": 1793765074.2347746,
+        "csv": "2026/11/03 23:04:34.230, 100, 0, 20431, 41.48"
+      },
+      {
+        "time": 1793765074.4995937,
+        "csv": "2026/11/03 23:04:34.495, 100, 0, 20431, 41.38"
+      },
+      {
+        "time": 1793765074.764563,
+        "csv": "2026/11/03 23:04:34.760, 100, 0, 20431, 41.38"
+      },
+      {
+        "time": 1793765075.0294397,
+        "csv": "2026/11/03 23:04:35.025, 100, 23, 20431, 87.40"
+      },
+      {
+        "time": 1793765075.2943387,
+        "csv": "2026/11/03 23:04:35.289, 100, 0, 20431, 41.58"
+      },
+      {
+        "time": 1793765075.5627582,
+        "csv": "2026/11/03 23:04:35.554, 100, 0, 20431, 41.48"
+      },
+      {
+        "time": 1793765075.8274634,
+        "csv": "2026/11/03 23:04:35.823, 100, 0, 20431, 41.29"
+      },
+      {
+        "time": 1793765076.0922034,
+        "csv": "2026/11/03 23:04:36.088, 100, 37, 20431, 85.67"
+      },
+      {
+        "time": 1793765076.3571064,
+        "csv": "2026/11/03 23:04:36.352, 100, 5, 20431, 41.48"
+      },
+      {
+        "time": 1793765076.6240182,
+        "csv": "2026/11/03 23:04:36.617, 100, 0, 20431, 41.48"
+      },
+      {
+        "time": 1793765076.8886626,
+        "csv": "2026/11/03 23:04:36.884, 100, 0, 20431, 41.47"
+      },
+      {
+        "time": 1793765077.153885,
+        "csv": "2026/11/03 23:04:37.149, 100, 28, 20431, 87.75"
+      },
+      {
+        "time": 1793765077.7796347,
+        "csv": "2026/11/03 23:04:37.775, 100, 12, 20429, 44.48"
+      },
+      {
+        "time": 1793765078.0475018,
+        "csv": "2026/11/03 23:04:38.040, 100, 39, 20429, 57.54"
+      },
+      {
+        "time": 1793765078.6378846,
+        "csv": "2026/11/03 23:04:38.633, 100, 12, 20429, 44.47"
+      },
+      {
+        "time": 1793765078.9024549,
+        "csv": "2026/11/03 23:04:38.898, 100, 35, 20429, 60.33"
+      },
+      {
+        "time": 1793765079.1673212,
+        "csv": "2026/11/03 23:04:39.162, 82, 35, 20429, 84.07"
+      },
+      {
+        "time": 1793765079.4328315,
+        "csv": "2026/11/03 23:04:39.428, 100, 31, 20429, 87.88"
+      },
+      {
+        "time": 1793765079.697579,
+        "csv": "2026/11/03 23:04:39.693, 82, 28, 20429, 85.08"
+      }
+    ],
+    "stack_samples": [
+      {
+        "time": 1793765174.8527608,
+        "csv": "2026/11/03 23:06:14.845, 0, 0, 15, 25.24"
+      },
+      {
+        "time": 1793765175.071384,
+        "csv": "2026/11/03 23:06:15.064, 74, 1, 19151, 39.08"
+      },
+      {
+        "time": 1793765175.2861717,
+        "csv": "2026/11/03 23:06:15.281, 100, 0, 19151, 41.19"
+      },
+      {
+        "time": 1793765175.501067,
+        "csv": "2026/11/03 23:06:15.496, 100, 0, 19151, 41.29"
+      },
+      {
+        "time": 1793765175.716032,
+        "csv": "2026/11/03 23:06:15.711, 100, 0, 19151, 41.29"
+      },
+      {
+        "time": 1793765175.9325578,
+        "csv": "2026/11/03 23:06:15.926, 100, 32, 19151, 85.68"
+      },
+      {
+        "time": 1793765176.1652155,
+        "csv": "2026/11/03 23:06:16.160, 100, 10, 21, 44.28"
+      },
+      {
+        "time": 1793765176.6068304,
+        "csv": "2026/11/03 23:06:16.602, 100, 12, 19149, 44.38"
+      },
+      {
+        "time": 1793765176.8224604,
+        "csv": "2026/11/03 23:06:16.817, 100, 35, 19149, 84.88"
+      },
+      {
+        "time": 1793765177.0390918,
+        "csv": "2026/11/03 23:06:17.033, 100, 13, 23, 44.49"
+      },
+      {
+        "time": 1793765177.456788,
+        "csv": "2026/11/03 23:06:17.451, 100, 12, 18511, 44.49"
+      },
+      {
+        "time": 1793765177.6717818,
+        "csv": "2026/11/03 23:06:17.667, 100, 7, 18511, 41.38"
+      },
+      {
+        "time": 1793765177.8863754,
+        "csv": "2026/11/03 23:06:17.882, 100, 0, 18511, 41.49"
+      },
+      {
+        "time": 1793765178.101713,
+        "csv": "2026/11/03 23:06:18.097, 100, 0, 18511, 41.38"
+      },
+      {
+        "time": 1793765178.3179884,
+        "csv": "2026/11/03 23:06:18.312, 100, 0, 18511, 109.15"
+      },
+      {
+        "time": 1793765178.5327682,
+        "csv": "2026/11/03 23:06:18.528, 100, 31, 18511, 60.79"
+      },
+      {
+        "time": 1793765179.1119132,
+        "csv": "2026/11/03 23:06:19.109, 100, 12, 18509, 44.39"
+      },
+      {
+        "time": 1793765179.3267212,
+        "csv": "2026/11/03 23:06:19.322, 90, 33, 18509, 84.52"
+      },
+      {
+        "time": 1793765179.5434096,
+        "csv": "2026/11/03 23:06:19.537, 100, 13, 23, 44.49"
+      },
+      {
+        "time": 1793765179.9656763,
+        "csv": "2026/11/03 23:06:19.961, 100, 12, 20429, 44.48"
+      },
+      {
+        "time": 1793765180.1828172,
+        "csv": "2026/11/03 23:06:20.176, 93, 30, 20429, 84.51"
+      },
+      {
+        "time": 1793765180.3977077,
+        "csv": "2026/11/03 23:06:20.393, 100, 18, 20429, 86.54"
+      },
+      {
+        "time": 1793765180.6126006,
+        "csv": "2026/11/03 23:06:20.608, 83, 12, 20429, 113.26"
+      },
+      {
+        "time": 1793765180.8281393,
+        "csv": "2026/11/03 23:06:20.823, 100, 35, 20429, 47.38"
+      },
+      {
+        "time": 1793765181.0447102,
+        "csv": "2026/11/03 23:06:21.038, 82, 23, 20429, 85.57"
+      },
+      {
+        "time": 1793765181.6404452,
+        "csv": "2026/11/03 23:06:21.636, 100, 12, 19149, 44.68"
+      },
+      {
+        "time": 1793765181.8553941,
+        "csv": "2026/11/03 23:06:21.851, 100, 32, 19149, 85.68"
+      },
+      {
+        "time": 1793765182.0701323,
+        "csv": "2026/11/03 23:06:22.066, 100, 19, 19149, 87.16"
+      },
+      {
+        "time": 1793765182.2876956,
+        "csv": "2026/11/03 23:06:22.280, 83, 10, 19149, 111.00"
+      },
+      {
+        "time": 1793765182.5026376,
+        "csv": "2026/11/03 23:06:22.498, 100, 37, 19149, 52.78"
+      },
+      {
+        "time": 1793765182.7178037,
+        "csv": "2026/11/03 23:06:22.713, 82, 21, 19149, 86.14"
+      },
+      {
+        "time": 1793765183.3148415,
+        "csv": "2026/11/03 23:06:23.310, 100, 12, 18509, 44.67"
+      },
+      {
+        "time": 1793765183.5308528,
+        "csv": "2026/11/03 23:06:23.525, 100, 29, 18509, 87.01"
+      },
+      {
+        "time": 1793765183.7456446,
+        "csv": "2026/11/03 23:06:23.741, 100, 21, 18509, 86.36"
+      },
+      {
+        "time": 1793765183.9604764,
+        "csv": "2026/11/03 23:06:23.956, 83, 9, 18509, 113.64"
+      },
+      {
+        "time": 1793765184.1750524,
+        "csv": "2026/11/03 23:06:24.170, 100, 37, 18509, 52.99"
+      },
+      {
+        "time": 1793765184.3925962,
+        "csv": "2026/11/03 23:06:24.385, 83, 21, 18509, 85.96"
+      },
+      {
+        "time": 1793765184.9906075,
+        "csv": "2026/11/03 23:06:24.986, 100, 12, 20431, 44.68"
+      },
+      {
+        "time": 1793765185.2053814,
+        "csv": "2026/11/03 23:06:25.201, 100, 6, 20431, 41.67"
+      },
+      {
+        "time": 1793765185.4201643,
+        "csv": "2026/11/03 23:06:25.415, 100, 0, 20431, 41.67"
+      },
+      {
+        "time": 1793765185.6357317,
+        "csv": "2026/11/03 23:06:25.630, 100, 0, 20431, 41.67"
+      },
+      {
+        "time": 1793765185.8507297,
+        "csv": "2026/11/03 23:06:25.846, 100, 0, 20431, 106.79"
+      },
+      {
+        "time": 1793765186.0653973,
+        "csv": "2026/11/03 23:06:26.061, 100, 32, 20431, 59.56"
+      },
+      {
+        "time": 1793765186.6118374,
+        "csv": "2026/11/03 23:06:26.607, 100, 12, 20429, 44.67"
+      },
+      {
+        "time": 1793765186.8267016,
+        "csv": "2026/11/03 23:06:26.822, 100, 39, 20429, 86.91"
+      },
+      {
+        "time": 1793765187.0423021,
+        "csv": "2026/11/03 23:06:27.037, 98, 11, 317, 44.78"
+      },
+      {
+        "time": 1793765187.4329476,
+        "csv": "2026/11/03 23:06:27.428, 100, 12, 19151, 44.78"
+      },
+      {
+        "time": 1793765187.6495197,
+        "csv": "2026/11/03 23:06:27.643, 100, 6, 19151, 41.68"
+      },
+      {
+        "time": 1793765187.8648682,
+        "csv": "2026/11/03 23:06:27.860, 100, 0, 19151, 41.68"
+      },
+      {
+        "time": 1793765188.0818026,
+        "csv": "2026/11/03 23:06:28.075, 100, 0, 19151, 41.68"
+      },
+      {
+        "time": 1793765188.296387,
+        "csv": "2026/11/03 23:06:28.292, 100, 0, 19151, 105.69"
+      },
+      {
+        "time": 1793765188.5114617,
+        "csv": "2026/11/03 23:06:28.507, 100, 37, 19151, 56.07"
+      },
+      {
+        "time": 1793765189.0668027,
+        "csv": "2026/11/03 23:06:29.061, 100, 12, 19149, 44.78"
+      },
+      {
+        "time": 1793765189.2816603,
+        "csv": "2026/11/03 23:06:29.277, 100, 35, 19149, 84.81"
+      },
+      {
+        "time": 1793765189.8819034,
+        "csv": "2026/11/03 23:06:29.877, 100, 12, 18511, 44.78"
+      },
+      {
+        "time": 1793765190.0966372,
+        "csv": "2026/11/03 23:06:30.092, 100, 11, 18511, 41.68"
+      },
+      {
+        "time": 1793765190.312033,
+        "csv": "2026/11/03 23:06:30.307, 100, 0, 18511, 41.68"
+      },
+      {
+        "time": 1793765190.527593,
+        "csv": "2026/11/03 23:06:30.522, 100, 0, 18511, 41.68"
+      },
+      {
+        "time": 1793765190.7423081,
+        "csv": "2026/11/03 23:06:30.738, 100, 0, 18511, 106.79"
+      },
+      {
+        "time": 1793765190.9575171,
+        "csv": "2026/11/03 23:06:30.953, 100, 22, 18511, 58.29"
+      },
+      {
+        "time": 1793765191.506351,
+        "csv": "2026/11/03 23:06:31.502, 100, 12, 18509, 44.78"
+      },
+      {
+        "time": 1793765191.7212877,
+        "csv": "2026/11/03 23:06:31.717, 92, 30, 18509, 85.66"
+      },
+      {
+        "time": 1793765192.321359,
+        "csv": "2026/11/03 23:06:31.934, 100, 12, 20419, 44.77"
+      },
+      {
+        "time": 1793765192.536604,
+        "csv": "2026/11/03 23:06:32.531, 100, 4, 20431, 41.77"
+      },
+      {
+        "time": 1793765192.752441,
+        "csv": "2026/11/03 23:06:32.747, 100, 0, 20431, 41.76"
+      },
+      {
+        "time": 1793765192.9673696,
+        "csv": "2026/11/03 23:06:32.962, 100, 0, 20431, 41.68"
+      },
+      {
+        "time": 1793765193.1821563,
+        "csv": "2026/11/03 23:06:33.177, 100, 0, 20431, 99.84"
+      },
+      {
+        "time": 1793765193.3970091,
+        "csv": "2026/11/03 23:06:33.392, 100, 33, 20431, 60.82"
+      },
+      {
+        "time": 1793765193.9554431,
+        "csv": "2026/11/03 23:06:33.948, 100, 12, 20429, 44.87"
+      },
+      {
+        "time": 1793765194.1704903,
+        "csv": "2026/11/03 23:06:34.166, 100, 40, 20429, 85.85"
+      },
+      {
+        "time": 1793765194.7776427,
+        "csv": "2026/11/03 23:06:34.771, 100, 12, 19151, 44.78"
+      },
+      {
+        "time": 1793765194.9925258,
+        "csv": "2026/11/03 23:06:34.988, 100, 4, 19151, 41.77"
+      },
+      {
+        "time": 1793765195.2074876,
+        "csv": "2026/11/03 23:06:35.203, 100, 0, 19151, 41.77"
+      },
+      {
+        "time": 1793765195.4226985,
+        "csv": "2026/11/03 23:06:35.418, 100, 0, 19151, 41.67"
+      },
+      {
+        "time": 1793765195.6394184,
+        "csv": "2026/11/03 23:06:35.633, 100, 5, 19151, 108.36"
+      },
+      {
+        "time": 1793765195.8544843,
+        "csv": "2026/11/03 23:06:35.850, 100, 33, 19151, 59.42"
+      },
+      {
+        "time": 1793765196.4065943,
+        "csv": "2026/11/03 23:06:36.402, 100, 12, 19149, 44.78"
+      },
+      {
+        "time": 1793765196.6215215,
+        "csv": "2026/11/03 23:06:36.617, 100, 20, 19149, 85.87"
+      },
+      {
+        "time": 1793765197.2237155,
+        "csv": "2026/11/03 23:06:37.217, 100, 12, 18511, 44.77"
+      },
+      {
+        "time": 1793765197.438722,
+        "csv": "2026/11/03 23:06:37.434, 100, 8, 18511, 41.87"
+      },
+      {
+        "time": 1793765197.6534197,
+        "csv": "2026/11/03 23:06:37.649, 100, 0, 18511, 41.77"
+      },
+      {
+        "time": 1793765197.8698313,
+        "csv": "2026/11/03 23:06:37.863, 100, 0, 18511, 41.68"
+      },
+      {
+        "time": 1793765198.0876062,
+        "csv": "2026/11/03 23:06:38.080, 100, 0, 18511, 107.75"
+      },
+      {
+        "time": 1793765198.3024757,
+        "csv": "2026/11/03 23:06:38.298, 100, 26, 18511, 57.91"
+      },
+      {
+        "time": 1793765198.8561375,
+        "csv": "2026/11/03 23:06:38.851, 100, 12, 18509, 44.87"
+      },
+      {
+        "time": 1793765199.070986,
+        "csv": "2026/11/03 23:06:39.066, 91, 33, 18509, 85.68"
+      },
+      {
+        "time": 1793765199.6779387,
+        "csv": "2026/11/03 23:06:39.673, 100, 12, 20431, 44.78"
+      },
+      {
+        "time": 1793765199.8928492,
+        "csv": "2026/11/03 23:06:39.888, 100, 3, 20431, 41.87"
+      },
+      {
+        "time": 1793765200.107825,
+        "csv": "2026/11/03 23:06:40.103, 100, 0, 20431, 41.87"
+      },
+      {
+        "time": 1793765200.3226163,
+        "csv": "2026/11/03 23:06:40.318, 100, 0, 20431, 41.67"
+      },
+      {
+        "time": 1793765200.5372012,
+        "csv": "2026/11/03 23:06:40.533, 100, 0, 20431, 109.26"
+      },
+      {
+        "time": 1793765200.754085,
+        "csv": "2026/11/03 23:06:40.747, 100, 35, 20431, 60.79"
+      },
+      {
+        "time": 1793765201.2996626,
+        "csv": "2026/11/03 23:06:41.295, 100, 12, 20429, 44.87"
+      },
+      {
+        "time": 1793765201.5163708,
+        "csv": "2026/11/03 23:06:41.510, 100, 39, 20429, 85.67"
+      },
+      {
+        "time": 1793765202.1225107,
+        "csv": "2026/11/03 23:06:42.118, 100, 12, 19149, 44.77"
+      },
+      {
+        "time": 1793765202.3390236,
+        "csv": "2026/11/03 23:06:42.333, 100, 2, 19151, 41.78"
+      },
+      {
+        "time": 1793765202.553814,
+        "csv": "2026/11/03 23:06:42.549, 100, 0, 19151, 41.87"
+      },
+      {
+        "time": 1793765202.768685,
+        "csv": "2026/11/03 23:06:42.764, 100, 0, 19151, 41.77"
+      },
+      {
+        "time": 1793765202.9851792,
+        "csv": "2026/11/03 23:06:42.979, 100, 0, 19151, 103.12"
+      },
+      {
+        "time": 1793765203.2015247,
+        "csv": "2026/11/03 23:06:43.195, 100, 29, 19151, 56.65"
+      },
+      {
+        "time": 1793765203.754494,
+        "csv": "2026/11/03 23:06:43.750, 100, 12, 19149, 44.87"
+      },
+      {
+        "time": 1793765203.9692254,
+        "csv": "2026/11/03 23:06:43.965, 100, 24, 19149, 87.01"
+      },
+      {
+        "time": 1793765204.5692945,
+        "csv": "2026/11/03 23:06:44.179, 98, 10, 18499, 44.96"
+      },
+      {
+        "time": 1793765204.7857652,
+        "csv": "2026/11/03 23:06:44.779, 100, 8, 18511, 41.87"
+      },
+      {
+        "time": 1793765205.0005941,
+        "csv": "2026/11/03 23:06:44.996, 100, 0, 18511, 41.77"
+      },
+      {
+        "time": 1793765205.2154174,
+        "csv": "2026/11/03 23:06:45.211, 100, 0, 18511, 41.77"
+      },
+      {
+        "time": 1793765205.430575,
+        "csv": "2026/11/03 23:06:45.426, 100, 0, 18511, 96.94"
+      },
+      {
+        "time": 1793765205.648177,
+        "csv": "2026/11/03 23:06:45.641, 100, 30, 18511, 60.14"
+      },
+      {
+        "time": 1793765206.2013977,
+        "csv": "2026/11/03 23:06:46.199, 100, 12, 18509, 44.87"
+      },
+      {
+        "time": 1793765206.41624,
+        "csv": "2026/11/03 23:06:46.412, 90, 35, 18509, 85.59"
+      },
+      {
+        "time": 1793765206.6311464,
+        "csv": "2026/11/03 23:06:46.627, 98, 11, 9, 44.87"
+      },
+      {
+        "time": 1793765206.847012,
+        "csv": "2026/11/03 23:06:46.842, 100, 12, 1573, 50.85"
+      },
+      {
+        "time": 1793765207.0620842,
+        "csv": "2026/11/03 23:06:47.057, 100, 13, 1573, 42.65"
+      },
+      {
+        "time": 1793765207.2767222,
+        "csv": "2026/11/03 23:06:47.272, 100, 3, 1573, 41.87"
+      },
+      {
+        "time": 1793765207.4941733,
+        "csv": "2026/11/03 23:06:47.487, 100, 0, 1573, 41.77"
+      },
+      {
+        "time": 1793765207.7093601,
+        "csv": "2026/11/03 23:06:47.704, 100, 0, 1573, 41.77"
+      },
+      {
+        "time": 1793765207.9241745,
+        "csv": "2026/11/03 23:06:47.919, 100, 0, 1573, 41.77"
+      },
+      {
+        "time": 1793765208.1388621,
+        "csv": "2026/11/03 23:06:48.134, 100, 0, 1573, 41.77"
+      },
+      {
+        "time": 1793765208.3547902,
+        "csv": "2026/11/03 23:06:48.349, 100, 0, 1573, 41.77"
+      },
+      {
+        "time": 1793765208.569489,
+        "csv": "2026/11/03 23:06:48.565, 100, 0, 1573, 41.77"
+      },
+      {
+        "time": 1793765208.7841933,
+        "csv": "2026/11/03 23:06:48.780, 100, 0, 1573, 41.87"
+      },
+      {
+        "time": 1793765208.999039,
+        "csv": "2026/11/03 23:06:48.994, 100, 0, 1573, 42.55"
+      },
+      {
+        "time": 1793765209.2165372,
+        "csv": "2026/11/03 23:06:49.209, 99, 0, 1573, 41.77"
+      },
+      {
+        "time": 1793765209.4316137,
+        "csv": "2026/11/03 23:06:49.427, 100, 0, 1573, 41.87"
+      },
+      {
+        "time": 1793765209.646089,
+        "csv": "2026/11/03 23:06:49.642, 100, 0, 1573, 41.87"
+      },
+      {
+        "time": 1793765209.8613572,
+        "csv": "2026/11/03 23:06:49.856, 100, 0, 1573, 41.77"
+      },
+      {
+        "time": 1793765210.078746,
+        "csv": "2026/11/03 23:06:50.072, 100, 0, 1573, 43.22"
+      },
+      {
+        "time": 1793765210.2949622,
+        "csv": "2026/11/03 23:06:50.290, 84, 1, 9, 41.58"
+      },
+      {
+        "time": 1793765210.5097396,
+        "csv": "2026/11/03 23:06:50.505, 15, 2, 935, 42.06"
+      },
+      {
+        "time": 1793765210.7243845,
+        "csv": "2026/11/03 23:06:50.720, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765210.9408634,
+        "csv": "2026/11/03 23:06:50.934, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765211.1557617,
+        "csv": "2026/11/03 23:06:51.151, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765211.3704605,
+        "csv": "2026/11/03 23:06:51.366, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765211.5853975,
+        "csv": "2026/11/03 23:06:51.581, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765211.8046145,
+        "csv": "2026/11/03 23:06:51.795, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765212.0174267,
+        "csv": "2026/11/03 23:06:52.015, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765212.2322686,
+        "csv": "2026/11/03 23:06:52.228, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765212.447597,
+        "csv": "2026/11/03 23:06:52.443, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765212.6652339,
+        "csv": "2026/11/03 23:06:52.658, 100, 0, 935, 41.67"
+      },
+      {
+        "time": 1793765212.8801372,
+        "csv": "2026/11/03 23:06:52.875, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765213.095078,
+        "csv": "2026/11/03 23:06:53.090, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765213.3097358,
+        "csv": "2026/11/03 23:06:53.305, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765213.5288181,
+        "csv": "2026/11/03 23:06:53.520, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765213.743715,
+        "csv": "2026/11/03 23:06:53.739, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765213.9589055,
+        "csv": "2026/11/03 23:06:53.954, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765214.1740026,
+        "csv": "2026/11/03 23:06:54.169, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765214.3887932,
+        "csv": "2026/11/03 23:06:54.384, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765214.6034136,
+        "csv": "2026/11/03 23:06:54.599, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765214.8199131,
+        "csv": "2026/11/03 23:06:54.814, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765215.0350792,
+        "csv": "2026/11/03 23:06:55.030, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765215.249907,
+        "csv": "2026/11/03 23:06:55.245, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765215.4647806,
+        "csv": "2026/11/03 23:06:55.460, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765215.6797118,
+        "csv": "2026/11/03 23:06:55.675, 100, 0, 935, 41.87"
+      },
+      {
+        "time": 1793765215.8948538,
+        "csv": "2026/11/03 23:06:55.890, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765216.11001,
+        "csv": "2026/11/03 23:06:56.105, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765216.3250952,
+        "csv": "2026/11/03 23:06:56.320, 100, 0, 935, 41.78"
+      },
+      {
+        "time": 1793765216.5402057,
+        "csv": "2026/11/03 23:06:56.535, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765216.7551177,
+        "csv": "2026/11/03 23:06:56.750, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765216.9700289,
+        "csv": "2026/11/03 23:06:56.965, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765217.1847115,
+        "csv": "2026/11/03 23:06:57.180, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765217.4010499,
+        "csv": "2026/11/03 23:06:57.395, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765217.6188097,
+        "csv": "2026/11/03 23:06:57.611, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765217.8335679,
+        "csv": "2026/11/03 23:06:57.829, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765218.0488353,
+        "csv": "2026/11/03 23:06:58.044, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765218.2635562,
+        "csv": "2026/11/03 23:06:58.259, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765218.4796946,
+        "csv": "2026/11/03 23:06:58.474, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765218.6947458,
+        "csv": "2026/11/03 23:06:58.690, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765218.909579,
+        "csv": "2026/11/03 23:06:58.905, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765219.1241384,
+        "csv": "2026/11/03 23:06:59.120, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765219.3388593,
+        "csv": "2026/11/03 23:06:59.334, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765219.5546265,
+        "csv": "2026/11/03 23:06:59.550, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765219.7696433,
+        "csv": "2026/11/03 23:06:59.765, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765219.9851422,
+        "csv": "2026/11/03 23:06:59.980, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765220.1998177,
+        "csv": "2026/11/03 23:07:00.195, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765220.4168508,
+        "csv": "2026/11/03 23:07:00.410, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765220.631698,
+        "csv": "2026/11/03 23:07:00.627, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765220.8465958,
+        "csv": "2026/11/03 23:07:00.842, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765221.0617352,
+        "csv": "2026/11/03 23:07:01.057, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765221.2767198,
+        "csv": "2026/11/03 23:07:01.272, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765221.491426,
+        "csv": "2026/11/03 23:07:01.487, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765221.7062984,
+        "csv": "2026/11/03 23:07:01.702, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765221.9205215,
+        "csv": "2026/11/03 23:07:01.916, 100, 0, 935, 41.87"
+      },
+      {
+        "time": 1793765222.1352017,
+        "csv": "2026/11/03 23:07:02.130, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765222.3501952,
+        "csv": "2026/11/03 23:07:02.345, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765222.5672543,
+        "csv": "2026/11/03 23:07:02.560, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765222.7822099,
+        "csv": "2026/11/03 23:07:02.777, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765222.9975624,
+        "csv": "2026/11/03 23:07:02.993, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765223.2128553,
+        "csv": "2026/11/03 23:07:03.208, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765223.4281113,
+        "csv": "2026/11/03 23:07:03.423, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765223.6430805,
+        "csv": "2026/11/03 23:07:03.638, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765223.8580348,
+        "csv": "2026/11/03 23:07:03.853, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765224.0729668,
+        "csv": "2026/11/03 23:07:04.068, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765224.2878253,
+        "csv": "2026/11/03 23:07:04.283, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765224.505505,
+        "csv": "2026/11/03 23:07:04.498, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765224.7201855,
+        "csv": "2026/11/03 23:07:04.716, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765224.9349825,
+        "csv": "2026/11/03 23:07:04.930, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765225.15266,
+        "csv": "2026/11/03 23:07:05.145, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765225.3676162,
+        "csv": "2026/11/03 23:07:05.363, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765225.5826988,
+        "csv": "2026/11/03 23:07:05.578, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765225.7973948,
+        "csv": "2026/11/03 23:07:05.793, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765226.014834,
+        "csv": "2026/11/03 23:07:06.010, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765226.2297237,
+        "csv": "2026/11/03 23:07:06.225, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765226.4442618,
+        "csv": "2026/11/03 23:07:06.440, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765226.659014,
+        "csv": "2026/11/03 23:07:06.654, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765226.876551,
+        "csv": "2026/11/03 23:07:06.869, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765227.091749,
+        "csv": "2026/11/03 23:07:07.087, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765227.3066967,
+        "csv": "2026/11/03 23:07:07.302, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765227.5214741,
+        "csv": "2026/11/03 23:07:07.517, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765227.7386286,
+        "csv": "2026/11/03 23:07:07.732, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765227.9534636,
+        "csv": "2026/11/03 23:07:07.949, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765228.1682942,
+        "csv": "2026/11/03 23:07:08.163, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765228.3832605,
+        "csv": "2026/11/03 23:07:08.379, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765228.6009521,
+        "csv": "2026/11/03 23:07:08.594, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765228.8177865,
+        "csv": "2026/11/03 23:07:08.811, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765229.0325797,
+        "csv": "2026/11/03 23:07:09.028, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765229.247605,
+        "csv": "2026/11/03 23:07:09.243, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765229.4634013,
+        "csv": "2026/11/03 23:07:09.458, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765229.678455,
+        "csv": "2026/11/03 23:07:09.674, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765229.8936665,
+        "csv": "2026/11/03 23:07:09.889, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765230.1085563,
+        "csv": "2026/11/03 23:07:10.104, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765230.3250687,
+        "csv": "2026/11/03 23:07:10.319, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765230.5399828,
+        "csv": "2026/11/03 23:07:10.535, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765230.7546985,
+        "csv": "2026/11/03 23:07:10.750, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765230.9695566,
+        "csv": "2026/11/03 23:07:10.965, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765231.1870892,
+        "csv": "2026/11/03 23:07:11.180, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765231.4018962,
+        "csv": "2026/11/03 23:07:11.397, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765231.6167111,
+        "csv": "2026/11/03 23:07:11.612, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765231.831552,
+        "csv": "2026/11/03 23:07:11.827, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765232.0492866,
+        "csv": "2026/11/03 23:07:12.042, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765232.264298,
+        "csv": "2026/11/03 23:07:12.260, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765232.478883,
+        "csv": "2026/11/03 23:07:12.474, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765232.6935508,
+        "csv": "2026/11/03 23:07:12.689, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765232.9108949,
+        "csv": "2026/11/03 23:07:12.904, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765233.1274948,
+        "csv": "2026/11/03 23:07:13.121, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765233.3424742,
+        "csv": "2026/11/03 23:07:13.338, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765233.5570076,
+        "csv": "2026/11/03 23:07:13.552, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765233.774081,
+        "csv": "2026/11/03 23:07:13.767, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765233.9893353,
+        "csv": "2026/11/03 23:07:13.985, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765234.2039857,
+        "csv": "2026/11/03 23:07:14.199, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765234.418845,
+        "csv": "2026/11/03 23:07:14.414, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765234.6361449,
+        "csv": "2026/11/03 23:07:14.629, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765234.851781,
+        "csv": "2026/11/03 23:07:14.847, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765235.066438,
+        "csv": "2026/11/03 23:07:15.062, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765235.2814279,
+        "csv": "2026/11/03 23:07:15.277, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765235.4982738,
+        "csv": "2026/11/03 23:07:15.492, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765235.7130501,
+        "csv": "2026/11/03 23:07:15.708, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765235.92789,
+        "csv": "2026/11/03 23:07:15.923, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765236.142824,
+        "csv": "2026/11/03 23:07:16.138, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765236.3600965,
+        "csv": "2026/11/03 23:07:16.353, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765236.5748727,
+        "csv": "2026/11/03 23:07:16.570, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765236.7900057,
+        "csv": "2026/11/03 23:07:16.785, 100, 0, 935, 41.97"
+      },
+      {
+        "time": 1793765237.0062191,
+        "csv": "2026/11/03 23:07:17.000, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765237.2220328,
+        "csv": "2026/11/03 23:07:17.216, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765237.436756,
+        "csv": "2026/11/03 23:07:17.432, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765237.6515183,
+        "csv": "2026/11/03 23:07:17.647, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765237.8667672,
+        "csv": "2026/11/03 23:07:17.862, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765238.083798,
+        "csv": "2026/11/03 23:07:18.077, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765238.2986414,
+        "csv": "2026/11/03 23:07:18.294, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765238.5133996,
+        "csv": "2026/11/03 23:07:18.509, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765238.7280297,
+        "csv": "2026/11/03 23:07:18.723, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765238.9468818,
+        "csv": "2026/11/03 23:07:18.938, 100, 0, 935, 43.13"
+      },
+      {
+        "time": 1793765239.1618834,
+        "csv": "2026/11/03 23:07:19.157, 99, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765239.3767343,
+        "csv": "2026/11/03 23:07:19.372, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765239.5916276,
+        "csv": "2026/11/03 23:07:19.587, 100, 0, 935, 41.77"
+      },
+      {
+        "time": 1793765239.8084288,
+        "csv": "2026/11/03 23:07:19.802, 100, 0, 935, 41.68"
+      },
+      {
+        "time": 1793765240.0209882,
+        "csv": "2026/11/03 23:07:20.019, 94, 0, 9, 43.80"
+      }
+    ],
+    "maximum_sampled_vram_mib": 20431.0
+  },
+  "artifacts": "artifacts/cuda-native-20261103/search/{scaling,stacks}.json plus every rawstdout/stderr and sanitizerlog; pinnedstackrunner/source preserved as search-stack-options{,.cu}.",
+  "reproduce": [
+    "Generatecanonical512specs using search_validate.py:candidates(replay_bytes,100,4,512),then repeat byte packet8/16times. Every rawsample includes completecommand.",
+    "env -u CUDA_VISIBLE_DEVICES build-cuda-native/clone/cuda_native/irisu-cuda-native-search-runner irisu-high-score-4393101.rpy repeated-specs.bin 100 4 --final-only --stack-kib 4 --warmups 0 --repeats 1",
+    "Add --host-prefix for explicit typed CPUcheckpoint preparation; remove it for defaultGPUinitialize/prefix. Timingcommands include --skip-compaction-check onlyafter fullcopy/continuation qualification.",
+    "Compare entirestdout to fresh build-project-exact/irisu-search-oracle with workers8/16 and target4393102. Native oracle pinned library SHA remains in baseline receipt."
+  ]
+}
