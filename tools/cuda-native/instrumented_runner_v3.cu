@@ -64,34 +64,49 @@ NATIVE_HD __forceinline__ void stage_end(Phase phase,unsigned long long start){
 }
 
 namespace irisu::cuda_native {
-template<unsigned index,class First,class... Rest>
-NATIVE_HD __forceinline__ decltype(auto) stage_argument(First&& first,Rest&&... rest){
-  if constexpr(index==0)return static_cast<First&&>(first);
-  else return stage_argument<index-1>(static_cast<Rest&&>(rest)...);
-}
-// Perfect forwarding without std::tuple/std::forward or extended lambdas.
-// Empty solver calls still execute the ORIGINAL function, without clocks or
-// counter writes; notably build(count0) must still set its output count to0.
-#define IRISU_TIMED_STAGE(name,phase,skip) \
-template<class... Args> NATIVE_HD __forceinline__ auto timed_##name(Args&&... args) \
- -> decltype(name(static_cast<Args&&>(args)...)){ \
-  if(skip)return name(static_cast<Args&&>(args)...); \
+// Match original parameter passing exactly. In particular, scalar counts must
+// be BY VALUE: forwarding references ODR-use host constexpr globals in CUDA.
+// Empty calls still execute originals so all output/reference effects remain.
+#define IRISU_TIMED_STAGE(name,phase,parameters,arguments,skip) \
+NATIVE_HD __forceinline__ auto timed_##name parameters -> decltype(name arguments){ \
+  if(skip)return name arguments; \
   const auto start=instrumentation::stage_begin(); \
-  auto result=name(static_cast<Args&&>(args)...); \
+  auto result=name arguments; \
   instrumentation::stage_end(instrumentation::phase,start);return result; \
 }
-IRISU_TIMED_STAGE(solver_build_constraints,solver_build_phase,stage_argument<5>(args...)==0)
-IRISU_TIMED_STAGE(solver_presolve,solver_pre_phase,stage_argument<3>(args...)==0)
-IRISU_TIMED_STAGE(solver_velocity,solver_velocity_phase,stage_argument<3>(args...)==0)
-IRISU_TIMED_STAGE(solver_position,solver_position_phase,stage_argument<3>(args...)==0)
-IRISU_TIMED_STAGE(solver_postsolve,solver_post_phase,stage_argument<1>(args...)==0)
-IRISU_TIMED_STAGE(collide,collision_phase,false)
-IRISU_TIMED_STAGE(shape_quick_sync,quick_sync_phase,false)
-IRISU_TIMED_STAGE(circle_swept_bounds,circle_bounds_phase,false)
-IRISU_TIMED_STAGE(polygon_swept_bounds,polygon_bounds_phase,false)
-IRISU_TIMED_STAGE(integrate_velocity,integrate_velocity_phase,stage_argument<0>(args...).inv_mass==0)
-IRISU_TIMED_STAGE(integrate_position,integrate_position_phase,stage_argument<0>(args...).inv_mass==0)
-IRISU_TIMED_STAGE(update_sleep,sleep_phase,stage_argument<2>(args...)==0)
+IRISU_TIMED_STAGE(solver_build_constraints,solver_build_phase,
+  (const BodyState* bodies,std::uint32_t body_count,const Manifold* manifolds,std::uint32_t manifold_count,
+   const SolverContact* contacts,std::uint32_t contact_count,ContactConstraint* output,std::uint32_t capacity,std::uint32_t& count),
+  (bodies,body_count,manifolds,manifold_count,contacts,contact_count,output,capacity,count),contact_count==0)
+IRISU_TIMED_STAGE(solver_presolve,solver_pre_phase,
+  (BodyState* bodies,std::uint32_t body_count,ContactConstraint* constraints,std::uint32_t count,bool warm_start),
+  (bodies,body_count,constraints,count,warm_start),count==0)
+IRISU_TIMED_STAGE(solver_velocity,solver_velocity_phase,
+  (BodyState* bodies,std::uint32_t body_count,ContactConstraint* constraints,std::uint32_t count),
+  (bodies,body_count,constraints,count),count==0)
+IRISU_TIMED_STAGE(solver_position,solver_position_phase,
+  (BodyState* bodies,std::uint32_t body_count,ContactConstraint* constraints,std::uint32_t count,float beta,bool canonical_rotation=false),
+  (bodies,body_count,constraints,count,beta,canonical_rotation),count==0)
+IRISU_TIMED_STAGE(solver_postsolve,solver_post_phase,
+  (const ContactConstraint* constraints,std::uint32_t count,Manifold* manifolds,std::uint32_t manifold_count),
+  (constraints,count,manifolds,manifold_count),count==0)
+IRISU_TIMED_STAGE(collide,collision_phase,
+  (Manifold& manifold,const ShapeState& first,const ShapeState& second,bool conservative=false),
+  (manifold,first,second,conservative),false)
+IRISU_TIMED_STAGE(shape_quick_sync,quick_sync_phase,
+  (ShapeState& shape,Vec2 position,const Mat22& rotation),(shape,position,rotation),false)
+IRISU_TIMED_STAGE(circle_swept_bounds,circle_bounds_phase,
+  (AABB& bounds,const ShapeState& shape,Vec2 previous,const Mat22& previous_rotation),
+  (bounds,shape,previous,previous_rotation),false)
+IRISU_TIMED_STAGE(polygon_swept_bounds,polygon_bounds_phase,
+  (AABB& bounds,const ShapeState& shape,Vec2 previous,const Mat22& previous_rotation,Vec2 position,const Mat22& rotation),
+  (bounds,shape,previous,previous_rotation,position,rotation),false)
+IRISU_TIMED_STAGE(integrate_velocity,integrate_velocity_phase,
+  (BodyState& body,float dt,Vec2 gravity),(body,dt,gravity),body.inv_mass==0)
+IRISU_TIMED_STAGE(integrate_position,integrate_position_phase,
+  (BodyState& body,float dt,bool canonical_rotation=false),(body,dt,canonical_rotation),body.inv_mass==0)
+IRISU_TIMED_STAGE(update_sleep,sleep_phase,
+  (BodyState* bodies,const std::uint32_t* order,unsigned count,float dt),(bodies,order,count,dt),count==0)
 #undef IRISU_TIMED_STAGE
 }
 

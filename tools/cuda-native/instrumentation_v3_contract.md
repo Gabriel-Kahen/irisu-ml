@@ -3,7 +3,8 @@
 `instrumented_runner_v3.cu` preserves V1/V2 and all existing sources. It locally
 forces `IRISU_CUDA_NATIVE_INTERLEAVED_SOLVER=0`, preloads original physics
 headers, and redirects later pipeline/adapter free-function calls to thin
-perfect-forwarding wrappers. Preloaded originals' internal calls stay inside
+wrappers matching the original parameter-passing signatures. Scalar counts stay
+by value so namespace constexpr limits do not become CUDA host-storage references. Preloaded originals' internal calls stay inside
 their enclosing stage; they are not recursively redirected or double-timed.
 
 The V2 thread-owned counter scheme remains: packed CUDA threads, default-stream
