@@ -8,9 +8,15 @@
 #define NATIVE_HD
 #endif
 
+#ifndef IRISU_CUDA_NATIVE_MAX_CONTACTS
+#define IRISU_CUDA_NATIVE_MAX_CONTACTS 4096
+#endif
+static_assert(IRISU_CUDA_NATIVE_MAX_CONTACTS==512||IRISU_CUDA_NATIVE_MAX_CONTACTS==1024||IRISU_CUDA_NATIVE_MAX_CONTACTS==4096,
+              "Typed contact capacity must be 512, 1024 or 4096");
+
 namespace irisu::cuda_native {
 inline constexpr std::uint32_t null_index=0xffffffffU;
-inline constexpr std::uint32_t max_bodies=512,max_shapes=512,max_contacts=4096;
+inline constexpr std::uint32_t max_bodies=512,max_shapes=512,max_contacts=IRISU_CUDA_NATIVE_MAX_CONTACTS;
 struct Vec2 {float x{},y{};};
 struct Mat22 {Vec2 col1{1,0},col2{0,1};};
 struct AABB {Vec2 min{},max{};};

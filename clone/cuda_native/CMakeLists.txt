@@ -11,6 +11,11 @@ option(IRISU_CUDA_NATIVE_SPARSE_RESET "Reset occupied flags instead of unused ph
 option(IRISU_CUDA_NATIVE_INLINE_STEP "Inline the typed game step forwarding wrapper" OFF)
 option(IRISU_CUDA_NATIVE_ENTRY_INDEX "Index typed game physics entries by body ID" OFF)
 option(IRISU_CUDA_NATIVE_WIDE_REBIND "Use aligned global u64 transport for GPU body-reference relocation" OFF)
+set(IRISU_CUDA_NATIVE_MAX_CONTACTS "4096" CACHE STRING "Typed World/solver contact capacity; native SAP remains 4096")
+set_property(CACHE IRISU_CUDA_NATIVE_MAX_CONTACTS PROPERTY STRINGS 512 1024 4096)
+if(NOT IRISU_CUDA_NATIVE_MAX_CONTACTS MATCHES "^(512|1024|4096)$")
+  message(FATAL_ERROR "Typed contact capacity must be 512, 1024 or 4096")
+endif()
 set(IRISU_CUDA_NATIVE_MAX_REGISTERS "0" CACHE STRING "Optional register cap for typed game/search kernels (0 uses compiler default)")
 if(NOT IRISU_CUDA_NATIVE_MAX_REGISTERS MATCHES "^(0|[1-9][0-9]*)$")
   message(FATAL_ERROR "Invalid typed GPU register cap")
@@ -42,7 +47,8 @@ function(irisu_native_cuda target source)
     IRISU_CUDA_NATIVE_SPARSE_RESET=$<BOOL:${IRISU_CUDA_NATIVE_SPARSE_RESET}>
     IRISU_CUDA_NATIVE_INLINE_STEP=$<BOOL:${IRISU_CUDA_NATIVE_INLINE_STEP}>
     IRISU_CUDA_NATIVE_ENTRY_INDEX=$<BOOL:${IRISU_CUDA_NATIVE_ENTRY_INDEX}>
-    IRISU_CUDA_NATIVE_WIDE_REBIND=$<BOOL:${IRISU_CUDA_NATIVE_WIDE_REBIND}>)
+    IRISU_CUDA_NATIVE_WIDE_REBIND=$<BOOL:${IRISU_CUDA_NATIVE_WIDE_REBIND}>
+    IRISU_CUDA_NATIVE_MAX_CONTACTS=${IRISU_CUDA_NATIVE_MAX_CONTACTS})
 endfunction()
 
 irisu_native_cuda(irisu-native-collision tools/cuda-native/collision_runner.cu)
