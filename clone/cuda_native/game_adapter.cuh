@@ -1,6 +1,9 @@
 #pragma once
 #include "../cuda/game_types.cuh"
 #include "world_scene.hpp"
+#if defined(IRISU_CUDA_NATIVE_ENTRY_INDEX) && IRISU_CUDA_NATIVE_ENTRY_INDEX
+#include "entry_index.cuh"
+#endif
 #include <cstring>
 #ifdef __CUDACC__
 #define NATIVE_GAME_CALL __noinline__
@@ -35,14 +38,35 @@ class NativePhysicsWorld {
  private:
   MechanicsConfig config_{};Scene* scene_{};
   vector<Entry> entries_{};vector<Contact> contacts_{};vector<Body*> ordered_{};
+#if defined(IRISU_CUDA_NATIVE_ENTRY_INDEX) && IRISU_CUDA_NATIVE_ENTRY_INDEX
+  EntryIndex entry_index_{};
+  GAME_HD void rebuild_entry_index(){
+    entry_index_.rebuild();
+    for(unsigned i=0;i<entries_.count;++i)if(!entry_index_.insert(entries_[i].id,i)){fail(irisu::cuda_native::Status::capacity);return;}
+  }
+#endif
   GAME_HD void fail(irisu::cuda_native::Status status=irisu::cuda_native::Status::invalid_snapshot) const {
     if(scene_&&scene_->world.status==irisu::cuda_native::Status::ok)scene_->world.status=status;
   }
   GAME_HD bool accept(irisu::cuda_native::StageResult result) const {
     if(!result)fail(result.status);return bool(result);
   }
-  GAME_HD Entry* find(BodyId id){for(auto& e:entries_)if(e.id==id)return &e;return nullptr;}
-  GAME_HD const Entry* find(BodyId id) const {for(const auto& e:entries_)if(e.id==id)return &e;return nullptr;}
+  GAME_HD Entry* find(BodyId id){
+#if defined(IRISU_CUDA_NATIVE_ENTRY_INDEX) && IRISU_CUDA_NATIVE_ENTRY_INDEX
+    const auto index=entry_index_.find(id);if(index==EntryIndex::missing)return nullptr;
+    if(index>=entries_.count||entries_[index].id!=id){fail();return nullptr;}return &entries_[index];
+#else
+    for(auto& e:entries_)if(e.id==id)return &e;return nullptr;
+#endif
+  }
+  GAME_HD const Entry* find(BodyId id)const{
+#if defined(IRISU_CUDA_NATIVE_ENTRY_INDEX) && IRISU_CUDA_NATIVE_ENTRY_INDEX
+    const auto index=entry_index_.find(id);if(index==EntryIndex::missing)return nullptr;
+    if(index>=entries_.count||entries_[index].id!=id){fail();return nullptr;}return &entries_[index];
+#else
+    for(const auto& e:entries_)if(e.id==id)return &e;return nullptr;
+#endif
+  }
   GAME_HD static bool same(Vec2 a,Vec2 b){return a.x==b.x&&a.y==b.y;}
   GAME_HD static void mirror(Entry& e,const Body& b){e.position=b.position;e.angle=b.angle;e.velocity=b.native_velocity;}
   GAME_HD float scale() const {return static_cast<float>(config_.world_magnification);}
@@ -75,6 +99,9 @@ class NativePhysicsWorld {
     Entry e{};e.id=b.id;e.slot=slot;e.shape=b.shape;e.size=b.size;e.density=b.density;
     e.friction=b.friction;e.restitution=b.restitution;mirror(e,b);entries_.push_back(e);
     if(entries_.overflow)fail(irisu::cuda_native::Status::capacity);
+#if defined(IRISU_CUDA_NATIVE_ENTRY_INDEX) && IRISU_CUDA_NATIVE_ENTRY_INDEX
+    else if(!entry_index_.insert(e.id,entries_.count-1))fail(irisu::cuda_native::Status::capacity);
+#endif
   }
   GAME_HD NATIVE_GAME_CALL void external(Body& b,Entry& e){
     const auto requested=b.native_velocity;
@@ -105,6 +132,9 @@ class NativePhysicsWorld {
       {m.store(m.div(float(config_.world_max_x),scale())),m.store(m.div(float(config_.world_max_y),scale()))}};
     const NativeVec gravity{0,m.store(m.div(float(config_.gravity_y),scale()))};
     entries_.clear();contacts_.clear();ordered_.clear();
+#if defined(IRISU_CUDA_NATIVE_ENTRY_INDEX) && IRISU_CUDA_NATIVE_ENTRY_INDEX
+    entry_index_.reset();
+#endif
     if(!accept(scene_->initialize(bounds,gravity)))return;
     if(!m.ok()){fail(m.status);return;}
     BodyState ground{};ground.flags=static_body|allow_sleep;std::uint32_t slot{};
@@ -150,7 +180,13 @@ class NativePhysicsWorld {
   GAME_HD NATIVE_GAME_CALL const vector<Contact>& step(vector<Body>& bodies){
     synchronize(bodies);contacts_.clear();if(failed()||!accept(scene_->step(float(config_.tick_seconds),config_.solver_iterations)))return contacts_;
     for(auto& e:entries_)if(e.pending)for(auto& b:bodies)if(b.id==e.id&&b.lifecycle==Lifecycle::Deleted)b.pending_delete=false;
+#if defined(IRISU_CUDA_NATIVE_ENTRY_INDEX) && IRISU_CUDA_NATIVE_ENTRY_INDEX
+    const auto old_entry_count=entries_.count;
+#endif
     entries_.erase(remove_if(entries_.begin(),entries_.end(),[] GAME_HD(const Entry& e){return e.pending;}),entries_.end());
+#if defined(IRISU_CUDA_NATIVE_ENTRY_INDEX) && IRISU_CUDA_NATIVE_ENTRY_INDEX
+    if(entries_.count!=old_entry_count)rebuild_entry_index();
+#endif
     const auto& w=scene_->world;unsigned count=0;
     for(auto c=w.contact_head;c!=irisu::cuda_native::null_index;c=w.contacts[c].next){
       if(c>=irisu::cuda_native::max_contacts||++count>irisu::cuda_native::max_contacts){fail();break;}
