@@ -225,7 +225,7 @@ reference model/microcode and GPU/driver identities. Verification rejects drift.
 The runtime also checks the actual image SHA-256 before allocating GPU state;
 modified, truncated or wrong-sized images are rejected.
 
-## Final measurements on this machine
+## Baseline measurements before the speedup follow-up
 
 The warmed, distinct-candidate future/ranking workloads use prefix 100,
 `--final-only` on both backends, one warmup and three measured repetitions.
@@ -320,3 +320,93 @@ The backend is slower than the measured native CPU path. It remains an optional
 research backend with a distinct identity; production exact-training admission
 is unchanged. A finite beam and sparse proposal menu do not establish a global
 score optimum or learned policy transfer.
+
+## Speedup follow-up
+
+The requested 5× speedup was not achieved. This optimization effort stopped
+after direct function translation, interleaved arenas, compiler optimization,
+and scalar instruction lifting were built and tested. The best qualified
+prototype completes 512 distinct four-tick futures in **1.2854 seconds** versus
+**0.06814 seconds** for native CPU8: **18.87× slower**. The GPU also materializes
+selected checkpoints in this fixed-future comparison. The separate native
+resident benchmark retains selected CPU checkpoints across dependent depths.
+
+| Experiment | Matched GPU control | Experimental GPU | Result |
+| --- | ---: | ---: | --- |
+| 31 scalar leaves, dense arenas | 1.5948 s | 1.2854 s | 1.241× faster |
+| Packed interleaved arenas | 1.5945 s | 7.1956 s | 4.513× slower |
+| Higher assembler optimization | 1.5964 s | 1.6138 s | No useful gain |
+
+The scalar comparison uses one validation warmup and three interleaved timed
+pairs per layout; every candidate/result/rank packet matches native. Warmups
+also check selected hidden state, complete arena contents and independent
+continuation. The packed-layout screen uses one warmup and one timed run; the
+assembler comparison uses three timed pairs. All retain the same actual
+512 × 4 future work and strict floating-point flags. These are small-workload
+results, with raw samples and compiler/input hashes in the
+[scalar receipt](../benchmarks/results/generic-scalar-leaf-final-probe-2026-11-03.json),
+[layout receipt](../benchmarks/results/cuda-search-stride-v100-2026-11-03.json), and
+[compiler receipt](../benchmarks/results/cuda-consumer-full-opt-screen-2026-11-03.json).
+
+The final native resident matrix uses the preserved 16-depth campaign's exact
+budget and selection policy: 3,872 nodes, 3,456 active branches and 206,412 future
+ticks. Every warmup and repetition matches its complete final-only result,
+rank, selected-child and lifecycle packet. Selected CPU children remain frozen
+fork/COW checkpoints across depths; there is no per-tick RPC or prefix replay.
+Median wall times are 24.281/5.900/4.953 seconds for CPU1/8/16. The historical
+GPU campaign took 322.935 seconds, about 65.2× the new warmed CPU16 median.
+This compares that preserved GPU run with a new CPU matrix; no fresh GPU
+campaign or large-campaign scalar-leaf timing is claimed. Prefix and future
+components are retained separately in the
+[resident benchmark receipt](../benchmarks/results/cuda-native-resident-warmed-final-v4-2026-11-03.json).
+
+`IRISU_CUDA_FUNCTION_CALLS=ON` enables original-function translation with direct
+device calls, the authoritative guest return stack, and a trampoline after
+eight nested native call edges. It remains off by default. Bounds checks reject
+invalid dispatch PCs; the callback and budget safety gate is retained in
+[its receipt](../benchmarks/results/cuda-function-dispatch-safety-2026-11-03.json).
+Direct calls alone showed no useful gain. Runtime `--word-stride 32` enables
+interleaved future arenas with dense prefix/survivor checkpoints; the default
+is 1. Mapping passed odd-count isolation, unaligned/cross-word operations,
+allocator canaries and actual GPU state/continuation comparisons. Packing did
+not overcome divergent search execution.
+
+The scalar prototype admits only call-free functions with consistent stack and
+x87 depths, rejects escaping stack addresses and unsupported forms, and checks
+the budget at each original block. Of 386 functions, 210 pass that static
+screen. The 31 dynamically selected leaves cover 24–28% of the two physics
+fixtures' guest blocks. Qualification includes **75,220** full post-call
+Guest/budget/arena comparisons, 33 mixed GPU worlds × 600 ticks, 13 GPU
+fault/fallback cases, and a 288-node resident lifecycle differential. Other
+statically admitted functions remain unqualified. The prototype's physics
+kernel requires 254 registers per thread; lifting only these leaves does not
+remove the remaining call/stack emulation costs.
+
+The scalar implementation is isolated under `tools/cuda-exact/direct-leaf`.
+It copies compiled consumers, original regions and generated inputs before
+replacing selected archive members, then links matched control/scalar binaries.
+To regenerate the selected leaves from a separately built function-call backend:
+
+```sh
+.venv-gpu/bin/python tools/cuda-exact/direct-leaf/generate_leaves.py \
+  .local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so \
+  artifacts/scalar-local --baseline-generated build-cuda-function-calls/clone/cuda/generated
+python3 - <<'PY'
+import json
+from pathlib import Path
+receipt = json.loads(Path('benchmarks/results/generic-scalar-leaf-final-probe-2026-11-03.json').read_text())
+Path('artifacts/scalar-local-entries.json').write_text(json.dumps(receipt['static_screen']['selected_dynamic_entries']))
+PY
+timeout 300s python3 tools/cuda-exact/direct-leaf/build_leaves.py \
+  --build build-cuda-function-calls --baseline build-cuda-function-calls/clone/cuda \
+  --typed artifacts/scalar-local --entries artifacts/scalar-local-entries.json \
+  --output artifacts/scalar-local-build --jobs 2
+```
+
+The build receipt contains every compile/link command and snapshot hash. Use a
+new destination for repeated experiments. The original record and prior
+campaigns are preserved. Production CPU/training admission remains unchanged.
+The current default CUDA build passes all **15 CTests**; see the
+[default validation receipt](../benchmarks/results/cuda-default-final-validation-2026-11-03.json).
+The [follow-up summary](../benchmarks/results/cuda-v100-speedup-followup-2026-11-03.json)
+collects the outcome, immutable evidence references and final runtime identity.
