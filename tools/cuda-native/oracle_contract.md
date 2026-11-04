@@ -175,3 +175,10 @@ qualifies a disjoint512-proxy history with query limits, destruction and reuse;
 it does not admit arbitrary dense512-proxy histories. Default64-proxy scope
 remains unchanged. Invalid513th allocation is tested on the typed implementation
 only, never by overflowing the original native fixed-size arrays.
+
+One concrete source-aid mismatch is the triangle wrapper: the tracked reference
+C++ file lists a cyclic alternate vertex order. The actual pinned instructions
+at0x14c50 store `(-hx,+hy),(-hx,-hy),(+hx,+hy)` (stores0x14cbc..0x14cdc).
+The native per-index factory oracle, not that reference source listing, governs
+vertex ordering and accumulation. No factory correction follows from the
+reference-only discrepancy.
