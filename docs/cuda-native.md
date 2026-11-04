@@ -117,9 +117,90 @@ rejections. The opt-in profile also passes native collision, solver, factory,
 dynamic world, game and search fixtures, with actual-device memory checks.
 Build it in a separate directory using the build options above plus this flag.
 
+## Further GPU efficiency
+
+The next profile adds exact merge ranking, active-state checkpoint transport,
+parallel raw prefix guards, and aligned body-reference relocation. It retains
+all 512 body/shape slots and 4,096 contact slots. The original implementations
+and the checked defaults remain available.
+
+The additional 2x target is met with checked CPU preparation of the shared
+prefix and GPU execution of every future. Pure-GPU execution reaches 1.956x.
+Matched full-process medians on V100 are:
+
+| Mode | Previous GPU seconds | New seconds | Speedup |
+| --- | --- | --- | --- |
+| All physics on GPU | 4.618 | 2.361 | 1.956x |
+| CPU prefix, GPU futures | 4.622 | 2.171 | 2.129x |
+
+Each comparison has three runs per configuration, alternates order and includes
+setup, allocation, prefix, all 20 batches, output and teardown. Both execute the
+same 12,288 distinct four-tick futures per batch: 983,040 future ticks plus one
+100-tick prefix. The extra speedup is a batched-search result. Full device
+allocations remain about 27.85 GB; reduced transport is not reduced reservation.
+
+The selected profile passes the complete 97,219-step native record, eight
+native search/continuation modes, 12,288 independent physical snapshots and
+memory/init checks. The original eight CPU suites pass. The compact plan's
+unused descriptor bytes are initialized before diagnostic host copies; the
+final sanitizer runs report zero errors and emit native-identical packets.
+
+Build the selected profile in its own directory:
+
+```sh
+cmake -S . -B build-cuda-native-efficiency-opt \
+  -DIRISU_BUILD_CUDA_NATIVE_EXPERIMENTS=ON \
+  -DIRISU_BUILD_CUDA_EXPERIMENTS=OFF -DIRISU_BUILD_TESTS=OFF \
+  -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=/usr/bin/g++-14 \
+  -DCMAKE_CUDA_COMPILER=/opt/cuda/bin/nvcc \
+  -DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-14 \
+  -DIRISU_CUDA_NATIVE_BOUNDED_MATH=ON \
+  -DIRISU_CUDA_NATIVE_BOUNDED_STORE=ON \
+  -DIRISU_CUDA_NATIVE_LIGHT_SHAPE_SYNC=ON \
+  -DIRISU_CUDA_NATIVE_CACHED_ROTATION=ON \
+  -DIRISU_CUDA_NATIVE_INLINE_STEP=ON \
+  -DIRISU_CUDA_NATIVE_WIDE_REBIND=ON \
+  -DIRISU_CUDA_NATIVE_GAME_FAST_COMPILE=min \
+  -DIRISU_CUDA_NATIVE_MAX_REGISTERS=0 \
+  -DIRISU_CUDA_NATIVE_F32_STORE=OFF \
+  -DIRISU_CUDA_NATIVE_SPARSE_RESET=OFF \
+  -DIRISU_CUDA_NATIVE_ENTRY_INDEX=OFF
+cmake --build build-cuda-native-efficiency-opt \
+  --target irisu-cuda-native-search-runner -j 2
+```
+
+`BOUNDED_STORE` removes only the redundant binary64-normal check inside the
+previously audited device graphs. Float conversion, finite-F32 rejection,
+sticky failure, division/sqrt/trig checks and rounding remain. Host/free stores
+stay checked. This profile excludes arbitrary raw-double store calls; see the
+[bounded-store contract](../tools/cuda-native/bounded_store_contract.md).
+Rotation reuse requires the factory-created canonical matrices described in
+[its contract](../tools/cuda-native/cached_rotation_contract.md).
+
+`--compact-clone` restores every live Game value, occupied physical record and
+complete SAP history. Allocation overwrites omitted inactive pool payloads;
+pointer tails are zeroed before rebinding. Runtime allocations retain their
+full sizes. Selected leaves still receive complete physical copies and undergo
+independent continuation checks outside timing. See the
+[checkpoint contract](../tools/cuda-native/compact_snapshot_contract.md).
+
+The full cached source remains immutable and every raw source byte, including
+scratch, is checked after each batch. `--parallel-prefix-guard` parallelizes
+that comparison; it does not replace it with a hash. Wide relocation preserves
+all capacity slots and existing pointer validation, using CUDA-global aligned
+u64 transport; [qualification](../tools/cuda-native/body_ref_contract.md) covers
+early-return partial writes and malformed references.
+
+The two execution modes must be distinguished. Without `--host-prefix`, all
+physics executes on GPU. With it, the shared 100-tick prefix is explicitly
+prepared on checked typed CPU physics; all 983,040 future physics ticks execute
+on GPU. Both modes include prefix preparation and process setup in timing.
+See [commands and measurements](../tools/cuda-native/search_README.md) and the
+[efficiency receipt](../benchmarks/results/cuda-native-efficiency-2026-11-04.json).
+
 ## Performance interpretation
 
-The final paired search campaign reached **6.46x** on the V100 versus the
+The first paired search campaign reached **6.46x** on the V100 versus the
 native cached-prefix CPU controller. Both prepare one 100-tick prefix, then
 execute 20 batches of 12,288 distinct four-tick futures: 983,040 future physics
 ticks per process. GPU initialization, prefix and future physics all execute

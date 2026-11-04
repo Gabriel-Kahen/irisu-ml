@@ -7,6 +7,11 @@
 #else
 #define NATIVE_WORLD_CALL
 #endif
+#if defined(__CUDACC__) && defined(IRISU_CUDA_NATIVE_INLINE_STEP) && IRISU_CUDA_NATIVE_INLINE_STEP
+#define NATIVE_WORLD_STEP_CALL __forceinline__
+#else
+#define NATIVE_WORLD_STEP_CALL NATIVE_WORLD_CALL
+#endif
 
 namespace irisu::cuda_game {
 struct NativeGameWorld {
@@ -25,7 +30,7 @@ struct NativeGameWorld {
     bind(scene);for(auto& byte:simulator.actor_refs_scratch_.storage)byte=0;
     simulator.physics_.initialize_pointer_storage();simulator.reset(0);if(!failed())simulator.reset(seed);
   }
-  GAME_HD NATIVE_WORLD_CALL StepResult step(const Action& action){return simulator.step(action);}
+  GAME_HD NATIVE_WORLD_STEP_CALL StepResult step(const Action& action){return simulator.step(action);}
   GAME_HD NATIVE_WORLD_CALL game_digest::Frame frame(const StepResult& result={}) const {
     struct Count {std::uint64_t value{};GAME_HD std::uint64_t size() const{return value;}};
     struct Summary {
@@ -53,4 +58,5 @@ GAME_HD inline Action native_replay_action(std::uint32_t word,std::uint64_t inde
     static_cast<double>((word>>12U)&511U),1,index<2};
 }
 #undef NATIVE_WORLD_CALL
+#undef NATIVE_WORLD_STEP_CALL
 }

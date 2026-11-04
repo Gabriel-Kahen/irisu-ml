@@ -5,6 +5,9 @@
 #include "entry_index.cuh"
 #endif
 #include <cstring>
+#ifndef IRISU_CUDA_NATIVE_WIDE_REBIND
+#define IRISU_CUDA_NATIVE_WIDE_REBIND 0
+#endif
 #ifdef __CUDACC__
 #define NATIVE_GAME_CALL __noinline__
 #else
@@ -16,10 +19,21 @@ GAME_HD inline bool relocate_native_body_refs(vector<Body*>& refs,std::uintptr_t
   if(live_only&&refs.count>refs.capacity)return false;
   const auto count=live_only?refs.count:refs.capacity;
   for(unsigned i=0;i<count;++i){
-    std::uintptr_t word{};std::memcpy(&word,refs.storage+i*sizeof(Body*),sizeof(word));
+    std::uintptr_t word{};
+#if defined(__CUDA_ARCH__) && IRISU_CUDA_NATIVE_WIDE_REBIND
+    static_assert(sizeof(Body*)==8&&alignof(vector<Body*>)>=8);
+    asm volatile("ld.global.u64 %0, [%1];":"=l"(word):"l"(__cvta_generic_to_global(refs.storage+i*sizeof(Body*))):"memory");
+#else
+    std::memcpy(&word,refs.storage+i*sizeof(Body*),sizeof(word));
+#endif
     if(word>=old_base&&word-old_base<sizeof(Body)*vector<Body>::capacity){
       if((word-old_base)%sizeof(Body))return false;
-      word=new_base+(word-old_base);std::memcpy(refs.storage+i*sizeof(Body*),&word,sizeof(word));
+      word=new_base+(word-old_base);
+#if defined(__CUDA_ARCH__) && IRISU_CUDA_NATIVE_WIDE_REBIND
+      asm volatile("st.global.u64 [%0], %1;"::"l"(__cvta_generic_to_global(refs.storage+i*sizeof(Body*))),"l"(word):"memory");
+#else
+      std::memcpy(refs.storage+i*sizeof(Body*),&word,sizeof(word));
+#endif
     }else if(i<refs.count&&word)return false;
   }
   return true;

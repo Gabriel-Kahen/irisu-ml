@@ -66,12 +66,33 @@ NATIVE_HD inline StageResult clear_reachable(ScenePipelineState& destination){
   return {};
 }
 NATIVE_HD inline void copy_bytes(unsigned char* destination,const unsigned char* source,std::size_t size,unsigned worker,unsigned workers){
+#ifdef __CUDA_ARCH__
+  // Whole aligned object representations only; PTX avoids typed aliasing.
+  if(!((reinterpret_cast<std::uintptr_t>(destination)|reinterpret_cast<std::uintptr_t>(source)|size)&7)){
+    for(std::size_t i=worker;i<size/8;i+=workers){std::uint64_t word;
+      asm volatile("ld.global.u64 %0, [%1];":"=l"(word):"l"(__cvta_generic_to_global(source+8*i)):"memory");
+      asm volatile("st.global.u64 [%0], %1;"::"l"(__cvta_generic_to_global(destination+8*i)),"l"(word):"memory");
+    }return;
+  }
+#endif
   for(std::size_t i=worker;i<size;i+=workers)destination[i]=source[i];
 }
 template<class T,unsigned Capacity>NATIVE_HD inline void copy_slots(T* destination,const T* source,const Slots<Capacity>& slots,unsigned worker,unsigned workers){
+#ifdef __CUDA_ARCH__
+  static_assert(alignof(T)>=4&&sizeof(T)%4==0);
+  constexpr std::size_t words=sizeof(T)/4;
+  for(std::size_t i=worker;i<std::size_t(slots.count)*words;i+=workers){
+    const auto slot=slots.indices[i/words];const auto offset=4*(i%words);std::uint32_t word;
+    const auto* in=reinterpret_cast<const unsigned char*>(source+slot)+offset;
+    auto* out=reinterpret_cast<unsigned char*>(destination+slot)+offset;
+    asm volatile("ld.global.u32 %0, [%1];":"=r"(word):"l"(__cvta_generic_to_global(in)):"memory");
+    asm volatile("st.global.u32 [%0], %1;"::"l"(__cvta_generic_to_global(out)),"r"(word):"memory");
+  }
+#else
   const auto bytes=std::size_t(slots.count)*sizeof(T);
   for(std::size_t i=worker;i<bytes;i+=workers){const auto slot=slots.indices[i/sizeof(T)];const auto offset=i%sizeof(T);
     reinterpret_cast<unsigned char*>(destination+slot)[offset]=reinterpret_cast<const unsigned char*>(source+slot)[offset];}
+#endif
 }
 // First clear_missing() OR clear_reachable(), then copy_active(). All workers
 // must finish before any scene operation. No SceneScratch initialization needed.

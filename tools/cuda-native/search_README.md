@@ -105,3 +105,67 @@ physical-core pinning was slower and was rejected. Final speedup claims require
 the paired native v2 cached controller with parent verification buffers excluded
 from candidate forks. See `search_physical_qualification.json` for exact gates;
 the earlier one-sample GPU pilot is superseded by the repeated paired campaign.
+
+## Additional efficiency profile
+
+Final paired medians: pure-GPU physics improves **1.956x** (4.618 → 2.361 s);
+explicit CPU prefix plus GPU futures improves **2.129x** (4.622 → 2.171 s).
+The additional 2x target is reached in the latter mode. These are complete
+20-batch campaign wall times, with three runs per configuration in each mode.
+
+The [build guide](../../docs/cuda-native.md#further-gpu-efficiency) provides the
+selected compile flags. Generate the same distinct packet as above, then run:
+
+```sh
+env -u CUDA_VISIBLE_DEVICES \
+  build-cuda-native-efficiency-opt/clone/cuda_native/irisu-cuda-native-search-runner \
+  irisu-high-score-4393101.rpy /tmp/search-distinct.bin 100 4 \
+  --copy-u64 --reuse-prefix --physical-snapshot --compact-clone \
+  --merge-rank --tiled-selection --parallel-prefix-guard \
+  --warmups 0 --repeats 20 --final-only --skip-compaction-check \
+  --host-prefix > /tmp/search-efficient.bin
+cmp /tmp/search-native.bin /tmp/search-efficient.bin
+```
+
+This explicitly uses CPU preparation for the one shared prefix. Remove
+`--host-prefix` for pure-GPU physics. It changes the prefix location, not the
+number of future rollouts. Every batch recomputes all 12,288 futures; repeated
+results are compared, not reused. Omit `--skip-compaction-check` for full selected
+state checks and independent continuations; prefix guards always remain on.
+
+Merge sorting retains the original full comparator and index tie-breaks.
+Tiled selected copies distribute work across more GPU blocks. Active cloning
+copies occupied physical pools, all live Game vector values and scalar state,
+with the complete broadphase. Inactive pointer tails are explicitly restored
+to zero before live-pointer relocation. All runtime pool capacities and full
+allocation strides remain unchanged. Poison tests and native continuations
+qualify the representation; raw inactive-byte equality is not its contract.
+
+The previous GPU executable is preserved locally at
+`artifacts/gpu-efficiency-20261104/search-baseline`, SHA-256
+`2f27d7ff719f66a53b9883ed602f654a1af5bab43dfa0d8c12fe6bc835967f72`.
+Its source/build profile is the prior `d3cb2d4` campaign, with bounded math,
+frontend `mid`, and compiler-default register allocation. Compare complete
+processes against that baseline, with a fresh native expected packet:
+
+```sh
+python3 tools/cuda-native/benchmark_gpu_efficiency.py \
+  --baseline artifacts/gpu-efficiency-20261104/search-baseline \
+  --candidate build-cuda-native-efficiency-opt/clone/cuda_native/irisu-cuda-native-search-runner \
+  --replay irisu-high-score-4393101.rpy --specs /tmp/search-distinct.bin \
+  --expected /tmp/search-native.bin --output /tmp/efficiency-hybrid.json \
+  --candidate-flag=--compact-clone --candidate-flag=--merge-rank \
+  --candidate-flag=--tiled-selection --candidate-flag=--parallel-prefix-guard \
+  --candidate-flag=--host-prefix
+```
+
+Remove the last flag for a separate pure-GPU comparison. The script alternates
+order across three paired rounds, pins both binaries/inputs, checks native
+packets and all counts, and includes setup, output and teardown. Two seconds
+of idle time before each process are outside the timer to avoid overlapping
+CUDA context teardown between successive GPU processes. Warmups are reported
+separately. Keep the device free of competing work during comparison.
+
+Actual-native search and continuation gates are reproducible with
+`qualify_search_efficiency.py`; raw sample pins and the selected/rejected
+experiments are in the [efficiency receipt](../../benchmarks/results/cuda-native-efficiency-2026-11-04.json).

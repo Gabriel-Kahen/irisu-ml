@@ -1,0 +1,893 @@
+{
+  "schema": "irisu-gpu-efficiency-followup-v1",
+  "date": "2026-11-04",
+  "status": "passed",
+  "promotion_eligible": false,
+  "enabled_by_default": false,
+  "objective": {
+    "additional_speedup_target": 2,
+    "hybrid_achieved": true,
+    "pure_gpu_achieved": false,
+    "interpretation": "The additional 2x end-to-end target is achieved only with explicit CPU shared-prefix preparation. All-physics-on-GPU reaches 1.956x; do not claim pure-GPU 2x."
+  },
+  "workload": {
+    "candidates": 12288,
+    "distinct_specs": 12288,
+    "distinct_native_results": 12288,
+    "batches": 20,
+    "horizon": 4,
+    "prefix_ticks": 100,
+    "prefix_executions": 1,
+    "future_ticks": 983040,
+    "result_packet_bytes": 3194896,
+    "expected_packet_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+    "repeat_semantics": "Every batch recomputes every future; identical results are checked, never memoized.",
+    "pure_location": {
+      "gpu_prefix_ticks": 100,
+      "gpu_future_ticks": 983040,
+      "cpu_physics_ticks": 0
+    },
+    "hybrid_location": {
+      "cpu_prefix_ticks": 100,
+      "gpu_future_ticks": 983040
+    }
+  },
+  "timing_scope": {
+    "wall": "Complete child process, including setup, allocation, prefix, every batch, output, capture and teardown.",
+    "excluded": "Native packet hashing/comparison, telemetry sampling, warmup campaigns and 2-second idle between processes.",
+    "warmups_per_comparison": 2,
+    "alternating_order": true,
+    "baseline": "Previous all-GPU executable from d3cb2d4 campaign; same pinned binary used for both comparisons.",
+    "selected_continuation_checks": "Disabled only in timing; complete selected copies/ranks and every raw prefix guard remain included. Checks pass separately.",
+    "contention": "No competing compute processes observed in any before/after GPU sample; CPU pressure avg10 at boundaries no higher than0.10%. No unrelated jobs, GPU clocks or power settings modified."
+  },
+  "pure_gpu": {
+    "median_seconds": {
+      "baseline": 4.618100357998628,
+      "candidate": 2.361188625000068
+    },
+    "speedup": 1.9558371191113524,
+    "ranges_seconds": {
+      "baseline": [
+        4.616541520997998,
+        4.620967655995628
+      ],
+      "candidate": [
+        2.3587159640010213,
+        2.3649219600047218
+      ]
+    },
+    "runs_per_configuration": 3,
+    "commands": {
+      "baseline": [
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency-20261104/search-baseline",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/cuda-native-20261103/search/specs12288-distinct.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--copy-u64",
+        "--reuse-prefix",
+        "--physical-snapshot",
+        "--warmups",
+        "0",
+        "--repeats",
+        "20",
+        "--skip-compaction-check"
+      ],
+      "candidate": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency-opt/clone/cuda_native/irisu-cuda-native-search-runner",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/cuda-native-20261103/search/specs12288-distinct.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--copy-u64",
+        "--reuse-prefix",
+        "--physical-snapshot",
+        "--warmups",
+        "0",
+        "--repeats",
+        "20",
+        "--skip-compaction-check",
+        "--merge-rank",
+        "--tiled-selection",
+        "--compact-clone",
+        "--parallel-prefix-guard"
+      ]
+    },
+    "samples": [
+      {
+        "backend": "baseline",
+        "round": 0,
+        "wall_seconds": 4.616541520997998,
+        "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+        "native_packet_equal": true,
+        "cpu_pressure_before": "some avg10=0.16 avg60=0.05 avg300=0.01 total=1325357939\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "cpu_pressure_after": "some avg10=0.10 avg60=0.05 avg300=0.01 total=1325372339\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "gpu_before": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 41.81 W, 34, 0 %, 9 MiB",
+          "compute_apps": ""
+        },
+        "gpu_after": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 45.49 W, 36, 97 %, 9 MiB",
+          "compute_apps": ""
+        }
+      },
+      {
+        "backend": "candidate",
+        "round": 0,
+        "wall_seconds": 2.3649219600047218,
+        "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+        "native_packet_equal": true,
+        "cpu_pressure_before": "some avg10=0.08 avg60=0.05 avg300=0.01 total=1325379584\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "cpu_pressure_after": "some avg10=0.07 avg60=0.04 avg300=0.00 total=1325385790\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "gpu_before": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 42.03 W, 35, 0 %, 9 MiB",
+          "compute_apps": ""
+        },
+        "gpu_after": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 45.68 W, 36, 100 %, 9 MiB",
+          "compute_apps": ""
+        }
+      },
+      {
+        "backend": "candidate",
+        "round": 1,
+        "wall_seconds": 2.3587159640010213,
+        "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+        "native_packet_equal": true,
+        "cpu_pressure_before": "some avg10=0.05 avg60=0.04 avg300=0.00 total=1325391783\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "cpu_pressure_after": "some avg10=0.04 avg60=0.04 avg300=0.00 total=1325397523\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "gpu_before": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 42.21 W, 35, 0 %, 9 MiB",
+          "compute_apps": ""
+        },
+        "gpu_after": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 45.78 W, 37, 97 %, 9 MiB",
+          "compute_apps": ""
+        }
+      },
+      {
+        "backend": "baseline",
+        "round": 1,
+        "wall_seconds": 4.620967655995628,
+        "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+        "native_packet_equal": true,
+        "cpu_pressure_before": "some avg10=0.03 avg60=0.04 avg300=0.00 total=1325405156\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "cpu_pressure_after": "some avg10=0.02 avg60=0.03 avg300=0.00 total=1325415897\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "gpu_before": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 42.41 W, 36, 0 %, 9 MiB",
+          "compute_apps": ""
+        },
+        "gpu_after": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 45.97 W, 37, 100 %, 9 MiB",
+          "compute_apps": ""
+        }
+      },
+      {
+        "backend": "baseline",
+        "round": 2,
+        "wall_seconds": 4.618100357998628,
+        "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+        "native_packet_equal": true,
+        "cpu_pressure_before": "some avg10=0.01 avg60=0.03 avg300=0.00 total=1325423073\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "cpu_pressure_after": "some avg10=0.01 avg60=0.03 avg300=0.00 total=1325431544\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "gpu_before": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 42.42 W, 36, 0 %, 9 MiB",
+          "compute_apps": ""
+        },
+        "gpu_after": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 46.17 W, 38, 100 %, 9 MiB",
+          "compute_apps": ""
+        }
+      },
+      {
+        "backend": "candidate",
+        "round": 2,
+        "wall_seconds": 2.361188625000068,
+        "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+        "native_packet_equal": true,
+        "cpu_pressure_before": "some avg10=0.00 avg60=0.03 avg300=0.00 total=1325437052\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "cpu_pressure_after": "some avg10=0.00 avg60=0.03 avg300=0.00 total=1325442147\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "gpu_before": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 42.51 W, 37, 0 %, 9 MiB",
+          "compute_apps": ""
+        },
+        "gpu_after": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 46.36 W, 38, 97 %, 9 MiB",
+          "compute_apps": ""
+        }
+      }
+    ],
+    "median_phases_ms": {
+      "baseline": {
+        "branch_ms": 77.113342285,
+        "rollout_ms": 97.17350769,
+        "rank_compact_ms": 30.735359192,
+        "validation_ms": 3.341311932
+      },
+      "candidate": {
+        "branch_ms": 5.182464123,
+        "rollout_ms": 90.324989319,
+        "rank_compact_ms": 1.658879995,
+        "validation_ms": 0.01536
+      }
+    }
+  },
+  "cpu_prefix_gpu_futures": {
+    "median_seconds": {
+      "baseline": 4.622096874998533,
+      "candidate": 2.170855604999815
+    },
+    "speedup": 2.1291590580014312,
+    "ranges_seconds": {
+      "baseline": [
+        4.619715410997742,
+        4.6241333420039155
+      ],
+      "candidate": [
+        2.1699952260096325,
+        2.175857869995525
+      ]
+    },
+    "runs_per_configuration": 3,
+    "commands": {
+      "baseline": [
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency-20261104/search-baseline",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/cuda-native-20261103/search/specs12288-distinct.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--copy-u64",
+        "--reuse-prefix",
+        "--physical-snapshot",
+        "--warmups",
+        "0",
+        "--repeats",
+        "20",
+        "--skip-compaction-check"
+      ],
+      "candidate": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency-opt/clone/cuda_native/irisu-cuda-native-search-runner",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/cuda-native-20261103/search/specs12288-distinct.bin",
+        "100",
+        "4",
+        "--final-only",
+        "--copy-u64",
+        "--reuse-prefix",
+        "--physical-snapshot",
+        "--warmups",
+        "0",
+        "--repeats",
+        "20",
+        "--skip-compaction-check",
+        "--merge-rank",
+        "--tiled-selection",
+        "--compact-clone",
+        "--parallel-prefix-guard",
+        "--host-prefix"
+      ]
+    },
+    "samples": [
+      {
+        "backend": "baseline",
+        "round": 0,
+        "wall_seconds": 4.622096874998533,
+        "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+        "native_packet_equal": true,
+        "cpu_pressure_before": "some avg10=0.00 avg60=0.02 avg300=0.00 total=1325465914\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "cpu_pressure_after": "some avg10=0.00 avg60=0.02 avg300=0.00 total=1325477565\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "gpu_before": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 42.52 W, 37, 0 %, 9 MiB",
+          "compute_apps": ""
+        },
+        "gpu_after": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 46.38 W, 39, 100 %, 9 MiB",
+          "compute_apps": ""
+        }
+      },
+      {
+        "backend": "candidate",
+        "round": 0,
+        "wall_seconds": 2.170855604999815,
+        "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+        "native_packet_equal": true,
+        "cpu_pressure_before": "some avg10=0.00 avg60=0.02 avg300=0.00 total=1325484995\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "cpu_pressure_after": "some avg10=0.00 avg60=0.02 avg300=0.00 total=1325489078\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "gpu_before": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 42.71 W, 38, 0 %, 9 MiB",
+          "compute_apps": ""
+        },
+        "gpu_after": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 46.65 W, 39, 97 %, 9 MiB",
+          "compute_apps": ""
+        }
+      },
+      {
+        "backend": "candidate",
+        "round": 1,
+        "wall_seconds": 2.175857869995525,
+        "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+        "native_packet_equal": true,
+        "cpu_pressure_before": "some avg10=0.00 avg60=0.02 avg300=0.00 total=1325497638\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "cpu_pressure_after": "some avg10=0.00 avg60=0.02 avg300=0.00 total=1325510161\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "gpu_before": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 42.99 W, 38, 0 %, 9 MiB",
+          "compute_apps": ""
+        },
+        "gpu_after": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 46.66 W, 39, 97 %, 9 MiB",
+          "compute_apps": ""
+        }
+      },
+      {
+        "backend": "baseline",
+        "round": 1,
+        "wall_seconds": 4.619715410997742,
+        "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+        "native_packet_equal": true,
+        "cpu_pressure_before": "some avg10=0.00 avg60=0.02 avg300=0.00 total=1325516771\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "cpu_pressure_after": "some avg10=0.00 avg60=0.01 avg300=0.00 total=1325535307\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "gpu_before": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 42.90 W, 38, 0 %, 9 MiB",
+          "compute_apps": ""
+        },
+        "gpu_after": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 46.65 W, 40, 97 %, 9 MiB",
+          "compute_apps": ""
+        }
+      },
+      {
+        "backend": "baseline",
+        "round": 2,
+        "wall_seconds": 4.6241333420039155,
+        "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+        "native_packet_equal": true,
+        "cpu_pressure_before": "some avg10=0.00 avg60=0.01 avg300=0.00 total=1325543447\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "cpu_pressure_after": "some avg10=0.00 avg60=0.01 avg300=0.00 total=1325554109\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "gpu_before": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 42.99 W, 39, 0 %, 9 MiB",
+          "compute_apps": ""
+        },
+        "gpu_after": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 46.85 W, 40, 100 %, 9 MiB",
+          "compute_apps": ""
+        }
+      },
+      {
+        "backend": "candidate",
+        "round": 2,
+        "wall_seconds": 2.1699952260096325,
+        "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+        "native_packet_equal": true,
+        "cpu_pressure_before": "some avg10=0.00 avg60=0.01 avg300=0.00 total=1325559825\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "cpu_pressure_after": "some avg10=0.00 avg60=0.01 avg300=0.00 total=1325566320\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+        "gpu_before": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 43.20 W, 39, 0 %, 9 MiB",
+          "compute_apps": ""
+        },
+        "gpu_after": {
+          "fields": "name,driver_version,power.limit,power.draw,temperature.gpu,utilization.gpu,memory.used",
+          "gpu": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 46.96 W, 40, 99 %, 9 MiB",
+          "compute_apps": ""
+        }
+      }
+    ],
+    "median_phases_ms": {
+      "baseline": {
+        "branch_ms": 77.087745667,
+        "rollout_ms": 97.252349854,
+        "rank_compact_ms": 30.733312607,
+        "validation_ms": 3.338239908
+      },
+      "candidate": {
+        "branch_ms": 5.180416107,
+        "rollout_ms": 90.309631348,
+        "rank_compact_ms": 1.658879995,
+        "validation_ms": 0.01536
+      }
+    }
+  },
+  "inputs": {
+    "baseline": {
+      "path": "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency-20261104/search-baseline",
+      "sha256": "2f27d7ff719f66a53b9883ed602f654a1af5bab43dfa0d8c12fe6bc835967f72"
+    },
+    "candidate": {
+      "path": "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency-opt/clone/cuda_native/irisu-cuda-native-search-runner",
+      "sha256": "3fc98390af3d610ab8cd511ae87cf34edcaaa4a884f85f40228757b0fd5a62b5"
+    },
+    "replay": {
+      "path": "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+      "sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79"
+    },
+    "specs": {
+      "path": "/home/gabe/Documents/ChatGPT/irisu/artifacts/cuda-native-20261103/search/specs12288-distinct.bin",
+      "sha256": "29fc880c37e2cced33ca14849f1c6f85471ddd1eaed7f4b0015479b455484c3c"
+    },
+    "expected": {
+      "path": "/home/gabe/Documents/ChatGPT/irisu/artifacts/cuda-native-20261103/search/distinct12288-native-w8-r0.bin",
+      "sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0"
+    }
+  },
+  "inputs_unchanged": true,
+  "hardware": {
+    "cpu": "Ryzen7 3700X,8cores/16logicalCPUs",
+    "gpu": "Tesla V100-PCIE-32GB,sm70",
+    "driver": "580.178.04",
+    "cuda": "12.9.86",
+    "cuda_host_compiler": "GCC14.3.1",
+    "power_limit_watts": 250
+  },
+  "selected_profile": {
+    "compile": {
+      "light_shape_sync": true,
+      "cached_rotation": true,
+      "f32_store": false,
+      "bounded_store": true,
+      "sparse_reset": false,
+      "inline_step": true,
+      "entry_index": false,
+      "wide_rebind": true
+    },
+    "frontend": "min",
+    "register_cap": "compiler default",
+    "strict_flags": [
+      "fmad=false",
+      "ftz=false",
+      "prec-div=true",
+      "prec-sqrt=true",
+      "ffp-contract=off",
+      "fno-fast-math"
+    ],
+    "runtime": {
+      "copy_u64": true,
+      "reuse_prefix": true,
+      "physical_snapshot": true,
+      "compact_clone": true,
+      "merge_rank": true,
+      "tiled_selection": true,
+      "parallel_prefix_guard": true,
+      "split_rebind": false,
+      "requested_stack_kib": 16
+    },
+    "allocated_bytes": 27848578679,
+    "capacities": {
+      "bodies": 512,
+      "shapes": 512,
+      "contacts": 4096,
+      "SAP_proxies": 512,
+      "SAP_pairs": 4096
+    },
+    "transport": {
+      "previous_physical_snapshot_bytes": 1415136,
+      "game_bytes": 11720,
+      "scene_bytes": 106176,
+      "total_bytes": 117896,
+      "all_SAP_history_and_live_warm_caches_preserved": true,
+      "inactive_pool_and_vector_payload_omitted": true,
+      "pointer_tails_zero_restored": true,
+      "full_runtime_allocation_strides_retained": true
+    }
+  },
+  "qualification": {
+    "final-full-game.json": {
+      "path": "artifacts/gpu-efficiency-20261104/final-full-game.json",
+      "sha256": "d6be636f1ffae1488b9b55a0be278e64efe82c5e6e99791cb012646555103341",
+      "result": {
+        "schema": "irisu-cuda-native-game-qualification-v1",
+        "passed": true,
+        "promotion_eligible": false,
+        "scope": "Exact complete game-digest-v1 wire equality for this replay prefix, including initial frame, body/observation/event/transition digests. Digest equality is not raw hidden-state equality. No search, throughput, arbitrary-input, or production admission.",
+        "source_attestation_scope": "Source hashes observed at invocation; not a receipt proving these binaries were built from this source snapshot.",
+        "backend": "cuda-native-full-game",
+        "inputs": {
+          "native_oracle": {
+            "path": "/home/gabe/Documents/ChatGPT/irisu/build-project-exact/irisu-game-oracle",
+            "sha256": "b94f4fdb998021e4e6a9cc6e57de680e11017f25f243b49053080fcd57481158"
+          },
+          "runner": {
+            "path": "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency-opt/clone/cuda_native/irisu-cuda-native-game-runner",
+            "sha256": "6282afbdda927899e733330e45a2dd78fe92c03558352673d949d716ef993067"
+          },
+          "library": {
+            "path": "/home/gabe/Documents/ChatGPT/irisu/.local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+            "sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5"
+          },
+          "replay": {
+            "path": "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+            "sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79"
+          }
+        },
+        "replay": {
+          "seed": 1298144938,
+          "header_level": 100,
+          "header_score": 4393101,
+          "header_chain": 70,
+          "available_steps": 97219,
+          "steps": 97219,
+          "canonical_record_header": true,
+          "original_record_sha256_verified": true
+        },
+        "wire": {
+          "format": "game-digest-v1",
+          "row_bytes": 96,
+          "words": [
+            "tick",
+            "body_hash",
+            "observation_hash",
+            "event_hash",
+            "event_count",
+            "transition_hash",
+            "body_count",
+            "score",
+            "gauge",
+            "level",
+            "highest_chain",
+            "latest_final_score"
+          ],
+          "expected_rows": 97220
+        },
+        "clone_at": null,
+        "clone_scope": null,
+        "gpu_child_cuda_visible_devices_removed": true,
+        "exact_frame_bytes_equal": true,
+        "output_lengths_valid": true,
+        "inputs_unchanged": true,
+        "sources_unchanged": true,
+        "typed_status_valid": true,
+        "clone_verified": true,
+        "verification_scope": "native_reset_full_replay_with_header_terminal_check"
+      }
+    },
+    "frozen-search-gates/qualification.json": {
+      "path": "artifacts/gpu-efficiency-20261104/frozen-search-gates/qualification.json",
+      "sha256": "2e1713307a5175aa092c023e2bf18e369ac69569b1bb2f3ceaa762eba06c3b75",
+      "result": {
+        "schema": "irisu-gpu-efficiency-search-qualification-v1",
+        "status": "passed",
+        "promotion_eligible": false,
+        "inputs": {
+          "native": {
+            "path": "/home/gabe/Documents/ChatGPT/irisu/build-project-exact/irisu-search-oracle",
+            "sha256": "b571996c02c36a3e11b5b3bbc8a6961d81580bdffe317f11c1c1d3d3a9181aa3"
+          },
+          "runner": {
+            "path": "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency-opt/clone/cuda_native/irisu-cuda-native-search-runner",
+            "sha256": "3fc98390af3d610ab8cd511ae87cf34edcaaa4a884f85f40228757b0fd5a62b5"
+          },
+          "library": {
+            "path": "/home/gabe/Documents/ChatGPT/irisu/.local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+            "sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5"
+          },
+          "replay": {
+            "path": "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+            "sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79"
+          }
+        },
+        "inputs_unchanged": true
+      }
+    },
+    "final-compact-scene.json": {
+      "path": "artifacts/gpu-efficiency-20261104/final-compact-scene.json",
+      "sha256": "9f7f514d9b3f8a79b887dd0f6fde9132d08f26c058916ddcf6e63d34fbf82758",
+      "result": {
+        "pass": true,
+        "snapshot_profile": "active-World-and-full-SAP",
+        "performance_claim": false,
+        "virgin_scratch": false,
+        "virgin_scope": "none; SceneScratch poisoned",
+        "persistent_prefix_initialized_once": true,
+        "native_cases": 16,
+        "ticks_each": 192,
+        "lanes": 64,
+        "snapshots": 12288,
+        "native_frame_checks": 9216,
+        "zero_iteration_steps": 3072,
+        "warm_zero_iteration_steps": 1796,
+        "pending_destroy_witnesses": 64,
+        "origin_calls": 80,
+        "sleeping_body_witnesses": 4848,
+        "frozen_body_witnesses": 10328,
+        "scene_bytes": 1682584,
+        "full_physical_prefix_bytes": 832656,
+        "scratch_bytes": 849924,
+        "all_active_bytes_and_metadata_equal_before_and_after": true,
+        "inactive_payload_equality": false,
+        "actor_mapping_bytes_equal": true,
+        "pool_scan_and_reachable_list_clear": true,
+        "summed_scene_transport_bytes": 1203649088,
+        "fallback_calls": 0
+      }
+    },
+    "final-compact-game-100.json": {
+      "path": "artifacts/gpu-efficiency-20261104/final-compact-game-100.json",
+      "sha256": "750dc1a8975f070943e8008682b8f53c7d7a3d43ae8f64e610ece12f644d9d37",
+      "result": {
+        "pass": true,
+        "performance_claim": false,
+        "prefix_backend": "typed-host-checked",
+        "prefix": 100,
+        "snapshots": 192,
+        "actual_native_frame_checks": 192,
+        "virgin": false,
+        "virgin_scope": "none; Game and SceneScratch poisoned each snapshot",
+        "all_persistent_storage_initialized_once": true,
+        "warm_point_witnesses": 3726,
+        "pending_delete_snapshots": 10,
+        "sleeping_body_witnesses": 533,
+        "frozen_body_witnesses": 0,
+        "game_transport_bytes_sum": 2223768,
+        "scene_transport_bytes_sum": 20302956,
+        "live_game_value_fields_and_active_scene_equal_before_after": true,
+        "live_element_padding_mismatches_ignored": 592,
+        "pointer_tails_zero_restored": true,
+        "inactive_payload_equality": false,
+        "full_SAP_bytes_preserved": true,
+        "fallback_calls": 0
+      }
+    },
+    "final-compact-game-96000.json": {
+      "path": "artifacts/gpu-efficiency-20261104/final-compact-game-96000.json",
+      "sha256": "63ff4b38ff76bfece95ab4d8508a954dc16f4b32d6d60a50c809c24e962f7026",
+      "result": {
+        "pass": true,
+        "performance_claim": false,
+        "prefix_backend": "typed-host-checked",
+        "prefix": 96000,
+        "snapshots": 192,
+        "actual_native_frame_checks": 192,
+        "virgin": false,
+        "virgin_scope": "none; Game and SceneScratch poisoned each snapshot",
+        "all_persistent_storage_initialized_once": true,
+        "warm_point_witnesses": 4261,
+        "pending_delete_snapshots": 18,
+        "sleeping_body_witnesses": 1489,
+        "frozen_body_witnesses": 960,
+        "game_transport_bytes_sum": 4827944,
+        "scene_transport_bytes_sum": 21668744,
+        "live_game_value_fields_and_active_scene_equal_before_after": true,
+        "live_element_padding_mismatches_ignored": 1017,
+        "pointer_tails_zero_restored": true,
+        "inactive_payload_equality": false,
+        "full_SAP_bytes_preserved": true,
+        "fallback_calls": 0
+      }
+    },
+    "bounded-store-qualified.json": {
+      "path": "artifacts/gpu-efficiency-20261104/bounded-store-qualified.json",
+      "sha256": "181f4fe224cceb35e915ddff2331da885e4483802aed0938bd234ae7ad39adcf",
+      "result": {
+        "schema": "irisu-bounded-store-qualifier-v1",
+        "passed": true,
+        "bounded_math": 1,
+        "bounded_store": 1,
+        "random_inputs": 1000000,
+        "boundary_inputs": 1081600,
+        "comparisons": 20816000,
+        "accepted": 14841082,
+        "rejected": 5974918,
+        "status_mismatches": 0,
+        "accepted_bit_mismatches": 0,
+        "rejected_bit_differences": 12,
+        "scope": "Ten bounded composed graphs, checked device reference, accepted F32 and raw F64 bits; no native-world admission"
+      }
+    },
+    "cached-rotation-qualified.json": {
+      "path": "artifacts/gpu-efficiency-20261104/cached-rotation-qualified.json",
+      "sha256": "62a60bc29b2b83d594ca4c6c1b706ce274878f73356dc5d62d7ddc126e8b5ec0",
+      "result": {
+        "integration_cases": 20000,
+        "position_cases": 59990,
+        "rejected_numeric_cases": 8,
+        "standalone_default_cases": 1,
+        "mismatches": 0
+      }
+    },
+    "compact-padding-qualified.json": {
+      "path": "artifacts/gpu-efficiency-20261104/compact-padding-qualified.json",
+      "sha256": "731d3a21fff5b48e3ad61116478c8686ce4c7e2c19e0517efed4f5f4ecf485ee",
+      "result": [
+        {
+          "type": "Body",
+          "bytes": 280,
+          "value_bytes": 260,
+          "padding_bytes": 20
+        },
+        {
+          "type": "Contact",
+          "bytes": 56,
+          "value_bytes": 49,
+          "padding_bytes": 7
+        },
+        {
+          "type": "ScriptedOrigin",
+          "bytes": 32,
+          "value_bytes": 28,
+          "padding_bytes": 4
+        },
+        {
+          "type": "Entry",
+          "bytes": 96,
+          "value_bytes": 82,
+          "padding_bytes": 14
+        },
+        {
+          "pass": true,
+          "host_only": true,
+          "one_byte_perturbations": 464,
+          "body_field_enumeration": "game_digest::visit_body"
+        }
+      ]
+    },
+    "body-ref-qualified.json": {
+      "path": "artifacts/gpu-efficiency-20261104/body-ref-qualified.json",
+      "sha256": "94d34afb5ffef7a9037a6c5ed12ff69931d637a883daea3424227fa08e80b3c7",
+      "result": {
+        "schema": "irisu-wide-body-reference-qualifier-v1",
+        "passed": true,
+        "wide_device_path_forced": true,
+        "host_reference": "original memcpy helper",
+        "cases": 1806,
+        "rejected_cases": 1418,
+        "partial_mutation_cases": 1026,
+        "capacity": 512,
+        "body_bytes": 280,
+        "vector_bytes": 4104,
+        "all_raw_vector_header_padding_bytes_equal": true,
+        "source_case_bytes_unchanged": true,
+        "scope": "Synthetic integer pointer words never dereferenced; relocation transport and existing validation behavior only, not live-world admission or performance"
+      }
+    },
+    "search-accel-qualification.json": {
+      "path": "artifacts/gpu-efficiency-20261104/search-accel-qualification.json",
+      "sha256": "4e431ccc1676128f342863d90348ce42a4891db9b69824bc971adb46ce449fc1",
+      "result": {
+        "schema": "irisu-search-acceleration-helper-qualifier-v1",
+        "passed": true,
+        "rank_cases": 54,
+        "tiled_copy_cases": 4,
+        "rank_wire_unchanged": true,
+        "source_bytes_unchanged": true,
+        "omitted_tails_unchanged": true,
+        "scope": "Index sort and raw mock snapshot transport only; actual Game/Scene pointer rebind, continuation, native parity and performance require separate gates"
+      }
+    },
+    "prefix-guard-qualified.json": {
+      "path": "artifacts/gpu-efficiency-20261104/prefix-guard-qualified.json",
+      "sha256": "9ba9f526be75f3fc42ecb7f21ee6defd223d89cdcc8fc029d9ea35947dbab272",
+      "result": {
+        "schema": "irisu-parallel-prefix-guard-qualifier-v1",
+        "passed": true,
+        "cases": 40,
+        "mismatch_cases": 38,
+        "null_input_rejected": true,
+        "all_current_saved_bytes_unchanged": true,
+        "prior_validation_preserved": true,
+        "multi_region_diagnostics": "section CAS winner and independent minimum relative offset, matching existing guard",
+        "scope": "Raw guard helper only; no game/search or performance admission"
+      }
+    }
+  },
+  "memory_checks": {
+    "final-search8-memcheck.sanitizer": {
+      "path": "artifacts/gpu-efficiency-20261104/final-search8-memcheck.sanitizer",
+      "sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "errors": 0
+    },
+    "final-search8-initcheck.sanitizer": {
+      "path": "artifacts/gpu-efficiency-20261104/final-search8-initcheck.sanitizer",
+      "sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+      "errors": 0
+    },
+    "body-ref-memcheck.log": {
+      "path": "artifacts/gpu-efficiency-20261104/body-ref-memcheck.log",
+      "sha256": "9333ee3fbd5c8a68b91a78fc94c23fbea3e6b7dd1ee7b17e75fe1d3d605d97a6",
+      "errors": 0
+    }
+  },
+  "original_cpu_regression": {
+    "passed": 8,
+    "failed": 0,
+    "seconds": 11.93,
+    "log": "artifacts/gpu-efficiency-20261104/cpu-regression.log",
+    "sha256": "160206f088e74ec42ebb003e5061f099df6b70774d7b38423928013038225733"
+  },
+  "preservation": {
+    "comparison_base": "2afadce",
+    "unchanged_implementation_paths": [
+      "clone/cuda",
+      "tools/cuda-exact",
+      "clone/core",
+      "clone/include",
+      "third_party/box2d_legacy",
+      "tools/exact-physics-prototype"
+    ],
+    "original_replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+    "native_library_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+    "default_checked_math_and_original_paths_preserved": true
+  },
+  "source_sha256": {
+    "CMakeLists.txt": "a12015c20db5970f52e1e8b57e012e2b2496a838e1672f729586c3fcae08e14f",
+    "clone/cuda_native/CMakeLists.txt": "c7204cee55eea6c89d8ee2826e5a10632a9413f89cf5c73d4c68517518ef3f11",
+    "clone/cuda_native/LICENSE": "383cc632cc7d84baabf376c14649ce08387e06f402134e8c2d70ec79c563c3d4",
+    "clone/cuda_native/broadphase.hpp": "54425a7766309fdd22728cb1a4d3d83d031afaf684c67dfe941e0df4479374ef",
+    "clone/cuda_native/broadphase_algorithm.inc": "d666412957b87b68722a72d3c014ceb227651961ed458794b4ff103283e99fb3",
+    "clone/cuda_native/collision.hpp": "3a4ec1b345c32eb125a5ee40d3715ccb3dd3f48723a2c164332f762194ede83e",
+    "clone/cuda_native/compact_game_snapshot.cuh": "064ab2bd680e1931a2e94765d938ecad19336085f012dde028d6f8d07f88a1f0",
+    "clone/cuda_native/compact_snapshot.cuh": "93939383b839cda814cc0cff423595f792f4049966178c49754aa8664afe80bd",
+    "clone/cuda_native/entry_index.cuh": "ad1e9eeec03a6d7e2dcdbc36992c9e6e69f4b5496e505e23a5462a77bbbdb6c8",
+    "clone/cuda_native/factory.hpp": "c8b4dc7ba2bc6734a685caf193df82ec2ebf35795278627e446c57c354131f0f",
+    "clone/cuda_native/game_adapter.cuh": "7ef0e64664a36c7334da286f87187b2bcbc56db3e0226d7624ab6c2fc58c4b68",
+    "clone/cuda_native/game_world.cuh": "788b94d89a26729a2a8cc180475f9d097cb0a4d7f32ef87f2b1c750668ee84a3",
+    "clone/cuda_native/solver.hpp": "ee00e16b69741b59b28aebcba45594a2fa2cf522849e95ca5a35b6c01b845f12",
+    "clone/cuda_native/solver_math.hpp": "d453337712c8cc50dff9e6f7285b856d78fefb4b9df4e20b54f2e9c59375f697",
+    "clone/cuda_native/types.hpp": "6764c26b03d10ecb29abdf6b8e0a0fbe57457549fdc8096b16e25ff0a21a39d7",
+    "clone/cuda_native/world.hpp": "ed04ffe27050e69db4b6f63498320db925f66ba49b543c299edf51402acc221d",
+    "clone/cuda_native/world_contacts.hpp": "9f12bd238c3ddc3008172dc676ab9517b707eb6f923949ae7eebcd421c709c7c",
+    "clone/cuda_native/world_pipeline.hpp": "88adc6f04b11d0814a22fbeab8243a17d0b3935402484d68660ca3214b34dffb",
+    "clone/cuda_native/world_scene.hpp": "9a84f9d03a644967bfbdfd451eaa8c9ec9cd6fb52e1353c9c269c39115c6226b",
+    "clone/cuda_native/world_shapes.hpp": "4de6657239442ad0c17123273a2447ee8be13825c344847601628907cd8374ee",
+    "tools/cuda-native/prefix_guard.cuh": "1e156c77aac9b83c14b72e62e5488c8a8cdccb6f7ac13ec3f8006d1a4e13b4c4",
+    "tools/cuda-native/search_accel.cuh": "1d1773ed78cf6b70aa667a8f6fdc4bcf67315669966e8746e0d0cbee1084abe0",
+    "tools/cuda-native/search_runner.cu": "90f3b4ba36a5ed3b5d302c0202fe9429a267bed652790426588b8b03baa6e424"
+  },
+  "raw_artifacts": {
+    "artifacts/gpu-efficiency-20261104/final-pure-paired.json": "ffafca6b932b46e4e9431c8ad941afb45e1fcd2a83fb963d2a738ca59f56cb4a",
+    "artifacts/gpu-efficiency-20261104/final-pure-paired.log": "5251b38eef75f4dabb24e5aaaa602f1aba4c6b1df77bc7e7b142696b2bb0e1db",
+    "artifacts/gpu-efficiency-20261104/final-hybrid-paired.json": "18171ae7f031681819574be4db3ac7bf24cbfa3158bef6e79fbbdf3693405829",
+    "artifacts/gpu-efficiency-20261104/final-hybrid-paired.log": "eb857b1568c626ea78357f1c6b188228d75ceebf0ea0b0237f9d759bf32a6694",
+    "artifacts/gpu-efficiency-20261104/final-search8-memcheck.bin": "348aab122f17b873983c35443627492d795e5d601518f8046162ef77a4366e5c",
+    "artifacts/gpu-efficiency-20261104/final-search8-initcheck.bin": "348aab122f17b873983c35443627492d795e5d601518f8046162ef77a4366e5c",
+    "artifacts/gpu-efficiency-20261104/final-native8.bin": "348aab122f17b873983c35443627492d795e5d601518f8046162ef77a4366e5c",
+    "artifacts/gpu-efficiency-20261104/frozen-build.log": "de582dd2517876fac9c7a54977cab1661cff47e719ae366f841ec40767cd8e7a",
+    "artifacts/gpu-efficiency-20261104/initialized-plan-build.log": "a6efebdd943ee088eeb6d556b9da63d7416e2eb0bb8b73e22e7bea20472a0801"
+  },
+  "rejected_experiments": [
+    "FP32 adjacent-store profile: equivalent accepted math but slower;OFF.",
+    "Sparse reset: negligible benefit;OFF.",
+    "Generation-stamped entry index: host churn/collision tests pass, campaign slower;OFF.",
+    "Register cap128,rollout chunking,alternative thread counts:no improvement.",
+    "Packed compact clear/rebind:extra host synchronization slower;experimental code removed.",
+    "Full frontend optimization0:compiler did not finish bounded attempt;no binary/runtime claim."
+  ],
+  "fixed_findings": [
+    "Poisoned newly live Game elements exposed ABI padding differences;qualifier retains every value field and ignores only exhaustively tested padding.",
+    "Virgin initcheck is scoped to SceneScratch;persistent storage initialized once,matching fast path.",
+    "Descriptor readback initially copied unused uninitialized plan slots;plan buffers now initialized once.Final memcheck/initcheck pass with native packets."
+  ],
+  "limitations": [
+    "Large cached-prefix fanout campaign,not universal/single-game speedup.",
+    "Pure GPU remains below another2x.Hybrid prepares exactly one shared prefix on CPU;every future runs on GPU.",
+    "Bounded-store admits only documented audited F32-derived graphs;generic raw-double Context stores require checked mode.",
+    "Compact restore preserves live state and full SAP history;inactive payload/padding equality is not promised.",
+    "Fixed allocations still use about27.85GB;no VRAM reservation reduction."
+  ],
+  "reproduction": "docs/cuda-native.md and tools/cuda-native/search_README.md"
+}

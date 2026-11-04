@@ -74,8 +74,10 @@ explicit prefix. GPU execution repeatedly makes a full reference checkpoint
 and an active compact checkpoint, compares preserved Game/Scene state before
 and after, and checks every suffix Frame against the actual-native capture.
 Default mode poisons omitted Game payloads and SceneScratch differently each
-checkpoint; `--virgin` leaves unused CUDA allocations uninitialized for
-initcheck, while pointer tails/occupied flags are initialized as required.
+checkpoint; `--virgin` initializes persistent Game and Scene storage once and
+leaves only SceneScratch uninitialized for initcheck, matching the fast runner.
+The separate poison run tests omitted Game payloads. Pointer tails and
+occupied flags are initialized as required.
 Use prefix 100 plus later dense/warm/deletion points and inspect the emitted
 witness counts; a successful early prefix does not prove those later cases.
 
