@@ -53,7 +53,7 @@ struct WorldPairCallbacks {
       c.shape1=a;c.shape2=b;c.next=w.contact_head;
       if(c.next!=null_index)w.contacts[c.next].prev=i;
       w.contact_head=i;++w.contact_count;
-      math::Context m;const auto product=m.store(m.mul(w.shapes[a].friction,w.shapes[b].friction));
+      math::Context m;const auto product=m.mul_store(w.shapes[a].friction,w.shapes[b].friction);
       c.friction=m.store(m.sqrt(product));
       c.restitution=w.shapes[a].restitution>w.shapes[b].restitution?w.shapes[a].restitution:w.shapes[b].restitution;
       if(!m.ok())w.status=m.status;

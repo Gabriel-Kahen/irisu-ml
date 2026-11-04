@@ -36,33 +36,33 @@ struct BodyDefinition {
 struct MassData {float mass{};Vec2 center{};float inertia{};};
 namespace factory_detail {
 using namespace collision_detail;
-NATIVE_HD inline float cross(math::Context& m,Vec2 a,Vec2 b){return m.store(m.sub(m.mul(a.x,b.y),m.mul(a.y,b.x)));}
+NATIVE_HD inline float cross(math::Context& m,Vec2 a,Vec2 b){return m.sub_store(m.mul(a.x,b.y),m.mul(a.y,b.x));}
 NATIVE_HD inline MassData polygon_mass(math::Context& m,const ShapeDefinition& s){
   MassData out;float area=0,inertia=0;Vec2 center{};constexpr float inverse3=0x1.555556p-2f;
   for(unsigned i=0;i<s.vertex_count;++i){
     const Vec2 p1{},p2=s.vertices[i],p3=s.vertices[i+1<s.vertex_count?i+1:0];
     const auto e1=subtract(m,p2,p1),e2=subtract(m,p3,p1);
-    const float D=cross(m,e1,e2),triangle_area=m.store(m.mul(.5f,D));
-    area=m.store(m.add(area,triangle_area));
-    center=add(m,center,scale(m,m.store(m.mul(triangle_area,inverse3)),add(m,add(m,p1,p2),p3)));
+    const float D=cross(m,e1,e2),triangle_area=m.mul_store(.5f,D);
+    area=m.add_store(area,triangle_area);
+    center=add(m,center,scale(m,m.mul_store(triangle_area,inverse3),add(m,add(m,p1,p2),p3)));
     const auto integral=[&](float p,float a,float b){
       const double squares=m.add(m.add(m.mul(a,a),m.mul(b,a)),m.mul(b,b));
       const double first=m.mul(inverse3,m.add(m.mul(.25f,squares),m.add(m.mul(p,a),m.mul(p,b))));
-      return m.store(m.add(first,m.mul(m.mul(.5f,p),p)));
+      return m.add_store(first,m.mul(m.mul(.5f,p),p));
     };
     const float x2=integral(p1.x,e1.x,e2.x),y2=integral(p1.y,e1.y,e2.y);
-    inertia=m.store(m.add(inertia,m.mul(D,m.add(x2,y2))));
+    inertia=m.add_store(inertia,m.mul(D,m.add(x2,y2)));
   }
   if(!(area>0x1p-23f)){m.status=Status::invalid_shape;return {};}
-  out.mass=m.store(m.mul(s.density,area));center=scale(m,m.store(m.div(1,area)),center);out.center=center;
-  out.inertia=m.store(m.mul(s.density,m.sub(inertia,m.mul(area,dot(m,center,center)))));return out;
+  out.mass=m.mul_store(s.density,area);center=scale(m,m.store(m.div(1,area)),center);out.center=center;
+  out.inertia=m.mul_store(s.density,m.sub(inertia,m.mul(area,dot(m,center,center))));return out;
 }
 NATIVE_HD inline Vec2 polygon_centroid(math::Context& m,const ShapeDefinition& s){
   float area=0;Vec2 center{};constexpr float inverse3=0x1.555556p-2f;
   for(unsigned i=0;i<s.vertex_count;++i){
     const Vec2 zero{},a=subtract(m,s.vertices[i],zero),b=subtract(m,s.vertices[i+1<s.vertex_count?i+1:0],zero);
-    const float triangle_area=m.store(m.mul(.5f,cross(m,a,b)));area=m.store(m.add(area,triangle_area));
-    center=add(m,center,scale(m,m.store(m.mul(triangle_area,inverse3)),add(m,add(m,zero,s.vertices[i]),s.vertices[i+1<s.vertex_count?i+1:0])));
+    const float triangle_area=m.mul_store(.5f,cross(m,a,b));area=m.add_store(area,triangle_area);
+    center=add(m,center,scale(m,m.mul_store(triangle_area,inverse3),add(m,add(m,zero,s.vertices[i]),s.vertices[i+1<s.vertex_count?i+1:0])));
   }
   if(!(area>0x1p-23f)){m.status=Status::invalid_shape;return {};}
   return scale(m,m.store(m.div(1,area)),center);
@@ -79,8 +79,8 @@ NATIVE_HD inline StageResult compute_mass(MassData& result,const ShapeDefinition
   if(!math::finite(s.density)||s.density<0)return {Status::unsupported_numeric};math::Context m;
   if(s.kind==ShapeKind::circle){
     if(!math::finite(s.radius)||s.radius<0)return {Status::invalid_shape};
-    result.mass=m.store(m.mul(m.mul(m.mul(s.density,0x1.921fb6p1f),s.radius),s.radius));result.center={};
-    result.inertia=m.store(m.mul(m.mul(m.mul(.5f,result.mass),s.radius),s.radius));
+    result.mass=m.mul_store(m.mul(m.mul(s.density,0x1.921fb6p1f),s.radius),s.radius);result.center={};
+    result.inertia=m.mul_store(m.mul(m.mul(.5f,result.mass),s.radius),s.radius);
   }else if(s.kind==ShapeKind::polygon){
     if(s.vertex_count<3||s.vertex_count>8)return {Status::invalid_shape};
     for(unsigned i=0;i<s.vertex_count;++i)if(!factory_detail::finite(s.vertices[i]))return {Status::unsupported_numeric};
@@ -98,17 +98,17 @@ NATIVE_HD inline StageResult construct_body_shape(BodyState& body,ShapeState& sh
   MassData mass;auto result=compute_mass(mass,sd);if(!result)return result;math::Context m;
   BodyState b{};ShapeState s{};b.position=b.position0=bd.position;b.rotation=b.rotation0=bd.rotation;
   result=rotation_matrix(b);if(!result)return result;
-  const float linear=m.store(m.sub(1,bd.linear_damping)),angular=m.store(m.sub(1,bd.angular_damping));
+  const float linear=m.sub_store(1,bd.linear_damping),angular=m.sub_store(1,bd.angular_damping);
   b.linear_damping=linear<0?0:linear>1?1:linear;b.angular_damping=angular<0?0:angular>1?1:angular;
-  b.mass=m.store(m.add(0,mass.mass));b.center=add(m,{},scale(m,mass.mass,add(m,sd.local_position,mass.center)));
+  b.mass=m.add_store(0,mass.mass);b.center=add(m,{},scale(m,mass.mass,add(m,sd.local_position,mass.center)));
   b.flags=0;
   if(b.mass>0){b.center=scale(m,m.store(m.div(1,b.mass)),b.center);b.position=add(m,b.position,rotate(m,b.R,b.center));}
   else b.flags|=static_body;
   const auto r=subtract(m,add(m,sd.local_position,mass.center),b.center);
-  b.inertia=m.store(m.add(m.store(m.add(0,mass.inertia)),m.mul(mass.mass,dot(m,r,r))));
+  b.inertia=m.add_store(m.add_store(0,mass.inertia),m.mul(mass.mass,dot(m,r,r)));
   b.inv_mass=b.mass>0?m.store(m.div(1,b.mass)):0;
   if(b.inertia>0&&!bd.prevent_rotation)b.inv_i=m.store(m.div(1,b.inertia));else b.inertia=b.inv_i=0;
-  const Vec2 angular_velocity{m.store(m.mul(-double(bd.angular_velocity),b.center.y)),m.store(m.mul(bd.angular_velocity,b.center.x))};
+  const Vec2 angular_velocity{m.mul_store(-double(bd.angular_velocity),b.center.y),m.mul_store(bd.angular_velocity,b.center.x)};
   b.velocity=add(m,bd.velocity,angular_velocity);b.angular_velocity=bd.angular_velocity;
   b.flags|=bd.allow_sleep?allow_sleep:0;b.flags|=bd.is_sleeping?sleeping_body:0;b.user_data=bd.user_data;
   if((b.flags&sleeping_body)||b.inv_mass==0){b.velocity={};b.angular_velocity=0;}
@@ -117,7 +117,7 @@ NATIVE_HD inline StageResult construct_body_shape(BodyState& body,ShapeState& sh
   if(sd.kind==ShapeKind::circle){
     s.radius=sd.radius;s.local_position=subtract(m,sd.local_position,b.center);
     const auto offset=rotate(m,b.R,s.local_position);s.position=add(m,b.position,offset);
-    s.max_radius=m.store(m.add(m.sqrt(dot(m,offset,offset)),s.radius));
+    s.max_radius=m.add_store(m.sqrt(dot(m,offset,offset)),s.radius);
   }else{
     BodyState local{};local.rotation=sd.local_rotation;result=rotation_matrix(local);if(!result)return result;
     const auto centroid=polygon_centroid(m,sd);s.local_centroid=subtract(m,add(m,sd.local_position,rotate(m,local.R,centroid)),b.center);

@@ -23,20 +23,20 @@
 namespace irisu::cuda_native {
 namespace collision_detail {
 NATIVE_HD inline Vec2 subtract(math::Context& m,Vec2 a,Vec2 b){
-  return {m.store(m.sub(a.x,b.x)),m.store(m.sub(a.y,b.y))};
+  return {m.sub_store(a.x,b.x),m.sub_store(a.y,b.y)};
 }
 NATIVE_HD inline Vec2 add(math::Context& m,Vec2 a,Vec2 b){
-  return {m.store(m.add(a.x,b.x)),m.store(m.add(a.y,b.y))};
+  return {m.add_store(a.x,b.x),m.add_store(a.y,b.y)};
 }
 NATIVE_HD inline Vec2 scale(math::Context& m,float a,Vec2 b){
-  return {m.store(m.mul(a,b.x)),m.store(m.mul(a,b.y))};
+  return {m.mul_store(a,b.x),m.mul_store(a,b.y)};
 }
 NATIVE_HD inline float dot(math::Context& m,Vec2 a,Vec2 b){
-  return m.store(m.add(m.mul(a.x,b.x),m.mul(a.y,b.y)));
+  return m.add_store(m.mul(a.x,b.x),m.mul(a.y,b.y));
 }
 NATIVE_HD inline Vec2 rotate(math::Context& m,const Mat22& R,Vec2 v){
-  return {m.store(m.add(m.mul(R.col1.x,v.x),m.mul(R.col2.x,v.y))),
-          m.store(m.add(m.mul(R.col1.y,v.x),m.mul(R.col2.y,v.y)))};
+  return {m.add_store(m.mul(R.col1.x,v.x),m.mul(R.col2.x,v.y)),
+          m.add_store(m.mul(R.col1.y,v.x),m.mul(R.col2.y,v.y))};
 }
 NATIVE_HD inline Vec2 inverse_rotate(math::Context& m,const Mat22& R,Vec2 v){
   return {dot(m,v,R.col1),dot(m,v,R.col2)};
@@ -53,8 +53,8 @@ NATIVE_HD inline void point(math::Context& m,Manifold& out,const ShapeState& cir
 }
 struct ClipVertex {Vec2 position{};std::uint32_t id{};};
 NATIVE_HD inline unsigned clip(math::Context& m,ClipVertex* out,const ClipVertex* in,Vec2 normal,float offset){
-  const float a=m.store(m.sub(dot(m,normal,in[0].position),offset));
-  const float b=m.store(m.sub(dot(m,normal,in[1].position),offset));
+  const float a=m.sub_store(dot(m,normal,in[0].position),offset);
+  const float b=m.sub_store(dot(m,normal,in[1].position),offset);
   unsigned count=0;if(a<=0)out[count++]=in[0];if(b<=0)out[count++]=in[1];
   if(m.mul(a,b)<0){
     const float fraction=m.store(m.div(a,m.sub(a,b)));
@@ -114,10 +114,10 @@ NATIVE_HD inline StageResult collide_circle(Manifold& manifold,const ShapeState&
      !math::finite(a.radius)||!math::finite(b.radius))return {Status::unsupported_numeric};
   if(a.radius<0||b.radius<0)return {Status::invalid_shape};
   auto out=manifold;out.point_count=0;math::Context m;
-  const float dx=m.store(m.sub(b.position.x,a.position.x));
-  const float dy=m.store(m.sub(b.position.y,a.position.y));
-  const float distance_squared=m.store(m.add(m.mul(dx,dx),m.mul(dy,dy)));
-  const float radius_sum=m.store(m.add(a.radius,b.radius));
+  const float dx=m.sub_store(b.position.x,a.position.x);
+  const float dy=m.sub_store(b.position.y,a.position.y);
+  const float distance_squared=m.add_store(m.mul(dx,dx),m.mul(dy,dy));
+  const float radius_sum=m.add_store(a.radius,b.radius);
   // This comparison consumes the unrounded PC53 radius product.
   const double threshold=m.mul(radius_sum,radius_sum);
   if(!m.ok())return {m.status};
@@ -127,15 +127,15 @@ NATIVE_HD inline StageResult collide_circle(Manifold& manifold,const ShapeState&
     separation=-radius_sum;out.normal={0,1};
   }else{
     const float distance=m.store(m.sqrt(distance_squared));
-    separation=m.store(m.sub(distance,radius_sum));
+    separation=m.sub_store(distance,radius_sum);
     const float inverse=m.store(m.div(1,distance));
-    out.normal={m.store(m.mul(inverse,dx)),m.store(m.mul(inverse,dy))};
+    out.normal={m.mul_store(inverse,dx),m.mul_store(inverse,dy)};
   }
   // Native vector multiplication stores both components before subtraction.
-  const Vec2 radius_normal{m.store(m.mul(b.radius,out.normal.x)),
-                           m.store(m.mul(b.radius,out.normal.y))};
-  out.points[0].position={m.store(m.sub(b.position.x,radius_normal.x)),
-                          m.store(m.sub(b.position.y,radius_normal.y))};
+  const Vec2 radius_normal{m.mul_store(b.radius,out.normal.x),
+                           m.mul_store(b.radius,out.normal.y)};
+  out.points[0].position={m.sub_store(b.position.x,radius_normal.x),
+                          m.sub_store(b.position.y,radius_normal.y)};
   out.points[0].separation=separation;out.points[0].id=0;out.point_count=1;
   if(!m.ok())return {m.status};
   manifold=out;return {};
@@ -163,7 +163,7 @@ NATIVE_HD inline StageResult collide_poly_circle(Manifold& manifold,const ShapeS
   if(separation<0x1p-23f){
     out.normal=rotate(m,poly.R,poly.normals[normal_index]);
     out.points[0].id=0x00ff00ffU|(normal_index<<8);
-    point(m,out,circle,m.store(m.sub(separation,circle.radius)));
+    point(m,out,circle,m.sub_store(separation,circle.radius));
   }else{
     const auto next=normal_index+1<poly.vertex_count?normal_index+1:0;
     Vec2 edge=subtract(m,poly.vertices[next],poly.vertices[normal_index]);
@@ -175,7 +175,7 @@ NATIVE_HD inline StageResult collide_poly_circle(Manifold& manifold,const ShapeS
       if(!m.ok())return {m.status};
       if(distance>circle.radius){manifold=out;return {};}
       out.normal=rotate(m,poly.R,direction);out.points[0].id=0x0000ffffU|(normal_index<<16);
-      point(m,out,circle,m.store(m.sub(distance,circle.radius)));
+      point(m,out,circle,m.sub_store(distance,circle.radius));
     }else{
       const float projection=dot(m,subtract(m,local,poly.vertices[normal_index]),edge);
       Vec2 closest;out.points[0].id=0x00ffffffU;
@@ -185,7 +185,7 @@ NATIVE_HD inline StageResult collide_poly_circle(Manifold& manifold,const ShapeS
       direction=subtract(m,local,closest);const float distance=normalize(m,direction);
       if(!m.ok())return {m.status};
       if(distance>circle.radius){manifold=out;return {};}
-      out.normal=rotate(m,poly.R,direction);point(m,out,circle,m.store(m.sub(distance,circle.radius)));
+      out.normal=rotate(m,poly.R,direction);point(m,out,circle,m.sub_store(distance,circle.radius));
     }
   }
   if(!m.ok())return {m.status};
@@ -220,7 +220,7 @@ NATIVE_HD inline StageResult collide_poly(Manifold& manifold,const ShapeState& a
   if(clip(m,clipped2,clipped1,side,side2)<2){if(!m.ok())return {m.status};manifold=out;return {};}
   out.normal=flip?Vec2{-front.x,-front.y}:front;
   for(unsigned i=0;i<2;++i){
-    const float separation=m.store(m.sub(dot(m,front,clipped2[i].position),front_offset));
+    const float separation=m.sub_store(dot(m,front,clipped2[i].position),front_offset);
     if(separation<=0||conservative){
       auto& point=out.points[out.point_count++];point.separation=separation;point.position=clipped2[i].position;
       point.id=(clipped2[i].id&0x00ffffffU)|(std::uint32_t(flip)<<24);

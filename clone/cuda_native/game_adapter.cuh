@@ -53,8 +53,8 @@ class NativePhysicsWorld {
   GAME_HD void set_wrapped_velocity(std::uint32_t slot,Vec2 velocity){
     irisu::cuda_native::math::Context m;
     // Preserve both the caller's scale multiplication and wrapper's division.
-    const auto x=m.store(m.div(m.store(m.mul(static_cast<float>(velocity.x),scale())),scale()));
-    const auto y=m.store(m.div(m.store(m.mul(static_cast<float>(velocity.y),scale())),scale()));
+    const auto x=m.store(m.div(m.mul_store(static_cast<float>(velocity.x),scale()),scale()));
+    const auto y=m.store(m.div(m.mul_store(static_cast<float>(velocity.y),scale()),scale()));
     if(!m.ok()){fail(m.status);return;}accept(scene_->set_velocity(slot,{x,y}));
   }
   GAME_HD NATIVE_GAME_CALL std::uint32_t construct(unsigned kind,float width,float height,float x,float y,float angle,
@@ -166,7 +166,7 @@ class NativePhysicsWorld {
       auto* e=find(b.id);if(!e)continue;const auto& native=w.bodies[e->slot];irisu::cuda_native::math::Context m;
       const auto origin=irisu::cuda_native::collision_detail::subtract(m,native.position,
         irisu::cuda_native::collision_detail::rotate(m,native.R,native.center));
-      const float x=m.store(m.mul(origin.x,scale())),y=m.store(m.mul(origin.y,scale()));
+      const float x=m.mul_store(origin.x,scale()),y=m.mul_store(origin.y,scale());
       if(!m.ok()){fail(m.status);break;}const auto v=raw(e->slot);
       b.position={x,y};b.velocity=v;b.angle=native.rotation;
       b.native_position={static_cast<double>(x)/scale(),static_cast<double>(y)/scale()};b.native_center=b.native_position;

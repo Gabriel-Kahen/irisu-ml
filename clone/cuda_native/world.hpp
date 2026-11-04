@@ -9,15 +9,15 @@ namespace irisu::cuda_native {
 NATIVE_HD inline StageResult integrate_velocity(BodyState& b,float dt,Vec2 gravity) {
   if(b.inv_mass==0)return {};
   math::Context m;
-  const auto fx=m.store(m.mul(b.inv_mass,b.force.x));
-  const auto fy=m.store(m.mul(b.inv_mass,b.force.y));
-  const auto ax=m.store(m.add(gravity.x,fx));
-  const auto ay=m.store(m.add(gravity.y,fy));
-  const auto dx=m.store(m.mul(dt,ax)),dy=m.store(m.mul(dt,ay));
-  const auto vx=m.store(m.add(b.velocity.x,dx)),vy=m.store(m.add(b.velocity.y,dy));
-  const auto w=m.store(m.add(b.angular_velocity,m.mul(m.mul(b.inv_i,dt),b.torque)));
-  const Vec2 velocity{m.store(m.mul(vx,b.linear_damping)),m.store(m.mul(b.linear_damping,vy))};
-  const auto angular=m.store(m.mul(b.angular_damping,w));
+  const auto fx=m.mul_store(b.inv_mass,b.force.x);
+  const auto fy=m.mul_store(b.inv_mass,b.force.y);
+  const auto ax=m.add_store(gravity.x,fx);
+  const auto ay=m.add_store(gravity.y,fy);
+  const auto dx=m.mul_store(dt,ax),dy=m.mul_store(dt,ay);
+  const auto vx=m.add_store(b.velocity.x,dx),vy=m.add_store(b.velocity.y,dy);
+  const auto w=m.add_store(b.angular_velocity,m.mul(m.mul(b.inv_i,dt),b.torque));
+  const Vec2 velocity{m.mul_store(vx,b.linear_damping),m.mul_store(b.linear_damping,vy)};
+  const auto angular=m.mul_store(b.angular_damping,w);
   if(!m.ok())return {Status::unsupported_numeric,b.id};
   b.velocity=velocity;b.angular_velocity=angular;
   b.position0=b.position;b.rotation0=b.rotation;
@@ -29,14 +29,20 @@ NATIVE_HD inline StageResult rotation_matrix(BodyState& b) {
   b.R={{pair.cosine,pair.sine},{-pair.sine,pair.cosine}};
   return {};
 }
-NATIVE_HD inline StageResult integrate_position(BodyState& b,float dt) {
+NATIVE_HD inline StageResult integrate_position(BodyState& b,float dt,bool canonical_rotation=false) {
   if(b.inv_mass==0)return {};
   math::Context m;
-  const auto dx=m.store(m.mul(dt,b.velocity.x)),dy=m.store(m.mul(dt,b.velocity.y));
-  const Vec2 position{m.store(m.add(b.position.x,dx)),m.store(m.add(b.position.y,dy))};
-  const auto angle=m.store(m.add(b.rotation,m.mul(b.angular_velocity,dt)));
+  const auto dx=m.mul_store(dt,b.velocity.x),dy=m.mul_store(dt,b.velocity.y);
+  const Vec2 position{m.add_store(b.position.x,dx),m.add_store(b.position.y,dy)};
+#if IRISU_CUDA_NATIVE_CACHED_ROTATION
+  const auto old_rotation_bits=irisu::cuda_exact::bits_float(b.rotation);
+#endif
+  const auto angle=m.add_store(b.rotation,m.mul(b.angular_velocity,dt));
   if(!m.ok())return {Status::unsupported_numeric,b.id};
   b.position=position;b.rotation=angle;
+#if IRISU_CUDA_NATIVE_CACHED_ROTATION
+  if(canonical_rotation&&math::sincos_input_supported(angle)&&irisu::cuda_exact::bits_float(angle)==old_rotation_bits)return {};
+#endif
   return rotation_matrix(b);
 }
 NATIVE_HD inline StageResult finish_integration(BodyState& b) {
@@ -49,17 +55,17 @@ NATIVE_HD inline StageResult finish_integration(BodyState& b) {
 NATIVE_HD inline StageResult update_sleep(BodyState* bodies,const std::uint32_t* order,
                                          unsigned count,float dt) {
   math::Context m;
-  const auto linear=m.store(m.mul(0x1.47ae14p-7f,0x1.47ae14p-7f));
-  const auto angular=m.store(m.mul(0x1.6c16c2p-7f,0x1.6c16c2p-7f));
+  const auto linear=m.mul_store(0x1.47ae14p-7f,0x1.47ae14p-7f);
+  const auto angular=m.mul_store(0x1.6c16c2p-7f,0x1.6c16c2p-7f);
   float minimum=0x1.fffffep127f;
   for(unsigned i=0;i<count;++i){
     auto& b=bodies[order[i]];if(b.inv_mass==0)continue;
     bool moving=!(b.flags&allow_sleep);
     if(!moving)moving=m.mul(b.angular_velocity,b.angular_velocity)>angular;
     // b2Dot returns through a binary32 stack temporary in this build.
-    if(!moving)moving=m.store(m.add(m.mul(b.velocity.y,b.velocity.y),m.mul(b.velocity.x,b.velocity.x)))>linear;
+    if(!moving)moving=m.add_store(m.mul(b.velocity.y,b.velocity.y),m.mul(b.velocity.x,b.velocity.x))>linear;
     if(moving){b.sleep_time=0;minimum=0;}
-    else {b.sleep_time=m.store(m.add(b.sleep_time,dt));if(b.sleep_time<minimum)minimum=b.sleep_time;}
+    else {b.sleep_time=m.add_store(b.sleep_time,dt);if(b.sleep_time<minimum)minimum=b.sleep_time;}
   }
   if(!m.ok())return {Status::unsupported_numeric};
   if(minimum>=0.5f)for(unsigned i=0;i<count;++i)bodies[order[i]].flags|=sleeping_body;

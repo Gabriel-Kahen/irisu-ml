@@ -73,10 +73,10 @@ struct ScenePipelineState {
     if(!(b.flags&frozen_body)){
       b.rotation=angle;result=rotation_matrix(b);if(!result)return accept(result);math::Context m;
       const auto offset=shape_rotate(m,b.R,b.center);
-      b.position={m.store(m.add(origin.x,offset.x)),m.store(m.add(origin.y,offset.y))};
+      b.position={m.add_store(origin.x,offset.x),m.add_store(origin.y,offset.y)};
       b.position0=b.position;b.rotation0=b.rotation;
       if(!m.ok())return accept({m.status});
-      result=sync_body_shapes(world,scratch,slot,&broadphase,true);if(!result)return accept(result);
+      result=sync_body_shapes(world,scratch,slot,&broadphase,true,IRISU_CUDA_NATIVE_CACHED_ROTATION!=0);if(!result)return accept(result);
       WorldPairCallbacks callbacks{&world};broadphase.Commit(callbacks);
     }
     b.velocity={};return check();
