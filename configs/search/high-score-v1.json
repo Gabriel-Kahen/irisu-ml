@@ -1,0 +1,40 @@
+{
+  "engine": [
+    "./build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-search-engine",
+    "--host-prefix",
+    "--max-checkpoints",
+    "512"
+  ],
+  "oracle": "./build-project-exact/irisu-game-oracle",
+  "oracle_library": "./.local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+  "cuda_device": "0",
+  "initial_seeds": 128,
+  "seed_generator": 0,
+  "attempts_per_seed": 3,
+  "control_seed": 1298144938,
+  "bootstrap_ticks": 2048,
+  "horizon": 384,
+  "candidates": 128,
+  "survivors": 8,
+  "job_seconds": 30,
+  "engine_timeout": 180,
+  "maximum_ticks": 160000,
+  "checkpoint_limit": 1024,
+  "archive_bytes": 268435456,
+  "per_cell": 3,
+  "minimum_seed_seconds": 30,
+  "finalist_seconds": 120,
+  "promoted_seeds": 16,
+  "finalists": 4,
+  "exploration_fraction": 0.25,
+  "train_every_jobs": 100,
+  "training_epochs": 40,
+  "max_training_examples": 4000,
+  "discover_new_seeds": true,
+  "lanes": {
+    "seed": 0.3,
+    "combo": 0.45,
+    "probe": 0.15,
+    "wildcard": 0.1
+  }
+}

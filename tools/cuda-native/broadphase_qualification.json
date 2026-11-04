@@ -1,0 +1,483 @@
+{
+  "schema": "irisu-independent-native-SAP-qualification-v1",
+  "promotion_eligible": false,
+  "implementation": "Independent fixed-array r58 integerSweepAndPrune+PairManager, noGuest/registermachine/instructiondispatcher/physicsfallback.",
+  "native_host_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+  "source_snapshot_sha256": {
+    "tools/cuda-native/broadphase_README.md": "245f31b098090cc4e13e74c564102c2f49d7d4e0ede9e524693b5e8e9ee05878",
+    "tools/cuda-native/broadphase_domain.cpp": "c21c6e581879dda381c693df7cf872c75d9d25fd0a6bc2918fae6471bd7422c2",
+    "tools/cuda-native/broadphase_edges.py": "60fbebb3ec222efb6562f7af0d0b7934c1876848561b184f172d79fb36014f28",
+    "tools/cuda-native/broadphase_generate.py": "5955f99eeba5acf15ce703d1e00cf9e84f582e4a5dbe56488d41faa56a0dfc47",
+    "tools/cuda-native/broadphase_runner.cu": "670e05fc4ed743672e8da4e2a76e2ab3c2c731c260790550f65201772ecde47b",
+    "tools/cuda-native/broadphase_smoke.cpp": "343dacba2a5321b8cbec55f407b51039592659c362f4da714239d397ac458aed",
+    "tools/cuda-native/broadphase_wire.hpp": "f3b0f398e643b8c164c36d5b89c188d8d709f9a37e5d3228caa9e0192e41a13a",
+    "tools/cuda-native/oracle_broadphase.cpp": "9dd1dfecb65b6c9f3e5cc7480b5595e99bc9ac1eb58fe3e66e4500cab4d707e6",
+    "tools/cuda-native/oracle_broadphase.py": "6627dd4d502a6c597874c2c1951fc4c7595b7b243162c52e2fb6ad0a9e9897fe",
+    "tools/cuda-native/oracle_native.h": "ffce80e395aa5655e2e52241cfff70fadc506dde423dc3ed1b864946dc40ef26",
+    "tools/cuda-exact/x87_numeric.cuh": "ce53bc2730e24227ebc83cf95699a75bb81b8f1739d8ead0d9764a25825b3a5e",
+    "clone/cuda_native/broadphase.hpp": "0678b3c434508301931daf35b0a1176a6ee46c825f498266420d96a6bc20c378",
+    "clone/cuda_native/broadphase_algorithm.inc": "d666412957b87b68722a72d3c014ceb227651961ed458794b4ff103283e99fb3",
+    "clone/cuda_native/types.hpp": "6764c26b03d10ecb29abdf6b8e0a0fbe57457549fdc8096b16e25ff0a21a39d7",
+    "clone/cuda_native/solver_math.hpp": "8463aa8ab69d9af2f72b6fafee0ae378b3a7e00d8c6afd721bda7ee1902cb939"
+  },
+  "source_snapshot_directory": "artifacts/cuda-native-20261103/broadphase/source-snapshot",
+  "capacities": {
+    "proxies": 512,
+    "pairs": 4096,
+    "native_same_capacities": true,
+    "source": "Pinnednativeconstructor0x3580 compares0x1ff; PairManager0x12014bytes and nativepaircount/buffer/table assembly match4096. Vendoredsettingsalso512/4096."
+  },
+  "layout": {
+    "native_prefix_bytes": 95292,
+    "typed_total_bytes": 95296,
+    "bounds_offset": 81942,
+    "query_results_offset": 94230,
+    "query_result_count_offset": 95256,
+    "timestamp_offset": 95288,
+    "normalization": "Nativeowner/callbackpointerwords0/1 zeroed; proxyuserData/pairuserData areopaqueuint32 IDs returnedbyfixturecallbacks. Typedstatecontainsnopersistentpointers. Nativeandtypedprefixesotherwisecomparedbyte-for-byte aftereachoperation."
+  },
+  "initial_condition": "Oracleusescalloc-backed memory. OriginalnativePairManagerconstructorleavespairBufferCountuninitialized; declaredfixtureinitialcount0 matches typedInitialize. No arbitraryindeterminatememoryclaim.",
+  "arithmetic": {
+    "constructor": "PC53worldextentdifference thenbinary32store;65535dividedbythatstoredextent atPC53,quantizationfactorbinary32store.",
+    "compute_bounds": "Clampbinary32coords;PC53subtract+multiply WITHOUTintermediatebinary32rounding; int32truncationmatchingFISTPtruncateCW, thennativeuint16lower/uppermasks.",
+    "quantization_witnesses": [
+      {
+        "axis": 0,
+        "bucket": 5152,
+        "coordinate": -15.983922004699707,
+        "correct_lower": 5150,
+        "incorrect_float_difference_lower": 5152
+      },
+      {
+        "axis": 0,
+        "bucket": 5154,
+        "coordinate": -15.975714683532715,
+        "correct_lower": 5154,
+        "incorrect_float_difference_lower": 5152
+      },
+      {
+        "axis": 0,
+        "bucket": 5160,
+        "coordinate": -15.951096534729004,
+        "correct_lower": 5158,
+        "incorrect_float_difference_lower": 5160
+      },
+      {
+        "axis": 0,
+        "bucket": 5162,
+        "coordinate": -15.942891120910645,
+        "correct_lower": 5160,
+        "incorrect_float_difference_lower": 5162
+      },
+      {
+        "axis": 0,
+        "bucket": 5164,
+        "coordinate": -15.934683799743652,
+        "correct_lower": 5164,
+        "incorrect_float_difference_lower": 5162
+      },
+      {
+        "axis": 0,
+        "bucket": 5170,
+        "coordinate": -15.910065650939941,
+        "correct_lower": 5168,
+        "incorrect_float_difference_lower": 5170
+      },
+      {
+        "axis": 0,
+        "bucket": 5172,
+        "coordinate": -15.90185832977295,
+        "correct_lower": 5172,
+        "incorrect_float_difference_lower": 5170
+      },
+      {
+        "axis": 0,
+        "bucket": 5178,
+        "coordinate": -15.877240180969238,
+        "correct_lower": 5176,
+        "incorrect_float_difference_lower": 5178
+      },
+      {
+        "axis": 0,
+        "bucket": 5180,
+        "coordinate": -15.869032859802246,
+        "correct_lower": 5180,
+        "incorrect_float_difference_lower": 5178
+      },
+      {
+        "axis": 0,
+        "bucket": 5186,
+        "coordinate": -15.844414710998535,
+        "correct_lower": 5184,
+        "incorrect_float_difference_lower": 5186
+      },
+      {
+        "axis": 0,
+        "bucket": 5188,
+        "coordinate": -15.836207389831543,
+        "correct_lower": 5188,
+        "incorrect_float_difference_lower": 5186
+      },
+      {
+        "axis": 0,
+        "bucket": 5194,
+        "coordinate": -15.811589241027832,
+        "correct_lower": 5192,
+        "incorrect_float_difference_lower": 5194
+      },
+      {
+        "axis": 0,
+        "bucket": 5196,
+        "coordinate": -15.80338191986084,
+        "correct_lower": 5196,
+        "incorrect_float_difference_lower": 5194
+      },
+      {
+        "axis": 0,
+        "bucket": 5202,
+        "coordinate": -15.778763771057129,
+        "correct_lower": 5200,
+        "incorrect_float_difference_lower": 5202
+      },
+      {
+        "axis": 0,
+        "bucket": 5204,
+        "coordinate": -15.770556449890137,
+        "correct_lower": 5204,
+        "incorrect_float_difference_lower": 5202
+      },
+      {
+        "axis": 0,
+        "bucket": 5210,
+        "coordinate": -15.745938301086426,
+        "correct_lower": 5208,
+        "incorrect_float_difference_lower": 5210
+      },
+      {
+        "axis": 1,
+        "bucket": 9708,
+        "coordinate": -41.01419448852539,
+        "correct_lower": 9706,
+        "incorrect_float_difference_lower": 9708
+      },
+      {
+        "axis": 1,
+        "bucket": 9714,
+        "coordinate": -40.97462844848633,
+        "correct_lower": 9712,
+        "incorrect_float_difference_lower": 9714
+      },
+      {
+        "axis": 1,
+        "bucket": 9720,
+        "coordinate": -40.935062408447266,
+        "correct_lower": 9718,
+        "incorrect_float_difference_lower": 9720
+      },
+      {
+        "axis": 1,
+        "bucket": 9722,
+        "coordinate": -40.921871185302734,
+        "correct_lower": 9722,
+        "incorrect_float_difference_lower": 9720
+      },
+      {
+        "axis": 1,
+        "bucket": 9726,
+        "coordinate": -40.8954963684082,
+        "correct_lower": 9724,
+        "incorrect_float_difference_lower": 9726
+      },
+      {
+        "axis": 1,
+        "bucket": 9728,
+        "coordinate": -40.88230514526367,
+        "correct_lower": 9728,
+        "incorrect_float_difference_lower": 9726
+      },
+      {
+        "axis": 1,
+        "bucket": 9732,
+        "coordinate": -40.85593032836914,
+        "correct_lower": 9730,
+        "incorrect_float_difference_lower": 9732
+      },
+      {
+        "axis": 1,
+        "bucket": 9734,
+        "coordinate": -40.84273910522461,
+        "correct_lower": 9734,
+        "incorrect_float_difference_lower": 9732
+      },
+      {
+        "axis": 1,
+        "bucket": 9738,
+        "coordinate": -40.81636428833008,
+        "correct_lower": 9736,
+        "incorrect_float_difference_lower": 9738
+      },
+      {
+        "axis": 1,
+        "bucket": 9740,
+        "coordinate": -40.80317306518555,
+        "correct_lower": 9740,
+        "incorrect_float_difference_lower": 9738
+      },
+      {
+        "axis": 1,
+        "bucket": 9744,
+        "coordinate": -40.776798248291016,
+        "correct_lower": 9742,
+        "incorrect_float_difference_lower": 9744
+      },
+      {
+        "axis": 1,
+        "bucket": 9746,
+        "coordinate": -40.763607025146484,
+        "correct_lower": 9746,
+        "incorrect_float_difference_lower": 9744
+      },
+      {
+        "axis": 1,
+        "bucket": 9752,
+        "coordinate": -40.72404098510742,
+        "correct_lower": 9752,
+        "incorrect_float_difference_lower": 9750
+      },
+      {
+        "axis": 1,
+        "bucket": 9758,
+        "coordinate": -40.68447494506836,
+        "correct_lower": 9758,
+        "incorrect_float_difference_lower": 9756
+      },
+      {
+        "axis": 1,
+        "bucket": 9764,
+        "coordinate": -40.64491653442383,
+        "correct_lower": 9762,
+        "incorrect_float_difference_lower": 9764
+      },
+      {
+        "axis": 1,
+        "bucket": 9770,
+        "coordinate": -40.605350494384766,
+        "correct_lower": 9768,
+        "incorrect_float_difference_lower": 9770
+      }
+    ],
+    "witness_scope": "32coordinatecaseswhereincorrectbinary32roundingofthedifferencechangeslowerbound. EachhasoneULPneighbortraversal andnativefullstatecomparison."
+  },
+  "GPU_corpora": [
+    {
+      "name": "random-and-ties-wrap-reuse",
+      "operations": 239,
+      "bytes": 22781616,
+      "all_GPU_bytes_equal_native": true,
+      "sha256": "22b969e1b0b258db99983929095d45d7fc1636c94cf607c11c195e9844b2b834",
+      "input": "artifacts/cuda-native-20261103/broadphase-native-first.ops.bin"
+    },
+    {
+      "name": "null-token",
+      "operations": 39,
+      "bytes": 3719748,
+      "all_GPU_bytes_equal_native": true,
+      "sha256": "f0ba7298c9e0af9c8ba2f3ebf3a8888cc16087e903db2c8c03412f5dea37ab68",
+      "input": "artifacts/cuda-native-20261103/broadphase-null-token-native.ops.bin"
+    },
+    {
+      "name": "quantization",
+      "operations": 197,
+      "bytes": 18776504,
+      "all_GPU_bytes_equal_native": true,
+      "sha256": "fd22390e257ac0c3c098d64027d59c5d3f8b1ea42ae543759a56f21265bd868e",
+      "input": "artifacts/cuda-native-20261103/broadphase/quantization.ops.bin"
+    },
+    {
+      "name": "cancellation",
+      "operations": 16,
+      "bytes": 1525088,
+      "all_GPU_bytes_equal_native": true,
+      "sha256": "a5184df779f028a87f68ef684077928037c04aa64e398ce0be59ac563a00f590",
+      "input": "artifacts/cuda-native-20261103/broadphase/cancellation.ops.bin"
+    },
+    {
+      "name": "capacity512",
+      "operations": 1542,
+      "bytes": 146977312,
+      "all_GPU_bytes_equal_native": true,
+      "sha256": "29f927306edc7a94dbcdccf6086c651088c627b1104fbf8f11d0fe2f7de20b60",
+      "input": "artifacts/cuda-native-20261103/broadphase-capacity512-native.ops.bin"
+    }
+  ],
+  "total_GPU_operations": 2033,
+  "total_GPU_wire_bytes": 193780268,
+  "CPU_gates": {
+    "random239_full_raw_native": {
+      "all_bytes_equal": true,
+      "bytes": 22781616,
+      "operations": 239,
+      "sha256": "22b969e1b0b258db99983929095d45d7fc1636c94cf607c11c195e9844b2b834"
+    },
+    "null_token_full_raw_native": {
+      "operations": 39,
+      "bytes": 3719748,
+      "sha256": "f0ba7298c9e0af9c8ba2f3ebf3a8888cc16087e903db2c8c03412f5dea37ab68",
+      "all_bytes_equal": true
+    },
+    "quantization_and_cancellation": [
+      {
+        "name": "quantization",
+        "all_bytes_equal": true,
+        "bytes": 18776504,
+        "sha256": "fd22390e257ac0c3c098d64027d59c5d3f8b1ea42ae543759a56f21265bd868e",
+        "native_metadata": {
+          "schema": "irisu-native-broadphase-oracle-v1",
+          "operations": 197,
+          "add_events": 1,
+          "remove_events": 1,
+          "active_proxies": 0,
+          "state_bytes": 95292,
+          "calloc_initial_condition": true,
+          "scope_max_live_proxies": 64,
+          "conservative_pair_capacity_guard": true
+        },
+        "host_metadata": {
+          "backend": "typed-host",
+          "operations": 197,
+          "errors": 0,
+          "state_bytes": 95292,
+          "scope": "fullSAPhistoryandnormalizedstate;noGuest"
+        }
+      },
+      {
+        "name": "cancellation",
+        "all_bytes_equal": true,
+        "bytes": 1525088,
+        "sha256": "a5184df779f028a87f68ef684077928037c04aa64e398ce0be59ac563a00f590",
+        "native_metadata": {
+          "schema": "irisu-native-broadphase-oracle-v1",
+          "operations": 16,
+          "add_events": 3,
+          "remove_events": 3,
+          "active_proxies": 0,
+          "state_bytes": 95292,
+          "calloc_initial_condition": true,
+          "scope_max_live_proxies": 64,
+          "conservative_pair_capacity_guard": true
+        },
+        "host_metadata": {
+          "backend": "typed-host",
+          "operations": 16,
+          "errors": 0,
+          "state_bytes": 95292,
+          "scope": "fullSAPhistoryandnormalizedstate;noGuest"
+        }
+      }
+    ],
+    "domain_source": "tools/cuda-native/broadphase_domain.cpp",
+    "domain_pass": true,
+    "domain_cases": [
+      "512proxyallocation accepted;513threjectsCapacity andnativeprefixunchanged",
+      "4096pairallocations/fullbufferaccepted",
+      "existingpairremove/readd whilebufferfulldoesnotincorrectlyreject",
+      "4096finalpaircommit/removalcallbacksandLIFOfreerecycling",
+      "4097thnewpairrejectsCapacitywithoutoutofbounds",
+      "invalidworldextent/nonfiniteAABB/invalidproxyexplicitstatuses"
+    ]
+  },
+  "ordered_semantics": [
+    "BinarySearchequalendpointchoice",
+    "strictlowerdown/upperdownandnonstrictupperup/lowerupcomparisons",
+    "stabbingcountsandqueryresultorder",
+    "proxy/pairfreelistsandhashchains",
+    "add/removebufferedcancellationbeforefirstfinalcommit",
+    "remove/readdcancellationforfinalpairs",
+    "CreateProxy/DestroyProxyimmediatecommitofentirebuffer",
+    "nullptrcallbacktokenstoredandremovedas0",
+    "timestampwrapresetincludingfreeproxies",
+    "512proxyquerylimits0/1/16/511/512,destroyeven/reuse/reversedestroy"
+  ],
+  "memcheck": [
+    {
+      "case": "cancellation-memcheck",
+      "command": [
+        "/opt/cuda/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "42",
+        "--log-file",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/cuda-native-20261103/broadphase/cancellation.memcheck.log",
+        "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native/clone/cuda_native/irisu-native-broadphase",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/cuda-native-20261103/broadphase/cancellation.ops.bin",
+        "--gpu"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.4994805520036607,
+      "all_bytes_equal_native": true,
+      "bytes": 1525088,
+      "sha256": "a5184df779f028a87f68ef684077928037c04aa64e398ce0be59ac563a00f590",
+      "stderr": "{\"backend\":\"cuda-native\",\"operations\":16,\"errors\":0,\"state_bytes\":95292,\"scope\":\"fullSAPhistoryandnormalizedstate;noGuest\"}\n",
+      "error_summary_zero": true
+    },
+    {
+      "case": "quantization-memcheck",
+      "command": [
+        "/opt/cuda/compute-sanitizer/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "42",
+        "--log-file",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/cuda-native-20261103/broadphase/quantization.memcheck.log",
+        "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native/clone/cuda_native/irisu-native-broadphase",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/cuda-native-20261103/broadphase/quantization.ops.bin",
+        "--gpu"
+      ],
+      "returncode": 0,
+      "wall_seconds": 2.767333031995804,
+      "all_bytes_equal_native": true,
+      "bytes": 18776504,
+      "sha256": "fd22390e257ac0c3c098d64027d59c5d3f8b1ea42ae543759a56f21265bd868e",
+      "stderr": "{\"backend\":\"cuda-native\",\"operations\":197,\"errors\":0,\"state_bytes\":95292,\"scope\":\"fullSAPhistoryandnormalizedstate;noGuest\"}\n",
+      "error_summary_zero": true
+    }
+  ],
+  "GPU_resources": {
+    "architecture": "sm_70",
+    "registers_per_thread": 56,
+    "stack_bytes": 16,
+    "spill_store_bytes": 0,
+    "spill_load_bytes": 0,
+    "shared_bytes": 1024,
+    "kernel_scope": "ProofharnessserialSAPoperationsinthread0;blockcooperativelycopiesfullsnapshots. Notabroadphasethroughputbenchmark.",
+    "binary_sha256": "6d639c15838b93c1918e44c762d97458a6328ab0b3afce99f5e02d2afb247ddc",
+    "literal_flags": "-O3 -DNDEBUG -std=c++20 \"--generate-code=arch=compute_70,code=[compute_70,sm_70]\" --fmad=false --ftz=false --prec-div=true --prec-sqrt=true -Xcompiler=-ffp-contract=off,-fno-fast-math -Xptxas=-v"
+  },
+  "interfaces": {
+    "callbacks": "uint32PairAdded(uint32proxyUser1,uint32proxyUser2);voidPairRemoved(uint32,uint32,uint32pairToken). Zeroisavalidpairtoken.",
+    "copy": "BroadPhaseisinlinefixedarrayswithopaquehandles,norebind. Importednativeprefixmustpreserveallorderingstateandnormalizepointers;slot-orderregenerationisnotcertified.",
+    "error": "StickyStatuserror outsideprefix. Failedstate/partialwritesmustnotbeaccepted;noapproximatedfallback."
+  },
+  "oracle_scope": {
+    "default_max_live": 64,
+    "capacity_fixture_max_live": 512,
+    "capacity_guard": "NativeoracleconservativelypreflightspairCount+activeandpairBufferCount+2*active<=4096;512capacityfixtureisdisjoint,notadensemaxpairsnativeclaim.",
+    "capacity_native_metadata": "{\"schema\":\"irisu-native-broadphase-oracle-v1\",\"operations\":1542,\"add_events\":0,\"remove_events\":0,\"active_proxies\":0,\"state_bytes\":95292,\"calloc_initial_condition\":true,\"scope_max_live_proxies\":512,\"conservative_pair_capacity_guard\":true}\n"
+  },
+  "artifact_sha256": {
+    "artifacts/cuda-native-20261103/broadphase/gpu-proof.json": "b65b6e2d0df79a6468bec41d1b67dd99981dbee0443d38bda66be961e1222b7b",
+    "artifacts/cuda-native-20261103/broadphase/first-host-proof.json": "1949d7e4d370a510a31807574a9cd76e40f7ba0cd8b1be1ad37e24a13cf5c55e",
+    "artifacts/cuda-native-20261103/broadphase/edge-host-proof.json": "c46f71ed84b573f598b07e155d8dfa7a4b66283cec08b1d0aa30672be485dd43",
+    "artifacts/cuda-native-20261103/broadphase/quantization.ops.labels.json": "e83e7a6fe8c0fc0f08aa959c41a8d38adc3f53e5152accb8cd345ce26ff4619f",
+    "artifacts/gpu-native-20261103/broadphase-build.log": "3abc9bbe02670c6be005978af4831febb5e06873c758d4d30bc5b4f9056eb1e2"
+  },
+  "source_correction": "Firstrawgatefoundincorrectalignmentinference. Nativeboundsare14016/queryResults17016,with2-bytepaddingbeforequerycount17418. CorrectedbeforeallreportedfullrawCPU/GPUgates.",
+  "limits": [
+    "Boundedlow-levelhistoriesandexplicitstartingstate;notexhaustiveall512proxy/4096pairtrajectories.",
+    "Full4096pairbuffer/domainchecksaretypedCPUchecks;actualnative512proxyfixturehas0pairs.",
+    "Wholeworldcreation/lifecycle/contactcallbackintegrationandgame/searchspeedremainseparateworkstreams.",
+    "No throughputor5xCPUclaimfromsnapshottransportharness."
+  ]
+}

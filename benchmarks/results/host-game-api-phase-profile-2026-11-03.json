@@ -1,0 +1,243 @@
+{
+  "schema": "irisu-host-game-api-phase-profile-v1",
+  "scope": "Host-only translated normal-game profiling; NOTGPUmeasurements and NOT warmedCPU/GPUbenchmark; noengine/sourcechanges",
+  "instrumentation": "Artifact-only PhysicsWorld::call overlay wraps each translated API invocation in chrono steady_clock and records calls, block-counter delta and elapsednanoseconds. Main loop omits per-tick Framehashing and validatesfinalFrame againstauthoritativenative record digest. Per-call timer overheadincluded; register/budget counter is Guest.instructions legacyblockcount, notmachineinstructions.",
+  "results": [
+    {
+      "prefix": 100,
+      "steps": 4096,
+      "body_sum": 34536,
+      "total_ns": 1299174868,
+      "native_final_frame_match": true,
+      "api": [
+        {
+          "name": "step",
+          "calls": 4096,
+          "blocks": 32071376,
+          "ns": 1189920335
+        },
+        {
+          "name": "get_x",
+          "calls": 34535,
+          "blocks": 345350,
+          "ns": 7729134
+        },
+        {
+          "name": "get_y",
+          "calls": 34535,
+          "blocks": 345350,
+          "ns": 7699961
+        },
+        {
+          "name": "get_r",
+          "calls": 34535,
+          "blocks": 345350,
+          "ns": 4408830
+        },
+        {
+          "name": "get_v",
+          "calls": 34535,
+          "blocks": 759770,
+          "ns": 8096742
+        },
+        {
+          "name": "get_contact",
+          "calls": 31908,
+          "blocks": 640964,
+          "ns": 10164732
+        },
+        {
+          "name": "set_position",
+          "calls": 7040,
+          "blocks": 1724612,
+          "ns": 45167638
+        },
+        {
+          "name": "set_v",
+          "calls": 185,
+          "blocks": 2035,
+          "ns": 127127
+        },
+        {
+          "name": "create_circle",
+          "calls": 0,
+          "blocks": 0,
+          "ns": 0
+        },
+        {
+          "name": "create_box",
+          "calls": 183,
+          "blocks": 208140,
+          "ns": 9576777
+        },
+        {
+          "name": "create_triangle",
+          "calls": 2,
+          "blocks": 2079,
+          "ns": 124877
+        },
+        {
+          "name": "destroy_body",
+          "calls": 189,
+          "blocks": 4347,
+          "ns": 274527
+        },
+        {
+          "name": "set_user_data",
+          "calls": 185,
+          "blocks": 1850,
+          "ns": 54931
+        },
+        {
+          "name": "create_world",
+          "calls": 0,
+          "blocks": 0,
+          "ns": 0
+        },
+        {
+          "name": "destroy_world",
+          "calls": 0,
+          "blocks": 0,
+          "ns": 0
+        },
+        {
+          "name": "other",
+          "calls": 0,
+          "blocks": 0,
+          "ns": 0
+        }
+      ],
+      "all_guest_ns": 1283345611,
+      "outside_guest_ns": 15829257,
+      "outside_guest_fraction": 0.012184084983392705,
+      "physics_step_fraction": 0.9159046748124133,
+      "four_getter_fraction": 0.02150185297457586
+    },
+    {
+      "prefix": 96000,
+      "steps": 1024,
+      "body_sum": 32505,
+      "total_ns": 1777802241,
+      "native_final_frame_match": true,
+      "api": [
+        {
+          "name": "step",
+          "calls": 1024,
+          "blocks": 43069504,
+          "ns": 1663641292
+        },
+        {
+          "name": "get_x",
+          "calls": 32505,
+          "blocks": 325050,
+          "ns": 6704472
+        },
+        {
+          "name": "get_y",
+          "calls": 32505,
+          "blocks": 325050,
+          "ns": 6625992
+        },
+        {
+          "name": "get_r",
+          "calls": 32505,
+          "blocks": 325050,
+          "ns": 3912354
+        },
+        {
+          "name": "get_v",
+          "calls": 32505,
+          "blocks": 715110,
+          "ns": 6900223
+        },
+        {
+          "name": "get_contact",
+          "calls": 28688,
+          "blocks": 608348,
+          "ns": 9315538
+        },
+        {
+          "name": "set_position",
+          "calls": 8734,
+          "blocks": 2151851,
+          "ns": 54234359
+        },
+        {
+          "name": "set_v",
+          "calls": 152,
+          "blocks": 1672,
+          "ns": 113137
+        },
+        {
+          "name": "create_circle",
+          "calls": 0,
+          "blocks": 0,
+          "ns": 0
+        },
+        {
+          "name": "create_box",
+          "calls": 143,
+          "blocks": 247395,
+          "ns": 10048876
+        },
+        {
+          "name": "create_triangle",
+          "calls": 9,
+          "blocks": 16597,
+          "ns": 601584
+        },
+        {
+          "name": "destroy_body",
+          "calls": 139,
+          "blocks": 3197,
+          "ns": 297387
+        },
+        {
+          "name": "set_user_data",
+          "calls": 152,
+          "blocks": 1520,
+          "ns": 55155
+        },
+        {
+          "name": "create_world",
+          "calls": 0,
+          "blocks": 0,
+          "ns": 0
+        },
+        {
+          "name": "destroy_world",
+          "calls": 0,
+          "blocks": 0,
+          "ns": 0
+        },
+        {
+          "name": "other",
+          "calls": 0,
+          "blocks": 0,
+          "ns": 0
+        }
+      ],
+      "all_guest_ns": 1762450369,
+      "outside_guest_ns": 15351872,
+      "outside_guest_fraction": 0.008635309173288414,
+      "physics_step_fraction": 0.9357853498172073,
+      "four_getter_fraction": 0.013580273690295118
+    }
+  ],
+  "interpretation": [
+    "Physics world_step accountsfor91.6% early and93.6%latehost loop time.",
+    "Outside translated API timeis1.22% early/0.86%late, includingsome instrumentationoverhead.",
+    "Four getterAPIs accountfor2.15% early/1.36%late.",
+    "These host proportionscannot beprojectedontoGPU; theysuggestoutercontainers/scans aloneareunlikelytobridge100x+ optimizationneed."
+  ],
+  "artifact_directory": "artifacts/gpu-exact-20261103/optimization2/game-profile",
+  "sha256": {
+    "artifacts/gpu-exact-20261103/optimization2/game-profile/main.cpp": "488e77a0f7572d9ba70684d6604bd63936e9f4751fcd1c8ff0291bcec4989f11",
+    "artifacts/gpu-exact-20261103/optimization2/game-profile/physics_profile.cuh": "978189e19b80b5b94d038cfd8ff584a105fba23da658e9464fd15e9ac624ae59",
+    "artifacts/gpu-exact-20261103/optimization2/game-profile/profile-host": "b7a6958320fb63df888785a845ab8f0e3fe127877424f42d2309d2abcc059e20",
+    "clone/cuda/physics_game.cuh": "c15ba8c8e6c41a4a415c67eafed11b74a15dea6524e23575a5ce7227203b5a1e",
+    "clone/cuda/game.cuh": "454025dc78c0b7769f85c885d49576f19e2a610ce5fe779dd926336a7bbef507",
+    "build-project-cuda/clone/cuda/libirisu_cuda_regions.a": "c6540d3b0122a464b9d75564019f2da8bf6222dab303b2cd9d5df1257c52369e"
+  },
+  "qualification": "Both measuredfinalFrames matchnativeexactoracle; no per-stepGPUqualification performed forprofiler."
+}

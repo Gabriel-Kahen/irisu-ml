@@ -1,0 +1,1016 @@
+{
+  "schema": "irisu-generic-scalar-leaf-final-probe-v1",
+  "promotion_eligible": false,
+  "default_production_changed": false,
+  "target_5x_best_cpu_achieved": false,
+  "decision": "Stop this bounded architectural route. Correctness-qualified tested prototype improves GPU about1.24x, but its best measured512x4 process wall remains18.9x slower than CPU8. No projection of further speedup.",
+  "scope": "Pinned native-function-call translation with31 selected original no-call functions lifted to scalar FP/register/ESP scratch locals. Separate copied386-region archives; existing production/default backend remains unchanged. Static admission does not certify all210 candidates.",
+  "source_host_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+  "source_inputs_sha256": {
+    "tools/cuda-exact/direct-leaf/generate_leaves.py": "adc76104b1b9daa42003430a900df3c5d1edf02b2bbcf5116e2f8a4df942bf31",
+    "tools/cuda-exact/direct-leaf/patch_leaves.py": "14c543539e2178cc3ba8391be9701e5d6cf8baec8b9fd92794f7ba0c8694cc6d",
+    "tools/cuda-exact/direct-leaf/build_leaves.py": "755e30641cf0962ea3730006ba40d53dc2d18296ff767f9de9f74b92510fe1fc",
+    "tools/cuda-exact/direct-leaf/verification.hpp": "bbc34d21ed03936c2e40797cbc97b5a90d5f1858db8dfb52a1ece0bd9322bddb",
+    "tools/cuda-exact/direct-leaf/support.cuh": "7b166523215f4b268a23fbe62f9dca11d40bb650ccb7351575455b1eb0ebafcf",
+    "tools/cuda-exact/direct-leaf/fallback_probe.cu": "697bae0a91ac25e664a711d8c436c19faf94287ea227c8b88acdf1013169b5e5",
+    "clone/cuda/guest.hpp": "3fd285ccf0bf97cd52ff5bdadee42a260587518037c3aba4c400012afd228a0c",
+    "tools/cuda-exact/x87_numeric.cuh": "ce53bc2730e24227ebc83cf95699a75bb81b8f1739d8ead0d9764a25825b3a5e",
+    "tools/cuda-exact/translate.py": "09954408174d9d16fb51dff2dd809b4d6cf5053cb8e2570ce189cda2869d3bed"
+  },
+  "artifact_receipts": {
+    "build-cuda-direct-leaf/generic/manifest.json": {
+      "sha256": "884607fc183cdefa3ffbac5d164007f4cbcd9db67c3761a372047333ccbef579",
+      "bytes": 95062
+    },
+    "build-cuda-direct-leaf/generic-profile.json": {
+      "sha256": "f78debe931aaf65a866ed42527e39e546951e5aea8b3e5efd04183da7e1fcfb9",
+      "bytes": 12355
+    },
+    "build-cuda-direct-leaf/generic-verified.json": {
+      "sha256": "26575ae7bc4735d043bfaa64b6cbdbf10aa5435533543c520abafb470bd44c04",
+      "bytes": 11586
+    },
+    "build-cuda-direct-leaf/generic-replacement/build-receipt.json": {
+      "sha256": "632a20182c61d293d91573266891cf4dc9911e313bee1d1bb8d848b9c327f71d",
+      "bytes": 155553
+    },
+    "build-cuda-direct-leaf/generic-replacement/paired-screen.json": {
+      "sha256": "fd91fef365bef348f2dbd905f5202c5a4bc64f46ff9c0158ef78cf0ac61fc67f",
+      "bytes": 29463
+    },
+    "build-cuda-direct-leaf/generic-replacement/mixed-lifecycle.json": {
+      "sha256": "33bf274775a504c4d78c9149db8691eba9019609f9e3a4f8cb160c7c445a4301",
+      "bytes": 11837
+    },
+    "build-cuda-direct-leaf/generic-replacement/physics33-screen.json": {
+      "sha256": "e3382dc93cc96c7f579c654f6440fdd91197af3466bc61d2e01001d636cbcbb3",
+      "bytes": 1103
+    },
+    "build-cuda-direct-leaf/generic-replacement/fallback-screen.json": {
+      "sha256": "c402a5599d5196b249cb8a609d96def88a9ee87cbf88c55913308ba81f1651fb",
+      "bytes": 1651
+    }
+  },
+  "snapshot_contract": {
+    "consumer_inputs": "Current search/session consumer libraries and runner objects copied before any replacement compilation; matchedcontrol andscalar link exactly the same snapshots. Baseline region archive and generated sources copied from immutable function-calls/unpatched artifacts.",
+    "replacement_inputs": "31 generated leaf headers, their original copied fallback .inc files, one .cu/object perselectedleaf, commands and allartifact hashes retained in build-receipt. Sharedproductionarchives never overwritten.",
+    "source_freeze": "Prototype source and Guest/numeric/generator files copied into artifactsource-snapshot after final qualification; sourcehashes above identify that snapshot. One numericheader compatibility change during compilation is explicitly recorded below and RDC-token-equivalent.",
+    "numeric_header_transition": {
+      "initial": {
+        "source_sha256": "cbcbb5a0275d026a556d8ac0075720d1ee3fd9d90e997660bfd7aa3608792f6a",
+        "rdc_preprocessed_nonwhitespace_sha256": "e7cfd428a60079d36b63051b6378f9c408e1e9fc64782a48983229f92f45c8ad"
+      },
+      "current": {
+        "source_sha256": "ce53bc2730e24227ebc83cf95699a75bb81b8f1739d8ead0d9764a25825b3a5e",
+        "rdc_preprocessed_nonwhitespace_sha256": "e7cfd428a60079d36b63051b6378f9c408e1e9fc64782a48983229f92f45c8ad"
+      },
+      "rdc_preprocessed_identical": true
+    }
+  },
+  "static_screen": {
+    "functions": 386,
+    "admitted": 210,
+    "rejected": 176,
+    "rejection_reasons": {
+      "contains call": 113,
+      "escaped or nonconstant ESP": 5,
+      "control flow outside function": 2,
+      "non-word/indexed stack operand": 24,
+      "escaped stack address": 25,
+      "write to caller stack": 3,
+      "indirect branch": 1,
+      "unsupported scalar form: rep stosd": 1,
+      "inconsistent/unsupported x87 depth": 2
+    },
+    "selected_dynamic_entries": [
+      8320,
+      9200,
+      12432,
+      13376,
+      13504,
+      26000,
+      26640,
+      29424,
+      29968,
+      30224,
+      42624,
+      43520,
+      47184,
+      47200,
+      47648,
+      48800,
+      49408,
+      69520,
+      69680,
+      78944,
+      79984,
+      82208,
+      82560,
+      83728,
+      83824,
+      83920,
+      83984,
+      84096,
+      84176,
+      84416,
+      85488
+    ],
+    "selected_function_names": {
+      "8320": [
+        "__x86.get_pc_thunk.bx"
+      ],
+      "9200": [
+        "?Free@b2BlockAllocator@@QAEXPAXH@Z"
+      ],
+      "12432": [
+        "?TestOverlap@b2BroadPhase@@AAE_NABUb2BoundValues@@PAUb2Proxy@@@Z"
+      ],
+      "13376": [
+        "?b2Min@@YA?AUb2Vec2@@ABU1@0@Z"
+      ],
+      "13504": [
+        "?b2Max@@YA?AUb2Vec2@@ABU1@0@Z"
+      ],
+      "26000": [
+        "?InitializeRegisters@b2Contact@@SAXXZ"
+      ],
+      "26640": [
+        "?IsConnected@b2Body@@QBE_NPBV1@@Z"
+      ],
+      "29424": [
+        "?PreSolve@b2ContactSolver@@QAEXXZ"
+      ],
+      "29968": [
+        "?PostSolve@b2ContactSolver@@QAEXXZ"
+      ],
+      "30224": [
+        "?SolveVelocityConstraints@b2ContactSolver@@QAEXXZ"
+      ],
+      "42624": [
+        "?Clear@b2Island@@QAEXXZ"
+      ],
+      "43520": [
+        "?UpdateSleep@b2Island@@QAEXM@Z"
+      ],
+      "47184": [
+        "?Initialize@b2PairManager@@QAEXPAVb2BroadPhase@@PAVb2PairCallback@@@Z"
+      ],
+      "47200": [
+        "?Find@b2PairManager@@AAEPAUb2Pair@@HHI@Z"
+      ],
+      "47648": [
+        "?RemovePair@b2PairManager@@AAEPAXHH@Z"
+      ],
+      "48800": [
+        "?GetManifolds@b2PolyAndCircleContact@@UAEPAUb2Manifold@@XZ"
+      ],
+      "49408": [
+        "?GetManifolds@b2PolyContact@@UAEPAUb2Manifold@@XZ"
+      ],
+      "69520": [
+        "?b2Mul@@YA?AUb2Mat22@@ABU1@0@Z"
+      ],
+      "69680": [
+        "?b2Abs@@YA?AUb2Mat22@@ABU1@@Z"
+      ],
+      "78944": [
+        "??0b2StackAllocator@@QAE@XZ"
+      ],
+      "79984": [
+        "?DestroyBody@b2World@@QAEXPAVb2Body@@@Z"
+      ],
+      "82208": [
+        "?ShouldCollide@b2CollisionFilter@@UAE_NPAVb2Shape@@0@Z"
+      ],
+      "82560": [
+        "??0b2CircleDef@@QAE@XZ"
+      ],
+      "83728": [
+        "msvc_b2d_world_get_x"
+      ],
+      "83824": [
+        "msvc_b2d_world_get_y"
+      ],
+      "83920": [
+        "msvc_b2d_world_get_r"
+      ],
+      "83984": [
+        "msvc_b2d_world_get_v"
+      ],
+      "84096": [
+        "msvc_b2d_world_set_v"
+      ],
+      "84176": [
+        "msvc_b2d_world_set_user_data"
+      ],
+      "84416": [
+        "??0b2PolyDef@@QAE@XZ"
+      ],
+      "85488": [
+        "msvc_finite"
+      ]
+    },
+    "admission_rules": [
+      "No calls, indirect branches or control flow outside original function.",
+      "Consistent ESP offset and x87 depth at all CFG merges; fixed return depth0or1, balanced own stack, RET immediate supported.",
+      "Reject escaped ESP/EBP local addresses, non-word or indexed ESP scratch accesses, caller-stack writes, unsupported controlword/string forms.",
+      "Only empty incoming x87 stack enters scalar path; internal reentry/nonemptyFP/errors use original function.",
+      "Check and consume remaining budget at every original basic-block boundary; write back remainingbudget, allrawFP/register/flag/status fields and every scratchstackword on every exit."
+    ],
+    "runtime_domain": "Valid native-engine arenas/snapshots under existing guest memory/numeric domain. No claim of arbitrary malformed pointer aliases into shadow scratch or general x86/FPU emulation."
+  },
+  "dynamic_profile": [
+    {
+      "mutations": false,
+      "native_fixture_raw_parity": true,
+      "entered_admitted_leaves": 29,
+      "leaf_guest_blocks": 453723,
+      "total_guest_blocks": 1891340,
+      "block_fraction": 0.2398949950828513
+    },
+    {
+      "mutations": true,
+      "native_fixture_raw_parity": true,
+      "entered_admitted_leaves": 31,
+      "leaf_guest_blocks": 478677,
+      "total_guest_blocks": 1703102,
+      "block_fraction": 0.2810618506701302
+    }
+  ],
+  "host_full_postcall_differential": [
+    {
+      "mutations": false,
+      "returncode": 0,
+      "native_fixture_raw_parity": true,
+      "leaves_entered": 29,
+      "calls": 35511,
+      "verified_calls": 35511,
+      "declined_calls": 0
+    },
+    {
+      "mutations": true,
+      "returncode": 0,
+      "native_fixture_raw_parity": true,
+      "leaves_entered": 31,
+      "calls": 39709,
+      "verified_calls": 39709,
+      "declined_calls": 0
+    }
+  ],
+  "postcall_comparison_contract": "Each tested host leaf call clones full2MiB arena and Guest, executes original function with same remainingbudget and native-depth, then compares bytewise entire Guest(memorypointer normalized), entirearena and remainingbudget. Native oracle separately checks final600tick physicalword traces for normal/mutation fixtures.",
+  "build": {
+    "selected_tus": 31,
+    "elapsed_seconds": 54.94313715699536,
+    "hard_whole_build_timeout_seconds": 300,
+    "jobs": 2,
+    "slowest_tus": [
+      {
+        "entry": 30224,
+        "seconds": 20.395354091997433,
+        "object": "/home/gabe/Documents/ChatGPT/irisu/build-cuda-direct-leaf/generic-replacement/guest_region_30224.cu.o"
+      },
+      {
+        "entry": 29424,
+        "seconds": 8.927316914006951,
+        "object": "/home/gabe/Documents/ChatGPT/irisu/build-cuda-direct-leaf/generic-replacement/guest_region_29424.cu.o"
+      },
+      {
+        "entry": 43520,
+        "seconds": 4.169318931999442,
+        "object": "/home/gabe/Documents/ChatGPT/irisu/build-cuda-direct-leaf/generic-replacement/guest_region_43520.cu.o"
+      },
+      {
+        "entry": 69520,
+        "seconds": 3.7219996270068805,
+        "object": "/home/gabe/Documents/ChatGPT/irisu/build-cuda-direct-leaf/generic-replacement/guest_region_69520.cu.o"
+      },
+      {
+        "entry": 69680,
+        "seconds": 3.074132975998509,
+        "object": "/home/gabe/Documents/ChatGPT/irisu/build-cuda-direct-leaf/generic-replacement/guest_region_69680.cu.o"
+      }
+    ],
+    "flags_literal": [
+      "nvcc12.9",
+      "g++-14",
+      "-std=c++20",
+      "-O2(hostoptimization)",
+      "-DNDEBUG",
+      "-gencode=arch=compute_70,code=[compute_70,sm_70]",
+      "-dc",
+      "--fmad=false",
+      "--ftz=false",
+      "--prec-div=true",
+      "--prec-sqrt=true",
+      "--expt-extended-lambda",
+      "-Xptxas=-O1,-v"
+    ],
+    "device_link": "Explicit compute70/sm70 device links forbothvariants, noLTO; matching consumers snapshotted, allotherregionobjects identical."
+  },
+  "gpu_physics_33x600": {
+    "command": [
+      "/home/gabe/Documents/ChatGPT/irisu/build-cuda-direct-leaf/generic-replacement/scalar/irisu-cuda-physics-probe",
+      "/home/gabe/Documents/ChatGPT/irisu/build-cuda-function-calls/clone/cuda/generated/guest_image.bin",
+      "600",
+      "--gpu",
+      "--mixed-mutations",
+      "--lanes",
+      "33",
+      "--arena-bytes",
+      "524288",
+      "--word-stride",
+      "32",
+      "--dump-state",
+      "/home/gabe/Documents/ChatGPT/irisu/build-cuda-direct-leaf/generic-replacement/physics33-state.json"
+    ],
+    "returncode": 0,
+    "wall_seconds": 4.987736369999766,
+    "stdout_sha256": "ceaefee9ef7a0eed6f6a0e38f3964709f2c83ba2cfb1181c0218eb3c80684903",
+    "all_raw_words_equal": true,
+    "whole_guest_arena_state_equal": true,
+    "stderr": "{\"backend\":\"cuda\",\"lanes\":33,\"padded_lanes\":64,\"word_stride\":32,\"steps\":600,\"mutations\":false,\"mixed_mutations\":true,\"kernel_ms\":4738.415527,\"elapsed_ms\":4780.055276,\"bytesperlane\":524288,\"maxheapbytes\":347008,\"dispatches\":59402412,\"registers_per_thread\":254,\"local_bytes_per_thread\":0,\"shared_bytes_per_block\":0,\"failures\":0}\n"
+  },
+  "gpu_fault_budget_fallback": {
+    "returncode": 0,
+    "sha256": "b1b3bc8d2510acea85c6cc693b5d0161d85df6c01696f2ec493b31b4854c0eef",
+    "whole_guest_budget_arena_equal": true
+  },
+  "negative_case_contract": "13 direct velocity-region cases compare entire raw Guest(pointer normalized), remainingbudget and full524KiB arena against unpatched archive: budgets0/1/2/3/4/255/256, nonemptyincomingFP, valid syntheticcontact, NaN numericfault, invalidsolveraddress, preexistingerror and pointCount3. Generic per-block budget checks bound malformed loop fields without trusting native pointCount limits.",
+  "resident_lifecycle": {
+    "all_candidate_parity": true,
+    "native_reset_replay_verified": true,
+    "winning_lineage_consistent": true,
+    "winning_lineage_native_parity": true,
+    "verification_scope": "bounded_nonterminal",
+    "winner_trace_ticks": 208,
+    "prefix": 100,
+    "horizon": 54,
+    "fanout": 32,
+    "beam": 8,
+    "depths": 2,
+    "trace_every_tick": true,
+    "rounds": [
+      {
+        "depth": 0,
+        "candidates": 32,
+        "live_children": 5,
+        "selected_live_children": 5,
+        "native_candidate_parity": true,
+        "result_sha256": "b9543ae9a7b76e957662b9ebe489d686f07b72291bc12475a64e829623f9f219"
+      },
+      {
+        "depth": 1,
+        "candidates": 256,
+        "live_children": 64,
+        "selected_live_children": 7,
+        "native_candidate_parity": true,
+        "result_sha256": "f3c55381e2f29699cb7656b832488ac8b3bf10d555d931d99649d39ea8eee116"
+      }
+    ],
+    "scope": "Mixed live/terminal/carry resident branches from alteredseed4000000151. Every candidate result/rank/lifecycle flag and selected lineage compared to independent native forks; exported winner checked from reset. Winner is bounded nonterminal, no highscoreclaim."
+  },
+  "paired_screen": {
+    "schema": "irisu-selected-scalar-leaves-paired-screen-v1",
+    "scope": "Exclusive bounded complete512x4 game-search screen, prefix100, fixed sparse candidate specs. Process wall and CUDA events separate. No performance extrapolation.",
+    "inputs_sha256": {
+      "artifacts/gpu-exact-speedup-20261103/function-calls/search-512x4-screen.specs.bin": "949f8d1d8678961ffbf19511804fc6ddff39684b4f8cfd191f72797ba6d1a84d",
+      "build-cuda-function-calls/clone/cuda/generated/guest_image.bin": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685",
+      "irisu-high-score-4393101.rpy": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79"
+    },
+    "cpu": [
+      {
+        "wall_seconds": 0.06769214700034354,
+        "metadata": {
+          "identity": "experimental-native-exact-search-oracle-v2",
+          "candidates": 512,
+          "workers": 8,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "trace_every_tick": false,
+          "prefix_ms": 8.741398,
+          "branch_rollout_rank_ms": 54.896842,
+          "total_ms": 63.649853,
+          "winner": 0
+        }
+      },
+      {
+        "wall_seconds": 0.06813632099510869,
+        "metadata": {
+          "identity": "experimental-native-exact-search-oracle-v2",
+          "candidates": 512,
+          "workers": 8,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "trace_every_tick": false,
+          "prefix_ms": 8.321329,
+          "branch_rollout_rank_ms": 55.222872,
+          "total_ms": 63.558238,
+          "winner": 0
+        }
+      },
+      {
+        "wall_seconds": 0.07004589199641487,
+        "metadata": {
+          "identity": "experimental-native-exact-search-oracle-v2",
+          "candidates": 512,
+          "workers": 8,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "trace_every_tick": false,
+          "prefix_ms": 8.55833,
+          "branch_rollout_rank_ms": 57.202074,
+          "total_ms": 65.767859,
+          "winner": 0
+        }
+      }
+    ],
+    "warmups": [
+      {
+        "variant": "control",
+        "word_stride": 1,
+        "all_candidate_rank_bytes_equal_native": true,
+        "selected_state_check_enabled": true,
+        "wall_seconds": 2.0057918279999285,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 512,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 128,
+          "stack_kib": 16,
+          "word_stride": 1,
+          "host_prefix": true,
+          "host_prefix_ms": 168.243081,
+          "prefix_ms": 17.341440201,
+          "branch_ms": 3.948544025,
+          "rollout_ms": 1276.216308594,
+          "rank_compact_ms": 2.353152037,
+          "validation_ms": 399.908874512,
+          "compaction_check_enabled": true,
+          "total_ms": 1944.645695,
+          "allocated_bytes": 840739904,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      {
+        "variant": "scalar",
+        "word_stride": 1,
+        "all_candidate_rank_bytes_equal_native": true,
+        "selected_state_check_enabled": true,
+        "wall_seconds": 1.5721492070006207,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 512,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 128,
+          "stack_kib": 16,
+          "word_stride": 1,
+          "host_prefix": true,
+          "host_prefix_ms": 137.366242,
+          "prefix_ms": 18.257919312,
+          "branch_ms": 3.683327913,
+          "rollout_ms": 987.590637207,
+          "rank_compact_ms": 2.350080013,
+          "validation_ms": 285.312011719,
+          "compaction_check_enabled": true,
+          "total_ms": 1504.774854,
+          "allocated_bytes": 840739904,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      {
+        "variant": "control",
+        "word_stride": 32,
+        "all_candidate_rank_bytes_equal_native": true,
+        "selected_state_check_enabled": true,
+        "wall_seconds": 1.9874758670048323,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 512,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 128,
+          "stack_kib": 16,
+          "word_stride": 32,
+          "host_prefix": true,
+          "host_prefix_ms": 166.706571,
+          "prefix_ms": 14.844927788,
+          "branch_ms": 9.985024452,
+          "rollout_ms": 1259.799560547,
+          "rank_compact_ms": 12.606464386,
+          "validation_ms": 400.684020996,
+          "compaction_check_enabled": true,
+          "total_ms": 1935.365412,
+          "allocated_bytes": 840739904,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      {
+        "variant": "scalar",
+        "word_stride": 32,
+        "all_candidate_rank_bytes_equal_native": true,
+        "selected_state_check_enabled": true,
+        "wall_seconds": 1.597364770997956,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 512,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 128,
+          "stack_kib": 16,
+          "word_stride": 32,
+          "host_prefix": true,
+          "host_prefix_ms": 136.562806,
+          "prefix_ms": 15.253503799,
+          "branch_ms": 9.90719986,
+          "rollout_ms": 1008.586730957,
+          "rank_compact_ms": 12.598272324,
+          "validation_ms": 286.84286499,
+          "compaction_check_enabled": true,
+          "total_ms": 1544.188458,
+          "allocated_bytes": 840739904,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      }
+    ],
+    "pairs": [
+      {
+        "variant": "control",
+        "word_stride": 1,
+        "repeat": 0,
+        "all_candidate_rank_bytes_equal_native": true,
+        "wall_seconds": 1.5947604140019394,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 512,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 128,
+          "stack_kib": 16,
+          "word_stride": 1,
+          "host_prefix": true,
+          "host_prefix_ms": 167.089598,
+          "prefix_ms": 14.816255569,
+          "branch_ms": 3.800064087,
+          "rollout_ms": 1285.672973633,
+          "rank_compact_ms": 2.353152037,
+          "validation_ms": 0.003072,
+          "compaction_check_enabled": false,
+          "total_ms": 1543.615984,
+          "allocated_bytes": 840739904,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      {
+        "variant": "scalar",
+        "word_stride": 1,
+        "repeat": 0,
+        "all_candidate_rank_bytes_equal_native": true,
+        "wall_seconds": 1.277089891002106,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 512,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 128,
+          "stack_kib": 16,
+          "word_stride": 1,
+          "host_prefix": true,
+          "host_prefix_ms": 136.92326,
+          "prefix_ms": 15.548416138,
+          "branch_ms": 3.644416094,
+          "rollout_ms": 992.643066406,
+          "rank_compact_ms": 2.350080013,
+          "validation_ms": 0.002048,
+          "compaction_check_enabled": false,
+          "total_ms": 1225.369708,
+          "allocated_bytes": 840739904,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      {
+        "variant": "control",
+        "word_stride": 1,
+        "repeat": 1,
+        "all_candidate_rank_bytes_equal_native": true,
+        "wall_seconds": 1.5907360339988372,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 512,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 128,
+          "stack_kib": 16,
+          "word_stride": 1,
+          "host_prefix": true,
+          "host_prefix_ms": 166.363558,
+          "prefix_ms": 15.160320282,
+          "branch_ms": 3.68025589,
+          "rollout_ms": 1277.344726562,
+          "rank_compact_ms": 2.351104021,
+          "validation_ms": 0.002048,
+          "compaction_check_enabled": false,
+          "total_ms": 1538.819898,
+          "allocated_bytes": 840739904,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      {
+        "variant": "scalar",
+        "word_stride": 1,
+        "repeat": 1,
+        "all_candidate_rank_bytes_equal_native": true,
+        "wall_seconds": 1.2853970849973848,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 512,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 128,
+          "stack_kib": 16,
+          "word_stride": 1,
+          "host_prefix": true,
+          "host_prefix_ms": 136.736475,
+          "prefix_ms": 15.311871529,
+          "branch_ms": 3.363840103,
+          "rollout_ms": 1001.889770508,
+          "rank_compact_ms": 2.34700799,
+          "validation_ms": 0.002048,
+          "compaction_check_enabled": false,
+          "total_ms": 1230.094111,
+          "allocated_bytes": 840739904,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      {
+        "variant": "control",
+        "word_stride": 1,
+        "repeat": 2,
+        "all_candidate_rank_bytes_equal_native": true,
+        "wall_seconds": 1.6117977559988503,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 512,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 128,
+          "stack_kib": 16,
+          "word_stride": 1,
+          "host_prefix": true,
+          "host_prefix_ms": 173.517999,
+          "prefix_ms": 15.361023903,
+          "branch_ms": 3.849215984,
+          "rollout_ms": 1290.158081055,
+          "rank_compact_ms": 2.350080013,
+          "validation_ms": 0.003072,
+          "compaction_check_enabled": false,
+          "total_ms": 1559.979496,
+          "allocated_bytes": 840739904,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      {
+        "variant": "scalar",
+        "word_stride": 1,
+        "repeat": 2,
+        "all_candidate_rank_bytes_equal_native": true,
+        "wall_seconds": 1.2944968660012819,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 512,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 128,
+          "stack_kib": 16,
+          "word_stride": 1,
+          "host_prefix": true,
+          "host_prefix_ms": 138.809666,
+          "prefix_ms": 15.298560143,
+          "branch_ms": 3.402751923,
+          "rollout_ms": 1005.083618164,
+          "rank_compact_ms": 2.351104021,
+          "validation_ms": 0.002048,
+          "compaction_check_enabled": false,
+          "total_ms": 1243.130606,
+          "allocated_bytes": 840739904,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      {
+        "variant": "control",
+        "word_stride": 32,
+        "repeat": 0,
+        "all_candidate_rank_bytes_equal_native": true,
+        "wall_seconds": 1.6103346079980838,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 512,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 128,
+          "stack_kib": 16,
+          "word_stride": 32,
+          "host_prefix": true,
+          "host_prefix_ms": 167.074881,
+          "prefix_ms": 14.808064461,
+          "branch_ms": 9.791487694,
+          "rollout_ms": 1282.02746582,
+          "rank_compact_ms": 12.615679741,
+          "validation_ms": 0.002048,
+          "compaction_check_enabled": false,
+          "total_ms": 1558.132799,
+          "allocated_bytes": 840739904,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      {
+        "variant": "scalar",
+        "word_stride": 32,
+        "repeat": 0,
+        "all_candidate_rank_bytes_equal_native": true,
+        "wall_seconds": 1.2928026090012281,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 512,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 128,
+          "stack_kib": 16,
+          "word_stride": 32,
+          "host_prefix": true,
+          "host_prefix_ms": 136.666903,
+          "prefix_ms": 16.185344696,
+          "branch_ms": 10.03929615,
+          "rollout_ms": 993.673217773,
+          "rank_compact_ms": 12.537856102,
+          "validation_ms": 0.002048,
+          "compaction_check_enabled": false,
+          "total_ms": 1240.980521,
+          "allocated_bytes": 840739904,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      {
+        "variant": "control",
+        "word_stride": 32,
+        "repeat": 1,
+        "all_candidate_rank_bytes_equal_native": true,
+        "wall_seconds": 1.5936079810053343,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 512,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 128,
+          "stack_kib": 16,
+          "word_stride": 32,
+          "host_prefix": true,
+          "host_prefix_ms": 168.079171,
+          "prefix_ms": 15.096832275,
+          "branch_ms": 9.794560432,
+          "rollout_ms": 1259.744262695,
+          "rank_compact_ms": 12.595199585,
+          "validation_ms": 0.003072,
+          "compaction_check_enabled": false,
+          "total_ms": 1541.507795,
+          "allocated_bytes": 840739904,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      {
+        "variant": "scalar",
+        "word_stride": 32,
+        "repeat": 1,
+        "all_candidate_rank_bytes_equal_native": true,
+        "wall_seconds": 1.3298023590032244,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 512,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 128,
+          "stack_kib": 16,
+          "word_stride": 32,
+          "host_prefix": true,
+          "host_prefix_ms": 136.709834,
+          "prefix_ms": 15.215616226,
+          "branch_ms": 10.13452816,
+          "rollout_ms": 1031.338012695,
+          "rank_compact_ms": 12.539903641,
+          "validation_ms": 0.002048,
+          "compaction_check_enabled": false,
+          "total_ms": 1273.973625,
+          "allocated_bytes": 840739904,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      {
+        "variant": "control",
+        "word_stride": 32,
+        "repeat": 2,
+        "all_candidate_rank_bytes_equal_native": true,
+        "wall_seconds": 1.6289362850002362,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 512,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 128,
+          "stack_kib": 16,
+          "word_stride": 32,
+          "host_prefix": true,
+          "host_prefix_ms": 167.398146,
+          "prefix_ms": 14.639103889,
+          "branch_ms": 9.803775787,
+          "rollout_ms": 1301.679077148,
+          "rank_compact_ms": 12.593152046,
+          "validation_ms": 0.002048,
+          "compaction_check_enabled": false,
+          "total_ms": 1577.495211,
+          "allocated_bytes": 840739904,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      {
+        "variant": "scalar",
+        "word_stride": 32,
+        "repeat": 2,
+        "all_candidate_rank_bytes_equal_native": true,
+        "wall_seconds": 1.3283044529962353,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 512,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 128,
+          "stack_kib": 16,
+          "word_stride": 32,
+          "host_prefix": true,
+          "host_prefix_ms": 137.482033,
+          "prefix_ms": 15.412223816,
+          "branch_ms": 9.684991837,
+          "rollout_ms": 1023.837158203,
+          "rank_compact_ms": 12.688384056,
+          "validation_ms": 0.003072,
+          "compaction_check_enabled": false,
+          "total_ms": 1276.405869,
+          "allocated_bytes": 840739904,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      }
+    ],
+    "status": "passed",
+    "medians": {
+      "1": {
+        "control": 1.5947604140019394,
+        "scalar": 1.2853970849973848
+      },
+      "32": {
+        "control": 1.6103346079980838,
+        "scalar": 1.3283044529962353
+      }
+    },
+    "cpu8_median_wall_seconds": 0.06813632099510869,
+    "elapsed_seconds": 24.897936628003663
+  },
+  "telemetry_summary": {
+    "peak_vram_mib": 3553.0,
+    "peak_gpu_util_percent": 100.0
+  },
+  "performance_summary": {
+    "cpu8_median_wall_seconds": 0.06813632099510869,
+    "scalar_best_median_wall_seconds": 1.2853970849973848,
+    "gpu_wall_slower_than_cpu_factor": 18.865079097676258,
+    "stride1_control_over_scalar_speedup": 1.2406752999639672,
+    "stride32_control_over_scalar_speedup": 1.212323428085841,
+    "ticks_per_search_case": 2048,
+    "best_scalar_search_branches_per_second": 398.32049253561337,
+    "best_scalar_simulation_ticks_per_second": 1593.2819701424535,
+    "cpu8_search_branches_per_second": 7514.347597909711,
+    "cpu8_simulation_ticks_per_second": 30057.390391638844,
+    "measurement_contract": "One warmup pervariant/stride with fullselectedstatecompaction+continuationverification, then3 interleaved timedpairs eachstride. Every candidate/result/rankwire equals native on everyrun. Processwall includes setup/prefix/rollout/ranking/download; GPUevent phases storedseparately. Allcompilersidle, GPUexclusive. Small512x4 workload; no extrapolation to largecampaigns."
+  },
+  "limits": [
+    "Only31 dynamic leaves qualified;179other statically admitted functions were not devicecompiled or runtime-certified.",
+    "Physics fixture has two fixed trajectories; varied resident lifecycle gate adds288completegamebranches but not exhaustive semanticcoverage.",
+    "Search processwall remains18.9x slower than CPU8, far from5x faster; no further optimization claimed.",
+    "Scalarization raises reported physics kernel registerrequirement to254/thread; registerpressure is a material limit.",
+    "x87 status/error behavior matches existing admitted exactguest numericdomain; no general hardware FPUexception/status emulator claim."
+  ]
+}

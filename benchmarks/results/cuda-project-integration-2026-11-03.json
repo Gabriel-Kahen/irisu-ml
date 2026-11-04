@@ -1,0 +1,40 @@
+{
+  "schema": "irisu-cuda-project-integration-v1",
+  "date": "2026-11-03",
+  "scope": "migration and rebuilt CPU regression gates; no GPU/search speedup claim",
+  "source_checkout": "/home/gabe/Documents/irisu",
+  "project_checkout": "/home/gabe/Documents/ChatGPT/irisu",
+  "branch": "codex/v100-exact-backend",
+  "migration_verified_regular_files": 2845,
+  "source_preserved": true,
+  "record": {
+    "backend": "native-msvc-cpu-oracle",
+    "format": "game-digest-v1",
+    "rows": 97220,
+    "steps": 97219,
+    "events": 308512,
+    "tick": 97219,
+    "live_score": 4393699,
+    "canonical_score": 4393101,
+    "level": 100,
+    "highest_chain": 70,
+    "config_hash": 17009678407634462320,
+    "elapsed_seconds": 4.174799011
+  },
+  "record_digest_sha256": "9d972bbf361cfa58de555891ebcf96d2cd7b109839bc00868079d60aa03577ed",
+  "record_digest_matches_recovered": true,
+  "native_checks": {
+    "cpu": {
+      "passed": 8,
+      "failed": 0,
+      "log_sha256": "3ac61d41eaa3e778ff2cea3d1381692a874d146069e105f5e48d9f7543d2b149",
+      "build": "build-project-cpu"
+    },
+    "exact": {
+      "passed": 12,
+      "failed": 0,
+      "log_sha256": "fb766fc2bdea72c4b7a76538217a08d9249763a590025807d15736b45fa56c8e",
+      "build": "build-project-exact"
+    }
+  }
+}

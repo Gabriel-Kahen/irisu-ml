@@ -1,0 +1,565 @@
+{
+  "schema": "irisu-cuda-world-scratch-v1",
+  "exact_training_admitted": false,
+  "changes": [
+    "Per-world scratch for scripted origins, contact keys, actor refs and physics ordering; each cleared before use; operation order preserved.",
+    "GPU probe/segment kernels bind a thread-local Guest copy then copy back and rebind the persistent state.",
+    "Compiled image hash admitted before any simulation."
+  ],
+  "world_bytes_before": 525288,
+  "world_bytes_after": 582664,
+  "kernel_resource_before": {
+    "registers": 158,
+    "stack_bytes": 59720,
+    "configured_stack_limit_bytes": 131072
+  },
+  "kernel_resource_after": {
+    "registers": 158,
+    "stack_bytes": 2520,
+    "configured_stack_limit_bytes": 16384
+  },
+  "single_world_vram_observation_mib": {
+    "before_telemetry_peak": 20669,
+    "after_live_nvidia_smi_sample": 2749,
+    "scope": "whole device during same128tick workload; after value is a live sample, not complete peak telemetry"
+  },
+  "single_world_kernel_ms": {
+    "before": 12600.912109,
+    "after": 12503.287109,
+    "scope": "one unwarmed invocation each; no speedup conclusion"
+  },
+  "host_full_record_clone": {
+    "schema": "irisu-cuda-game-differential-v1",
+    "exact_gpu_promoted": false,
+    "backend": "host-translated",
+    "steps_per_case": 97219,
+    "inputs": {
+      "build-project-exact/irisu-game-oracle": "c7172f8687942e02770846686cb55b12e269dffb33d6e00f5fdf8c4794b5b04e",
+      "build-cuda-game/game-probe-host-scratch": "0bf83ba26bae679ad4217def1b13eabba02b4f41d69b43309d73103839dfa696",
+      "build-project-cuda/clone/cuda/generated/guest_image.bin": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685",
+      "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79"
+    },
+    "cases": [
+      {
+        "seed": 1298144938,
+        "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+        "runs": [
+          {
+            "name": "native",
+            "command": [
+              "/home/gabe/Documents/ChatGPT/irisu/build-project-exact/irisu-game-oracle",
+              "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/scratch-game-host-record/seed-1298144938.rpy",
+              "97219"
+            ],
+            "wall_seconds": 3.6655343560050824,
+            "digest_sha256": "9d972bbf361cfa58de555891ebcf96d2cd7b109839bc00868079d60aa03577ed",
+            "metadata": {
+              "backend": "native-msvc-cpu-oracle",
+              "format": "game-digest-v1",
+              "rows": 97220,
+              "steps": 97219,
+              "events": 308512,
+              "tick": 97219,
+              "live_score": 4393699,
+              "canonical_score": 4393101,
+              "level": 100,
+              "highest_chain": 70,
+              "config_hash": 17009678407634462320,
+              "elapsed_seconds": 3.631719893
+            }
+          },
+          {
+            "name": "probe",
+            "command": [
+              "/home/gabe/Documents/ChatGPT/irisu/build-cuda-game/game-probe-host-scratch",
+              "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+              "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/scratch-game-host-record/seed-1298144938.rpy",
+              "97219",
+              "--arena-mib",
+              "8",
+              "--clone-at",
+              "4096"
+            ],
+            "wall_seconds": 128.83389824000187,
+            "digest_sha256": "9d972bbf361cfa58de555891ebcf96d2cd7b109839bc00868079d60aa03577ed",
+            "metadata": {
+              "backend": "host-translated-full-game",
+              "experimental": true,
+              "clone_verified": true,
+              "rows": 97220,
+              "requested_steps": 97219,
+              "tick": 97219,
+              "guest_error": 0,
+              "fault_pc": 0,
+              "guest_heap": 367648,
+              "game_failed": false,
+              "config_hash": 17009678407634462320,
+              "score": 4393699,
+              "canonical_score": 4393101,
+              "level": 100,
+              "chain": 70,
+              "kernel_ms": 0.0,
+              "elapsed_seconds": 128.767878089,
+              "world_bytes": 582664,
+              "arena_bytes": 8388608
+            }
+          }
+        ],
+        "comparison": {
+          "version": "game-digest-v1-comparison",
+          "rows": 97220,
+          "mismatches": 0,
+          "trajectory_sha256": "9d972bbf361cfa58de555891ebcf96d2cd7b109839bc00868079d60aa03577ed",
+          "scope": "All encoded scalar/body/event/transition digests match; FNV-1a is not a collision-resistant proof of unobserved internal state."
+        }
+      }
+    ],
+    "status": "passed"
+  },
+  "host_four_seed_clones": {
+    "schema": "irisu-cuda-game-differential-v1",
+    "exact_gpu_promoted": false,
+    "backend": "host-translated",
+    "steps_per_case": 4096,
+    "inputs": {
+      "build-project-exact/irisu-game-oracle": "c7172f8687942e02770846686cb55b12e269dffb33d6e00f5fdf8c4794b5b04e",
+      "build-cuda-game/game-probe-host-scratch": "0bf83ba26bae679ad4217def1b13eabba02b4f41d69b43309d73103839dfa696",
+      "build-project-cuda/clone/cuda/generated/guest_image.bin": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685",
+      "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79"
+    },
+    "cases": [
+      {
+        "seed": 0,
+        "replay_sha256": "ef72bfac174b743f0a0ec0d7c3c6d035539dc47b85cdb811494ecca295dd8f60",
+        "runs": [
+          {
+            "name": "native",
+            "command": [
+              "/home/gabe/Documents/ChatGPT/irisu/build-project-exact/irisu-game-oracle",
+              "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/scratch-game-host-seeds/seed-0.rpy",
+              "4096"
+            ],
+            "wall_seconds": 0.2135398760001408,
+            "digest_sha256": "305ceaa49730bca15a2735be75ab9f1ee4f591bbd68e9fbdf166466a9a783d9b",
+            "metadata": {
+              "backend": "native-msvc-cpu-oracle",
+              "format": "game-digest-v1",
+              "rows": 4097,
+              "steps": 4096,
+              "events": 12030,
+              "tick": 934,
+              "live_score": 16,
+              "canonical_score": 16,
+              "level": 1,
+              "highest_chain": 2,
+              "config_hash": 17009678407634462320,
+              "elapsed_seconds": 0.168453644
+            }
+          },
+          {
+            "name": "probe",
+            "command": [
+              "/home/gabe/Documents/ChatGPT/irisu/build-cuda-game/game-probe-host-scratch",
+              "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+              "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/scratch-game-host-seeds/seed-0.rpy",
+              "4096",
+              "--arena-mib",
+              "8",
+              "--clone-at",
+              "256"
+            ],
+            "wall_seconds": 4.515696588998253,
+            "digest_sha256": "305ceaa49730bca15a2735be75ab9f1ee4f591bbd68e9fbdf166466a9a783d9b",
+            "metadata": {
+              "backend": "host-translated-full-game",
+              "experimental": true,
+              "clone_verified": true,
+              "rows": 4097,
+              "requested_steps": 4096,
+              "tick": 934,
+              "guest_error": 0,
+              "fault_pc": 0,
+              "guest_heap": 367648,
+              "game_failed": false,
+              "config_hash": 17009678407634462320,
+              "score": 16,
+              "canonical_score": 16,
+              "level": 1,
+              "chain": 2,
+              "kernel_ms": 0.0,
+              "elapsed_seconds": 4.488705192,
+              "world_bytes": 582664,
+              "arena_bytes": 8388608
+            }
+          }
+        ],
+        "comparison": {
+          "version": "game-digest-v1-comparison",
+          "rows": 4097,
+          "mismatches": 0,
+          "trajectory_sha256": "305ceaa49730bca15a2735be75ab9f1ee4f591bbd68e9fbdf166466a9a783d9b",
+          "scope": "All encoded scalar/body/event/transition digests match; FNV-1a is not a collision-resistant proof of unobserved internal state."
+        }
+      },
+      {
+        "seed": 3939967453,
+        "replay_sha256": "e3afbb6cc2e6cc4f23e134ce94f79f59eb96ffa62ed26d99450b04e7c9819a2b",
+        "runs": [
+          {
+            "name": "native",
+            "command": [
+              "/home/gabe/Documents/ChatGPT/irisu/build-project-exact/irisu-game-oracle",
+              "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/scratch-game-host-seeds/seed-3939967453.rpy",
+              "4096"
+            ],
+            "wall_seconds": 0.16362573000515113,
+            "digest_sha256": "a40d37ea3312ef5783fa32b007eb844f6ac1c390e37fadb4fd7cbae6240df050",
+            "metadata": {
+              "backend": "native-msvc-cpu-oracle",
+              "format": "game-digest-v1",
+              "rows": 4097,
+              "steps": 4096,
+              "events": 14461,
+              "tick": 1000,
+              "live_score": 8,
+              "canonical_score": 8,
+              "level": 1,
+              "highest_chain": 2,
+              "config_hash": 17009678407634462320,
+              "elapsed_seconds": 0.142277316
+            }
+          },
+          {
+            "name": "probe",
+            "command": [
+              "/home/gabe/Documents/ChatGPT/irisu/build-cuda-game/game-probe-host-scratch",
+              "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+              "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/scratch-game-host-seeds/seed-3939967453.rpy",
+              "4096",
+              "--arena-mib",
+              "8",
+              "--clone-at",
+              "256"
+            ],
+            "wall_seconds": 3.865528053996968,
+            "digest_sha256": "a40d37ea3312ef5783fa32b007eb844f6ac1c390e37fadb4fd7cbae6240df050",
+            "metadata": {
+              "backend": "host-translated-full-game",
+              "experimental": true,
+              "clone_verified": true,
+              "rows": 4097,
+              "requested_steps": 4096,
+              "tick": 1000,
+              "guest_error": 0,
+              "fault_pc": 0,
+              "guest_heap": 359392,
+              "game_failed": false,
+              "config_hash": 17009678407634462320,
+              "score": 8,
+              "canonical_score": 8,
+              "level": 1,
+              "chain": 2,
+              "kernel_ms": 0.0,
+              "elapsed_seconds": 3.820667962,
+              "world_bytes": 582664,
+              "arena_bytes": 8388608
+            }
+          }
+        ],
+        "comparison": {
+          "version": "game-digest-v1-comparison",
+          "rows": 4097,
+          "mismatches": 0,
+          "trajectory_sha256": "a40d37ea3312ef5783fa32b007eb844f6ac1c390e37fadb4fd7cbae6240df050",
+          "scope": "All encoded scalar/body/event/transition digests match; FNV-1a is not a collision-resistant proof of unobserved internal state."
+        }
+      },
+      {
+        "seed": 1196846281,
+        "replay_sha256": "52d5c914dd3b3fce0605594f2f80c49832b1f1f108a9b14ab857ccfb8e3bb685",
+        "runs": [
+          {
+            "name": "native",
+            "command": [
+              "/home/gabe/Documents/ChatGPT/irisu/build-project-exact/irisu-game-oracle",
+              "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/scratch-game-host-seeds/seed-1196846281.rpy",
+              "4096"
+            ],
+            "wall_seconds": 0.16349800700118067,
+            "digest_sha256": "e287ec64a1855d8e014068a4d7526d892ca75fad1ad7fd7d30e85674bb05be4d",
+            "metadata": {
+              "backend": "native-msvc-cpu-oracle",
+              "format": "game-digest-v1",
+              "rows": 4097,
+              "steps": 4096,
+              "events": 13312,
+              "tick": 936,
+              "live_score": 16,
+              "canonical_score": 16,
+              "level": 1,
+              "highest_chain": 2,
+              "config_hash": 17009678407634462320,
+              "elapsed_seconds": 0.123432403
+            }
+          },
+          {
+            "name": "probe",
+            "command": [
+              "/home/gabe/Documents/ChatGPT/irisu/build-cuda-game/game-probe-host-scratch",
+              "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+              "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/scratch-game-host-seeds/seed-1196846281.rpy",
+              "4096",
+              "--arena-mib",
+              "8",
+              "--clone-at",
+              "256"
+            ],
+            "wall_seconds": 2.965221794998797,
+            "digest_sha256": "e287ec64a1855d8e014068a4d7526d892ca75fad1ad7fd7d30e85674bb05be4d",
+            "metadata": {
+              "backend": "host-translated-full-game",
+              "experimental": true,
+              "clone_verified": true,
+              "rows": 4097,
+              "requested_steps": 4096,
+              "tick": 936,
+              "guest_error": 0,
+              "fault_pc": 0,
+              "guest_heap": 359392,
+              "game_failed": false,
+              "config_hash": 17009678407634462320,
+              "score": 16,
+              "canonical_score": 16,
+              "level": 1,
+              "chain": 2,
+              "kernel_ms": 0.0,
+              "elapsed_seconds": 2.953577639,
+              "world_bytes": 582664,
+              "arena_bytes": 8388608
+            }
+          }
+        ],
+        "comparison": {
+          "version": "game-digest-v1-comparison",
+          "rows": 4097,
+          "mismatches": 0,
+          "trajectory_sha256": "e287ec64a1855d8e014068a4d7526d892ca75fad1ad7fd7d30e85674bb05be4d",
+          "scope": "All encoded scalar/body/event/transition digests match; FNV-1a is not a collision-resistant proof of unobserved internal state."
+        }
+      },
+      {
+        "seed": 4000000151,
+        "replay_sha256": "48e7a92ebec369742470222a972e91b431fcd8170219e808fd48ab0d49a0cd79",
+        "runs": [
+          {
+            "name": "native",
+            "command": [
+              "/home/gabe/Documents/ChatGPT/irisu/build-project-exact/irisu-game-oracle",
+              "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/scratch-game-host-seeds/seed-4000000151.rpy",
+              "4096"
+            ],
+            "wall_seconds": 0.06348814100056188,
+            "digest_sha256": "6110609bf50e6ebf4edcc6341ce601c45840f898f3c8cea6f05356edc3d4a63b",
+            "metadata": {
+              "backend": "native-msvc-cpu-oracle",
+              "format": "game-digest-v1",
+              "rows": 4097,
+              "steps": 4096,
+              "events": 317,
+              "tick": 155,
+              "live_score": 0,
+              "canonical_score": 0,
+              "level": 1,
+              "highest_chain": 0,
+              "config_hash": 17009678407634462320,
+              "elapsed_seconds": 0.046607765
+            }
+          },
+          {
+            "name": "probe",
+            "command": [
+              "/home/gabe/Documents/ChatGPT/irisu/build-cuda-game/game-probe-host-scratch",
+              "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+              "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/scratch-game-host-seeds/seed-4000000151.rpy",
+              "4096",
+              "--arena-mib",
+              "8",
+              "--clone-at",
+              "256"
+            ],
+            "wall_seconds": 0.46380044800025644,
+            "digest_sha256": "6110609bf50e6ebf4edcc6341ce601c45840f898f3c8cea6f05356edc3d4a63b",
+            "metadata": {
+              "backend": "host-translated-full-game",
+              "experimental": true,
+              "clone_verified": true,
+              "rows": 4097,
+              "requested_steps": 4096,
+              "tick": 155,
+              "guest_error": 0,
+              "fault_pc": 0,
+              "guest_heap": 359392,
+              "game_failed": false,
+              "config_hash": 17009678407634462320,
+              "score": 0,
+              "canonical_score": 0,
+              "level": 1,
+              "chain": 0,
+              "kernel_ms": 0.0,
+              "elapsed_seconds": 0.451828868,
+              "world_bytes": 582664,
+              "arena_bytes": 8388608
+            }
+          }
+        ],
+        "comparison": {
+          "version": "game-digest-v1-comparison",
+          "rows": 4097,
+          "mismatches": 0,
+          "trajectory_sha256": "6110609bf50e6ebf4edcc6341ce601c45840f898f3c8cea6f05356edc3d4a63b",
+          "scope": "All encoded scalar/body/event/transition digests match; FNV-1a is not a collision-resistant proof of unobserved internal state."
+        }
+      }
+    ],
+    "status": "passed"
+  },
+  "gpu_128_continuous": {
+    "schema": "irisu-cuda-game-differential-v1",
+    "exact_gpu_promoted": false,
+    "backend": "cuda",
+    "steps_per_case": 128,
+    "inputs": {
+      "build-project-exact/irisu-game-oracle": "c7172f8687942e02770846686cb55b12e269dffb33d6e00f5fdf8c4794b5b04e",
+      "build-project-cuda/clone/cuda/irisu-cuda-game-probe": "7773d0724a313a187698a0426f8de322722794211c77d99da1575edfdd6c6d1e",
+      "build-project-cuda/clone/cuda/generated/guest_image.bin": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685",
+      "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79"
+    },
+    "cases": [
+      {
+        "seed": 1298144938,
+        "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+        "runs": [
+          {
+            "name": "native",
+            "command": [
+              "/home/gabe/Documents/ChatGPT/irisu/build-project-exact/irisu-game-oracle",
+              "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/scratch-game-gpu-128/seed-1298144938.rpy",
+              "128"
+            ],
+            "wall_seconds": 0.03170883699931437,
+            "digest_sha256": "72f0dae184ffe9f16d63e0eb4223fd12e0a400e0ce7eafc613f84768449316ba",
+            "metadata": {
+              "backend": "native-msvc-cpu-oracle",
+              "format": "game-digest-v1",
+              "rows": 129,
+              "steps": 128,
+              "events": 266,
+              "tick": 128,
+              "live_score": 0,
+              "canonical_score": 0,
+              "level": 1,
+              "highest_chain": 0,
+              "config_hash": 17009678407634462320,
+              "elapsed_seconds": 0.012162692
+            }
+          },
+          {
+            "name": "probe",
+            "command": [
+              "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/irisu-cuda-game-probe",
+              "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+              "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/scratch-game-gpu-128/seed-1298144938.rpy",
+              "128",
+              "--arena-mib",
+              "8",
+              "--gpu"
+            ],
+            "wall_seconds": 12.671093044998997,
+            "digest_sha256": "72f0dae184ffe9f16d63e0eb4223fd12e0a400e0ce7eafc613f84768449316ba",
+            "metadata": {
+              "backend": "cuda-translated-full-game",
+              "experimental": true,
+              "clone_verified": false,
+              "rows": 129,
+              "requested_steps": 128,
+              "tick": 128,
+              "guest_error": 0,
+              "fault_pc": 0,
+              "guest_heap": 359392,
+              "game_failed": false,
+              "config_hash": 17009678407634462320,
+              "score": 0,
+              "canonical_score": 0,
+              "level": 1,
+              "chain": 0,
+              "kernel_ms": 12503.287109,
+              "elapsed_seconds": 12.59860453,
+              "world_bytes": 582664,
+              "arena_bytes": 8388608
+            }
+          }
+        ],
+        "comparison": {
+          "version": "game-digest-v1-comparison",
+          "rows": 129,
+          "mismatches": 0,
+          "trajectory_sha256": "72f0dae184ffe9f16d63e0eb4223fd12e0a400e0ce7eafc613f84768449316ba",
+          "scope": "All encoded scalar/body/event/transition digests match; FNV-1a is not a collision-resistant proof of unobserved internal state."
+        }
+      }
+    ],
+    "status": "passed"
+  },
+  "gpu_128_segmented": {
+    "schema": "irisu-cuda-game-segments-v1",
+    "status": "passed",
+    "scope": "checkpoint-segmented GPU replay; every frame plus canonical hidden/complete arena endpoint hashes",
+    "continuous_gpu_replay_observed": false,
+    "exact_training_admitted": false,
+    "steps": 128,
+    "rows": 129,
+    "segments": 4,
+    "segment_ticks": 32,
+    "arena_bytes": 1048576,
+    "threads_per_block": 1,
+    "host_checkpoint_seconds": 0.192685138,
+    "gpu_kernel_ms": 3968.789551,
+    "elapsed_seconds": 4.243263755,
+    "canonical_score": 0,
+    "live_score": 0,
+    "level": 1,
+    "chain": 0
+  },
+  "altered_image_rejection": {
+    "command": [
+      "build-cuda-game/game-probe-host-scratch",
+      "build-cuda-game/altered-image.bin",
+      "irisu-high-score-4393101.rpy",
+      "1",
+      "--gpu"
+    ],
+    "returncode": 1,
+    "stderr": "game-probe: CUDA guest image SHA-256 does not match compiled identity\n",
+    "status": "passed",
+    "scope": "altered image rejected before simulation or GPU admission"
+  },
+  "sha256": {
+    "clone/cuda/game.cuh": "454025dc78c0b7769f85c885d49576f19e2a610ce5fe779dd926336a7bbef507",
+    "clone/cuda/game_source.json": "f8ce73edb9abff471a43e0ea88c368bcb4a29f35259f67a7d1e3e4be91c87476",
+    "clone/cuda/game_support.cuh": "a04980514e30cacd2b158622dfb072b4618b95c5b69b87d942ea505bcb9408c5",
+    "clone/cuda/game_types.cuh": "654e1a2738ddb0ae7e1862e8a8d887a109fac908c5afb02f7fb0344c9202fac7",
+    "clone/cuda/game_tables.cuh": "3ddd4c93f2856cb779a964a82d23aae78aca826d03f3d64809fe56c9ea1cf330",
+    "clone/cuda/world.cuh": "e7f82b2349f1277e12c9072b498da2487d7ec0f1b02b4a460f2c3f09c0ad2954",
+    "clone/cuda/physics_game.cuh": "c15ba8c8e6c41a4a415c67eafed11b74a15dea6524e23575a5ce7227203b5a1e",
+    "tools/cuda-exact/game_codegen.py": "14813a4d34f0431cba9cdeeb6c1dcba39e261ac3e9953ec00d0336d7b976e6f1",
+    "tools/cuda-exact/game_probe.cu": "dbcdaee70b687a2989697730a12daa4abfba85aa10e66bf6a7303437aa9ba6e9",
+    "tools/cuda-exact/game_segments.cu": "a5b6b47fdb193094ba46fe41429b9cdce3cad08d78b190f3487f20cbf474f49a",
+    "tools/cuda-exact/game_digest.hpp": "ffd7e32374c9667afe2793d2b35ac94eeb0e0ad0e1375560ef8dc59b86a89766",
+    "build-project-cuda/clone/cuda/irisu-cuda-game-probe": "7773d0724a313a187698a0426f8de322722794211c77d99da1575edfdd6c6d1e",
+    "build-project-cuda/clone/cuda/irisu-cuda-game-segments": "8fb81ad94e258ca6863be4e4820d49d00f22ec834d71630d60b35baef882b513"
+  },
+  "limitations": [
+    "Full GPU record segmented gate is recorded separately.",
+    "Moving scratch may trade warp-coalesced local storage for per-world global storage; complete search throughput must be measured."
+  ]
+}

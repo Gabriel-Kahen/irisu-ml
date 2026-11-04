@@ -1,0 +1,37 @@
+{
+  "schema": "irisu-bounded-store-source-qualification-v1",
+  "scope": "Current audited typed physics graphs only; numeric gate is not full backend admission or a performance claim",
+  "default_enabled": false,
+  "requires_device_bounded_math": true,
+  "source_pins": {
+    "clone/cuda_native/solver_math.hpp": "d453337712c8cc50dff9e6f7285b856d78fefb4b9df4e20b54f2e9c59375f697",
+    "tools/cuda-native/bounded_store_validate.cu": "2248618883541c35959e858034927ddf63a0afd48c6cbccf4d3ebe16cefc74d5",
+    "tools/cuda-native/bounded_store_contract.md": "3fe5fd9acec8bc4d7fa86a55a07bf67688c4f4db1c4ab9a330a124c22af51210"
+  },
+  "numeric_evidence": {
+    "path": "artifacts/gpu-efficiency-20261104/bounded-store-qualified.json",
+    "sha256": "181f4fe224cceb35e915ddff2331da885e4483802aed0938bd234ae7ad39adcf",
+    "result": {
+      "schema": "irisu-bounded-store-qualifier-v1",
+      "passed": true,
+      "bounded_math": 1,
+      "bounded_store": 1,
+      "random_inputs": 1000000,
+      "boundary_inputs": 1081600,
+      "comparisons": 20816000,
+      "accepted": 14841082,
+      "rejected": 5974918,
+      "status_mismatches": 0,
+      "accepted_bit_mismatches": 0,
+      "rejected_bit_differences": 12,
+      "scope": "Ten bounded composed graphs, checked device reference, accepted F32 and raw F64 bits; no native-world admission"
+    }
+  },
+  "pending_for_profile_admission": [
+    "Native stage and dynamic-scene gates",
+    "Full native game record",
+    "Search snapshot/continuation and native packet gates",
+    "Device memory checks"
+  ],
+  "rejected_output_bits_part_of_contract": false
+}

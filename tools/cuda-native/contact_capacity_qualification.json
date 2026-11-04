@@ -1,0 +1,139 @@
+{
+  "identity": "experimental-typed-contact-capacity-20261104",
+  "source_commit": "81b0900",
+  "baseline_selected_commit": "4c36f6f",
+  "scope": "Host/native-frame admission and CPU compilation of optional512-contact typed GPU profile; no GPU execution or speed claim",
+  "default_contact_capacity": 4096,
+  "profile_contact_capacity": 512,
+  "unchanged_capacities": {
+    "bodies": 512,
+    "shapes": 512,
+    "native_SAP_pairs": 4096,
+    "Game_contact_vector": 4096
+  },
+  "compile_profile": {
+    "bounded_math": true,
+    "bounded_store": true,
+    "light_shape_sync": true,
+    "cached_rotation": true,
+    "f32_store": false,
+    "sparse_reset": false,
+    "inline_step": true,
+    "entry_index": false,
+    "wide_rebind": true,
+    "frontend": "min",
+    "register_cap": 0,
+    "architecture": "70",
+    "build_type": "Release",
+    "nvcc": "12.9.86",
+    "host_compiler": "g++-14"
+  },
+  "host_4096": {
+    "pass": true,
+    "backend": "checked-typed-host",
+    "contact_capacity": 4096,
+    "native_SAP_pair_capacity": 4096,
+    "game_contact_vector_capacity": 4096,
+    "actual_native_frame_checks": 97220,
+    "typed_boundary_contact_peak": 64,
+    "first_contact_peak_tick": 97161,
+    "typed_boundary_SAP_pair_peak": 64,
+    "pending_delete_boundaries": 6774,
+    "peak_scope": "typed call-boundary occupancy; not native hidden or transient allocation high-water",
+    "capacity_overflow_rejected": true,
+    "world_bytes": 737360,
+    "scene_bytes": 1682584,
+    "scratch_bytes": 849924,
+    "physical_prefix_bytes": 832656,
+    "game_bytes": 582480,
+    "performance_claim": false
+  },
+  "host_512": {
+    "pass": true,
+    "backend": "checked-typed-host",
+    "contact_capacity": 512,
+    "native_SAP_pair_capacity": 4096,
+    "game_contact_vector_capacity": 4096,
+    "actual_native_frame_checks": 97220,
+    "typed_boundary_contact_peak": 64,
+    "first_contact_peak_tick": 97161,
+    "typed_boundary_SAP_pair_peak": 64,
+    "pending_delete_boundaries": 6774,
+    "peak_scope": "typed call-boundary occupancy; not native hidden or transient allocation high-water",
+    "capacity_overflow_rejected": true,
+    "world_bytes": 292944,
+    "scene_bytes": 507032,
+    "scratch_bytes": 118788,
+    "physical_prefix_bytes": 388240,
+    "game_bytes": 582480,
+    "performance_claim": false
+  },
+  "peak_qualification": "Observed typed public-call contact occupancy, not direct native hidden state or transient allocation high-water. Every reported replay Frame matches pinned actual-native capture.512admission proven only for that host replay; arbitrary512-proxy worlds not admitted by this receipt.",
+  "build_directory": "build-cuda-native-efficiency-cap",
+  "built_binaries": {
+    "build-cuda-native-efficiency-cap/clone/cuda_native/irisu-cuda-native-search-runner": {
+      "sha256": "7180b1757a04265f66d0a70fe7876d487362ed4120d497e3053414441c4ba8fc",
+      "bytes": 3312712,
+      "immutable_archive": "artifacts/gpu-efficiency-20261104/contact-capacity/irisu-cuda-native-search-runner-initial"
+    },
+    "build-cuda-native-efficiency-cap/clone/cuda_native/irisu-cuda-native-game-runner": {
+      "sha256": "4baee531b924c012e79748c1a508d110582255288d2e61837d81e3c99a87f055",
+      "bytes": 1528120,
+      "immutable_archive": "artifacts/gpu-efficiency-20261104/contact-capacity/irisu-cuda-native-game-runner-initial"
+    },
+    "build-cuda-native-efficiency-cap/clone/cuda_native/irisu-cuda-native-dynamic-scene-runner": {
+      "sha256": "8b731d7be21ebe652538ae9810946233c0efed94322a5e375134c3c799ca86fb",
+      "bytes": 2189880,
+      "immutable_archive": "artifacts/gpu-efficiency-20261104/contact-capacity/irisu-cuda-native-dynamic-scene-runner-initial"
+    }
+  },
+  "source_manifest_before": "artifacts/gpu-efficiency-20261104/contact-capacity/source-before.json",
+  "source_manifest_after": "artifacts/gpu-efficiency-20261104/contact-capacity/source-after.json",
+  "source_manifest_sha256": "ccc28242fb50ca5ee6aabc02755fbaf29f3e161f640d3dd0b664209259d760b4",
+  "source_files_pinned": 36,
+  "sources_unchanged_during_build": true,
+  "actual_compiled_repository_dependencies": 33,
+  "new_dependencies_not_pinned_before": [
+    "tools/cuda-native/scene_dynamic_runner.cu"
+  ],
+  "inputs_sha256": {
+    "irisu-high-score-4393101.rpy": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+    "artifacts/gpu-exact-20261103/cpu-oracle/game-record.digest": "9d972bbf361cfa58de555891ebcf96d2cd7b109839bc00868079d60aa03577ed"
+  },
+  "raw_future_arrays_12288_bytes": {
+    "capacity4096": 27833106432,
+    "capacity512": 13387923456
+  },
+  "memory_scope": "Host sizeof-based future Game+Scene array bytes only; excludes GPU stack, CUDA context, prefix/selected state, outputs, ranks and allocation overhead. No actual GPU VRAM observation yet.",
+  "logs": {
+    "configure.log": "artifacts/gpu-efficiency-20261104/contact-capacity/configure.log",
+    "build-search.log": "artifacts/gpu-efficiency-20261104/contact-capacity/build-search.log",
+    "build-qualifiers.log": "artifacts/gpu-efficiency-20261104/contact-capacity/build-qualifiers.log",
+    "host-4096-build.log": "artifacts/gpu-efficiency-20261104/contact-capacity/host-4096-build.log",
+    "host-512-build.log": "artifacts/gpu-efficiency-20261104/contact-capacity/host-512-build.log",
+    "host-4096.json": "artifacts/gpu-efficiency-20261104/contact-capacity/host-4096.json",
+    "host-512.json": "artifacts/gpu-efficiency-20261104/contact-capacity/host-512.json"
+  },
+  "build_interruption": "Game/dynamic targets completed before search-priority instruction. Remaining qualifier group terminated with143 at compactScene compilation; no orphan. Search then built successfully alone-j1.",
+  "unsupported_cross_profile_wire": "Raw Scene/World/plan dumps and scene_wire v1/v2 snapshots/hash are capacity-specific.1396-byte dynamic SceneCase, canonical dynamic active-state/SAP hash,96-byte Game Frame and search candidate/result wires remain compatible.",
+  "gpu_qualification": "Pending root-exclusive pilot; fullGPUrecord+dynamic native/compact gates required if profile chosen",
+  "performance_claim": false,
+  "target_dependency_pins": {
+    "irisu-cuda-native-search-runner": {
+      "repository_files": 27,
+      "not_pinned_before": []
+    },
+    "irisu-cuda-native-game-runner": {
+      "repository_files": 22,
+      "not_pinned_before": []
+    },
+    "irisu-cuda-native-dynamic-scene-runner": {
+      "repository_files": 17,
+      "not_pinned_before": [
+        "tools/cuda-native/scene_dynamic_runner.cu"
+      ]
+    }
+  },
+  "dynamic_source_pin_limit": "scene_dynamic_runner.cu was absent from the pre-build manifest; it is tracked and currently matches committed source, but no pre-build hash capture is claimed for this one source. All search/game target repository dependencies were pinned before and after.",
+  "dynamic_source_postbuild_sha256": "27b479528ca0e23cc79d689ba4c353610dd7e38cb303258861bc4115664f5ee5"
+}

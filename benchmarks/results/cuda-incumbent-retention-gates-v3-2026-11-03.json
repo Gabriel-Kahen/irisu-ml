@@ -1,0 +1,4573 @@
+{
+  "schema": "irisu-incumbent-retention-policy-gates-v3",
+  "promotion_eligible": false,
+  "historical_policy": "protected canonical topK, before live-beam improvement",
+  "cases": {
+    "forced-beam2": {
+      "schema": "irisu-resident-search-session-parity-v3",
+      "promotion_eligible": false,
+      "inputs": {
+        "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+        "specs_sha256": "b9cb973b4839dd0e1ac5bd25706e4014e28b52487357438aadd6ebd00f0ab514",
+        "image_sha256": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685"
+      },
+      "binaries": {
+        "gpu_sha256": "3bf2024dcafd21911309c32aff88c55040608d236d9509d7c1e7210230d617db",
+        "oracle_sha256": "cf4865e017afa0f559569d1d5ac834cb39cd4d23385c17224953e85e9ace48e1",
+        "game_oracle_sha256": "b94f4fdb998021e4e6a9cc6e57de680e11017f25f243b49053080fcd57481158"
+      },
+      "command": [
+        "build-project-cuda/clone/cuda/irisu-cuda-search-session",
+        "build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/gpu-exact-20261103/search-v3/forced-beam2.specs.bin",
+        "10000",
+        "80",
+        "1",
+        "2",
+        "3",
+        "4393102",
+        "artifacts/gpu-exact-20261103/search-v3/forced-beam2.winner.rpy",
+        "artifacts/gpu-exact-20261103/search-v3/forced-beam2.lineage.json",
+        "--host-prefix",
+        "--isolated-warps",
+        "--final-only",
+        "--block-threads",
+        "128",
+        "--stack-kib",
+        "16"
+      ],
+      "gpu": {
+        "wall_seconds": 16.931428347998008,
+        "stderr": "{\"selection_policy\":\"canonical-rank-with-protected-zero-edit-lineage\",\"protect_incumbent\":true}\n{\"identity\":\"experimental-cuda-game-search-session-v3\",\"promotion_eligible\":false,\"depths\":3,\"beam\":2,\"fanout\":8,\"candidate_nodes\":40,\"actual_simulated_branches\":40,\"actual_simulated_ticks\":3200,\"failed_candidates\":0,\"trace_every_tick\":false,\"cache_guest\":true,\"block_threads\":128,\"stack_kib\":16,\"host_prefix_ms\":5443.091548000,\"prefix_ms\":42.100704193,\"branch_ms\":6.202336073,\"rollout_ms\":11082.376464844,\"rank_compact_ms\":6.490112066,\"validation_ms\":216.019973755,\"total_ms\":16878.402793000,\"allocated_bytes\":29865220,\"compaction_errors\":0,\"winner_tick\":10240,\"winner_live_score\":4051,\"winner_canonical_score\":0,\"winner_canonical_level\":0,\"winner_canonical_chain\":0,\"winner_natural\":0}\n"
+      },
+      "rounds": [
+        {
+          "depth": 0,
+          "candidates": 8,
+          "selected_paths": [
+            [
+              6
+            ],
+            [
+              0
+            ]
+          ],
+          "distinct_final_frame_fingerprints": 8,
+          "distinct_trace_fingerprints": 8,
+          "selected_children": [
+            6,
+            0
+          ],
+          "protected_parent_rank": 1,
+          "native_command": [
+            "build-project-exact/irisu-search-oracle",
+            "irisu-high-score-4393101.rpy",
+            "artifacts/gpu-exact-20261103/search-v3/forced-beam2.depth-0.native-specs.bin",
+            "10000",
+            "80",
+            "8",
+            "4393102",
+            "--final-only"
+          ],
+          "native": {
+            "wall_seconds": 0.2859348400015733,
+            "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":8,\"workers\":8,\"prefix_ticks\":10000,\"horizon\":80,\"simulated_ticks\":640,\"trace_every_tick\":false,\"prefix_ms\":276.738444000,\"branch_rollout_rank_ms\":5.173637000,\"total_ms\":281.922040000,\"winner\":6}\n"
+          },
+          "native_candidate_parity": true,
+          "result_sha256": "e449f08a4383740815febc7f840bf39fab9bac6d012b043fc124b80e1ade587f"
+        },
+        {
+          "depth": 1,
+          "candidates": 16,
+          "selected_paths": [
+            [
+              6,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "distinct_final_frame_fingerprints": 16,
+          "distinct_trace_fingerprints": 16,
+          "selected_children": [
+            0,
+            8
+          ],
+          "protected_parent_rank": 1,
+          "native_command": [
+            "build-project-exact/irisu-search-oracle",
+            "irisu-high-score-4393101.rpy",
+            "artifacts/gpu-exact-20261103/search-v3/forced-beam2.depth-1.native-specs.bin",
+            "10000",
+            "160",
+            "8",
+            "4393102",
+            "--final-only"
+          ],
+          "native": {
+            "wall_seconds": 0.29996461699920474,
+            "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":16,\"workers\":8,\"prefix_ticks\":10000,\"horizon\":160,\"simulated_ticks\":2560,\"trace_every_tick\":false,\"prefix_ms\":281.899026000,\"branch_rollout_rank_ms\":14.151408000,\"total_ms\":296.059852000,\"winner\":0}\n"
+          },
+          "native_candidate_parity": true,
+          "result_sha256": "f676291266f0fae71bea4784a7dacdec8d81f11c7029813366f0b12b84fd67c4"
+        },
+        {
+          "depth": 2,
+          "candidates": 16,
+          "selected_paths": [
+            [
+              6,
+              0,
+              4
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "distinct_final_frame_fingerprints": 16,
+          "distinct_trace_fingerprints": 16,
+          "selected_children": [
+            4,
+            8
+          ],
+          "protected_parent_rank": 1,
+          "native_command": [
+            "build-project-exact/irisu-search-oracle",
+            "irisu-high-score-4393101.rpy",
+            "artifacts/gpu-exact-20261103/search-v3/forced-beam2.depth-2.native-specs.bin",
+            "10000",
+            "240",
+            "8",
+            "4393102",
+            "--final-only"
+          ],
+          "native": {
+            "wall_seconds": 0.3010020599976997,
+            "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":16,\"workers\":8,\"prefix_ticks\":10000,\"horizon\":240,\"simulated_ticks\":3840,\"trace_every_tick\":false,\"prefix_ms\":276.066847000,\"branch_rollout_rank_ms\":21.114307000,\"total_ms\":297.190963000,\"winner\":4}\n"
+          },
+          "native_candidate_parity": true,
+          "result_sha256": "f9e9720416b0cb33858a3248cc01bb7f298475ea98639cf977f3800df2f8ea4c"
+        }
+      ],
+      "all_candidate_parity": true,
+      "prefix": 10000,
+      "horizon": 80,
+      "beam": 2,
+      "fanout": 8,
+      "depths": 3,
+      "trace_every_tick": false,
+      "protect_incumbent": true,
+      "distinct_normalized_specs": 8,
+      "verification_mode": "every_native_candidate_and_winner_replay",
+      "telemetry": [
+        [
+          1793742522.159914,
+          0.0,
+          9.0,
+          26.01
+        ],
+        [
+          1793742522.375138,
+          8.0,
+          2747.0,
+          36.74
+        ],
+        [
+          1793742522.5898979,
+          0.0,
+          2747.0,
+          36.93
+        ],
+        [
+          1793742522.8051069,
+          0.0,
+          2747.0,
+          36.74
+        ],
+        [
+          1793742523.0203822,
+          0.0,
+          2747.0,
+          36.84
+        ],
+        [
+          1793742523.2355604,
+          0.0,
+          2747.0,
+          36.83
+        ],
+        [
+          1793742523.4523437,
+          0.0,
+          2747.0,
+          36.83
+        ],
+        [
+          1793742523.6675305,
+          0.0,
+          2747.0,
+          36.85
+        ],
+        [
+          1793742523.8830624,
+          0.0,
+          2747.0,
+          36.74
+        ],
+        [
+          1793742524.0981266,
+          0.0,
+          2747.0,
+          36.93
+        ],
+        [
+          1793742524.3131084,
+          0.0,
+          2747.0,
+          36.83
+        ],
+        [
+          1793742524.528454,
+          0.0,
+          2747.0,
+          36.74
+        ],
+        [
+          1793742524.743511,
+          0.0,
+          2747.0,
+          36.83
+        ],
+        [
+          1793742524.9588478,
+          0.0,
+          2747.0,
+          36.83
+        ],
+        [
+          1793742525.1752176,
+          0.0,
+          2747.0,
+          36.83
+        ],
+        [
+          1793742525.3901203,
+          0.0,
+          2747.0,
+          36.84
+        ],
+        [
+          1793742525.605444,
+          0.0,
+          2747.0,
+          36.84
+        ],
+        [
+          1793742525.821255,
+          0.0,
+          2747.0,
+          36.94
+        ],
+        [
+          1793742526.0401044,
+          0.0,
+          2747.0,
+          36.94
+        ],
+        [
+          1793742526.2555299,
+          0.0,
+          2747.0,
+          36.93
+        ],
+        [
+          1793742526.4709995,
+          0.0,
+          2747.0,
+          36.93
+        ],
+        [
+          1793742526.6866398,
+          0.0,
+          2747.0,
+          36.93
+        ],
+        [
+          1793742526.9019723,
+          0.0,
+          2747.0,
+          36.93
+        ],
+        [
+          1793742527.11739,
+          0.0,
+          2747.0,
+          36.93
+        ],
+        [
+          1793742527.332499,
+          0.0,
+          2747.0,
+          36.93
+        ],
+        [
+          1793742527.547855,
+          0.0,
+          2747.0,
+          36.93
+        ],
+        [
+          1793742527.763,
+          0.0,
+          2769.0,
+          37.61
+        ],
+        [
+          1793742527.9779994,
+          71.0,
+          2769.0,
+          42.43
+        ],
+        [
+          1793742528.1932702,
+          100.0,
+          2769.0,
+          43.9
+        ],
+        [
+          1793742528.408228,
+          100.0,
+          2769.0,
+          43.9
+        ],
+        [
+          1793742528.623393,
+          100.0,
+          2769.0,
+          43.9
+        ],
+        [
+          1793742528.8389351,
+          100.0,
+          2769.0,
+          43.88
+        ],
+        [
+          1793742529.0543966,
+          100.0,
+          2769.0,
+          43.9
+        ],
+        [
+          1793742529.2693527,
+          100.0,
+          2769.0,
+          43.89
+        ],
+        [
+          1793742529.4849155,
+          100.0,
+          2769.0,
+          43.81
+        ],
+        [
+          1793742529.6999986,
+          100.0,
+          2769.0,
+          44.0
+        ],
+        [
+          1793742529.914934,
+          100.0,
+          2769.0,
+          43.9
+        ],
+        [
+          1793742530.1298294,
+          100.0,
+          2769.0,
+          43.8
+        ],
+        [
+          1793742530.3446474,
+          100.0,
+          2769.0,
+          43.89
+        ],
+        [
+          1793742530.5596957,
+          100.0,
+          2769.0,
+          43.9
+        ],
+        [
+          1793742530.774737,
+          100.0,
+          2769.0,
+          43.9
+        ],
+        [
+          1793742530.9894965,
+          100.0,
+          2769.0,
+          43.9
+        ],
+        [
+          1793742531.2043207,
+          100.0,
+          2769.0,
+          43.9
+        ],
+        [
+          1793742531.4199793,
+          100.0,
+          2769.0,
+          43.51
+        ],
+        [
+          1793742531.6348207,
+          100.0,
+          2769.0,
+          43.13
+        ],
+        [
+          1793742531.8496833,
+          100.0,
+          2769.0,
+          43.81
+        ],
+        [
+          1793742532.0645068,
+          100.0,
+          2769.0,
+          44.37
+        ],
+        [
+          1793742532.2794828,
+          100.0,
+          2769.0,
+          44.38
+        ],
+        [
+          1793742532.494387,
+          100.0,
+          2769.0,
+          44.37
+        ],
+        [
+          1793742532.7098048,
+          100.0,
+          2769.0,
+          44.38
+        ],
+        [
+          1793742532.9245,
+          100.0,
+          2769.0,
+          44.68
+        ],
+        [
+          1793742533.1392488,
+          100.0,
+          2769.0,
+          44.96
+        ],
+        [
+          1793742533.354056,
+          100.0,
+          2769.0,
+          44.95
+        ],
+        [
+          1793742533.5688088,
+          100.0,
+          2769.0,
+          44.97
+        ],
+        [
+          1793742533.7842176,
+          100.0,
+          2769.0,
+          44.96
+        ],
+        [
+          1793742533.9989502,
+          100.0,
+          2769.0,
+          44.86
+        ],
+        [
+          1793742534.2140088,
+          100.0,
+          2769.0,
+          45.05
+        ],
+        [
+          1793742534.4291458,
+          100.0,
+          2769.0,
+          44.96
+        ],
+        [
+          1793742534.6459825,
+          100.0,
+          2769.0,
+          44.96
+        ],
+        [
+          1793742534.8607595,
+          100.0,
+          2769.0,
+          44.96
+        ],
+        [
+          1793742535.0765488,
+          100.0,
+          2769.0,
+          43.9
+        ],
+        [
+          1793742535.2917252,
+          100.0,
+          2769.0,
+          43.41
+        ],
+        [
+          1793742535.5065718,
+          100.0,
+          2769.0,
+          44.38
+        ],
+        [
+          1793742535.7212343,
+          100.0,
+          2769.0,
+          44.37
+        ],
+        [
+          1793742535.9363437,
+          100.0,
+          2769.0,
+          44.38
+        ],
+        [
+          1793742536.152424,
+          100.0,
+          2769.0,
+          44.76
+        ],
+        [
+          1793742536.3674505,
+          100.0,
+          2769.0,
+          44.76
+        ],
+        [
+          1793742536.5827475,
+          100.0,
+          2769.0,
+          45.06
+        ],
+        [
+          1793742536.7988124,
+          100.0,
+          2769.0,
+          45.34
+        ],
+        [
+          1793742537.016199,
+          100.0,
+          2769.0,
+          45.16
+        ],
+        [
+          1793742537.2309332,
+          100.0,
+          2769.0,
+          45.25
+        ],
+        [
+          1793742537.4458463,
+          100.0,
+          2769.0,
+          45.14
+        ],
+        [
+          1793742537.6606095,
+          100.0,
+          2769.0,
+          44.95
+        ],
+        [
+          1793742537.8788688,
+          100.0,
+          2769.0,
+          45.14
+        ],
+        [
+          1793742538.0938737,
+          100.0,
+          2769.0,
+          45.05
+        ],
+        [
+          1793742538.3090801,
+          100.0,
+          2769.0,
+          45.14
+        ],
+        [
+          1793742538.5240023,
+          100.0,
+          2769.0,
+          44.37
+        ],
+        [
+          1793742538.7410035,
+          100.0,
+          2769.0,
+          43.8
+        ],
+        [
+          1793742538.9560702,
+          100.0,
+          2769.0,
+          42.93
+        ]
+      ],
+      "peak_vram_mib": 2769.0,
+      "peak_gpu_util_percent": 100.0,
+      "gpu_metadata": {
+        "identity": "experimental-cuda-game-search-session-v3",
+        "promotion_eligible": false,
+        "depths": 3,
+        "beam": 2,
+        "fanout": 8,
+        "candidate_nodes": 40,
+        "actual_simulated_branches": 40,
+        "actual_simulated_ticks": 3200,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "cache_guest": true,
+        "block_threads": 128,
+        "stack_kib": 16,
+        "host_prefix_ms": 5443.091548,
+        "prefix_ms": 42.100704193,
+        "branch_ms": 6.202336073,
+        "rollout_ms": 11082.376464844,
+        "rank_compact_ms": 6.490112066,
+        "validation_ms": 216.019973755,
+        "total_ms": 16878.402793,
+        "allocated_bytes": 29865220,
+        "compaction_errors": 0,
+        "winner_tick": 10240,
+        "winner_live_score": 4051,
+        "winner_canonical_score": 0,
+        "winner_canonical_level": 0,
+        "winner_canonical_chain": 0,
+        "winner_natural": 0
+      },
+      "winning_lineage_consistent": true,
+      "winning_lineage_native_parity": true,
+      "winner_replay_sha256": "23ea5b3bf820b6297f916eabf918ad264d67fdabb32de604b96a4f99f3a8bd0d",
+      "native_reset_replay_verified": true,
+      "verification_scope": "bounded_nonterminal",
+      "natural_terminal": false,
+      "canonical_score": 0,
+      "winner_trace_ticks": 10240,
+      "independent_verification": {
+        "wall_seconds": 0.34381334299541777,
+        "stderr": "{\"backend\":\"native-msvc-cpu-oracle\",\"format\":\"game-digest-v1\",\"rows\":10241,\"steps\":10240,\"events\":30622,\"tick\":10240,\"live_score\":4051,\"canonical_score\":0,\"latest_final_score\":0,\"level\":9,\"highest_chain\":5,\"config_hash\":17009678407634462320,\"elapsed_seconds\":0.341776661}\n"
+      },
+      "native_verified_incumbent_score_floor": null,
+      "incumbent_native_verification": {
+        "wall_seconds": 3.6269197209985578,
+        "stderr": "{\"backend\":\"native-msvc-cpu-oracle\",\"format\":\"game-digest-v1\",\"rows\":97220,\"steps\":97219,\"events\":308512,\"tick\":97219,\"live_score\":4393699,\"canonical_score\":4393101,\"latest_final_score\":4393101,\"level\":100,\"highest_chain\":70,\"config_hash\":17009678407634462320,\"elapsed_seconds\":3.622721237}\n"
+      }
+    },
+    "forced-beam2-fulltrace": {
+      "schema": "irisu-resident-search-session-parity-v3",
+      "promotion_eligible": false,
+      "inputs": {
+        "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+        "specs_sha256": "b9cb973b4839dd0e1ac5bd25706e4014e28b52487357438aadd6ebd00f0ab514",
+        "image_sha256": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685"
+      },
+      "binaries": {
+        "gpu_sha256": "3bf2024dcafd21911309c32aff88c55040608d236d9509d7c1e7210230d617db",
+        "oracle_sha256": "cf4865e017afa0f559569d1d5ac834cb39cd4d23385c17224953e85e9ace48e1",
+        "game_oracle_sha256": "b94f4fdb998021e4e6a9cc6e57de680e11017f25f243b49053080fcd57481158"
+      },
+      "command": [
+        "build-project-cuda/clone/cuda/irisu-cuda-search-session",
+        "build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/gpu-exact-20261103/search-v3/forced-beam2-fulltrace.specs.bin",
+        "10000",
+        "80",
+        "1",
+        "2",
+        "3",
+        "4393102",
+        "artifacts/gpu-exact-20261103/search-v3/forced-beam2-fulltrace.winner.rpy",
+        "artifacts/gpu-exact-20261103/search-v3/forced-beam2-fulltrace.lineage.json",
+        "--host-prefix",
+        "--isolated-warps",
+        "--block-threads",
+        "128",
+        "--stack-kib",
+        "16"
+      ],
+      "gpu": {
+        "wall_seconds": 16.898437098003342,
+        "stderr": "{\"selection_policy\":\"canonical-rank-with-protected-zero-edit-lineage\",\"protect_incumbent\":true}\n{\"identity\":\"experimental-cuda-game-search-session-v3\",\"promotion_eligible\":false,\"depths\":3,\"beam\":2,\"fanout\":8,\"candidate_nodes\":40,\"actual_simulated_branches\":40,\"actual_simulated_ticks\":3200,\"failed_candidates\":0,\"trace_every_tick\":true,\"cache_guest\":true,\"block_threads\":128,\"stack_kib\":16,\"host_prefix_ms\":5330.414376000,\"prefix_ms\":36.701183319,\"branch_ms\":6.185984015,\"rollout_ms\":11153.423583984,\"rank_compact_ms\":6.495232105,\"validation_ms\":216.011779785,\"total_ms\":16844.989268000,\"allocated_bytes\":29865220,\"compaction_errors\":0,\"winner_tick\":10240,\"winner_live_score\":4051,\"winner_canonical_score\":0,\"winner_canonical_level\":0,\"winner_canonical_chain\":0,\"winner_natural\":0}\n"
+      },
+      "rounds": [
+        {
+          "depth": 0,
+          "candidates": 8,
+          "selected_paths": [
+            [
+              6
+            ],
+            [
+              0
+            ]
+          ],
+          "distinct_final_frame_fingerprints": 8,
+          "distinct_trace_fingerprints": 8,
+          "selected_children": [
+            6,
+            0
+          ],
+          "protected_parent_rank": 1,
+          "native_command": [
+            "build-project-exact/irisu-search-oracle",
+            "irisu-high-score-4393101.rpy",
+            "artifacts/gpu-exact-20261103/search-v3/forced-beam2-fulltrace.depth-0.native-specs.bin",
+            "10000",
+            "80",
+            "8",
+            "4393102"
+          ],
+          "native": {
+            "wall_seconds": 0.2934249850004562,
+            "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":8,\"workers\":8,\"prefix_ticks\":10000,\"horizon\":80,\"simulated_ticks\":640,\"trace_every_tick\":true,\"prefix_ms\":283.284371000,\"branch_rollout_rank_ms\":5.317667000,\"total_ms\":288.612478000,\"winner\":6}\n"
+          },
+          "native_candidate_parity": true,
+          "result_sha256": "5bd5d72d1f66e055c5d09ad03a854d3086f6fd69c9bef1ca8a82b9ab3b72f36e"
+        },
+        {
+          "depth": 1,
+          "candidates": 16,
+          "selected_paths": [
+            [
+              6,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "distinct_final_frame_fingerprints": 16,
+          "distinct_trace_fingerprints": 16,
+          "selected_children": [
+            0,
+            8
+          ],
+          "protected_parent_rank": 1,
+          "native_command": [
+            "build-project-exact/irisu-search-oracle",
+            "irisu-high-score-4393101.rpy",
+            "artifacts/gpu-exact-20261103/search-v3/forced-beam2-fulltrace.depth-1.native-specs.bin",
+            "10000",
+            "160",
+            "8",
+            "4393102"
+          ],
+          "native": {
+            "wall_seconds": 0.3038939819962252,
+            "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":16,\"workers\":8,\"prefix_ticks\":10000,\"horizon\":160,\"simulated_ticks\":2560,\"trace_every_tick\":true,\"prefix_ms\":281.784749000,\"branch_rollout_rank_ms\":18.283636000,\"total_ms\":300.078784000,\"winner\":0}\n"
+          },
+          "native_candidate_parity": true,
+          "result_sha256": "efa89891e5932cccd42f16eb3344775d1f571fb050b61611aec4146cc5c1d9a9"
+        },
+        {
+          "depth": 2,
+          "candidates": 16,
+          "selected_paths": [
+            [
+              6,
+              0,
+              4
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "distinct_final_frame_fingerprints": 16,
+          "distinct_trace_fingerprints": 16,
+          "selected_children": [
+            4,
+            8
+          ],
+          "protected_parent_rank": 1,
+          "native_command": [
+            "build-project-exact/irisu-search-oracle",
+            "irisu-high-score-4393101.rpy",
+            "artifacts/gpu-exact-20261103/search-v3/forced-beam2-fulltrace.depth-2.native-specs.bin",
+            "10000",
+            "240",
+            "8",
+            "4393102"
+          ],
+          "native": {
+            "wall_seconds": 0.30853087500145193,
+            "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":16,\"workers\":8,\"prefix_ticks\":10000,\"horizon\":240,\"simulated_ticks\":3840,\"trace_every_tick\":true,\"prefix_ms\":280.572621000,\"branch_rollout_rank_ms\":24.047042000,\"total_ms\":304.629191000,\"winner\":4}\n"
+          },
+          "native_candidate_parity": true,
+          "result_sha256": "9d79bdad8a27e103b871bde06b7d605df9afe45108ccccf1c2c510e42c04292e"
+        }
+      ],
+      "all_candidate_parity": true,
+      "prefix": 10000,
+      "horizon": 80,
+      "beam": 2,
+      "fanout": 8,
+      "depths": 3,
+      "trace_every_tick": true,
+      "protect_incumbent": true,
+      "distinct_normalized_specs": 8,
+      "verification_mode": "every_native_candidate_and_winner_replay",
+      "telemetry": [
+        [
+          1793743056.4823964,
+          0.0,
+          9.0,
+          26.22
+        ],
+        [
+          1793743056.6976416,
+          7.0,
+          2747.0,
+          37.05
+        ],
+        [
+          1793743056.912739,
+          0.0,
+          2747.0,
+          37.06
+        ],
+        [
+          1793743057.1281047,
+          0.0,
+          2747.0,
+          37.05
+        ],
+        [
+          1793743057.346012,
+          0.0,
+          2747.0,
+          37.15
+        ],
+        [
+          1793743057.561285,
+          0.0,
+          2747.0,
+          37.15
+        ],
+        [
+          1793743057.7780464,
+          0.0,
+          2747.0,
+          37.15
+        ],
+        [
+          1793743057.9934409,
+          0.0,
+          2747.0,
+          37.15
+        ],
+        [
+          1793743058.209394,
+          0.0,
+          2747.0,
+          37.15
+        ],
+        [
+          1793743058.424406,
+          0.0,
+          2747.0,
+          37.05
+        ],
+        [
+          1793743058.6395411,
+          0.0,
+          2747.0,
+          37.15
+        ],
+        [
+          1793743058.8545196,
+          0.0,
+          2747.0,
+          37.06
+        ],
+        [
+          1793743059.0732996,
+          0.0,
+          2747.0,
+          37.07
+        ],
+        [
+          1793743059.2882938,
+          0.0,
+          2747.0,
+          37.16
+        ],
+        [
+          1793743059.5034804,
+          0.0,
+          2747.0,
+          37.05
+        ],
+        [
+          1793743059.7188284,
+          0.0,
+          2747.0,
+          37.15
+        ],
+        [
+          1793743059.934665,
+          0.0,
+          2747.0,
+          37.05
+        ],
+        [
+          1793743060.150007,
+          0.0,
+          2747.0,
+          37.05
+        ],
+        [
+          1793743060.365125,
+          0.0,
+          2747.0,
+          37.05
+        ],
+        [
+          1793743060.5804813,
+          0.0,
+          2747.0,
+          37.15
+        ],
+        [
+          1793743060.7977338,
+          0.0,
+          2747.0,
+          37.15
+        ],
+        [
+          1793743061.0131094,
+          0.0,
+          2747.0,
+          37.05
+        ],
+        [
+          1793743061.228781,
+          0.0,
+          2747.0,
+          37.05
+        ],
+        [
+          1793743061.443791,
+          0.0,
+          2747.0,
+          37.06
+        ],
+        [
+          1793743061.6597488,
+          0.0,
+          2747.0,
+          37.15
+        ],
+        [
+          1793743061.8749926,
+          0.0,
+          2747.0,
+          37.05
+        ],
+        [
+          1793743062.091847,
+          39.0,
+          2769.0,
+          38.03
+        ],
+        [
+          1793743062.3075025,
+          100.0,
+          2769.0,
+          42.77
+        ],
+        [
+          1793743062.5224366,
+          100.0,
+          2769.0,
+          44.12
+        ],
+        [
+          1793743062.737845,
+          100.0,
+          2769.0,
+          44.12
+        ],
+        [
+          1793743062.9533665,
+          100.0,
+          2769.0,
+          44.12
+        ],
+        [
+          1793743063.168544,
+          100.0,
+          2769.0,
+          44.12
+        ],
+        [
+          1793743063.3833196,
+          100.0,
+          2769.0,
+          44.12
+        ],
+        [
+          1793743063.598483,
+          100.0,
+          2769.0,
+          44.12
+        ],
+        [
+          1793743063.8193264,
+          100.0,
+          2769.0,
+          44.12
+        ],
+        [
+          1793743064.0345988,
+          100.0,
+          2769.0,
+          44.12
+        ],
+        [
+          1793743064.2494733,
+          100.0,
+          2769.0,
+          44.12
+        ],
+        [
+          1793743064.4649432,
+          100.0,
+          2769.0,
+          44.12
+        ],
+        [
+          1793743064.680309,
+          100.0,
+          2769.0,
+          44.12
+        ],
+        [
+          1793743064.8959672,
+          100.0,
+          2769.0,
+          44.12
+        ],
+        [
+          1793743065.1121619,
+          100.0,
+          2769.0,
+          44.12
+        ],
+        [
+          1793743065.3279278,
+          100.0,
+          2769.0,
+          44.12
+        ],
+        [
+          1793743065.5431716,
+          100.0,
+          2769.0,
+          44.12
+        ],
+        [
+          1793743065.760421,
+          100.0,
+          2769.0,
+          43.83
+        ],
+        [
+          1793743065.9753923,
+          100.0,
+          2769.0,
+          43.44
+        ],
+        [
+          1793743066.1905196,
+          100.0,
+          2769.0,
+          44.61
+        ],
+        [
+          1793743066.405778,
+          100.0,
+          2769.0,
+          44.6
+        ],
+        [
+          1793743066.6206973,
+          100.0,
+          2769.0,
+          44.61
+        ],
+        [
+          1793743066.8361018,
+          100.0,
+          2769.0,
+          44.6
+        ],
+        [
+          1793743067.0514305,
+          100.0,
+          2769.0,
+          44.5
+        ],
+        [
+          1793743067.2665954,
+          100.0,
+          2769.0,
+          45.0
+        ],
+        [
+          1793743067.4822664,
+          100.0,
+          2769.0,
+          45.29
+        ],
+        [
+          1793743067.6974676,
+          100.0,
+          2769.0,
+          45.28
+        ],
+        [
+          1793743067.9128754,
+          100.0,
+          2769.0,
+          45.08
+        ],
+        [
+          1793743068.1290746,
+          100.0,
+          2769.0,
+          45.27
+        ],
+        [
+          1793743068.344602,
+          100.0,
+          2769.0,
+          45.19
+        ],
+        [
+          1793743068.559743,
+          100.0,
+          2769.0,
+          45.28
+        ],
+        [
+          1793743068.776042,
+          100.0,
+          2769.0,
+          45.28
+        ],
+        [
+          1793743068.991506,
+          100.0,
+          2769.0,
+          45.37
+        ],
+        [
+          1793743069.2073047,
+          100.0,
+          2769.0,
+          45.29
+        ],
+        [
+          1793743069.4223099,
+          100.0,
+          2769.0,
+          44.12
+        ],
+        [
+          1793743069.6376548,
+          100.0,
+          2769.0,
+          44.71
+        ],
+        [
+          1793743069.8530712,
+          100.0,
+          2769.0,
+          44.61
+        ],
+        [
+          1793743070.0683537,
+          100.0,
+          2769.0,
+          44.7
+        ],
+        [
+          1793743070.2836418,
+          100.0,
+          2769.0,
+          44.6
+        ],
+        [
+          1793743070.4994,
+          100.0,
+          2769.0,
+          45.0
+        ],
+        [
+          1793743070.7148623,
+          100.0,
+          2769.0,
+          45.09
+        ],
+        [
+          1793743070.9300303,
+          100.0,
+          2769.0,
+          45.38
+        ],
+        [
+          1793743071.1455822,
+          100.0,
+          2769.0,
+          45.47
+        ],
+        [
+          1793743071.3665762,
+          100.0,
+          2769.0,
+          45.38
+        ],
+        [
+          1793743071.5820618,
+          100.0,
+          2769.0,
+          45.38
+        ],
+        [
+          1793743071.797228,
+          100.0,
+          2769.0,
+          45.38
+        ],
+        [
+          1793743072.0156543,
+          100.0,
+          2769.0,
+          45.38
+        ],
+        [
+          1793743072.2307656,
+          100.0,
+          2769.0,
+          45.38
+        ],
+        [
+          1793743072.4458818,
+          100.0,
+          2769.0,
+          45.38
+        ],
+        [
+          1793743072.6611595,
+          100.0,
+          2769.0,
+          45.38
+        ],
+        [
+          1793743072.877527,
+          100.0,
+          2769.0,
+          44.21
+        ],
+        [
+          1793743073.0925148,
+          100.0,
+          2769.0,
+          43.45
+        ],
+        [
+          1793743073.3078773,
+          100.0,
+          2769.0,
+          43.05
+        ]
+      ],
+      "peak_vram_mib": 2769.0,
+      "peak_gpu_util_percent": 100.0,
+      "gpu_metadata": {
+        "identity": "experimental-cuda-game-search-session-v3",
+        "promotion_eligible": false,
+        "depths": 3,
+        "beam": 2,
+        "fanout": 8,
+        "candidate_nodes": 40,
+        "actual_simulated_branches": 40,
+        "actual_simulated_ticks": 3200,
+        "failed_candidates": 0,
+        "trace_every_tick": true,
+        "cache_guest": true,
+        "block_threads": 128,
+        "stack_kib": 16,
+        "host_prefix_ms": 5330.414376,
+        "prefix_ms": 36.701183319,
+        "branch_ms": 6.185984015,
+        "rollout_ms": 11153.423583984,
+        "rank_compact_ms": 6.495232105,
+        "validation_ms": 216.011779785,
+        "total_ms": 16844.989268,
+        "allocated_bytes": 29865220,
+        "compaction_errors": 0,
+        "winner_tick": 10240,
+        "winner_live_score": 4051,
+        "winner_canonical_score": 0,
+        "winner_canonical_level": 0,
+        "winner_canonical_chain": 0,
+        "winner_natural": 0
+      },
+      "winning_lineage_consistent": true,
+      "winning_lineage_native_parity": true,
+      "winner_replay_sha256": "23ea5b3bf820b6297f916eabf918ad264d67fdabb32de604b96a4f99f3a8bd0d",
+      "native_reset_replay_verified": true,
+      "verification_scope": "bounded_nonterminal",
+      "natural_terminal": false,
+      "canonical_score": 0,
+      "winner_trace_ticks": 10240,
+      "independent_verification": {
+        "wall_seconds": 0.34760675900179194,
+        "stderr": "{\"backend\":\"native-msvc-cpu-oracle\",\"format\":\"game-digest-v1\",\"rows\":10241,\"steps\":10240,\"events\":30622,\"tick\":10240,\"live_score\":4051,\"canonical_score\":0,\"latest_final_score\":0,\"level\":9,\"highest_chain\":5,\"config_hash\":17009678407634462320,\"elapsed_seconds\":0.345541580}\n"
+      },
+      "native_verified_incumbent_score_floor": null,
+      "incumbent_native_verification": {
+        "wall_seconds": 3.8728581120012677,
+        "stderr": "{\"backend\":\"native-msvc-cpu-oracle\",\"format\":\"game-digest-v1\",\"rows\":97220,\"steps\":97219,\"events\":308512,\"tick\":97219,\"live_score\":4393699,\"canonical_score\":4393101,\"latest_final_score\":4393101,\"level\":100,\"highest_chain\":70,\"config_hash\":17009678407634462320,\"elapsed_seconds\":3.867629664}\n"
+      }
+    },
+    "forced-beam1": {
+      "schema": "irisu-resident-search-session-parity-v3",
+      "promotion_eligible": false,
+      "inputs": {
+        "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+        "specs_sha256": "b9cb973b4839dd0e1ac5bd25706e4014e28b52487357438aadd6ebd00f0ab514",
+        "image_sha256": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685"
+      },
+      "binaries": {
+        "gpu_sha256": "3bf2024dcafd21911309c32aff88c55040608d236d9509d7c1e7210230d617db",
+        "oracle_sha256": "cf4865e017afa0f559569d1d5ac834cb39cd4d23385c17224953e85e9ace48e1",
+        "game_oracle_sha256": "b94f4fdb998021e4e6a9cc6e57de680e11017f25f243b49053080fcd57481158"
+      },
+      "command": [
+        "build-project-cuda/clone/cuda/irisu-cuda-search-session",
+        "build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/gpu-exact-20261103/search-v3/forced-beam1.specs.bin",
+        "10000",
+        "80",
+        "1",
+        "1",
+        "3",
+        "4393102",
+        "artifacts/gpu-exact-20261103/search-v3/forced-beam1.winner.rpy",
+        "artifacts/gpu-exact-20261103/search-v3/forced-beam1.lineage.json",
+        "--host-prefix",
+        "--isolated-warps",
+        "--final-only",
+        "--block-threads",
+        "128",
+        "--stack-kib",
+        "16"
+      ],
+      "gpu": {
+        "wall_seconds": 16.814562061001197,
+        "stderr": "{\"selection_policy\":\"canonical-rank-with-protected-zero-edit-lineage\",\"protect_incumbent\":true}\n{\"identity\":\"experimental-cuda-game-search-session-v3\",\"promotion_eligible\":false,\"depths\":3,\"beam\":1,\"fanout\":8,\"candidate_nodes\":24,\"actual_simulated_branches\":24,\"actual_simulated_ticks\":1920,\"failed_candidates\":0,\"trace_every_tick\":false,\"cache_guest\":true,\"block_threads\":128,\"stack_kib\":16,\"host_prefix_ms\":5429.171880000,\"prefix_ms\":38.735904694,\"branch_ms\":5.796863914,\"rollout_ms\":11080.489746094,\"rank_compact_ms\":6.445056200,\"validation_ms\":117.158912659,\"total_ms\":16761.506769000,\"allocated_bytes\":15179600,\"compaction_errors\":0,\"winner_tick\":10240,\"winner_live_score\":4051,\"winner_canonical_score\":0,\"winner_canonical_level\":0,\"winner_canonical_chain\":0,\"winner_natural\":0}\n"
+      },
+      "rounds": [
+        {
+          "depth": 0,
+          "candidates": 8,
+          "selected_paths": [
+            [
+              0
+            ]
+          ],
+          "distinct_final_frame_fingerprints": 8,
+          "distinct_trace_fingerprints": 8,
+          "selected_children": [
+            0
+          ],
+          "protected_parent_rank": 0,
+          "native_command": [
+            "build-project-exact/irisu-search-oracle",
+            "irisu-high-score-4393101.rpy",
+            "artifacts/gpu-exact-20261103/search-v3/forced-beam1.depth-0.native-specs.bin",
+            "10000",
+            "80",
+            "8",
+            "4393102",
+            "--final-only"
+          ],
+          "native": {
+            "wall_seconds": 0.28366990399808856,
+            "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":8,\"workers\":8,\"prefix_ticks\":10000,\"horizon\":80,\"simulated_ticks\":640,\"trace_every_tick\":false,\"prefix_ms\":274.627590000,\"branch_rollout_rank_ms\":4.969740000,\"total_ms\":279.606968000,\"winner\":6}\n"
+          },
+          "native_candidate_parity": true,
+          "result_sha256": "e449f08a4383740815febc7f840bf39fab9bac6d012b043fc124b80e1ade587f"
+        },
+        {
+          "depth": 1,
+          "candidates": 8,
+          "selected_paths": [
+            [
+              0,
+              0
+            ]
+          ],
+          "distinct_final_frame_fingerprints": 8,
+          "distinct_trace_fingerprints": 8,
+          "selected_children": [
+            0
+          ],
+          "protected_parent_rank": 0,
+          "native_command": [
+            "build-project-exact/irisu-search-oracle",
+            "irisu-high-score-4393101.rpy",
+            "artifacts/gpu-exact-20261103/search-v3/forced-beam1.depth-1.native-specs.bin",
+            "10000",
+            "160",
+            "8",
+            "4393102",
+            "--final-only"
+          ],
+          "native": {
+            "wall_seconds": 0.2858469929997227,
+            "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":8,\"workers\":8,\"prefix_ticks\":10000,\"horizon\":160,\"simulated_ticks\":1280,\"trace_every_tick\":false,\"prefix_ms\":274.158048000,\"branch_rollout_rank_ms\":7.911834000,\"total_ms\":282.079189000,\"winner\":0}\n"
+          },
+          "native_candidate_parity": true,
+          "result_sha256": "2d3f3257aba949e1137bad8cdf3a448f5b4642ca62448253264be7616cbc5c09"
+        },
+        {
+          "depth": 2,
+          "candidates": 8,
+          "selected_paths": [
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "distinct_final_frame_fingerprints": 8,
+          "distinct_trace_fingerprints": 8,
+          "selected_children": [
+            0
+          ],
+          "protected_parent_rank": 0,
+          "native_command": [
+            "build-project-exact/irisu-search-oracle",
+            "irisu-high-score-4393101.rpy",
+            "artifacts/gpu-exact-20261103/search-v3/forced-beam1.depth-2.native-specs.bin",
+            "10000",
+            "240",
+            "8",
+            "4393102",
+            "--final-only"
+          ],
+          "native": {
+            "wall_seconds": 0.2906600249989424,
+            "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":8,\"workers\":8,\"prefix_ticks\":10000,\"horizon\":240,\"simulated_ticks\":1920,\"trace_every_tick\":false,\"prefix_ms\":275.854984000,\"branch_rollout_rank_ms\":11.069207000,\"total_ms\":286.933299000,\"winner\":4}\n"
+          },
+          "native_candidate_parity": true,
+          "result_sha256": "f557c6c1b7a1ec8791b5d1fe306170660cf4ef5c7ca1f6d1615d8435787ee7d9"
+        }
+      ],
+      "all_candidate_parity": true,
+      "prefix": 10000,
+      "horizon": 80,
+      "beam": 1,
+      "fanout": 8,
+      "depths": 3,
+      "trace_every_tick": false,
+      "protect_incumbent": true,
+      "distinct_normalized_specs": 8,
+      "verification_mode": "every_native_candidate_and_winner_replay",
+      "telemetry": [
+        [
+          1793742609.8303726,
+          0.0,
+          9.0,
+          26.0
+        ],
+        [
+          1793742610.0454621,
+          8.0,
+          2735.0,
+          37.23
+        ],
+        [
+          1793742610.2605171,
+          0.0,
+          2735.0,
+          37.22
+        ],
+        [
+          1793742610.475687,
+          0.0,
+          2735.0,
+          37.32
+        ],
+        [
+          1793742610.6903052,
+          0.0,
+          2735.0,
+          37.23
+        ],
+        [
+          1793742610.9057822,
+          0.0,
+          2735.0,
+          37.22
+        ],
+        [
+          1793742611.1207037,
+          0.0,
+          2735.0,
+          37.32
+        ],
+        [
+          1793742611.3355355,
+          0.0,
+          2735.0,
+          37.32
+        ],
+        [
+          1793742611.5516074,
+          0.0,
+          2735.0,
+          37.33
+        ],
+        [
+          1793742611.7663186,
+          0.0,
+          2735.0,
+          37.32
+        ],
+        [
+          1793742611.9822245,
+          0.0,
+          2735.0,
+          37.43
+        ],
+        [
+          1793742612.1971114,
+          0.0,
+          2735.0,
+          37.33
+        ],
+        [
+          1793742612.411824,
+          0.0,
+          2735.0,
+          37.33
+        ],
+        [
+          1793742612.6266284,
+          0.0,
+          2735.0,
+          37.33
+        ],
+        [
+          1793742612.8446622,
+          0.0,
+          2735.0,
+          37.33
+        ],
+        [
+          1793742613.060139,
+          0.0,
+          2735.0,
+          37.33
+        ],
+        [
+          1793742613.2761197,
+          0.0,
+          2735.0,
+          37.42
+        ],
+        [
+          1793742613.4907722,
+          0.0,
+          2735.0,
+          37.33
+        ],
+        [
+          1793742613.706289,
+          0.0,
+          2735.0,
+          37.43
+        ],
+        [
+          1793742613.9212365,
+          0.0,
+          2735.0,
+          37.33
+        ],
+        [
+          1793742614.1360836,
+          0.0,
+          2735.0,
+          37.32
+        ],
+        [
+          1793742614.3514054,
+          0.0,
+          2735.0,
+          37.43
+        ],
+        [
+          1793742614.5683632,
+          0.0,
+          2735.0,
+          37.33
+        ],
+        [
+          1793742614.7832024,
+          0.0,
+          2735.0,
+          37.43
+        ],
+        [
+          1793742614.9980524,
+          0.0,
+          2735.0,
+          37.43
+        ],
+        [
+          1793742615.2131746,
+          0.0,
+          2735.0,
+          37.43
+        ],
+        [
+          1793742615.4312146,
+          0.0,
+          2757.0,
+          38.11
+        ],
+        [
+          1793742615.6460826,
+          100.0,
+          2757.0,
+          42.65
+        ],
+        [
+          1793742615.8611557,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742616.075804,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742616.2926614,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742616.5074294,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742616.722938,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742616.937873,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742617.1546462,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742617.3696434,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742617.584395,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742617.7989516,
+          100.0,
+          2757.0,
+          44.0
+        ],
+        [
+          1793742618.0170133,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742618.2323847,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742618.4472604,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742618.662191,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742618.878855,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742619.093681,
+          100.0,
+          2757.0,
+          43.61
+        ],
+        [
+          1793742619.3085253,
+          100.0,
+          2757.0,
+          43.22
+        ],
+        [
+          1793742619.5233512,
+          100.0,
+          2757.0,
+          43.51
+        ],
+        [
+          1793742619.7412713,
+          100.0,
+          2757.0,
+          43.51
+        ],
+        [
+          1793742619.9560459,
+          100.0,
+          2757.0,
+          43.51
+        ],
+        [
+          1793742620.171323,
+          100.0,
+          2757.0,
+          43.51
+        ],
+        [
+          1793742620.3863819,
+          100.0,
+          2757.0,
+          43.51
+        ],
+        [
+          1793742620.603013,
+          100.0,
+          2757.0,
+          43.71
+        ],
+        [
+          1793742620.818274,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742621.0339167,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742621.24904,
+          100.0,
+          2757.0,
+          43.81
+        ],
+        [
+          1793742621.465094,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742621.6802049,
+          100.0,
+          2757.0,
+          43.99
+        ],
+        [
+          1793742621.8949084,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742622.1095724,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742622.327637,
+          100.0,
+          2757.0,
+          43.89
+        ],
+        [
+          1793742622.5424776,
+          100.0,
+          2757.0,
+          44.0
+        ],
+        [
+          1793742622.757734,
+          100.0,
+          2757.0,
+          43.42
+        ],
+        [
+          1793742622.9725444,
+          100.0,
+          2757.0,
+          43.03
+        ],
+        [
+          1793742623.1893897,
+          100.0,
+          2757.0,
+          43.53
+        ],
+        [
+          1793742623.404307,
+          100.0,
+          2757.0,
+          43.51
+        ],
+        [
+          1793742623.6191266,
+          100.0,
+          2757.0,
+          43.61
+        ],
+        [
+          1793742623.8343303,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742624.0516486,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742624.2666514,
+          100.0,
+          2757.0,
+          44.0
+        ],
+        [
+          1793742624.4816246,
+          100.0,
+          2757.0,
+          44.0
+        ],
+        [
+          1793742624.6966877,
+          100.0,
+          2757.0,
+          43.99
+        ],
+        [
+          1793742624.913786,
+          100.0,
+          2757.0,
+          44.0
+        ],
+        [
+          1793742625.1285415,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742625.3447673,
+          100.0,
+          2757.0,
+          44.0
+        ],
+        [
+          1793742625.559701,
+          100.0,
+          2757.0,
+          44.0
+        ],
+        [
+          1793742625.7767897,
+          100.0,
+          2757.0,
+          43.9
+        ],
+        [
+          1793742625.9914746,
+          100.0,
+          2757.0,
+          44.0
+        ],
+        [
+          1793742626.2064426,
+          100.0,
+          2757.0,
+          43.42
+        ],
+        [
+          1793742626.4212992,
+          100.0,
+          2757.0,
+          43.13
+        ],
+        [
+          1793742626.6359951,
+          100.0,
+          9.0,
+          45.45
+        ]
+      ],
+      "peak_vram_mib": 2757.0,
+      "peak_gpu_util_percent": 100.0,
+      "gpu_metadata": {
+        "identity": "experimental-cuda-game-search-session-v3",
+        "promotion_eligible": false,
+        "depths": 3,
+        "beam": 1,
+        "fanout": 8,
+        "candidate_nodes": 24,
+        "actual_simulated_branches": 24,
+        "actual_simulated_ticks": 1920,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "cache_guest": true,
+        "block_threads": 128,
+        "stack_kib": 16,
+        "host_prefix_ms": 5429.17188,
+        "prefix_ms": 38.735904694,
+        "branch_ms": 5.796863914,
+        "rollout_ms": 11080.489746094,
+        "rank_compact_ms": 6.4450562,
+        "validation_ms": 117.158912659,
+        "total_ms": 16761.506769,
+        "allocated_bytes": 15179600,
+        "compaction_errors": 0,
+        "winner_tick": 10240,
+        "winner_live_score": 4051,
+        "winner_canonical_score": 0,
+        "winner_canonical_level": 0,
+        "winner_canonical_chain": 0,
+        "winner_natural": 0
+      },
+      "winning_lineage_consistent": true,
+      "winning_lineage_native_parity": true,
+      "winner_replay_sha256": "c0ea297da441f93b6f49e9407e07ef101e6399fc8d16feed488a86e15719f5bc",
+      "native_reset_replay_verified": true,
+      "verification_scope": "bounded_nonterminal",
+      "natural_terminal": false,
+      "canonical_score": 0,
+      "winner_trace_ticks": 10240,
+      "independent_verification": {
+        "wall_seconds": 0.342954069004918,
+        "stderr": "{\"backend\":\"native-msvc-cpu-oracle\",\"format\":\"game-digest-v1\",\"rows\":10241,\"steps\":10240,\"events\":30617,\"tick\":10240,\"live_score\":4051,\"canonical_score\":0,\"latest_final_score\":0,\"level\":9,\"highest_chain\":5,\"config_hash\":17009678407634462320,\"elapsed_seconds\":0.341060008}\n"
+      },
+      "native_verified_incumbent_score_floor": null,
+      "incumbent_native_verification": {
+        "wall_seconds": 3.6653402450028807,
+        "stderr": "{\"backend\":\"native-msvc-cpu-oracle\",\"format\":\"game-digest-v1\",\"rows\":97220,\"steps\":97219,\"events\":308512,\"tick\":97219,\"live_score\":4393699,\"canonical_score\":4393101,\"latest_final_score\":4393101,\"level\":100,\"highest_chain\":70,\"config_hash\":17009678407634462320,\"elapsed_seconds\":3.660879343}\n"
+      }
+    },
+    "greedy-control": {
+      "schema": "irisu-resident-search-session-parity-v3",
+      "promotion_eligible": false,
+      "inputs": {
+        "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+        "specs_sha256": "b9cb973b4839dd0e1ac5bd25706e4014e28b52487357438aadd6ebd00f0ab514",
+        "image_sha256": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685"
+      },
+      "binaries": {
+        "gpu_sha256": "3bf2024dcafd21911309c32aff88c55040608d236d9509d7c1e7210230d617db",
+        "oracle_sha256": "cf4865e017afa0f559569d1d5ac834cb39cd4d23385c17224953e85e9ace48e1",
+        "game_oracle_sha256": "b94f4fdb998021e4e6a9cc6e57de680e11017f25f243b49053080fcd57481158"
+      },
+      "command": [
+        "build-project-cuda/clone/cuda/irisu-cuda-search-session",
+        "build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/gpu-exact-20261103/search-v3/greedy-control.specs.bin",
+        "10000",
+        "80",
+        "1",
+        "2",
+        "3",
+        "4393102",
+        "artifacts/gpu-exact-20261103/search-v3/greedy-control.winner.rpy",
+        "artifacts/gpu-exact-20261103/search-v3/greedy-control.lineage.json",
+        "--host-prefix",
+        "--isolated-warps",
+        "--final-only",
+        "--no-protect-incumbent",
+        "--block-threads",
+        "128",
+        "--stack-kib",
+        "16"
+      ],
+      "gpu": {
+        "wall_seconds": 17.02685938200011,
+        "stderr": "{\"selection_policy\":\"canonical-top-k\",\"protect_incumbent\":false}\n{\"identity\":\"experimental-cuda-game-search-session-v3\",\"promotion_eligible\":false,\"depths\":3,\"beam\":2,\"fanout\":8,\"candidate_nodes\":40,\"actual_simulated_branches\":40,\"actual_simulated_ticks\":3200,\"failed_candidates\":0,\"trace_every_tick\":false,\"cache_guest\":true,\"block_threads\":128,\"stack_kib\":16,\"host_prefix_ms\":5467.656857000,\"prefix_ms\":37.956607819,\"branch_ms\":6.225919962,\"rollout_ms\":11156.592773438,\"rank_compact_ms\":6.509568214,\"validation_ms\":215.987197876,\"total_ms\":16974.158484000,\"allocated_bytes\":29865220,\"compaction_errors\":0,\"winner_tick\":10240,\"winner_live_score\":4051,\"winner_canonical_score\":0,\"winner_canonical_level\":0,\"winner_canonical_chain\":0,\"winner_natural\":0}\n"
+      },
+      "rounds": [
+        {
+          "depth": 0,
+          "candidates": 8,
+          "selected_paths": [
+            [
+              6
+            ],
+            [
+              5
+            ]
+          ],
+          "distinct_final_frame_fingerprints": 8,
+          "distinct_trace_fingerprints": 8,
+          "selected_children": [
+            6,
+            5
+          ],
+          "protected_parent_rank": 4294967295,
+          "native_command": [
+            "build-project-exact/irisu-search-oracle",
+            "irisu-high-score-4393101.rpy",
+            "artifacts/gpu-exact-20261103/search-v3/greedy-control.depth-0.native-specs.bin",
+            "10000",
+            "80",
+            "8",
+            "4393102",
+            "--final-only"
+          ],
+          "native": {
+            "wall_seconds": 0.28775815699918894,
+            "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":8,\"workers\":8,\"prefix_ticks\":10000,\"horizon\":80,\"simulated_ticks\":640,\"trace_every_tick\":false,\"prefix_ms\":278.451541000,\"branch_rollout_rank_ms\":5.320366000,\"total_ms\":283.781776000,\"winner\":6}\n"
+          },
+          "native_candidate_parity": true,
+          "result_sha256": "e449f08a4383740815febc7f840bf39fab9bac6d012b043fc124b80e1ade587f"
+        },
+        {
+          "depth": 1,
+          "candidates": 16,
+          "selected_paths": [
+            [
+              6,
+              0
+            ],
+            [
+              6,
+              1
+            ]
+          ],
+          "distinct_final_frame_fingerprints": 16,
+          "distinct_trace_fingerprints": 16,
+          "selected_children": [
+            0,
+            1
+          ],
+          "protected_parent_rank": 4294967295,
+          "native_command": [
+            "build-project-exact/irisu-search-oracle",
+            "irisu-high-score-4393101.rpy",
+            "artifacts/gpu-exact-20261103/search-v3/greedy-control.depth-1.native-specs.bin",
+            "10000",
+            "160",
+            "8",
+            "4393102",
+            "--final-only"
+          ],
+          "native": {
+            "wall_seconds": 0.2970352569973329,
+            "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":16,\"workers\":8,\"prefix_ticks\":10000,\"horizon\":160,\"simulated_ticks\":2560,\"trace_every_tick\":false,\"prefix_ms\":277.471778000,\"branch_rollout_rank_ms\":15.712426000,\"total_ms\":293.196608000,\"winner\":0}\n"
+          },
+          "native_candidate_parity": true,
+          "result_sha256": "efc5e993d7df25c57e762b5f624d61b3e865ba109716b61863fefc0ca03768cd"
+        },
+        {
+          "depth": 2,
+          "candidates": 16,
+          "selected_paths": [
+            [
+              6,
+              0,
+              4
+            ],
+            [
+              6,
+              0,
+              0
+            ]
+          ],
+          "distinct_final_frame_fingerprints": 16,
+          "distinct_trace_fingerprints": 16,
+          "selected_children": [
+            4,
+            0
+          ],
+          "protected_parent_rank": 4294967295,
+          "native_command": [
+            "build-project-exact/irisu-search-oracle",
+            "irisu-high-score-4393101.rpy",
+            "artifacts/gpu-exact-20261103/search-v3/greedy-control.depth-2.native-specs.bin",
+            "10000",
+            "240",
+            "8",
+            "4393102",
+            "--final-only"
+          ],
+          "native": {
+            "wall_seconds": 0.30455385399545776,
+            "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":16,\"workers\":8,\"prefix_ticks\":10000,\"horizon\":240,\"simulated_ticks\":3840,\"trace_every_tick\":false,\"prefix_ms\":279.722238000,\"branch_rollout_rank_ms\":20.882086000,\"total_ms\":300.618100000,\"winner\":4}\n"
+          },
+          "native_candidate_parity": true,
+          "result_sha256": "e930b567b6a2c2500fd8a7da98ebedc58e417785626f28f79df17247f72f5518"
+        }
+      ],
+      "all_candidate_parity": true,
+      "prefix": 10000,
+      "horizon": 80,
+      "beam": 2,
+      "fanout": 8,
+      "depths": 3,
+      "trace_every_tick": false,
+      "protect_incumbent": false,
+      "distinct_normalized_specs": 8,
+      "verification_mode": "every_native_candidate_and_winner_replay",
+      "telemetry": [
+        [
+          1793742631.5960784,
+          0.0,
+          9.0,
+          29.88
+        ],
+        [
+          1793742631.8141406,
+          7.0,
+          2747.0,
+          37.14
+        ],
+        [
+          1793742632.0289464,
+          0.0,
+          2747.0,
+          37.03
+        ],
+        [
+          1793742632.2439613,
+          0.0,
+          2747.0,
+          37.12
+        ],
+        [
+          1793742632.4589806,
+          0.0,
+          2747.0,
+          37.14
+        ],
+        [
+          1793742632.6757276,
+          0.0,
+          2747.0,
+          37.12
+        ],
+        [
+          1793742632.8916764,
+          0.0,
+          2747.0,
+          37.14
+        ],
+        [
+          1793742633.1063952,
+          0.0,
+          2747.0,
+          37.12
+        ],
+        [
+          1793742633.3211346,
+          0.0,
+          2747.0,
+          37.04
+        ],
+        [
+          1793742633.5381048,
+          0.0,
+          2747.0,
+          37.12
+        ],
+        [
+          1793742633.7537854,
+          0.0,
+          2747.0,
+          37.12
+        ],
+        [
+          1793742633.9686863,
+          0.0,
+          2747.0,
+          37.12
+        ],
+        [
+          1793742634.183413,
+          0.0,
+          2747.0,
+          37.12
+        ],
+        [
+          1793742634.4007046,
+          0.0,
+          2747.0,
+          37.15
+        ],
+        [
+          1793742634.615242,
+          0.0,
+          2747.0,
+          37.04
+        ],
+        [
+          1793742634.8298542,
+          0.0,
+          2747.0,
+          37.14
+        ],
+        [
+          1793742635.044699,
+          0.0,
+          2747.0,
+          37.14
+        ],
+        [
+          1793742635.259535,
+          0.0,
+          2747.0,
+          37.12
+        ],
+        [
+          1793742635.4744987,
+          0.0,
+          2747.0,
+          37.14
+        ],
+        [
+          1793742635.6893005,
+          0.0,
+          2747.0,
+          37.14
+        ],
+        [
+          1793742635.9046772,
+          0.0,
+          2747.0,
+          37.23
+        ],
+        [
+          1793742636.1195035,
+          0.0,
+          2747.0,
+          37.12
+        ],
+        [
+          1793742636.334382,
+          0.0,
+          2747.0,
+          37.14
+        ],
+        [
+          1793742636.5492666,
+          0.0,
+          2747.0,
+          37.12
+        ],
+        [
+          1793742636.7671099,
+          0.0,
+          2747.0,
+          37.15
+        ],
+        [
+          1793742636.9818997,
+          0.0,
+          2747.0,
+          37.14
+        ],
+        [
+          1793742637.1973932,
+          0.0,
+          2769.0,
+          37.72
+        ],
+        [
+          1793742637.4124005,
+          100.0,
+          2769.0,
+          42.35
+        ],
+        [
+          1793742637.627257,
+          100.0,
+          2769.0,
+          43.51
+        ],
+        [
+          1793742637.8421023,
+          100.0,
+          2769.0,
+          44.1
+        ],
+        [
+          1793742638.056614,
+          100.0,
+          2769.0,
+          44.1
+        ],
+        [
+          1793742638.2714398,
+          100.0,
+          2769.0,
+          44.1
+        ],
+        [
+          1793742638.486361,
+          100.0,
+          2769.0,
+          44.1
+        ],
+        [
+          1793742638.7012055,
+          100.0,
+          2769.0,
+          44.1
+        ],
+        [
+          1793742638.9174466,
+          100.0,
+          2769.0,
+          44.1
+        ],
+        [
+          1793742639.132191,
+          100.0,
+          2769.0,
+          44.19
+        ],
+        [
+          1793742639.3471975,
+          100.0,
+          2769.0,
+          44.18
+        ],
+        [
+          1793742639.5621634,
+          100.0,
+          2769.0,
+          44.0
+        ],
+        [
+          1793742639.779533,
+          100.0,
+          2769.0,
+          44.0
+        ],
+        [
+          1793742639.994738,
+          100.0,
+          2769.0,
+          44.0
+        ],
+        [
+          1793742640.210008,
+          100.0,
+          2769.0,
+          44.0
+        ],
+        [
+          1793742640.4248412,
+          100.0,
+          2769.0,
+          44.09
+        ],
+        [
+          1793742640.6414583,
+          100.0,
+          2769.0,
+          44.1
+        ],
+        [
+          1793742640.8566308,
+          100.0,
+          2769.0,
+          44.0
+        ],
+        [
+          1793742641.0715528,
+          100.0,
+          2769.0,
+          43.51
+        ],
+        [
+          1793742641.2876327,
+          100.0,
+          2769.0,
+          43.03
+        ],
+        [
+          1793742641.5033984,
+          100.0,
+          2769.0,
+          44.48
+        ],
+        [
+          1793742641.7183738,
+          100.0,
+          2769.0,
+          44.58
+        ],
+        [
+          1793742641.9333735,
+          100.0,
+          2769.0,
+          44.58
+        ],
+        [
+          1793742642.1483722,
+          100.0,
+          2769.0,
+          44.58
+        ],
+        [
+          1793742642.3654358,
+          100.0,
+          2769.0,
+          44.77
+        ],
+        [
+          1793742642.5807061,
+          100.0,
+          2769.0,
+          45.26
+        ],
+        [
+          1793742642.7953877,
+          100.0,
+          2769.0,
+          45.16
+        ],
+        [
+          1793742643.0094686,
+          100.0,
+          2769.0,
+          45.26
+        ],
+        [
+          1793742643.2245588,
+          100.0,
+          2769.0,
+          45.06
+        ],
+        [
+          1793742643.4398913,
+          100.0,
+          2769.0,
+          45.16
+        ],
+        [
+          1793742643.6546617,
+          100.0,
+          2769.0,
+          45.06
+        ],
+        [
+          1793742643.8700233,
+          100.0,
+          2769.0,
+          45.26
+        ],
+        [
+          1793742644.0856445,
+          100.0,
+          2769.0,
+          45.16
+        ],
+        [
+          1793742644.3017654,
+          100.0,
+          2769.0,
+          45.26
+        ],
+        [
+          1793742644.5169907,
+          100.0,
+          2769.0,
+          44.38
+        ],
+        [
+          1793742644.7324283,
+          100.0,
+          2769.0,
+          43.9
+        ],
+        [
+          1793742644.9476964,
+          100.0,
+          2769.0,
+          44.48
+        ],
+        [
+          1793742645.1627066,
+          100.0,
+          2769.0,
+          44.48
+        ],
+        [
+          1793742645.3777823,
+          100.0,
+          2769.0,
+          44.58
+        ],
+        [
+          1793742645.594068,
+          100.0,
+          2769.0,
+          45.06
+        ],
+        [
+          1793742645.809061,
+          100.0,
+          2769.0,
+          45.06
+        ],
+        [
+          1793742646.0239377,
+          100.0,
+          2769.0,
+          45.35
+        ],
+        [
+          1793742646.2394195,
+          100.0,
+          2769.0,
+          45.26
+        ],
+        [
+          1793742646.4565425,
+          100.0,
+          2769.0,
+          45.45
+        ],
+        [
+          1793742646.6866412,
+          100.0,
+          2769.0,
+          45.44
+        ],
+        [
+          1793742646.9017594,
+          100.0,
+          2769.0,
+          45.45
+        ],
+        [
+          1793742647.1177576,
+          100.0,
+          2769.0,
+          45.45
+        ],
+        [
+          1793742647.332722,
+          100.0,
+          2769.0,
+          45.37
+        ],
+        [
+          1793742647.5477018,
+          100.0,
+          2769.0,
+          45.45
+        ],
+        [
+          1793742647.762582,
+          100.0,
+          2769.0,
+          45.45
+        ],
+        [
+          1793742647.9799469,
+          100.0,
+          2769.0,
+          44.76
+        ],
+        [
+          1793742648.1954377,
+          100.0,
+          2769.0,
+          43.9
+        ],
+        [
+          1793742648.4111662,
+          100.0,
+          2769.0,
+          43.02
+        ]
+      ],
+      "peak_vram_mib": 2769.0,
+      "peak_gpu_util_percent": 100.0,
+      "gpu_metadata": {
+        "identity": "experimental-cuda-game-search-session-v3",
+        "promotion_eligible": false,
+        "depths": 3,
+        "beam": 2,
+        "fanout": 8,
+        "candidate_nodes": 40,
+        "actual_simulated_branches": 40,
+        "actual_simulated_ticks": 3200,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "cache_guest": true,
+        "block_threads": 128,
+        "stack_kib": 16,
+        "host_prefix_ms": 5467.656857,
+        "prefix_ms": 37.956607819,
+        "branch_ms": 6.225919962,
+        "rollout_ms": 11156.592773438,
+        "rank_compact_ms": 6.509568214,
+        "validation_ms": 215.987197876,
+        "total_ms": 16974.158484,
+        "allocated_bytes": 29865220,
+        "compaction_errors": 0,
+        "winner_tick": 10240,
+        "winner_live_score": 4051,
+        "winner_canonical_score": 0,
+        "winner_canonical_level": 0,
+        "winner_canonical_chain": 0,
+        "winner_natural": 0
+      },
+      "winning_lineage_consistent": true,
+      "winning_lineage_native_parity": true,
+      "winner_replay_sha256": "23ea5b3bf820b6297f916eabf918ad264d67fdabb32de604b96a4f99f3a8bd0d",
+      "native_reset_replay_verified": true,
+      "verification_scope": "bounded_nonterminal",
+      "natural_terminal": false,
+      "canonical_score": 0,
+      "winner_trace_ticks": 10240,
+      "independent_verification": {
+        "wall_seconds": 0.34662501900311327,
+        "stderr": "{\"backend\":\"native-msvc-cpu-oracle\",\"format\":\"game-digest-v1\",\"rows\":10241,\"steps\":10240,\"events\":30622,\"tick\":10240,\"live_score\":4051,\"canonical_score\":0,\"latest_final_score\":0,\"level\":9,\"highest_chain\":5,\"config_hash\":17009678407634462320,\"elapsed_seconds\":0.344291392}\n"
+      },
+      "native_verified_incumbent_score_floor": null,
+      "incumbent_native_verification": {}
+    },
+    "terminal-carry": {
+      "schema": "irisu-resident-search-session-parity-v3",
+      "promotion_eligible": false,
+      "inputs": {
+        "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+        "specs_sha256": "b9cb973b4839dd0e1ac5bd25706e4014e28b52487357438aadd6ebd00f0ab514",
+        "image_sha256": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685"
+      },
+      "binaries": {
+        "gpu_sha256": "3bf2024dcafd21911309c32aff88c55040608d236d9509d7c1e7210230d617db",
+        "oracle_sha256": "cf4865e017afa0f559569d1d5ac834cb39cd4d23385c17224953e85e9ace48e1",
+        "game_oracle_sha256": "b94f4fdb998021e4e6a9cc6e57de680e11017f25f243b49053080fcd57481158"
+      },
+      "command": [
+        "build-project-cuda/clone/cuda/irisu-cuda-search-session",
+        "build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/gpu-exact-20261103/search-v3/terminal-carry.specs.bin",
+        "97215",
+        "2",
+        "1",
+        "2",
+        "3",
+        "4393102",
+        "artifacts/gpu-exact-20261103/search-v3/terminal-carry.winner.rpy",
+        "artifacts/gpu-exact-20261103/search-v3/terminal-carry.lineage.json",
+        "--host-prefix",
+        "--isolated-warps",
+        "--final-only",
+        "--block-threads",
+        "128",
+        "--stack-kib",
+        "16"
+      ],
+      "gpu": {
+        "wall_seconds": 58.2856328630005,
+        "stderr": "{\"selection_policy\":\"canonical-rank-with-protected-zero-edit-lineage\",\"protect_incumbent\":true}\n{\"identity\":\"experimental-cuda-game-search-session-v3\",\"promotion_eligible\":false,\"depths\":3,\"beam\":2,\"fanout\":8,\"candidate_nodes\":40,\"actual_simulated_branches\":24,\"actual_simulated_ticks\":48,\"failed_candidates\":0,\"trace_every_tick\":false,\"cache_guest\":true,\"block_threads\":128,\"stack_kib\":16,\"host_prefix_ms\":57283.706863000,\"prefix_ms\":36.514816284,\"branch_ms\":6.241279840,\"rollout_ms\":808.090609703,\"rank_compact_ms\":6.496256113,\"validation_ms\":12.577792168,\"total_ms\":58231.271167000,\"allocated_bytes\":29865220,\"compaction_errors\":0,\"winner_tick\":97219,\"winner_live_score\":4393699,\"winner_canonical_score\":4393101,\"winner_canonical_level\":100,\"winner_canonical_chain\":70,\"winner_natural\":1}\n"
+      },
+      "rounds": [
+        {
+          "depth": 0,
+          "candidates": 8,
+          "selected_paths": [
+            [
+              0
+            ],
+            [
+              1
+            ]
+          ],
+          "distinct_final_frame_fingerprints": 8,
+          "distinct_trace_fingerprints": 8,
+          "selected_children": [
+            0,
+            1
+          ],
+          "protected_parent_rank": 0,
+          "native_command": [
+            "build-project-exact/irisu-search-oracle",
+            "irisu-high-score-4393101.rpy",
+            "artifacts/gpu-exact-20261103/search-v3/terminal-carry.depth-0.native-specs.bin",
+            "97215",
+            "2",
+            "8",
+            "4393102",
+            "--final-only"
+          ],
+          "native": {
+            "wall_seconds": 2.976937622996047,
+            "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":8,\"workers\":8,\"prefix_ticks\":97215,\"horizon\":2,\"simulated_ticks\":16,\"trace_every_tick\":false,\"prefix_ms\":2971.034458000,\"branch_rollout_rank_ms\":1.754927000,\"total_ms\":2972.809163000,\"winner\":0}\n"
+          },
+          "native_candidate_parity": true,
+          "result_sha256": "4bb3eefeeb155ff9e814b8810f8144fd6bf6ed6bc391e9e568931bc63bda536e"
+        },
+        {
+          "depth": 1,
+          "candidates": 16,
+          "selected_paths": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "distinct_final_frame_fingerprints": 16,
+          "distinct_trace_fingerprints": 16,
+          "selected_children": [
+            0,
+            1
+          ],
+          "protected_parent_rank": 0,
+          "native_command": [
+            "build-project-exact/irisu-search-oracle",
+            "irisu-high-score-4393101.rpy",
+            "artifacts/gpu-exact-20261103/search-v3/terminal-carry.depth-1.native-specs.bin",
+            "97215",
+            "4",
+            "8",
+            "4393102",
+            "--final-only"
+          ],
+          "native": {
+            "wall_seconds": 2.9710380339965923,
+            "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":16,\"workers\":8,\"prefix_ticks\":97215,\"horizon\":4,\"simulated_ticks\":64,\"trace_every_tick\":false,\"prefix_ms\":2964.103990000,\"branch_rollout_rank_ms\":3.036444000,\"total_ms\":2967.159821000,\"winner\":0}\n"
+          },
+          "native_candidate_parity": true,
+          "result_sha256": "22000131a7a4246f6d6a01d203afff770e1bb5a4dbc1e2cf9ec5ddac3fb3aeb8"
+        },
+        {
+          "depth": 2,
+          "candidates": 16,
+          "selected_paths": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "distinct_final_frame_fingerprints": 2,
+          "distinct_trace_fingerprints": 2,
+          "selected_children": [
+            0,
+            1
+          ],
+          "protected_parent_rank": 0,
+          "native_command": [
+            "build-project-exact/irisu-search-oracle",
+            "irisu-high-score-4393101.rpy",
+            "artifacts/gpu-exact-20261103/search-v3/terminal-carry.depth-2.native-specs.bin",
+            "97215",
+            "6",
+            "8",
+            "4393102",
+            "--final-only"
+          ],
+          "native": {
+            "wall_seconds": 2.9027540660026716,
+            "stderr": "{\"identity\":\"experimental-native-exact-search-oracle-v2\",\"candidates\":16,\"workers\":8,\"prefix_ticks\":97215,\"horizon\":6,\"simulated_ticks\":64,\"trace_every_tick\":false,\"prefix_ms\":2895.769726000,\"branch_rollout_rank_ms\":3.261442000,\"total_ms\":2899.049993000,\"winner\":0}\n"
+          },
+          "native_candidate_parity": true,
+          "result_sha256": "973a8d46d4537da8171b50ef3bf762cf25bb133b1dbd63c4abe7134eb2ae6448"
+        }
+      ],
+      "all_candidate_parity": true,
+      "prefix": 97215,
+      "horizon": 2,
+      "beam": 2,
+      "fanout": 8,
+      "depths": 3,
+      "trace_every_tick": false,
+      "protect_incumbent": true,
+      "distinct_normalized_specs": 8,
+      "verification_mode": "every_native_candidate_and_winner_replay",
+      "telemetry": [
+        [
+          1793742649.9291408,
+          0.0,
+          9.0,
+          42.84
+        ],
+        [
+          1793742650.146128,
+          7.0,
+          2747.0,
+          42.74
+        ],
+        [
+          1793742650.3609164,
+          0.0,
+          2747.0,
+          42.74
+        ],
+        [
+          1793742650.5756395,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742650.790642,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742651.0106711,
+          0.0,
+          2747.0,
+          42.74
+        ],
+        [
+          1793742651.2256775,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742651.44042,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742651.6552238,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742651.8704195,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742652.0854712,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742652.3002384,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742652.5153508,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742652.732121,
+          0.0,
+          2747.0,
+          42.85
+        ],
+        [
+          1793742652.9473498,
+          0.0,
+          2747.0,
+          42.74
+        ],
+        [
+          1793742653.1621814,
+          0.0,
+          2747.0,
+          42.74
+        ],
+        [
+          1793742653.377126,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742653.5937111,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742653.8088129,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742654.0235343,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742654.2388403,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742654.4561985,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742654.6709075,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742654.8858144,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742655.1011312,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742655.3201857,
+          0.0,
+          2747.0,
+          42.74
+        ],
+        [
+          1793742655.5353372,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742655.7503943,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742655.9650838,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742656.18102,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742656.3957722,
+          0.0,
+          2747.0,
+          42.74
+        ],
+        [
+          1793742656.6108665,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742656.8260663,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742657.0430923,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742657.2582495,
+          0.0,
+          2747.0,
+          42.85
+        ],
+        [
+          1793742657.4740317,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742657.6897345,
+          0.0,
+          2747.0,
+          42.85
+        ],
+        [
+          1793742657.9068546,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742658.1281667,
+          0.0,
+          2747.0,
+          42.83
+        ],
+        [
+          1793742658.3472865,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742658.565358,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742658.7835126,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742658.9994733,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742659.2156298,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742659.4331424,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742659.648052,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742659.8631544,
+          0.0,
+          2747.0,
+          42.95
+        ],
+        [
+          1793742660.0786715,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742660.2942815,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742660.509245,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742660.7254174,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742660.944097,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742661.1591828,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742661.374503,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742661.590706,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742661.8057163,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742662.0213327,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742662.2361174,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742662.4513881,
+          0.0,
+          2747.0,
+          42.75
+        ],
+        [
+          1793742662.6661465,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742662.8810985,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742663.0960977,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742663.3111386,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742663.5265603,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742663.7411308,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742663.9575336,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742664.1726136,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742664.387342,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742664.6032279,
+          0.0,
+          2747.0,
+          42.85
+        ],
+        [
+          1793742664.8189695,
+          0.0,
+          2747.0,
+          43.03
+        ],
+        [
+          1793742665.0340593,
+          0.0,
+          2747.0,
+          42.85
+        ],
+        [
+          1793742665.2488499,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742665.4663825,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742665.6812413,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742665.8967948,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742666.1115043,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742666.3263958,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742666.5414305,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742666.7562706,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742666.9712481,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742667.1864376,
+          0.0,
+          2747.0,
+          42.95
+        ],
+        [
+          1793742667.402632,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742667.6174908,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742667.832343,
+          0.0,
+          2747.0,
+          42.95
+        ],
+        [
+          1793742668.0474236,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742668.2623162,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742668.4789727,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742668.6937246,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742668.9094775,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742669.1245627,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742669.3397813,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742669.5551836,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742669.7703001,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742669.9851394,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742670.2002034,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742670.4163744,
+          0.0,
+          2747.0,
+          42.94
+        ],
+        [
+          1793742670.6312058,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742670.8461728,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742671.061238,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742671.278063,
+          0.0,
+          2747.0,
+          43.03
+        ],
+        [
+          1793742671.4928336,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742671.70776,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742671.9225364,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742672.1373003,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742672.3521154,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742672.567469,
+          0.0,
+          2747.0,
+          42.95
+        ],
+        [
+          1793742672.7824802,
+          0.0,
+          2747.0,
+          42.94
+        ],
+        [
+          1793742672.9978273,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742673.2127373,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742673.427641,
+          0.0,
+          2747.0,
+          43.03
+        ],
+        [
+          1793742673.6448855,
+          0.0,
+          2747.0,
+          43.03
+        ],
+        [
+          1793742673.8597965,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742674.0752876,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742674.2913408,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742674.5069287,
+          0.0,
+          2747.0,
+          43.03
+        ],
+        [
+          1793742674.723695,
+          0.0,
+          2747.0,
+          42.84
+        ],
+        [
+          1793742674.9389179,
+          0.0,
+          2747.0,
+          43.03
+        ],
+        [
+          1793742675.1538994,
+          0.0,
+          2747.0,
+          43.03
+        ],
+        [
+          1793742675.370257,
+          0.0,
+          2747.0,
+          42.93
+        ],
+        [
+          1793742675.5851688,
+          0.0,
+          2747.0,
+          43.03
+        ],
+        [
+          1793742675.8002138,
+          0.0,
+          2747.0,
+          37.03
+        ],
+        [
+          1793742676.015262,
+          0.0,
+          2747.0,
+          37.32
+        ],
+        [
+          1793742676.2324276,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742676.4473643,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742676.6620474,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742676.8771677,
+          0.0,
+          2747.0,
+          37.42
+        ],
+        [
+          1793742677.0947855,
+          0.0,
+          2747.0,
+          37.32
+        ],
+        [
+          1793742677.3101132,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742677.5251312,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742677.7402155,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742677.9566174,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742678.1715379,
+          0.0,
+          2747.0,
+          37.23
+        ],
+        [
+          1793742678.3864815,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742678.6016192,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742678.8197258,
+          0.0,
+          2747.0,
+          37.34
+        ],
+        [
+          1793742679.034937,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742679.2500322,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742679.4650435,
+          0.0,
+          2747.0,
+          37.23
+        ],
+        [
+          1793742679.68143,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742679.897034,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742680.1119103,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742680.327326,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742680.5437932,
+          0.0,
+          2747.0,
+          37.32
+        ],
+        [
+          1793742680.758667,
+          0.0,
+          2747.0,
+          37.34
+        ],
+        [
+          1793742680.9734282,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742681.188586,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742681.4060473,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742681.6210642,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742681.8359447,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742682.0508988,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742682.2679884,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742682.4828677,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742682.6977887,
+          0.0,
+          2747.0,
+          37.32
+        ],
+        [
+          1793742682.9127545,
+          0.0,
+          2747.0,
+          37.23
+        ],
+        [
+          1793742683.1276546,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742683.3449175,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742683.55995,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742683.7747006,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742683.9898624,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742684.2047338,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742684.4194484,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742684.6352708,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742684.8501947,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742685.0654814,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742685.2806735,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742685.4976974,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742685.7126594,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742685.9275923,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742686.142476,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742686.3600562,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742686.5753162,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742686.7901895,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742687.007606,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742687.222463,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742687.4373891,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742687.654539,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742687.8697286,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742688.0852082,
+          0.0,
+          2747.0,
+          37.24
+        ],
+        [
+          1793742688.3000085,
+          0.0,
+          2747.0,
+          37.23
+        ],
+        [
+          1793742688.5148764,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742688.7299776,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742688.9472184,
+          0.0,
+          2747.0,
+          37.42
+        ],
+        [
+          1793742689.1621773,
+          0.0,
+          2747.0,
+          37.22
+        ],
+        [
+          1793742689.3769815,
+          0.0,
+          2747.0,
+          37.32
+        ],
+        [
+          1793742689.5923197,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742689.809667,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742690.024877,
+          0.0,
+          2747.0,
+          37.43
+        ],
+        [
+          1793742690.2405028,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742690.455668,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742690.6722248,
+          0.0,
+          2747.0,
+          37.23
+        ],
+        [
+          1793742690.8870656,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742691.1026285,
+          0.0,
+          2747.0,
+          37.25
+        ],
+        [
+          1793742691.3182256,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742691.534194,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742691.7492478,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742691.9660938,
+          0.0,
+          2747.0,
+          37.34
+        ],
+        [
+          1793742692.1810665,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742692.397055,
+          0.0,
+          2747.0,
+          37.23
+        ],
+        [
+          1793742692.612536,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742692.827297,
+          0.0,
+          2747.0,
+          37.32
+        ],
+        [
+          1793742693.0420523,
+          0.0,
+          2747.0,
+          37.32
+        ],
+        [
+          1793742693.259682,
+          0.0,
+          2747.0,
+          37.22
+        ],
+        [
+          1793742693.4750426,
+          0.0,
+          2747.0,
+          37.23
+        ],
+        [
+          1793742693.689955,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742693.9051113,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742694.1217113,
+          0.0,
+          2747.0,
+          37.34
+        ],
+        [
+          1793742694.3366995,
+          0.0,
+          2747.0,
+          37.34
+        ],
+        [
+          1793742694.551582,
+          0.0,
+          2747.0,
+          37.34
+        ],
+        [
+          1793742694.7661872,
+          0.0,
+          2747.0,
+          37.23
+        ],
+        [
+          1793742694.98386,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742695.198832,
+          0.0,
+          2747.0,
+          37.23
+        ],
+        [
+          1793742695.4151528,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742695.6301007,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742695.8459678,
+          0.0,
+          2747.0,
+          37.32
+        ],
+        [
+          1793742696.0612295,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742696.277886,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742696.4947329,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742696.7095425,
+          0.0,
+          2747.0,
+          37.32
+        ],
+        [
+          1793742696.924793,
+          0.0,
+          2747.0,
+          37.23
+        ],
+        [
+          1793742697.139475,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742697.354412,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742697.5715337,
+          0.0,
+          2747.0,
+          37.34
+        ],
+        [
+          1793742697.7864037,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742698.0014532,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742698.2163165,
+          0.0,
+          2747.0,
+          37.23
+        ],
+        [
+          1793742698.434082,
+          0.0,
+          2747.0,
+          37.24
+        ],
+        [
+          1793742698.6488388,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742698.8636615,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742699.078614,
+          0.0,
+          2747.0,
+          37.24
+        ],
+        [
+          1793742699.2966568,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742699.5121617,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742699.7272534,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742699.9425902,
+          0.0,
+          2747.0,
+          37.34
+        ],
+        [
+          1793742700.1581926,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742700.3739433,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742700.5893438,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742700.8044145,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742701.0201423,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742701.2350004,
+          0.0,
+          2747.0,
+          37.43
+        ],
+        [
+          1793742701.450107,
+          0.0,
+          2747.0,
+          37.24
+        ],
+        [
+          1793742701.6660473,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742701.8822107,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742702.0976012,
+          0.0,
+          2747.0,
+          37.32
+        ],
+        [
+          1793742702.3124425,
+          0.0,
+          2747.0,
+          37.23
+        ],
+        [
+          1793742702.5275412,
+          0.0,
+          2747.0,
+          37.23
+        ],
+        [
+          1793742702.744836,
+          0.0,
+          2747.0,
+          37.32
+        ],
+        [
+          1793742702.959908,
+          0.0,
+          2747.0,
+          37.32
+        ],
+        [
+          1793742703.1748157,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742703.3899145,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742703.6070487,
+          0.0,
+          2747.0,
+          37.23
+        ],
+        [
+          1793742703.8221993,
+          0.0,
+          2747.0,
+          37.23
+        ],
+        [
+          1793742704.0371277,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742704.2530048,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742704.4691937,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742704.6840792,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742704.899687,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742705.1149616,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742705.3317776,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742705.5468097,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742705.7619371,
+          0.0,
+          2747.0,
+          37.32
+        ],
+        [
+          1793742705.97697,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742706.1937299,
+          0.0,
+          2747.0,
+          37.22
+        ],
+        [
+          1793742706.4088783,
+          0.0,
+          2747.0,
+          37.23
+        ],
+        [
+          1793742706.6235473,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742706.8382795,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742707.05617,
+          0.0,
+          2747.0,
+          37.34
+        ],
+        [
+          1793742707.271143,
+          0.0,
+          2747.0,
+          37.33
+        ],
+        [
+          1793742707.486534,
+          3.0,
+          2769.0,
+          38.1
+        ],
+        [
+          1793742707.7036068,
+          100.0,
+          2769.0,
+          43.51
+        ],
+        [
+          1793742707.9190798,
+          100.0,
+          2769.0,
+          45.06
+        ],
+        [
+          1793742708.1340866,
+          100.0,
+          2769.0,
+          43.51
+        ]
+      ],
+      "peak_vram_mib": 2769.0,
+      "peak_gpu_util_percent": 100.0,
+      "gpu_metadata": {
+        "identity": "experimental-cuda-game-search-session-v3",
+        "promotion_eligible": false,
+        "depths": 3,
+        "beam": 2,
+        "fanout": 8,
+        "candidate_nodes": 40,
+        "actual_simulated_branches": 24,
+        "actual_simulated_ticks": 48,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "cache_guest": true,
+        "block_threads": 128,
+        "stack_kib": 16,
+        "host_prefix_ms": 57283.706863,
+        "prefix_ms": 36.514816284,
+        "branch_ms": 6.24127984,
+        "rollout_ms": 808.090609703,
+        "rank_compact_ms": 6.496256113,
+        "validation_ms": 12.577792168,
+        "total_ms": 58231.271167,
+        "allocated_bytes": 29865220,
+        "compaction_errors": 0,
+        "winner_tick": 97219,
+        "winner_live_score": 4393699,
+        "winner_canonical_score": 4393101,
+        "winner_canonical_level": 100,
+        "winner_canonical_chain": 70,
+        "winner_natural": 1
+      },
+      "winning_lineage_consistent": true,
+      "winning_lineage_native_parity": true,
+      "winner_replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+      "native_reset_replay_verified": true,
+      "verification_scope": "natural_terminal",
+      "natural_terminal": true,
+      "canonical_score": 4393101,
+      "winner_trace_ticks": 97219,
+      "independent_verification": {
+        "wall_seconds": 3.6067755769981886,
+        "stderr": "{\"backend\":\"native-msvc-cpu-oracle\",\"format\":\"game-digest-v1\",\"rows\":97220,\"steps\":97219,\"events\":308512,\"tick\":97219,\"live_score\":4393699,\"canonical_score\":4393101,\"latest_final_score\":4393101,\"level\":100,\"highest_chain\":70,\"config_hash\":17009678407634462320,\"elapsed_seconds\":3.602378546}\n"
+      },
+      "native_verified_incumbent_score_floor": 4393101,
+      "incumbent_native_verification": {
+        "wall_seconds": 3.6101501240045764,
+        "stderr": "{\"backend\":\"native-msvc-cpu-oracle\",\"format\":\"game-digest-v1\",\"rows\":97220,\"steps\":97219,\"events\":308512,\"tick\":97219,\"live_score\":4393699,\"canonical_score\":4393101,\"latest_final_score\":4393101,\"level\":100,\"highest_chain\":70,\"config_hash\":17009678407634462320,\"elapsed_seconds\":3.605003407}\n"
+      }
+    }
+  }
+}

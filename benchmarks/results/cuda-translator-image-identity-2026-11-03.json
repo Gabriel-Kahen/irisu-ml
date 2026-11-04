@@ -1,0 +1,34 @@
+{
+  "schema": "irisu-cuda-translator-image-identity-v1",
+  "scope": "pinned source/image code generation, incremental build stability and host-side SHA256 admission helper; no fullGPUexactness attestation",
+  "source_host_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+  "generated_image_sha256": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685",
+  "generated_image_bytes": 102400,
+  "regions": 77,
+  "preserved_existing_region_output_mtimes": 155,
+  "native_lowering_gate": {
+    "x87_forms": 118,
+    "patterns": 2,
+    "adc_sbb_cases": 40,
+    "pass": true
+  },
+  "regression_tests": {
+    "count": 3,
+    "pass": true,
+    "tampered_source_rejected_before_output": true,
+    "all_generated_output_mtimes_preserved_on_second_generation": true
+  },
+  "openssl_helper_gate": {
+    "canonical_admitted": true,
+    "null_rejected": true,
+    "truncated_rejected": true,
+    "bitflip_rejected": true,
+    "oversized_rejected": true
+  },
+  "source_sha256": {
+    "tools/cuda-exact/translate.py": "a1b1bd4c68cc39d3a9ea1444df02bb1a1cf6217e11917f0d9d28b5a9295ef434",
+    "tools/cuda-exact/test_translation.py": "4359ee7b423e73f5cd3beb8b228f15853182044b6e827b12d6e09d83f75ae853",
+    "tools/cuda-exact/image_identity.hpp": "b05295ca56342b0f21c462830c4ae7fb94fb3f535ef681e2907fc2947537d657",
+    "tools/cuda-exact/physics_probe.cu": "c732024f3e773b0b5f5b23abddcc3021b565d48daefaf67f943fc367dbb850fe"
+  }
+}

@@ -1,0 +1,314 @@
+{
+  "schema": "irisu-independent-typed-solver-qualification-v1",
+  "promotion_eligible": false,
+  "whole_independent_backend_claimed": false,
+  "native_host_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+  "implementation": "Separate indexedBodyState/ContactConstraint/Manifold solver implementingconstructor,PreSolve,velocity,position,PostSolve. NoGuest, emulatedregister/FPstack, translatedregionlibrary orphysicsfallback inhotpath. Existingread-onlyPC53numeric/CORE-MATHhelpers reused.",
+  "source_sha256": {
+    "clone/cuda_native/solver.hpp": "1d36a4f7e739af6958486121b88454c161bca267df4e96a11ee9a89b530823ff",
+    "clone/cuda_native/solver_math.hpp": "8463aa8ab69d9af2f72b6fafee0ae378b3a7e00d8c6afd721bda7ee1902cb939",
+    "tools/cuda-native/solver_README.md": "7264e5d548a0c21bdb287cdb427d46150d1ccd92a2d48f018f497fce7f327eda",
+    "tools/cuda-native/solver_domain.cpp": "6cc5978ca98d0b026b7c7fdb2a7e4f2ab9c7e3c88d71e7842c45428a3e5ff3f9",
+    "tools/cuda-native/solver_host_probe.py": "e590cfb0865300697a7de26900b70508aa8cf42c4cfd2615dfd25b40fa76eb6c",
+    "tools/cuda-native/solver_native_oracle.c": "a0c5d880bbc883403870d6bec969b64f9a63cb42c29392fb8b8e053bb9e558cf",
+    "tools/cuda-native/solver_runner.cu": "c9203ac7ddddea952e0dbc2c1943d86a72670c743d1bc9ee3a54a8e4c177b033",
+    "tools/cuda-native/solver_stage_bridge.hpp": "6dd9eb870e7a93cf5f07f697f0375bfab6ad01c7d5bfb89154687dca30de645f",
+    "tools/cuda-native/solver_validate.py": "f672f05633eb5a62a5b658ac009a8dbcf592741044164a616b71860d85b0d065",
+    "tools/cuda-native/solver_wire.h": "08ac19666e869288c5da4fb78cfcc838d0e592d111bd512bfdd1bf33765b448c",
+    "clone/cuda_native/types.hpp": "5e7a84862b163d32d81db0d68f6401ba64400c3ffdd5de138399913309b9faf8",
+    "tools/cuda-exact/x87_numeric.cuh": "ce53bc2730e24227ebc83cf95699a75bb81b8f1739d8ead0d9764a25825b3a5e",
+    "tools/cuda-native/oracle_native.h": "0184f7db92afbc05c467c8e56ccf904e5b6507242d1df3e7ff9001e5cb38d3ca"
+  },
+  "native_addresses": {
+    "constructor": 28192,
+    "presolve": 29424,
+    "velocity": 30224,
+    "position": 31584,
+    "postsolve": 29968
+  },
+  "native_packet_validation": {
+    "schema": "irisu-independent-solver-stage-v1",
+    "promotion_eligible": false,
+    "scope": "Actual pinned ELF32 MSVC constructor/PreSolve/velocity/position/PostSolve, independent typed CPU/CUDA solver; contact-list stage snapshots, not whole independent scene backend.",
+    "inputs_sha256": {
+      "build-cuda-native-solver/solver-native-oracle": "dbb599f21c219a204974190e740172ba9891874c4c97a4c3ce352c6c43af2b6b",
+      "build-cuda-native-solver/solver-host-runner": "a9aa7943f9f8ac1a50589466fd3a9fbf3448a7b44bbd4c568ce7c5529acd406f",
+      ".local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+      "build-cuda-native/clone/cuda_native/irisu-native-solver": "2803f71fb09edbf09a301a31944eefb10b6ba72683f5279e6a69e22e1ab2044b"
+    },
+    "runs": [
+      {
+        "name": "native",
+        "command": [
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-solver/solver-native-oracle",
+          "/home/gabe/Documents/ChatGPT/irisu/.local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-solver/validation/cases.bin"
+        ],
+        "returncode": 0,
+        "wall_seconds": 0.015234122001857031,
+        "stdout_bytes": 80592,
+        "stdout_sha256": "f76f75047f76f7895087516eff0df1875744043df3dd84146efce8186a36caa2",
+        "stderr_sha256": "ea01a4e808b0c26f164d013961356433a1bba7130627c347626f69bf22c1b9ca",
+        "metadata": {
+          "identity": "native-solver-stage-v1",
+          "native_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+          "fixtures": 32,
+          "stage_cases": 160,
+          "active_fixtures": 28,
+          "constraints": 53,
+          "points": 72,
+          "order_scope": "contact-list stage fixture; not original island traversal"
+        }
+      },
+      {
+        "name": "host",
+        "command": [
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-solver/solver-host-runner",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-solver/validation/cases.bin"
+        ],
+        "returncode": 0,
+        "wall_seconds": 0.0018719399959081784,
+        "stdout_bytes": 80592,
+        "stdout_sha256": "f76f75047f76f7895087516eff0df1875744043df3dd84146efce8186a36caa2",
+        "stderr_sha256": "b2c625f60b8fc75400dfed69fd9229cba4e2a37164c5c62d41a934a8bff5747f",
+        "metadata": {
+          "backend": "host-native",
+          "stage_cases": 160,
+          "failed_cases": 0,
+          "kernel_ms": 0.0,
+          "elapsed_ms": 0.088458,
+          "guest_linked": false
+        },
+        "all_physical_output_bytes_equal_native": true
+      },
+      {
+        "name": "cuda",
+        "command": [
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native/clone/cuda_native/irisu-native-solver",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-solver/validation/cases.bin",
+          "--gpu"
+        ],
+        "returncode": 0,
+        "wall_seconds": 0.12316868000198156,
+        "stdout_bytes": 80592,
+        "stdout_sha256": "f76f75047f76f7895087516eff0df1875744043df3dd84146efce8186a36caa2",
+        "stderr_sha256": "95caed9e13ac3811599c2ab154cbc90a3d0fcfb9d0123718bbd4aed3c9d8fe80",
+        "metadata": {
+          "backend": "cuda-native",
+          "stage_cases": 160,
+          "failed_cases": 0,
+          "kernel_ms": 0.56627202,
+          "elapsed_ms": 78.251978,
+          "guest_linked": false
+        },
+        "all_physical_output_bytes_equal_native": true
+      },
+      {
+        "name": "memcheck",
+        "command": [
+          "/opt/cuda/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "memcheck",
+          "--error-exitcode",
+          "42",
+          "--log-file",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-solver/validation/memcheck.log",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native/clone/cuda_native/irisu-native-solver",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-solver/validation/cases.bin",
+          "--gpu"
+        ],
+        "returncode": 0,
+        "wall_seconds": 0.2611677120003151,
+        "stdout_bytes": 80592,
+        "stdout_sha256": "f76f75047f76f7895087516eff0df1875744043df3dd84146efce8186a36caa2",
+        "stderr_sha256": "d28b7afb4bb00c036829f16319cde54eada61d264850b3b0167816242384ebe8",
+        "metadata": {
+          "backend": "cuda-native",
+          "stage_cases": 160,
+          "failed_cases": 0,
+          "kernel_ms": 6.386688232,
+          "elapsed_ms": 171.208411,
+          "guest_linked": false
+        },
+        "all_physical_output_bytes_equal_native": true,
+        "memcheck_error_summary_zero": true
+      }
+    ],
+    "status": "passed",
+    "cases_sha256": "64d82a9cdd4cde43acb4ba726c3490fa24a43e8792644fb0f84d4fbed86e4bba"
+  },
+  "final_source_host_native_confirmation": {
+    "native_metadata": {
+      "identity": "native-solver-stage-v1",
+      "native_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+      "fixtures": 32,
+      "stage_cases": 160,
+      "active_fixtures": 28,
+      "constraints": 53,
+      "points": 72,
+      "order_scope": "contact-list stage fixture; not original island traversal"
+    },
+    "host_metadata": {
+      "backend": "host-native",
+      "stage_cases": 160,
+      "failed_cases": 0,
+      "kernel_ms": 0.0,
+      "elapsed_ms": 0.087336,
+      "guest_linked": false
+    },
+    "all_bytes_equal_cuda": true,
+    "cases_equal_cuda_input": true,
+    "output_sha256": "f76f75047f76f7895087516eff0df1875744043df3dd84146efce8186a36caa2",
+    "native_binary_sha256": "dbb599f21c219a204974190e740172ba9891874c4c97a4c3ce352c6c43af2b6b",
+    "host_binary_sha256": "ef435e223834e2e84439ece759049cb698d6ab5d1d768fce4dfd72e9307adcc3"
+  },
+  "physical_stage_contract": {
+    "store_order": "Explicit independently roundedPC53 add/sub/mul/div/sqrt, observedbinary32storepoints and signedzero. PositionRusesqualifiednative-float sincos helper.",
+    "ordering": "Caller supplies deterministiccontact/islandDFS order. Eachworldserializesdependentconstraints/points; independentworlds parallel.",
+    "state": "Physicalbodyposition/rotation/R/velocity/mass,inertia;constraintanchors,masses,impulses,bias;manifoldimpulses and positionconvergence. Unconsumedconstructorpointslots retained.",
+    "failure": "ExplicitstageStatus; partialwrites fromfailedstage mustnotbeaccepted. No approximatefallback. Numericdomain retainsnormal-or-zero binary64range restrictions requiredbysharedPC53helpers; no general FPUexception/status emulation.",
+    "host": "Round-to-nearest required."
+  },
+  "scene_continuation_bridge": {
+    "scope": "Testadapter convertsphysicalstate outsidehotfunction, comparesindependenttypedstageoutputs againstoriginaltranslatedstage aftereverycall, thencontinuesreferenceScene. NativefreshELF32oracle independently verifies every600tickphysicaloutputword. This testbridge isnotnewwholebackend.",
+    "stage_index": {
+      "0": "PreSolve",
+      "1": "velocity",
+      "2": "position",
+      "3": "PostSolve"
+    },
+    "cases": [
+      {
+        "mutations": false,
+        "returncode": 0,
+        "full600_native_output_equal": true,
+        "bytes": 36000,
+        "sha256": "4fcd94f803509317a3f81b9611c0c4c362374354becf04b5382252c6f2d603b9",
+        "stage_calls": [
+          {
+            "stage": 0,
+            "calls": 1022,
+            "constraints": 710,
+            "points": 825
+          },
+          {
+            "stage": 1,
+            "calls": 10220,
+            "constraints": 7100,
+            "points": 8250
+          },
+          {
+            "stage": 2,
+            "calls": 6719,
+            "constraints": 6551,
+            "points": 7701
+          },
+          {
+            "stage": 3,
+            "calls": 1022,
+            "constraints": 710,
+            "points": 825
+          }
+        ]
+      },
+      {
+        "mutations": true,
+        "returncode": 0,
+        "full600_native_output_equal": true,
+        "bytes": 36000,
+        "sha256": "162ba7744a7837107d1f0215f2dfa964bc2fb453768b178f6d7703d93d5a4e7a",
+        "stage_calls": [
+          {
+            "stage": 0,
+            "calls": 1165,
+            "constraints": 708,
+            "points": 855
+          },
+          {
+            "stage": 1,
+            "calls": 11650,
+            "constraints": 7080,
+            "points": 8550
+          },
+          {
+            "stage": 2,
+            "calls": 3361,
+            "constraints": 3048,
+            "points": 4329
+          },
+          {
+            "stage": 3,
+            "calls": 1165,
+            "constraints": 708,
+            "points": 855
+          }
+        ]
+      }
+    ],
+    "total_stage_comparisons": 36324,
+    "full_native_trace_bytes": 72000
+  },
+  "downstream_independent_scene_gate": {
+    "artifact": "artifacts/cuda-native-20261103/scene/circle-result.json",
+    "sha256": "6f738c4974bd2cd59ebf4ed5574285e2040d1ecef39616a3889011e2774c13f2",
+    "result": {
+      "pass": true,
+      "circle_scenes": 8,
+      "steps_each": 64,
+      "native_fullstep_frames": 512,
+      "all_semantic_words_equal": true,
+      "pair_topology": "fixed-imported-native-pair",
+      "fallback_calls": 0,
+      "full_broadphase_backend": false
+    },
+    "scope": "Separateworld/integration/collision implementation ownedbyotheragents. Fixedimportedpair topology; fullbroadphase/gamebackendnotclaimed."
+  },
+  "domain_gates": {
+    "source": "tools/cuda-native/solver_domain.cpp",
+    "pass": true,
+    "cases": [
+      "invalidbodyindex",
+      "pointCountoutside0..2",
+      "NaN consumednormal",
+      "constructorcapacityfailure",
+      "zeroeffective-massdivisionfailure",
+      "signednegativezerostore",
+      "divisionbyzero",
+      "negativesqrt",
+      "nonfinitestore"
+    ]
+  },
+  "gpu": {
+    "cuda_binary_sha256": "2803f71fb09edbf09a301a31944eefb10b6ba72683f5279e6a69e22e1ab2044b",
+    "architecture": "sm_70",
+    "registers_per_thread": 78,
+    "stack_bytes": 0,
+    "spill_store_bytes": 0,
+    "spill_load_bytes": 0,
+    "compile_flags_literal": "-O3 -DNDEBUG -std=c++20 \"--generate-code=arch=compute_70,code=[compute_70,sm_70]\" --fmad=false --ftz=false --prec-div=true --prec-sqrt=true -Xcompiler=-ffp-contract=off,-fno-fast-math -Xptxas=-v",
+    "link_command": "/usr/bin/g++-14 @CMakeFiles/irisu-native-solver.dir/objects1.rsp -o irisu-native-solver @CMakeFiles/irisu-native-solver.dir/linkLibs.rsp -L\"/opt/cuda/targets/x86_64-linux/lib/stubs\" -L\"/opt/cuda/targets/x86_64-linux/lib\"",
+    "Guest_or_region_symbols_present": false,
+    "timing_scope": "160mixed independentstagepackets, onecoldkernel event sample; componentdiagnostics only. No wholebackend/CPU speedup claim."
+  },
+  "artifact_sha256": {
+    "build-cuda-native-solver/validation/cases.bin": "64d82a9cdd4cde43acb4ba726c3490fa24a43e8792644fb0f84d4fbed86e4bba",
+    "build-cuda-native-solver/validation/native.bin": "f76f75047f76f7895087516eff0df1875744043df3dd84146efce8186a36caa2",
+    "build-cuda-native-solver/validation/cuda.bin": "f76f75047f76f7895087516eff0df1875744043df3dd84146efce8186a36caa2",
+    "build-cuda-native-solver/validation/memcheck.bin": "f76f75047f76f7895087516eff0df1875744043df3dd84146efce8186a36caa2",
+    "build-cuda-native-solver/validation/memcheck.log": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425",
+    "build-cuda-native-solver/validation/comparison.json": "3fee94f413970e786ac56f7133343e60ee791670e0e9e43f1c06b0574249b13f",
+    "build-cuda-native-solver/solver-final-scene-proof.json": "4b0bc7ad05ef0f45738039d45528f6385b655fc2adc3d29d60f2de294cc74ab2",
+    "build-cuda-native-solver/solver-cuda-build.log": "04ae18b4bd3cbd4666e9a22e846472e7fe873278b35aae34d137b1032a4e9c20",
+    "build-cuda-native-solver/solver-final-native-host.json": "35fe76bb4d062f313107bd3a951151a1df7ca7ff412cc7feb0f945b883f2ac29"
+  },
+  "compatibility_fixes": [
+    "NVCC12.9/GCC14 C++20frontassert onstd::vector<anonymousCtypedef> isolatedbyminimalrepro; namedwirestructtags preserveABI andcompile successfully.",
+    "ComputeSanitizerlogredirectedfrombinary stdout into separatefile; initialbanner-onlycomparisonfailure preservedunder artifactvalidation/comparison-initial-banner-failure.json. Finalmemcheckwire identical andERRORSUMMARY0."
+  ],
+  "limitations": [
+    "Nativefixturecontact-list order qualifiesstagearithmetic, not actualnativeislandDFS selection. DownstreamnewScene gate separatelyvalidatesfixedpair topology.",
+    "32physicalscene snapshots with160stagecalls and36,324stagecomparisons in2fixed600tickScenes are boundedcoverage, not exhaustive MSVC equivalence.",
+    "Newfullbroadphase,polygoncollision,shapeconstruction/lifecycle and fullgame integration remain separateworkstreams.",
+    "No full independentbackend speedup claim or defaultproductionpromotion."
+  ]
+}

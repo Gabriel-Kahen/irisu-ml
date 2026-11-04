@@ -1,0 +1,47 @@
+{
+  "schema": "irisu-independent-native-factory-stage-v1",
+  "date": "2026-11-03",
+  "promotion_eligible": false,
+  "scope": "Single circle or wrapper rectangle/triangle polygon per body. Native MSVC actual ELF32 cold creation versus independent typed physical construction. No broadphase/proxy or full world-step admission from this receipt.",
+  "native_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+  "oracle_identity": "Held-FD SHA256 pin then dlopen the same file via oracle_native.h.",
+  "host": {
+    "pass": true,
+    "native_wrapper_factory_cases": 1536,
+    "hidden_field_comparisons": 61440,
+    "circle_box_triangle": true,
+    "consumed_and_active_core_geometry": true,
+    "proxy_allocation_compared": false
+  },
+  "gpu": {
+    "native_factory_cases": 1536,
+    "all_consumed_state_hashes_equal": true,
+    "registers_per_thread": 63,
+    "local_bytes_per_thread": 744,
+    "compute_sanitizer_errors": 0,
+    "source": "Root-coordinated actual GPU memcheck run; log retained below."
+  },
+  "corpus": "512 each circle/box/triangle; magnification1 and30; dimensions12..62; random coordinates/angles/density/materials plus zero density and signed-zero inputs. Wrapper initializes velocity/damping/local-transform defaults; other BodyDefinition inputs are not certified here.",
+  "comparison": "All native initialized physical body fields, flags, mass/inverse mass/inertia, center of mass/current versus prior origin, rotation matrix, caches/material/filter fields; active polygon vertices, normals and core vertices; complete local OBB. Excludes allocation metadata, native pointers, proxy IDs and unused polygon slots.",
+  "source_sha256_at_checkpoint": {
+    "clone/cuda_native/types.hpp": "6764c26b03d10ecb29abdf6b8e0a0fbe57457549fdc8096b16e25ff0a21a39d7",
+    "clone/cuda_native/world.hpp": "11ccd005afec41ac8c10ee2060a774cbe682dd297db0c233d7aae394122261b7",
+    "clone/cuda_native/factory.hpp": "3ab2cef30efa346baae00655b834cd27b5720573349f46817a12d57dbe37c688",
+    "tools/cuda-native/factory_validate.cpp": "e86ffe6b3c2524b2333e9a48c65ee34b463066153eff35e0ac0179db951e0fca",
+    "tools/cuda-native/factory_wire.hpp": "d82ac3e5a6302fa8c7c49f4a2f82e2bc19f87ed25424bd24d7b42f931b83d632",
+    "tools/cuda-native/factory_runner.cu": "8e361f4cee8d062bb31e30fd1e22b4152d06039feca2814006edf549b6838052",
+    "tools/cuda-native/scene_native.hpp": "dc542843eadd70916cb060c1eba13d96322addb67e4beebf4781ba207c026687"
+  },
+  "artifacts": {
+    "artifacts/cuda-native-20261103/factory/result.json": "b1647defc8d382bd582e9a218969b9a4f01ba1f05605304239fa75e183658a3d",
+    "artifacts/cuda-native-20261103/factory/build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/cuda-native-20261103/factory/packets.bin": "664e1e0bcba49cd7ccee0919b3c0b0e95f26324c62faadca63856da1b3ac2404",
+    "artifacts/gpu-native-20261103/factory-gpu-memcheck.log": "4eff9888aac4684fb0b975e1aae9526934d87fc9553c6fca526a2ec6ab8579ed"
+  },
+  "host_command": "c++ -m32 -std=c++20 -O2 -ffp-contract=off -fno-fast-math -I/opt/cuda/include tools/cuda-native/factory_validate.cpp -ldl -lcrypto -o artifacts/cuda-native-20261103/factory/factory-validate",
+  "scope_limits": [
+    "No mass algorithm is duplicated in the validator; typed implementation is Root-owned factory.hpp.",
+    "This is correctness qualification, not throughput or full-scene performance.",
+    "The prior fixed-circle receipt remains pinned to its source snapshot. Scene wire v2 appends polygon OBB/core fields and reserved world bookkeeping; v1 remains readable."
+  ]
+}

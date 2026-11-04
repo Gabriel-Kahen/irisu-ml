@@ -1,0 +1,710 @@
+{
+  "schema": "irisu-full-game-search-benchmark-v2",
+  "promotion_eligible": false,
+  "scope": "bounded published-replay prefix, sparse mutations, fixed continuation, full game rules and exact-host translation",
+  "record_search_provenance": "new sparse-mutation workload; recovered historical event-search invocation used rl_combo_diverse_search.py, whose source is absent; this benchmark does not reproduce that algorithm",
+  "candidate_generator": "distinct-effective-sparse-pixels-v2",
+  "distinct_normalized_specs": 512,
+  "inputs": {
+    "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+    "specs_sha256": "949f8d1d8678961ffbf19511804fc6ddff39684b4f8cfd191f72797ba6d1a84d",
+    "image_sha256": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685"
+  },
+  "binaries": {
+    "oracle_sha256": "cf4865e017afa0f559569d1d5ac834cb39cd4d23385c17224953e85e9ace48e1",
+    "gpu_sha256": "c2e64a367eb2e6a34f56db33b8191775dd794b63674da37d31c9ce571111da22"
+  },
+  "prefix": 100,
+  "horizon": 4,
+  "candidates": 512,
+  "host_prefix": true,
+  "isolated_warps": true,
+  "trace_every_tick": false,
+  "cache_guest": true,
+  "block_threads": 128,
+  "stack_kib": 16,
+  "timing_contract": {
+    "warmups": 1,
+    "timed_repeats": 3,
+    "wall": "process startup, runtime initialization, prefix preparation/upload, branches, complete futures, stable ranking, GPU selected-state compaction and result download; Python parity comparison excluded",
+    "gpu_component": "CUDA events; setup/prefix, snapshot copy, future rollout, rank+compact+verification separately",
+    "telemetry": "whole-device nvidia-smi samples at approximately 200 ms; not process exclusive",
+    "validation": "warmup additionally compares compacted hidden state/arena and steps selected state plus independent source; timed repetitions skip that extra validation workload",
+    "cpu": "native ELF32 exact core, prefix once then bounded fork/COW candidate workers; same digest mode as GPU"
+  },
+  "cases": [
+    {
+      "backend": "cpu",
+      "workers": 1,
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-v3-linked-512x4-2026-11-03.specs.bin",
+        "100",
+        "4",
+        "1",
+        "4393102",
+        "--final-only"
+      ],
+      "validation_command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-v3-linked-512x4-2026-11-03.specs.bin",
+        "100",
+        "4",
+        "1",
+        "4393102",
+        "--final-only"
+      ],
+      "warmup": {
+        "wall_seconds": 0.37665505599579774,
+        "metadata": {
+          "identity": "experimental-native-exact-search-oracle-v2",
+          "candidates": 512,
+          "workers": 1,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "trace_every_tick": false,
+          "prefix_ms": 8.668442,
+          "branch_rollout_rank_ms": 363.696412,
+          "total_ms": 372.374042,
+          "winner": 0
+        }
+      },
+      "runs": [
+        {
+          "wall_seconds": 0.3824168569990434,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 512,
+            "workers": 1,
+            "prefix_ticks": 100,
+            "horizon": 4,
+            "simulated_ticks": 2048,
+            "trace_every_tick": false,
+            "prefix_ms": 8.902076,
+            "branch_rollout_rank_ms": 367.945565,
+            "total_ms": 376.856208,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 0.37772164399939356,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 512,
+            "workers": 1,
+            "prefix_ticks": 100,
+            "horizon": 4,
+            "simulated_ticks": 2048,
+            "trace_every_tick": false,
+            "prefix_ms": 8.579082,
+            "branch_rollout_rank_ms": 364.569884,
+            "total_ms": 373.157992,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 0.3761130929997307,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 512,
+            "workers": 1,
+            "prefix_ticks": 100,
+            "horizon": 4,
+            "simulated_ticks": 2048,
+            "trace_every_tick": false,
+            "prefix_ms": 8.343173,
+            "branch_rollout_rank_ms": 363.735867,
+            "total_ms": 372.091773,
+            "winner": 0
+          }
+        }
+      ],
+      "parity": true,
+      "result_sha256": "f1c22a7da492f250ae1c3af02968d6091912d22859d12c6c5a978520cf32767f",
+      "winner": 0,
+      "distinct_final_frame_fingerprints": 512,
+      "distinct_trace_fingerprints": 512,
+      "actual_simulated_ticks": 2048,
+      "median_wall_seconds": 0.37772164399939356,
+      "search_branches_per_second": 1355.495529932677,
+      "simulation_ticks_per_second": 5421.982119730708,
+      "telemetry": [
+        [
+          1793743135.9528985,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743136.1720614,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743136.3942823,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743136.6149287,
+          0.0,
+          9.0,
+          26.13
+        ],
+        [
+          1793743136.8305929,
+          0.0,
+          9.0,
+          26.12
+        ],
+        [
+          1793743137.0456414,
+          0.0,
+          9.0,
+          26.03
+        ]
+      ],
+      "peak_vram_mib": 9.0,
+      "peak_gpu_util_percent": 0.0
+    },
+    {
+      "backend": "cpu",
+      "workers": 8,
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-v3-linked-512x4-2026-11-03.specs.bin",
+        "100",
+        "4",
+        "8",
+        "4393102",
+        "--final-only"
+      ],
+      "validation_command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-v3-linked-512x4-2026-11-03.specs.bin",
+        "100",
+        "4",
+        "8",
+        "4393102",
+        "--final-only"
+      ],
+      "warmup": {
+        "wall_seconds": 0.0742828809961793,
+        "metadata": {
+          "identity": "experimental-native-exact-search-oracle-v2",
+          "candidates": 512,
+          "workers": 8,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "trace_every_tick": false,
+          "prefix_ms": 8.416752,
+          "branch_rollout_rank_ms": 61.525561,
+          "total_ms": 69.954847,
+          "winner": 0
+        }
+      },
+      "runs": [
+        {
+          "wall_seconds": 0.07243218999792589,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 512,
+            "workers": 8,
+            "prefix_ticks": 100,
+            "horizon": 4,
+            "simulated_ticks": 2048,
+            "trace_every_tick": false,
+            "prefix_ms": 8.508477,
+            "branch_rollout_rank_ms": 59.519514,
+            "total_ms": 68.037038,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 0.07404718299949309,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 512,
+            "workers": 8,
+            "prefix_ticks": 100,
+            "horizon": 4,
+            "simulated_ticks": 2048,
+            "trace_every_tick": false,
+            "prefix_ms": 8.516843,
+            "branch_rollout_rank_ms": 61.030929,
+            "total_ms": 69.556529,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 0.07417504499608185,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 512,
+            "workers": 8,
+            "prefix_ticks": 100,
+            "horizon": 4,
+            "simulated_ticks": 2048,
+            "trace_every_tick": false,
+            "prefix_ms": 8.873842,
+            "branch_rollout_rank_ms": 61.063812,
+            "total_ms": 69.947102,
+            "winner": 0
+          }
+        }
+      ],
+      "parity": true,
+      "result_sha256": "f1c22a7da492f250ae1c3af02968d6091912d22859d12c6c5a978520cf32767f",
+      "winner": 0,
+      "distinct_final_frame_fingerprints": 512,
+      "distinct_trace_fingerprints": 512,
+      "actual_simulated_ticks": 2048,
+      "median_wall_seconds": 0.07404718299949309,
+      "search_branches_per_second": 6914.51017121752,
+      "simulation_ticks_per_second": 27658.04068487008,
+      "telemetry": [
+        [
+          1793743137.167771,
+          0.0,
+          9.0,
+          26.03
+        ],
+        [
+          1793743137.382874,
+          0.0,
+          9.0,
+          26.03
+        ]
+      ],
+      "peak_vram_mib": 9.0,
+      "peak_gpu_util_percent": 0.0
+    },
+    {
+      "backend": "cpu",
+      "workers": 16,
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-v3-linked-512x4-2026-11-03.specs.bin",
+        "100",
+        "4",
+        "16",
+        "4393102",
+        "--final-only"
+      ],
+      "validation_command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-v3-linked-512x4-2026-11-03.specs.bin",
+        "100",
+        "4",
+        "16",
+        "4393102",
+        "--final-only"
+      ],
+      "warmup": {
+        "wall_seconds": 0.07182544600073015,
+        "metadata": {
+          "identity": "experimental-native-exact-search-oracle-v2",
+          "candidates": 512,
+          "workers": 16,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "trace_every_tick": false,
+          "prefix_ms": 8.508016,
+          "branch_rollout_rank_ms": 59.14916,
+          "total_ms": 67.666313,
+          "winner": 0
+        }
+      },
+      "runs": [
+        {
+          "wall_seconds": 0.07248544100002619,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 512,
+            "workers": 16,
+            "prefix_ticks": 100,
+            "horizon": 4,
+            "simulated_ticks": 2048,
+            "trace_every_tick": false,
+            "prefix_ms": 8.591175,
+            "branch_rollout_rank_ms": 59.464179,
+            "total_ms": 68.064351,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 0.07321083200076828,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 512,
+            "workers": 16,
+            "prefix_ticks": 100,
+            "horizon": 4,
+            "simulated_ticks": 2048,
+            "trace_every_tick": false,
+            "prefix_ms": 8.695493,
+            "branch_rollout_rank_ms": 60.165512,
+            "total_ms": 68.869121,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 0.07272129000193672,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 512,
+            "workers": 16,
+            "prefix_ticks": 100,
+            "horizon": 4,
+            "simulated_ticks": 2048,
+            "trace_every_tick": false,
+            "prefix_ms": 8.646971,
+            "branch_rollout_rank_ms": 59.880651,
+            "total_ms": 68.536509,
+            "winner": 0
+          }
+        }
+      ],
+      "parity": true,
+      "result_sha256": "f1c22a7da492f250ae1c3af02968d6091912d22859d12c6c5a978520cf32767f",
+      "winner": 0,
+      "distinct_final_frame_fingerprints": 512,
+      "distinct_trace_fingerprints": 512,
+      "actual_simulated_ticks": 2048,
+      "median_wall_seconds": 0.07272129000193672,
+      "search_branches_per_second": 7040.579175456931,
+      "simulation_ticks_per_second": 28162.316701827724,
+      "telemetry": [
+        [
+          1793743137.4718933,
+          0.0,
+          9.0,
+          26.13
+        ],
+        [
+          1793743137.687325,
+          0.0,
+          9.0,
+          26.13
+        ]
+      ],
+      "peak_vram_mib": 9.0,
+      "peak_gpu_util_percent": 0.0
+    },
+    {
+      "backend": "cuda",
+      "workers": 0,
+      "command": [
+        "build-project-cuda/clone/cuda/irisu-cuda-search",
+        "build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-v3-linked-512x4-2026-11-03.specs.bin",
+        "100",
+        "4",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix",
+        "--isolated-warps",
+        "--final-only",
+        "--block-threads",
+        "128",
+        "--stack-kib",
+        "16",
+        "--skip-compaction-check"
+      ],
+      "validation_command": [
+        "build-project-cuda/clone/cuda/irisu-cuda-search",
+        "build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-v3-linked-512x4-2026-11-03.specs.bin",
+        "100",
+        "4",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix",
+        "--isolated-warps",
+        "--final-only",
+        "--block-threads",
+        "128",
+        "--stack-kib",
+        "16"
+      ],
+      "warmup": {
+        "wall_seconds": 1.7073882989934646,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 512,
+          "prefix_ticks": 100,
+          "horizon": 4,
+          "simulated_ticks": 2048,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 128,
+          "stack_kib": 16,
+          "host_prefix": true,
+          "host_prefix_ms": 151.406155,
+          "prefix_ms": 38.355998993,
+          "branch_ms": 4.329472065,
+          "rollout_ms": 1192.70300293,
+          "rank_compact_ms": 2.382848024,
+          "validation_ms": 193.130493164,
+          "compaction_check_enabled": true,
+          "total_ms": 1656.821327,
+          "allocated_bytes": 839104544,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      "runs": [
+        {
+          "wall_seconds": 1.5167801589996088,
+          "metadata": {
+            "identity": "experimental-cuda-game-search-v2",
+            "promotion_eligible": false,
+            "candidates": 512,
+            "prefix_ticks": 100,
+            "horizon": 4,
+            "simulated_ticks": 2048,
+            "failed_candidates": 0,
+            "trace_every_tick": false,
+            "cache_guest": true,
+            "block_threads": 128,
+            "stack_kib": 16,
+            "host_prefix": true,
+            "host_prefix_ms": 145.656266,
+            "prefix_ms": 36.549633026,
+            "branch_ms": 3.827712059,
+            "rollout_ms": 1200.547851562,
+            "rank_compact_ms": 2.367487907,
+            "validation_ms": 0.002048,
+            "compaction_check_enabled": false,
+            "total_ms": 1464.546396,
+            "allocated_bytes": 839104544,
+            "peak_guest_bytes": 359392,
+            "compaction_errors": 0,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 1.5261589680012548,
+          "metadata": {
+            "identity": "experimental-cuda-game-search-v2",
+            "promotion_eligible": false,
+            "candidates": 512,
+            "prefix_ticks": 100,
+            "horizon": 4,
+            "simulated_ticks": 2048,
+            "failed_candidates": 0,
+            "trace_every_tick": false,
+            "cache_guest": true,
+            "block_threads": 128,
+            "stack_kib": 16,
+            "host_prefix": true,
+            "host_prefix_ms": 146.284321,
+            "prefix_ms": 38.166526794,
+            "branch_ms": 3.981312037,
+            "rollout_ms": 1211.683837891,
+            "rank_compact_ms": 2.379776001,
+            "validation_ms": 0.002048,
+            "compaction_check_enabled": false,
+            "total_ms": 1475.464214,
+            "allocated_bytes": 839104544,
+            "peak_guest_bytes": 359392,
+            "compaction_errors": 0,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 1.5372352069971384,
+          "metadata": {
+            "identity": "experimental-cuda-game-search-v2",
+            "promotion_eligible": false,
+            "candidates": 512,
+            "prefix_ticks": 100,
+            "horizon": 4,
+            "simulated_ticks": 2048,
+            "failed_candidates": 0,
+            "trace_every_tick": false,
+            "cache_guest": true,
+            "block_threads": 128,
+            "stack_kib": 16,
+            "host_prefix": true,
+            "host_prefix_ms": 145.507983,
+            "prefix_ms": 36.685825348,
+            "branch_ms": 3.98438406,
+            "rollout_ms": 1221.567504883,
+            "rank_compact_ms": 2.37567997,
+            "validation_ms": 0.002048,
+            "compaction_check_enabled": false,
+            "total_ms": 1481.486327,
+            "allocated_bytes": 839104544,
+            "peak_guest_bytes": 359392,
+            "compaction_errors": 0,
+            "winner": 0
+          }
+        }
+      ],
+      "parity": true,
+      "result_sha256": "f1c22a7da492f250ae1c3af02968d6091912d22859d12c6c5a978520cf32767f",
+      "winner": 0,
+      "distinct_final_frame_fingerprints": 512,
+      "distinct_trace_fingerprints": 512,
+      "actual_simulated_ticks": 2048,
+      "median_wall_seconds": 1.5261589680012548,
+      "search_branches_per_second": 335.4827450711406,
+      "simulation_ticks_per_second": 1341.9309802845623,
+      "telemetry": [
+        [
+          1793743139.4118035,
+          100.0,
+          15.0,
+          45.48
+        ],
+        [
+          1793743139.6266825,
+          45.0,
+          3519.0,
+          42.67
+        ],
+        [
+          1793743139.8415518,
+          33.0,
+          3541.0,
+          70.2
+        ],
+        [
+          1793743140.0593405,
+          100.0,
+          3541.0,
+          66.35
+        ],
+        [
+          1793743140.2741368,
+          100.0,
+          3541.0,
+          65.48
+        ],
+        [
+          1793743140.4892368,
+          100.0,
+          3541.0,
+          62.67
+        ],
+        [
+          1793743140.7040348,
+          100.0,
+          3541.0,
+          53.1
+        ],
+        [
+          1793743140.9214146,
+          100.0,
+          9.0,
+          45.77
+        ],
+        [
+          1793743141.1371233,
+          51.0,
+          3519.0,
+          42.77
+        ],
+        [
+          1793743141.3527503,
+          27.0,
+          3541.0,
+          70.66
+        ],
+        [
+          1793743141.568499,
+          100.0,
+          3541.0,
+          67.2
+        ],
+        [
+          1793743141.7836087,
+          100.0,
+          3541.0,
+          65.67
+        ],
+        [
+          1793743142.0005221,
+          100.0,
+          3541.0,
+          62.5
+        ],
+        [
+          1793743142.2155554,
+          100.0,
+          3541.0,
+          53.32
+        ],
+        [
+          1793743142.4352212,
+          100.0,
+          9.0,
+          45.77
+        ],
+        [
+          1793743142.650468,
+          63.0,
+          3519.0,
+          42.87
+        ],
+        [
+          1793743142.8671992,
+          17.0,
+          3541.0,
+          71.84
+        ],
+        [
+          1793743143.0827339,
+          100.0,
+          3541.0,
+          67.38
+        ],
+        [
+          1793743143.2982936,
+          100.0,
+          3541.0,
+          65.94
+        ],
+        [
+          1793743143.5130394,
+          100.0,
+          3541.0,
+          61.91
+        ],
+        [
+          1793743143.7299948,
+          100.0,
+          3541.0,
+          53.59
+        ],
+        [
+          1793743143.9460208,
+          100.0,
+          2739.0,
+          45.1
+        ]
+      ],
+      "peak_vram_mib": 3541.0,
+      "peak_gpu_util_percent": 100.0
+    }
+  ]
+}

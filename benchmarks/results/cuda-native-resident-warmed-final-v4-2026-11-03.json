@@ -1,0 +1,409 @@
+{
+  "schema": "irisu-native-resident-warmed-final-v4-comparison-v1",
+  "promotion_eligible": false,
+  "scope": "Native exact prefix once; selected fork/COW states retained across depths; same Session-v4 results, lifecycle and selection as the supplied GPU capture. Python parity/hash work excluded from process wall timers. GPU not timed by this tool.",
+  "inputs": {
+    "replay": {
+      "path": "irisu-high-score-4393101.rpy",
+      "sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79"
+    },
+    "specs": {
+      "path": "artifacts/gpu-exact-20261103/search-v4/resident-suffix-96000-live-beam-v4.specs.bin",
+      "sha256": "bba0221d3030cd417c1c2e722e22c0a38ac5476353cee7d90afa441c5ca43143"
+    },
+    "gpu_results": {
+      "path": "artifacts/gpu-exact-20261103/search-v4/resident-suffix-96000-live-beam-v4.results.bin",
+      "sha256": "a605d7ab4789155cf8d982249571fe517a6385cdf3f38fedd6ba18b8ca04e87e"
+    }
+  },
+  "native_sha256": "f1b1d2a8574df141952abdf287927d624c163230d69753158bd8eebb34c75c94",
+  "cases": [
+    {
+      "workers": 1,
+      "command": [
+        "build-project-exact/irisu-search-session-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/gpu-exact-20261103/search-v4/resident-suffix-96000-live-beam-v4.specs.bin",
+        "96000",
+        "80",
+        "1",
+        "8",
+        "16",
+        "4393102",
+        "--final-only"
+      ],
+      "warmups": [
+        {
+          "wall_seconds": 24.100686968995433,
+          "metadata": {
+            "identity": "experimental-native-exact-resident-search-v1",
+            "workers": 1,
+            "depths": 16,
+            "beam": 8,
+            "fanout": 32,
+            "candidate_nodes": 3872,
+            "actual_simulated_branches": 3456,
+            "actual_simulated_ticks": 206412,
+            "prefix_ms": 2766.040496,
+            "branch_rollout_ms": 21274.231489,
+            "rank_selection_ms": 44.888287,
+            "total_ms": 24085.199727,
+            "winner": 40
+          },
+          "result_sha256": "a605d7ab4789155cf8d982249571fe517a6385cdf3f38fedd6ba18b8ca04e87e",
+          "byte_parity": true
+        }
+      ],
+      "runs": [
+        {
+          "wall_seconds": 24.120664809001028,
+          "metadata": {
+            "identity": "experimental-native-exact-resident-search-v1",
+            "workers": 1,
+            "depths": 16,
+            "beam": 8,
+            "fanout": 32,
+            "candidate_nodes": 3872,
+            "actual_simulated_branches": 3456,
+            "actual_simulated_ticks": 206412,
+            "prefix_ms": 2764.588547,
+            "branch_rollout_ms": 21297.899502,
+            "rank_selection_ms": 50.557646,
+            "total_ms": 24113.086512,
+            "winner": 40
+          },
+          "result_sha256": "a605d7ab4789155cf8d982249571fe517a6385cdf3f38fedd6ba18b8ca04e87e",
+          "byte_parity": true
+        },
+        {
+          "wall_seconds": 24.364718475997506,
+          "metadata": {
+            "identity": "experimental-native-exact-resident-search-v1",
+            "workers": 1,
+            "depths": 16,
+            "beam": 8,
+            "fanout": 32,
+            "candidate_nodes": 3872,
+            "actual_simulated_branches": 3456,
+            "actual_simulated_ticks": 206412,
+            "prefix_ms": 2765.589169,
+            "branch_rollout_ms": 21538.500634,
+            "rank_selection_ms": 46.494312,
+            "total_ms": 24350.972233,
+            "winner": 40
+          },
+          "result_sha256": "a605d7ab4789155cf8d982249571fe517a6385cdf3f38fedd6ba18b8ca04e87e",
+          "byte_parity": true
+        },
+        {
+          "wall_seconds": 24.280518708997988,
+          "metadata": {
+            "identity": "experimental-native-exact-resident-search-v1",
+            "workers": 1,
+            "depths": 16,
+            "beam": 8,
+            "fanout": 32,
+            "candidate_nodes": 3872,
+            "actual_simulated_branches": 3456,
+            "actual_simulated_ticks": 206412,
+            "prefix_ms": 2771.641665,
+            "branch_rollout_ms": 21449.187075,
+            "rank_selection_ms": 39.56608,
+            "total_ms": 24260.429858,
+            "winner": 40
+          },
+          "result_sha256": "a605d7ab4789155cf8d982249571fe517a6385cdf3f38fedd6ba18b8ca04e87e",
+          "byte_parity": true
+        }
+      ],
+      "median_wall_seconds": 24.280518708997988
+    },
+    {
+      "workers": 8,
+      "command": [
+        "build-project-exact/irisu-search-session-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/gpu-exact-20261103/search-v4/resident-suffix-96000-live-beam-v4.specs.bin",
+        "96000",
+        "80",
+        "8",
+        "8",
+        "16",
+        "4393102",
+        "--final-only"
+      ],
+      "warmups": [
+        {
+          "wall_seconds": 5.946808180000517,
+          "metadata": {
+            "identity": "experimental-native-exact-resident-search-v1",
+            "workers": 8,
+            "depths": 16,
+            "beam": 8,
+            "fanout": 32,
+            "candidate_nodes": 3872,
+            "actual_simulated_branches": 3456,
+            "actual_simulated_ticks": 206412,
+            "prefix_ms": 2788.986529,
+            "branch_rollout_ms": 3105.768755,
+            "rank_selection_ms": 37.511645,
+            "total_ms": 5932.304928,
+            "winner": 40
+          },
+          "result_sha256": "a605d7ab4789155cf8d982249571fe517a6385cdf3f38fedd6ba18b8ca04e87e",
+          "byte_parity": true
+        }
+      ],
+      "runs": [
+        {
+          "wall_seconds": 5.927193841002008,
+          "metadata": {
+            "identity": "experimental-native-exact-resident-search-v1",
+            "workers": 8,
+            "depths": 16,
+            "beam": 8,
+            "fanout": 32,
+            "candidate_nodes": 3872,
+            "actual_simulated_branches": 3456,
+            "actual_simulated_ticks": 206412,
+            "prefix_ms": 2769.601369,
+            "branch_rollout_ms": 3117.9063,
+            "rank_selection_ms": 30.484446,
+            "total_ms": 5918.022183,
+            "winner": 40
+          },
+          "result_sha256": "a605d7ab4789155cf8d982249571fe517a6385cdf3f38fedd6ba18b8ca04e87e",
+          "byte_parity": true
+        },
+        {
+          "wall_seconds": 5.899568128996179,
+          "metadata": {
+            "identity": "experimental-native-exact-resident-search-v1",
+            "workers": 8,
+            "depths": 16,
+            "beam": 8,
+            "fanout": 32,
+            "candidate_nodes": 3872,
+            "actual_simulated_branches": 3456,
+            "actual_simulated_ticks": 206412,
+            "prefix_ms": 2770.414018,
+            "branch_rollout_ms": 3089.274483,
+            "rank_selection_ms": 26.818977,
+            "total_ms": 5886.5395,
+            "winner": 40
+          },
+          "result_sha256": "a605d7ab4789155cf8d982249571fe517a6385cdf3f38fedd6ba18b8ca04e87e",
+          "byte_parity": true
+        },
+        {
+          "wall_seconds": 5.877323198998056,
+          "metadata": {
+            "identity": "experimental-native-exact-resident-search-v1",
+            "workers": 8,
+            "depths": 16,
+            "beam": 8,
+            "fanout": 32,
+            "candidate_nodes": 3872,
+            "actual_simulated_branches": 3456,
+            "actual_simulated_ticks": 206412,
+            "prefix_ms": 2766.422103,
+            "branch_rollout_ms": 3069.761131,
+            "rank_selection_ms": 27.03073,
+            "total_ms": 5863.247248,
+            "winner": 40
+          },
+          "result_sha256": "a605d7ab4789155cf8d982249571fe517a6385cdf3f38fedd6ba18b8ca04e87e",
+          "byte_parity": true
+        }
+      ],
+      "median_wall_seconds": 5.899568128996179
+    },
+    {
+      "workers": 16,
+      "command": [
+        "build-project-exact/irisu-search-session-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/gpu-exact-20261103/search-v4/resident-suffix-96000-live-beam-v4.specs.bin",
+        "96000",
+        "80",
+        "16",
+        "8",
+        "16",
+        "4393102",
+        "--final-only"
+      ],
+      "warmups": [
+        {
+          "wall_seconds": 4.979317932004051,
+          "metadata": {
+            "identity": "experimental-native-exact-resident-search-v1",
+            "workers": 16,
+            "depths": 16,
+            "beam": 8,
+            "fanout": 32,
+            "candidate_nodes": 3872,
+            "actual_simulated_branches": 3456,
+            "actual_simulated_ticks": 206412,
+            "prefix_ms": 2782.088501,
+            "branch_rollout_ms": 2161.852885,
+            "rank_selection_ms": 22.143848,
+            "total_ms": 4966.119369,
+            "winner": 40
+          },
+          "result_sha256": "a605d7ab4789155cf8d982249571fe517a6385cdf3f38fedd6ba18b8ca04e87e",
+          "byte_parity": true
+        }
+      ],
+      "runs": [
+        {
+          "wall_seconds": 5.036053569994692,
+          "metadata": {
+            "identity": "experimental-native-exact-resident-search-v1",
+            "workers": 16,
+            "depths": 16,
+            "beam": 8,
+            "fanout": 32,
+            "candidate_nodes": 3872,
+            "actual_simulated_branches": 3456,
+            "actual_simulated_ticks": 206412,
+            "prefix_ms": 2776.174111,
+            "branch_rollout_ms": 2223.13856,
+            "rank_selection_ms": 24.071222,
+            "total_ms": 5023.414411,
+            "winner": 40
+          },
+          "result_sha256": "a605d7ab4789155cf8d982249571fe517a6385cdf3f38fedd6ba18b8ca04e87e",
+          "byte_parity": true
+        },
+        {
+          "wall_seconds": 4.9310573039983865,
+          "metadata": {
+            "identity": "experimental-native-exact-resident-search-v1",
+            "workers": 16,
+            "depths": 16,
+            "beam": 8,
+            "fanout": 32,
+            "candidate_nodes": 3872,
+            "actual_simulated_branches": 3456,
+            "actual_simulated_ticks": 206412,
+            "prefix_ms": 2777.322548,
+            "branch_rollout_ms": 2116.863088,
+            "rank_selection_ms": 26.383297,
+            "total_ms": 4920.602198,
+            "winner": 40
+          },
+          "result_sha256": "a605d7ab4789155cf8d982249571fe517a6385cdf3f38fedd6ba18b8ca04e87e",
+          "byte_parity": true
+        },
+        {
+          "wall_seconds": 4.952657654997893,
+          "metadata": {
+            "identity": "experimental-native-exact-resident-search-v1",
+            "workers": 16,
+            "depths": 16,
+            "beam": 8,
+            "fanout": 32,
+            "candidate_nodes": 3872,
+            "actual_simulated_branches": 3456,
+            "actual_simulated_ticks": 206412,
+            "prefix_ms": 2768.730707,
+            "branch_rollout_ms": 2145.880567,
+            "rank_selection_ms": 23.962746,
+            "total_ms": 4938.606452,
+            "winner": 40
+          },
+          "result_sha256": "a605d7ab4789155cf8d982249571fe517a6385cdf3f38fedd6ba18b8ca04e87e",
+          "byte_parity": true
+        }
+      ],
+      "median_wall_seconds": 4.952657654997893
+    }
+  ],
+  "timing_contract": {
+    "cpu": "Exclusive CPU slot,1untimedwarmup+3timed full processes per worker setting1/8/16; initialization/native exact prefix once, retained selected fork/COW states across16depths; cleanup/output part of process wall; Python comparison/hashwork excluded.",
+    "gpu": "Preserved previously qualified single GPU campaign, not rerun or warmed/repeated for this comparison. Same full work and every byte independently compared here.",
+    "comparison_limit": "This is a new warmed CPU matrix against the historical v4 GPU campaign, not a contemporaneous paired GPU/CPU matrix; no fresh GPU performance or modified typed-leaf campaign claim."
+  },
+  "summary": [
+    {
+      "workers": 1,
+      "median_wall_seconds": 24.280518708997988,
+      "median_components_ms": {
+        "prefix_ms": 2765.589169,
+        "branch_rollout_ms": 21449.187075,
+        "rank_selection_ms": 46.494312,
+        "total_ms": 24260.429858
+      },
+      "warmup_parity": true,
+      "timed_repeats_parity": true
+    },
+    {
+      "workers": 8,
+      "median_wall_seconds": 5.899568128996179,
+      "median_components_ms": {
+        "prefix_ms": 2769.601369,
+        "branch_rollout_ms": 3089.274483,
+        "rank_selection_ms": 27.03073,
+        "total_ms": 5886.5395
+      },
+      "warmup_parity": true,
+      "timed_repeats_parity": true
+    },
+    {
+      "workers": 16,
+      "median_wall_seconds": 4.952657654997893,
+      "median_components_ms": {
+        "prefix_ms": 2776.174111,
+        "branch_rollout_ms": 2145.880567,
+        "rank_selection_ms": 24.071222,
+        "total_ms": 4938.606452
+      },
+      "warmup_parity": true,
+      "timed_repeats_parity": true
+    }
+  ],
+  "workload": {
+    "prefix": 96000,
+    "horizon": 80,
+    "beam": 8,
+    "fanout": 32,
+    "depths": 16,
+    "candidate_nodes": 3872,
+    "actual_simulated_branches": 3456,
+    "actual_simulated_ticks": 206412,
+    "trace_every_tick": false,
+    "selection_policy": "global-best-live-beam-with-protected-zero-edit-lineage"
+  },
+  "gpu_reference": {
+    "report_path": "artifacts/gpu-exact-20261103/search-v4/resident-suffix-96000-live-beam-v4.json",
+    "report_sha256": "5d7bd9ca6d36057f7c3b26fb618540028b1da24b55c72b2938c8c03944bf98dd",
+    "binary_sha256": "f36f567ed9e951f95bb3eec01f39953b70bb99659c476361941deae99defaa0b",
+    "identity": {
+      "path": "artifacts/gpu-exact-20261103/final-session-v4-identity.json",
+      "sha256": "9f16cde27bc2d93513d59b67761e1d2141c6f12f02f3ada21328fcb9c9e33623",
+      "verified_before_and_after": true,
+      "production_exact_training_admitted": false
+    },
+    "wall_seconds": 322.9347473430025,
+    "components_ms": {
+      "host_prefix_ms": 53243.095441,
+      "prefix_ms": 36.56496048,
+      "branch_ms": 47.351807356,
+      "rollout_ms": 269411.032714844,
+      "rank_compact_ms": 39.634944201,
+      "validation_ms": 15.300607681,
+      "total_ms": 322878.815565
+    }
+  },
+  "gpu_wall_divided_by_fastest_tested_cpu_wall": 65.2043346903088,
+  "fastest_tested_cpu_workers": 16,
+  "complete_packet_parity_all_12_runs": true,
+  "verification_scope": "Every candidate Result, cumulative/final trace digest, stable canonical rank, selected child, protected rank and lifecycle flag in all16rounds; exactfull saved1,023,176byte Session-v4packet.",
+  "native_linkage": "\tlinux-gate.so.1 (0xf7f53000)\n\tlibirisu_box2d_msvc_exact_multiworld.so => /home/gabe/Documents/ChatGPT/irisu/.local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so (0xf7e9c000)\n\tlibstdc++.so.6 => /home/gabe/Documents/ChatGPT/irisu/.local/exact-runtime-20260824/exact-runtime/guest/libstdc++.so.6 (0xf7c34000)\n\tlibm.so.6 => /usr/lib32/libm.so.6 (0xf7aee000)\n\tlibgcc_s.so.1 => /usr/lib32/libgcc_s.so.1 (0xf7aad000)\n\tlibc.so.6 => /usr/lib32/libc.so.6 (0xf7810000)\n\t/lib/ld-linux.so.2 => /usr/lib/ld-linux.so.2 (0xf7f56000)\n",
+  "native_exact_dso_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+  "native_source_sha256": "872b5e7f17be3475ef24afab2006a295ab36428afff88e276817c4a85c4e0b76",
+  "original_replay_unchanged": true,
+  "native_binary_after_sha256": "f1b1d2a8574df141952abdf287927d624c163230d69753158bd8eebb34c75c94",
+  "native_binary_unchanged_during_matrix": true,
+  "conclusion": "Whole retained-state campaign is independently native-exact for all leaves, ranks and selections. FastesttestedCPU16 median4.952658s; historical GPU322.935s (~65.2xslower). FivefoldGPUgoal not met."
+}

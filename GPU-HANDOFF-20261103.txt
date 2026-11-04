@@ -1,0 +1,145 @@
+STOPPED GPU ENGINEERING CHECKPOINT — 2026-11-03
+
+STOP REASON
+User corrected the destination: this work must continue in a NEW chat in the
+existing irisu project. Mistaken dispatch in this older chat is cancelled.
+Do not resume here. Do not restart the old indefinite CPU score search.
+All source, commits, build products and test evidence are preserved.
+
+CHECKOUT / IDENTITY
+Checkout: /home/gabe/Documents/irisu
+Branch: codex/v100-exact-backend
+Original upstream main: c675d5527f6cb8a1eded036a6de9060c7f4cff64
+Current HEAD: fd79e5a259b23d275ace7d432a61fd4633216f08
+Remote: https://github.com/Gabriel-Kahen/irisu-ml.git
+The deleted historical checkout was restored by a fresh full checkout.
+The nearly empty /home/gabe/Documents/ChatGPT/irisu was left untouched.
+Git author identity is local-only Codex <codex@openai.com>.
+
+ACTIVE JOBS AT STOP
+None found. /proc inventory found no processes whose cwd is this checkout.
+No CUDA compiler, physics probe, game oracle or cuda-exact benchmark remains.
+Agent inventory contains only the root; all three GPU subtasks are absent.
+No indefinite search was started and no GPU power/driver setting was changed.
+The normal optimized CUDA compilation did not leave a completed optimized binary.
+
+COMMITTED WORK
+fd79e5a Add bounded native-versus-CUDA physics parity and timing harness
+72f821d Differentially test lowered x87 and carry semantics against native instructions
+fd544e1 Add bounded CUDA x87 numeric helpers and exhaustive V100 differential gates
+513c743 Add device-resident checkpoint branching and deterministic search scheduling
+f45f631 Audit fixed-host trigonometric float boundaries for GPU translation
+295cce6 Recover pinned exact CPU oracle and verify published record byte parity
+
+UNCOMMITTED WORK (PRESERVED)
+M CMakeLists.txt
+?? clone/cuda/CMakeLists.txt
+?? clone/cuda/game.cuh
+?? clone/cuda/game_source.json
+?? clone/cuda/game_support.cuh
+?? clone/cuda/game_tables.cuh
+?? clone/cuda/game_types.cuh
+?? clone/cuda/guest.hpp
+?? clone/cuda/guest_program.cuh
+?? clone/cuda/physics_game.cuh
+?? tools/cuda-exact/compare_game_digests.py
+?? tools/cuda-exact/game_codegen.py
+?? tools/cuda-exact/game_digest.hpp
+?? tools/cuda-exact/game_oracle.cpp
+?? tools/cuda-exact/game_validate.cpp
+?? tools/cuda-exact/physics_probe.cu
+?? tools/cuda-exact/translate.py
+
+VERIFIED FINDINGS
+- Live GPU: Tesla V100-PCIE-32GB, 32768 MiB, driver580.178.04, current250W cap.
+  Toolkit /opt/cuda is CUDA12.9.86; use sm_70 and g++-14, not defaultGCC16.
+  Parent environment has CUDA_VISIBLE_DEVICES=-1: unset only for child runs.
+- Exact MSVC physics host recovered from official repository release:
+  .local/exact-runtime-20260824/exact-runtime/guest/
+  libirisu_box2d_msvc_exact_multiworld.so
+  SHA256 ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5.
+  Recovery is reproducible via tools/recover-exact-cpu-runtime.py.
+- Rebuilt current-source CPU runtime: build-exact-recovered/. Exact12/12 and
+  portable8/8 CTests passed. Release vs rebuilt worker matched188,356,329
+  response bytes across97,219ticks; canonical4,393,101 level100 chain70.
+  Do NOT silently reuse historical worker pin: release/current worker hashes
+  differ even though the physics host is byte-identical and replay matches.
+- Native full-game oracle record has97,220digest rows (reset+97,219steps),
+  308,512events; raw/live score4,393,699 and canonical4,393,101.
+  Default config hash17009678407634462320. Saved repeat oracle also exists.
+- CUDA PC53 numeric helpers reject unsupported exponent/NaN domains. Bounded
+  final-float trig |x|<2^19 matched native x87 on2,449,473,536 signed operands;
+  ordinary CUDA libm mismatched125,647,062. Numeric values only, not arbitrary
+  x87 extended-exponent or complete status/exception emulation.
+- Static pinned-image audit found94direct trig calls, all binary32 inputs
+  and immediate binary32 result stores. This supports the float helper boundary.
+- Native-instruction lowering gate passed118x87forms*2patterns plus40ADC/SBB
+  cases; fixed Capstone popping-operand, FXCH and carry handling bugs.
+- AOT experimental translator now decodes20,272instructions with no listed
+  unsupported opcodes, including recovered inline joint jump tables. This is
+  not a proof of full reachable semantics. Generated image/blocks under
+  build-gpu-guest/generated; generator tools/cuda-exact/translate.py.
+- Translated-host physics matches native600-step3-body collision fixture,
+  including a separate velocity-change/body-replacement fixture.
+- CUDA physics matches the600-step fixture9,000float words. Current FAST-
+  COMPILE binary is extremely slow: approx54.9s for one world600steps versus
+  native milliseconds. No CPU->GPU simulation/search speedup is established.
+  Split dispatch into4KiBregions after monolithic compiler used excessive RAM.
+  Next normal optimized build was interrupted by cancellation. Generic region
+  helpers in fast-build use excessive device calls/registers (REG255); this
+  is an important unresolved performance issue.
+- GPU checkpoint arena/branch/rank/compact tests and synthetic graph pipeline
+  pass CPU/GPU comparisons, memcheck and racecheck. Millions of synthetic
+  memory branches/s are component results, NOT real game/search throughput.
+- Generated full game rules/RNG/spawn/scoring/contacts code exists in
+  clone/cuda/game*. Agent reported independent portable-physics comparison:
+  6,192steps,62,938events across4seeds, allBodyfields/RNG/groups/counters/
+  event digests match. CPU translated-physics+generated-game100tick smoke
+  succeeds (20initial bodies, tick100gauge2900level1). Full GPU game and
+  full-record GPU parity have NOT been run or established.
+
+KEY EVIDENCE / FILES
+- docs/exact-runtime-recovery.md
+- tools/cuda-exact/arithmetic.md
+- benchmarks/results/cuda-x87-numeric-2026-11-03.json
+- benchmarks/results/cuda-batch-v100-2026-11-03.json
+- benchmarks/results/cuda-physics-initial-v100-2026-11-03.json
+- benchmarks/results/cuda-physics-unoptimized-interrupted-2026-11-03.json
+- artifacts/gpu-exact-20261103/cpu-oracle/worker-byte-differential.json
+- artifacts/gpu-exact-20261103/cpu-oracle/game-record.digest
+- artifacts/gpu-exact-20261103/cpu-oracle/game-record-repeat.digest
+- tools/cuda-exact/game_digest.hpp: explicit96byteperframe regression hashes
+  (FNV is regression evidence, not cryptographic attestation).
+- tools/cuda-exact/game_oracle.cpp and compare_game_digests.py
+- build-gpu-guest/physics-probe-local: measured fast-build fixture binary
+- build-gpu-guest/compile-optimized.log: interrupted normal optimized build
+- .tmp/game-host-probe.cpp and .tmp/game-host-probe:100tick smoke only
+- .venv-gpu/ has capstone5.0.9 and pyelftools0.33.
+
+REMAINING ENGINEERING / LIMITATIONS (NOT EXTERNAL BLOCKERS)
+No external missing-runtime or toolchain blocker remains. Work is incomplete.
+1. Reconcile generated game current state: constructor originally leaves
+   config_hash_=0; port actual config-hash encoding before native transition
+   comparisons (agent was asked to implement this when cancelled).
+2. Finish review of root physics_game.cuh, generated-game CUDA compile and
+   full everytick native/game comparisons via shared digest, then record.
+3. Optimize translated physics: normal optimization/inlining after split;
+   measure tiny gates before600step matrix. Guest state is now thread-local,
+   aligned4/8byte device accesses added, imported copy/fill word paths added
+   most recently (not yet benchmarked). Bump allocator release currently does
+   not recycle memory: exhaustion must fail closed; long-game capacity unknown.
+4. Complete actual resident game+branch/search integration. Only generic
+   GPU scheduling is integrated so far; no full GPU high-score search runner.
+5. Validate snapshots/branch replay/contacts/RNG/rules/long corpus and publish
+   same-workload warmed CPU/GPU search benchmarks before any exact promotion.
+6. Historical exact training/provenance pins remain unchanged. New CUDA path
+   currently labels itself experimental/non-promoting; do not bypass checks.
+7. Review CMake optional CUDA changes: configure build-cuda succeeded with
+   -DIRISU_BUILD_CUDA_EXPERIMENTS=ON
+   -DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-14
+   -DPython3_EXECUTABLE=/home/gabe/Documents/irisu/.venv-gpu/bin/python
+   -DIRISU_CUDA_EXACT_HOST=/home/gabe/Documents/irisu/.local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so
+   Full new CMake targets were not all built after edits.
+
+Do not infer completion, speedup, GPU full-record exactness or improved score.
+Continue only in the NEW project chat authorized by the user.

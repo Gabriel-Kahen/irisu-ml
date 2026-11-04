@@ -1,0 +1,478 @@
+{
+  "schema": "irisu-host-restrict-region-experiment-v1",
+  "scope": "Hostonly eighthotregions28..35; NOTGPUbenchmark; concurrentCUDAcompilation, resultsindicativeonly",
+  "edit": "Guest&g parameter\u2192Guest&__restrict__g, allothercode/compileflagsmatched",
+  "compile_flags": "g++-14 -std=c++20 -O2 -ffp-contract=off",
+  "source_game_header_edited": false,
+  "results": [
+    {
+      "mutations": false,
+      "runs": {
+        "baseline": [
+          {
+            "repeat": 0,
+            "warmup": true,
+            "mode": "baseline",
+            "wall_seconds": 1.050785261002602,
+            "metadata": {
+              "backend": "translated-host",
+              "lanes": 16,
+              "steps": 600,
+              "mutations": false,
+              "kernel_ms": 0.0,
+              "elapsed_ms": 1037.65956,
+              "bytesperlane": 524288,
+              "maxheapbytes": 347008,
+              "dispatches": 30617152,
+              "registers_per_thread": 0,
+              "local_bytes_per_thread": 0,
+              "shared_bytes_per_block": 0,
+              "failures": 0
+            },
+            "compared_float_words": 144000,
+            "mismatches": 0
+          },
+          {
+            "repeat": 1,
+            "warmup": false,
+            "mode": "baseline",
+            "wall_seconds": 1.0070721470037824,
+            "metadata": {
+              "backend": "translated-host",
+              "lanes": 16,
+              "steps": 600,
+              "mutations": false,
+              "kernel_ms": 0.0,
+              "elapsed_ms": 1001.003034,
+              "bytesperlane": 524288,
+              "maxheapbytes": 347008,
+              "dispatches": 30617152,
+              "registers_per_thread": 0,
+              "local_bytes_per_thread": 0,
+              "shared_bytes_per_block": 0,
+              "failures": 0
+            },
+            "compared_float_words": 144000,
+            "mismatches": 0
+          },
+          {
+            "repeat": 2,
+            "warmup": false,
+            "mode": "baseline",
+            "wall_seconds": 1.016723405002267,
+            "metadata": {
+              "backend": "translated-host",
+              "lanes": 16,
+              "steps": 600,
+              "mutations": false,
+              "kernel_ms": 0.0,
+              "elapsed_ms": 1010.986702,
+              "bytesperlane": 524288,
+              "maxheapbytes": 347008,
+              "dispatches": 30617152,
+              "registers_per_thread": 0,
+              "local_bytes_per_thread": 0,
+              "shared_bytes_per_block": 0,
+              "failures": 0
+            },
+            "compared_float_words": 144000,
+            "mismatches": 0
+          },
+          {
+            "repeat": 3,
+            "warmup": false,
+            "mode": "baseline",
+            "wall_seconds": 1.0606567610011552,
+            "metadata": {
+              "backend": "translated-host",
+              "lanes": 16,
+              "steps": 600,
+              "mutations": false,
+              "kernel_ms": 0.0,
+              "elapsed_ms": 1054.223004,
+              "bytesperlane": 524288,
+              "maxheapbytes": 347008,
+              "dispatches": 30617152,
+              "registers_per_thread": 0,
+              "local_bytes_per_thread": 0,
+              "shared_bytes_per_block": 0,
+              "failures": 0
+            },
+            "compared_float_words": 144000,
+            "mismatches": 0
+          }
+        ],
+        "restrict": [
+          {
+            "repeat": 0,
+            "warmup": true,
+            "mode": "restrict",
+            "wall_seconds": 1.0425790719964425,
+            "metadata": {
+              "backend": "translated-host",
+              "lanes": 16,
+              "steps": 600,
+              "mutations": false,
+              "kernel_ms": 0.0,
+              "elapsed_ms": 1029.248522,
+              "bytesperlane": 524288,
+              "maxheapbytes": 347008,
+              "dispatches": 30617152,
+              "registers_per_thread": 0,
+              "local_bytes_per_thread": 0,
+              "shared_bytes_per_block": 0,
+              "failures": 0
+            },
+            "compared_float_words": 144000,
+            "mismatches": 0
+          },
+          {
+            "repeat": 1,
+            "warmup": false,
+            "mode": "restrict",
+            "wall_seconds": 1.0235737550028716,
+            "metadata": {
+              "backend": "translated-host",
+              "lanes": 16,
+              "steps": 600,
+              "mutations": false,
+              "kernel_ms": 0.0,
+              "elapsed_ms": 1016.93457,
+              "bytesperlane": 524288,
+              "maxheapbytes": 347008,
+              "dispatches": 30617152,
+              "registers_per_thread": 0,
+              "local_bytes_per_thread": 0,
+              "shared_bytes_per_block": 0,
+              "failures": 0
+            },
+            "compared_float_words": 144000,
+            "mismatches": 0
+          },
+          {
+            "repeat": 2,
+            "warmup": false,
+            "mode": "restrict",
+            "wall_seconds": 1.0113771010001074,
+            "metadata": {
+              "backend": "translated-host",
+              "lanes": 16,
+              "steps": 600,
+              "mutations": false,
+              "kernel_ms": 0.0,
+              "elapsed_ms": 1005.203027,
+              "bytesperlane": 524288,
+              "maxheapbytes": 347008,
+              "dispatches": 30617152,
+              "registers_per_thread": 0,
+              "local_bytes_per_thread": 0,
+              "shared_bytes_per_block": 0,
+              "failures": 0
+            },
+            "compared_float_words": 144000,
+            "mismatches": 0
+          },
+          {
+            "repeat": 3,
+            "warmup": false,
+            "mode": "restrict",
+            "wall_seconds": 1.014058014996408,
+            "metadata": {
+              "backend": "translated-host",
+              "lanes": 16,
+              "steps": 600,
+              "mutations": false,
+              "kernel_ms": 0.0,
+              "elapsed_ms": 1007.925591,
+              "bytesperlane": 524288,
+              "maxheapbytes": 347008,
+              "dispatches": 30617152,
+              "registers_per_thread": 0,
+              "local_bytes_per_thread": 0,
+              "shared_bytes_per_block": 0,
+              "failures": 0
+            },
+            "compared_float_words": 144000,
+            "mismatches": 0
+          }
+        ]
+      },
+      "median_elapsed_ms": {
+        "baseline": 1010.986702,
+        "restrict": 1007.925591
+      },
+      "baseline_over_restrict": 1.0030370406578952
+    },
+    {
+      "mutations": true,
+      "runs": {
+        "baseline": [
+          {
+            "repeat": 0,
+            "warmup": true,
+            "mode": "baseline",
+            "wall_seconds": 0.9281691930009401,
+            "metadata": {
+              "backend": "translated-host",
+              "lanes": 16,
+              "steps": 600,
+              "mutations": true,
+              "kernel_ms": 0.0,
+              "elapsed_ms": 921.976023,
+              "bytesperlane": 524288,
+              "maxheapbytes": 347008,
+              "dispatches": 27598848,
+              "registers_per_thread": 0,
+              "local_bytes_per_thread": 0,
+              "shared_bytes_per_block": 0,
+              "failures": 0
+            },
+            "compared_float_words": 144000,
+            "mismatches": 0
+          },
+          {
+            "repeat": 1,
+            "warmup": false,
+            "mode": "baseline",
+            "wall_seconds": 0.9337855089979712,
+            "metadata": {
+              "backend": "translated-host",
+              "lanes": 16,
+              "steps": 600,
+              "mutations": true,
+              "kernel_ms": 0.0,
+              "elapsed_ms": 927.217719,
+              "bytesperlane": 524288,
+              "maxheapbytes": 347008,
+              "dispatches": 27598848,
+              "registers_per_thread": 0,
+              "local_bytes_per_thread": 0,
+              "shared_bytes_per_block": 0,
+              "failures": 0
+            },
+            "compared_float_words": 144000,
+            "mismatches": 0
+          },
+          {
+            "repeat": 2,
+            "warmup": false,
+            "mode": "baseline",
+            "wall_seconds": 0.947486941004172,
+            "metadata": {
+              "backend": "translated-host",
+              "lanes": 16,
+              "steps": 600,
+              "mutations": true,
+              "kernel_ms": 0.0,
+              "elapsed_ms": 940.957703,
+              "bytesperlane": 524288,
+              "maxheapbytes": 347008,
+              "dispatches": 27598848,
+              "registers_per_thread": 0,
+              "local_bytes_per_thread": 0,
+              "shared_bytes_per_block": 0,
+              "failures": 0
+            },
+            "compared_float_words": 144000,
+            "mismatches": 0
+          },
+          {
+            "repeat": 3,
+            "warmup": false,
+            "mode": "baseline",
+            "wall_seconds": 0.9437595700001111,
+            "metadata": {
+              "backend": "translated-host",
+              "lanes": 16,
+              "steps": 600,
+              "mutations": true,
+              "kernel_ms": 0.0,
+              "elapsed_ms": 937.899281,
+              "bytesperlane": 524288,
+              "maxheapbytes": 347008,
+              "dispatches": 27598848,
+              "registers_per_thread": 0,
+              "local_bytes_per_thread": 0,
+              "shared_bytes_per_block": 0,
+              "failures": 0
+            },
+            "compared_float_words": 144000,
+            "mismatches": 0
+          }
+        ],
+        "restrict": [
+          {
+            "repeat": 0,
+            "warmup": true,
+            "mode": "restrict",
+            "wall_seconds": 0.9404870490034227,
+            "metadata": {
+              "backend": "translated-host",
+              "lanes": 16,
+              "steps": 600,
+              "mutations": true,
+              "kernel_ms": 0.0,
+              "elapsed_ms": 934.440258,
+              "bytesperlane": 524288,
+              "maxheapbytes": 347008,
+              "dispatches": 27598848,
+              "registers_per_thread": 0,
+              "local_bytes_per_thread": 0,
+              "shared_bytes_per_block": 0,
+              "failures": 0
+            },
+            "compared_float_words": 144000,
+            "mismatches": 0
+          },
+          {
+            "repeat": 1,
+            "warmup": false,
+            "mode": "restrict",
+            "wall_seconds": 0.9319620629976271,
+            "metadata": {
+              "backend": "translated-host",
+              "lanes": 16,
+              "steps": 600,
+              "mutations": true,
+              "kernel_ms": 0.0,
+              "elapsed_ms": 925.637444,
+              "bytesperlane": 524288,
+              "maxheapbytes": 347008,
+              "dispatches": 27598848,
+              "registers_per_thread": 0,
+              "local_bytes_per_thread": 0,
+              "shared_bytes_per_block": 0,
+              "failures": 0
+            },
+            "compared_float_words": 144000,
+            "mismatches": 0
+          },
+          {
+            "repeat": 2,
+            "warmup": false,
+            "mode": "restrict",
+            "wall_seconds": 0.9480709249983192,
+            "metadata": {
+              "backend": "translated-host",
+              "lanes": 16,
+              "steps": 600,
+              "mutations": true,
+              "kernel_ms": 0.0,
+              "elapsed_ms": 942.409024,
+              "bytesperlane": 524288,
+              "maxheapbytes": 347008,
+              "dispatches": 27598848,
+              "registers_per_thread": 0,
+              "local_bytes_per_thread": 0,
+              "shared_bytes_per_block": 0,
+              "failures": 0
+            },
+            "compared_float_words": 144000,
+            "mismatches": 0
+          },
+          {
+            "repeat": 3,
+            "warmup": false,
+            "mode": "restrict",
+            "wall_seconds": 0.9487395410033059,
+            "metadata": {
+              "backend": "translated-host",
+              "lanes": 16,
+              "steps": 600,
+              "mutations": true,
+              "kernel_ms": 0.0,
+              "elapsed_ms": 942.651771,
+              "bytesperlane": 524288,
+              "maxheapbytes": 347008,
+              "dispatches": 27598848,
+              "registers_per_thread": 0,
+              "local_bytes_per_thread": 0,
+              "shared_bytes_per_block": 0,
+              "failures": 0
+            },
+            "compared_float_words": 144000,
+            "mismatches": 0
+          }
+        ]
+      },
+      "median_elapsed_ms": {
+        "baseline": 937.899281,
+        "restrict": 942.409024
+      },
+      "baseline_over_restrict": 0.9952146648799491
+    }
+  ],
+  "text_comparison": [
+    {
+      "region": 28,
+      "same_text": false,
+      "sha256": [
+        "aebe80abb752d9b849dd6e73d4580b0652ed616ac1a9f217b42c6287ef7c5029",
+        "b37894d485a96b2b13a4a53907453571f98bf0d0566c52d94acfa4897e21f8b6"
+      ]
+    },
+    {
+      "region": 29,
+      "same_text": false,
+      "sha256": [
+        "5f48b390527d806b6ff9904a0863ba92151675d0a9c0ca11c89af56de1572d37",
+        "fa3626410f38de7d72105a58388d3c07391e7f2c84d394175ebc24feb2fcc3fc"
+      ]
+    },
+    {
+      "region": 30,
+      "same_text": false,
+      "sha256": [
+        "2a556585890f5fa27af3209c877bb7efe0e8f31fff9f8c9acd551f56edb00702",
+        "48c7e6eb1a181ffb7f34486c8be3861cde7b51fb45c76046fcefcad86884092b"
+      ]
+    },
+    {
+      "region": 31,
+      "same_text": false,
+      "sha256": [
+        "5490aed0362af8e9b6a8bfd834e187827826cb2cf3a6a728ef95062119da214a",
+        "cbb668d6db95cbad95bbcd55fa7e4ce1a1b901a077cb63bb0d120637dba1d4c2"
+      ]
+    },
+    {
+      "region": 32,
+      "same_text": false,
+      "sha256": [
+        "b149d908d2de1a2652dded2d0a7e6c5329bdd959444223f951efc157b7d7b978",
+        "0ab5bbcd2f3cd7a37ccf1418f66f5262e7659c1db994964547ad2d3319730672"
+      ]
+    },
+    {
+      "region": 33,
+      "same_text": false,
+      "sha256": [
+        "6330b491ed449a20f0f0e8014ca3c160121a97f951ed966c1447f5725b8335e4",
+        "b981489aa8de7b1ddff6a93349b6157bd4862b6e0edc2bd87c041913f0e3e645"
+      ]
+    },
+    {
+      "region": 34,
+      "same_text": false,
+      "sha256": [
+        "039218621aa34fdf4e659b4ae8025788ce3ffc0c9ada69c742c6c546b039d88e",
+        "4a5f5447fb8786bd698247e407bfb44402aa2d38f2d08dec39574714d01d2aad"
+      ]
+    },
+    {
+      "region": 35,
+      "same_text": false,
+      "sha256": [
+        "0855f99ae46e9db63ad510e1b800523a0b4a957e61785eaa339f02b3ff9fdd01",
+        "4521b46ec1f2e8c1cbc4333d55ad46c5011d698c3b8828611df3d5cd97e6daa3"
+      ]
+    }
+  ],
+  "binary_sha256": {
+    "baseline": "68c8bc17f60735ad4837727a3a8d9e3603128aca48a1285773addedef88d74f2",
+    "restrict": "71b532d191ad3ced713a308a5deb617417aa4c733e251dcab7f9d1d7a242652e"
+  },
+  "conclusion": "No useful measured host gain: baseline/restrict median ratio1.0030 normal,0.9952 mutation; no production restrict change. GPU effects unmeasured.",
+  "validity_contract": "Guest object must be disjoint from its guest arena; all Guest object access remains based on the restricted parameter. This holds in the current World/threadlocalGuest construction, but is an internal contract, not validation of arbitrary callers.",
+  "minimal_qualifier": "Guest& g -> Guest& __restrict__ g on generated function definitions/declarations; qualifier does not change C++ ABI. Tested only hot regions28..35."
+}

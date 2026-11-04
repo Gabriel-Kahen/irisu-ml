@@ -1,0 +1,129 @@
+{
+  "schema": "irisu-cuda-x87-numeric-v1",
+  "verification_date": "2026-11-03",
+  "scope": "supported numeric output bits only; not x87 status, full physics, or end-to-end search parity",
+  "exact_backend_ready": false,
+  "device": "Tesla V100-PCIE-32GB, 580.178.04, 250.00 W, 32768 MiB",
+  "nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0",
+  "cpu": "AMD Ryzen 7 3700X 8-Core Processor",
+  "compiler_flags": [
+    "-std=c++20",
+    "-O3",
+    "-arch=sm_70",
+    "-ccbin",
+    "g++-14",
+    "--fmad=false",
+    "--ftz=false",
+    "--prec-div=true",
+    "--prec-sqrt=true"
+  ],
+  "source_sha256": {
+    "tools/cuda-exact/arithmetic_validate.cu": "fb98ac41ab74b7506af08649fd0018fe59a92c292b9df07a74a8b7904c52259e",
+    "tools/cuda-exact/x87_numeric.cuh": "cddb0e86b99f5f8fdd2d39a1f183df1b5f5cef1f114087d31656a552759cc50d",
+    "tools/cuda-exact/arithmetic_sweep.py": "899cdf08aa225ae8e48c7cd4f707f2bd3b7b2be0aa9d31dee9b0f98cfc2d68b9"
+  },
+  "mixed_random_curated_gate": {
+    "schema": 1,
+    "scope": "numeric_boundary_only_not_physics_parity",
+    "gpu": "Tesla V100-PCIE-32GB",
+    "compute_capability": "7.0",
+    "samples": 10000000,
+    "boundary_checks_passed": 8,
+    "seed": 141834067,
+    "control_word": 639,
+    "trig": {
+      "supported": 7853579,
+      "rejected": 2146421,
+      "gpu_mismatches": 0,
+      "host_mismatches": 0,
+      "cuda_libm_mismatches_on_supported": 292428,
+      "comparison_seconds_including_host_helper": 0.45290522,
+      "counterexamples": []
+    },
+    "contiguous_range": null,
+    "arithmetic": {
+      "add": {
+        "supported": 9980497,
+        "rejected": 19503,
+        "mismatches": 0
+      },
+      "sub": {
+        "supported": 9980498,
+        "rejected": 19502,
+        "mismatches": 0
+      },
+      "mul": {
+        "supported": 7485392,
+        "rejected": 2514608,
+        "mismatches": 0
+      },
+      "div": {
+        "supported": 7482261,
+        "rejected": 2517739,
+        "mismatches": 0
+      },
+      "sqrt": {
+        "supported": 4994704,
+        "rejected": 5005296,
+        "mismatches": 0
+      }
+    },
+    "warmed_combined_trig_kernel_ms": [
+      0.8151040077,
+      0.8151040077,
+      0.8161280155,
+      0.8171520233,
+      0.8171520233,
+      0.8171520233,
+      0.8784959912
+    ],
+    "allocated_device_bytes": 1200000000,
+    "pass": true
+  },
+  "exhaustive_bounded_trig_gate": {
+    "schema": 1,
+    "scope": "final_binary32_sin_cos_values_only_not_full_x87_or_physics_parity",
+    "first_exponent": 0,
+    "last_exponent": 145,
+    "signs": [
+      0,
+      1
+    ],
+    "compared": 2449473536,
+    "gpu_mismatches": 0,
+    "host_mismatches": 0,
+    "cuda_libm_mismatches": 125647062,
+    "run_seconds": 191.51534843444824,
+    "resumed_chunks_included": true,
+    "gpu": "Tesla V100-PCIE-32GB",
+    "validation_binary_sha256": "12477fefc30b6dd761900d7c5c3fa03f8da729376a48a147807173ca73b0a370",
+    "source_sha256_at_start": {
+      "arithmetic_validate.cu": "fb98ac41ab74b7506af08649fd0018fe59a92c292b9df07a74a8b7904c52259e",
+      "x87_numeric.cuh": "cddb0e86b99f5f8fdd2d39a1f183df1b5f5cef1f114087d31656a552759cc50d",
+      "arithmetic_sweep.py": "899cdf08aa225ae8e48c7cd4f707f2bd3b7b2be0aa9d31dee9b0f98cfc2d68b9"
+    },
+    "pass": true
+  },
+  "optimization_component_only": {
+    "baseline": [
+      6.737919807,
+      6.766592026,
+      6.774784088,
+      6.787072182,
+      6.823935986,
+      6.848512173,
+      6.91571188
+    ],
+    "constant_memory": [
+      0.8151040077,
+      0.8151040077,
+      0.8161280155,
+      0.8171520233,
+      0.8171520233,
+      0.8171520233,
+      0.8784959912
+    ],
+    "timing_scope": "CUDA events for kernel computing both candidate and libm baseline; excludes upload/download/CPU comparisons; not physics/search speedup"
+  },
+  "raw_chunk_reports": "build-cuda-numeric/final-full-sweep/sign*-exponent*.json"
+}

@@ -1,0 +1,1604 @@
+{
+  "schema": "irisu-full-game-search-benchmark-v2",
+  "promotion_eligible": false,
+  "scope": "bounded published-replay prefix, sparse mutations, fixed continuation, full game rules and exact-host translation",
+  "record_search_provenance": "new sparse-mutation workload; recovered historical event-search invocation used rl_combo_diverse_search.py, whose source is absent; this benchmark does not reproduce that algorithm",
+  "candidate_generator": "distinct-effective-sparse-pixels-v2",
+  "distinct_normalized_specs": 1024,
+  "inputs": {
+    "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+    "specs_sha256": "b8c094e1a48fe8a80424df21cf3890f5bf015291ec4cd1893ca530b96c7acdeb",
+    "image_sha256": "0748e18a1c58541f4f22da54b9e606224532c18cd05c4a0cb6914af3c2cc7685"
+  },
+  "binaries": {
+    "oracle_sha256": "cf4865e017afa0f559569d1d5ac834cb39cd4d23385c17224953e85e9ace48e1",
+    "gpu_sha256": "4264bef9bc305be6631edc05d7d38735ac5d2e2400e276fe938423cd67f98b23"
+  },
+  "prefix": 100,
+  "horizon": 16,
+  "candidates": 1024,
+  "host_prefix": true,
+  "isolated_warps": true,
+  "trace_every_tick": false,
+  "cache_guest": true,
+  "block_threads": 128,
+  "stack_kib": 16,
+  "timing_contract": {
+    "warmups": 1,
+    "timed_repeats": 3,
+    "wall": "process startup, runtime initialization, prefix preparation/upload, branches, complete futures, stable ranking, GPU selected-state compaction and result download; Python parity comparison excluded",
+    "gpu_component": "CUDA events; setup/prefix, snapshot copy, future rollout, rank+compact+verification separately",
+    "telemetry": "whole-device nvidia-smi samples at approximately 200 ms; not process exclusive",
+    "validation": "warmup additionally compares compacted hidden state/arena and steps selected state plus independent source; timed repetitions skip that extra validation workload",
+    "cpu": "native ELF32 exact core, prefix once then bounded fork/COW candidate workers; same digest mode as GPU"
+  },
+  "cases": [
+    {
+      "backend": "cpu",
+      "workers": 1,
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-1024x16-2026-11-03.specs.bin",
+        "100",
+        "16",
+        "1",
+        "4393102",
+        "--final-only"
+      ],
+      "validation_command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-1024x16-2026-11-03.specs.bin",
+        "100",
+        "16",
+        "1",
+        "4393102",
+        "--final-only"
+      ],
+      "warmup": {
+        "wall_seconds": 2.0541871640016325,
+        "metadata": {
+          "identity": "experimental-native-exact-search-oracle-v2",
+          "candidates": 1024,
+          "workers": 1,
+          "prefix_ticks": 100,
+          "horizon": 16,
+          "simulated_ticks": 16384,
+          "trace_every_tick": false,
+          "prefix_ms": 10.2976,
+          "branch_rollout_rank_ms": 2038.20777,
+          "total_ms": 2048.517614,
+          "winner": 0
+        }
+      },
+      "runs": [
+        {
+          "wall_seconds": 1.7743264320015442,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 1024,
+            "workers": 1,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "trace_every_tick": false,
+            "prefix_ms": 8.708299,
+            "branch_rollout_rank_ms": 1760.654555,
+            "total_ms": 1769.372102,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 1.8013131159968907,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 1024,
+            "workers": 1,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "trace_every_tick": false,
+            "prefix_ms": 8.463183,
+            "branch_rollout_rank_ms": 1788.156319,
+            "total_ms": 1796.628529,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 1.8474725460037007,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 1024,
+            "workers": 1,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "trace_every_tick": false,
+            "prefix_ms": 8.94067,
+            "branch_rollout_rank_ms": 1833.771293,
+            "total_ms": 1842.721241,
+            "winner": 0
+          }
+        }
+      ],
+      "parity": true,
+      "result_sha256": "7977d82101064667360f5c0a4ecdcce684c030101c6a63290a866d6b28977a76",
+      "winner": 0,
+      "distinct_final_frame_fingerprints": 1024,
+      "distinct_trace_fingerprints": 1024,
+      "actual_simulated_ticks": 16384,
+      "median_wall_seconds": 1.8013131159968907,
+      "search_branches_per_second": 568.4741819210556,
+      "simulation_ticks_per_second": 9095.586910736889,
+      "telemetry": [
+        [
+          1793741425.1955564,
+          0.0,
+          9.0,
+          26.75
+        ],
+        [
+          1793741425.4118743,
+          0.0,
+          9.0,
+          26.64
+        ],
+        [
+          1793741425.6316936,
+          0.0,
+          9.0,
+          26.65
+        ],
+        [
+          1793741425.846615,
+          0.0,
+          9.0,
+          26.55
+        ],
+        [
+          1793741426.0618005,
+          0.0,
+          9.0,
+          26.64
+        ],
+        [
+          1793741426.2771733,
+          0.0,
+          9.0,
+          26.55
+        ],
+        [
+          1793741426.49478,
+          0.0,
+          9.0,
+          26.65
+        ],
+        [
+          1793741426.715669,
+          0.0,
+          9.0,
+          26.74
+        ],
+        [
+          1793741426.9356842,
+          0.0,
+          9.0,
+          26.65
+        ],
+        [
+          1793741427.1559498,
+          0.0,
+          9.0,
+          26.65
+        ],
+        [
+          1793741427.3769007,
+          0.0,
+          9.0,
+          26.65
+        ],
+        [
+          1793741427.5977874,
+          0.0,
+          9.0,
+          26.64
+        ],
+        [
+          1793741427.8182194,
+          0.0,
+          9.0,
+          26.55
+        ],
+        [
+          1793741428.0392575,
+          0.0,
+          9.0,
+          26.64
+        ],
+        [
+          1793741428.258092,
+          0.0,
+          9.0,
+          26.64
+        ],
+        [
+          1793741428.4735296,
+          0.0,
+          9.0,
+          26.65
+        ],
+        [
+          1793741428.6893008,
+          0.0,
+          9.0,
+          26.64
+        ],
+        [
+          1793741428.9052706,
+          0.0,
+          9.0,
+          26.65
+        ],
+        [
+          1793741429.1221242,
+          0.0,
+          9.0,
+          26.64
+        ],
+        [
+          1793741429.3420894,
+          0.0,
+          9.0,
+          26.65
+        ],
+        [
+          1793741429.563118,
+          0.0,
+          9.0,
+          26.64
+        ],
+        [
+          1793741429.7827172,
+          0.0,
+          9.0,
+          26.64
+        ],
+        [
+          1793741430.0049589,
+          0.0,
+          9.0,
+          26.56
+        ],
+        [
+          1793741430.2230422,
+          0.0,
+          9.0,
+          26.65
+        ],
+        [
+          1793741430.4434001,
+          0.0,
+          9.0,
+          26.55
+        ]
+      ],
+      "peak_vram_mib": 9.0,
+      "peak_gpu_util_percent": 0.0
+    },
+    {
+      "backend": "cpu",
+      "workers": 8,
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-1024x16-2026-11-03.specs.bin",
+        "100",
+        "16",
+        "8",
+        "4393102",
+        "--final-only"
+      ],
+      "validation_command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-1024x16-2026-11-03.specs.bin",
+        "100",
+        "16",
+        "8",
+        "4393102",
+        "--final-only"
+      ],
+      "warmup": {
+        "wall_seconds": 0.31297126099525485,
+        "metadata": {
+          "identity": "experimental-native-exact-search-oracle-v2",
+          "candidates": 1024,
+          "workers": 8,
+          "prefix_ticks": 100,
+          "horizon": 16,
+          "simulated_ticks": 16384,
+          "trace_every_tick": false,
+          "prefix_ms": 8.814671,
+          "branch_rollout_rank_ms": 298.600375,
+          "total_ms": 307.428191,
+          "winner": 0
+        }
+      },
+      "runs": [
+        {
+          "wall_seconds": 0.3404465740022715,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 1024,
+            "workers": 8,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "trace_every_tick": false,
+            "prefix_ms": 9.026714,
+            "branch_rollout_rank_ms": 325.610223,
+            "total_ms": 334.646655,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 0.39617739299865207,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 1024,
+            "workers": 8,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "trace_every_tick": false,
+            "prefix_ms": 10.425213,
+            "branch_rollout_rank_ms": 380.191136,
+            "total_ms": 390.62714,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 0.3394339089936693,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 1024,
+            "workers": 8,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "trace_every_tick": false,
+            "prefix_ms": 8.791977,
+            "branch_rollout_rank_ms": 325.023868,
+            "total_ms": 333.825795,
+            "winner": 0
+          }
+        }
+      ],
+      "parity": true,
+      "result_sha256": "7977d82101064667360f5c0a4ecdcce684c030101c6a63290a866d6b28977a76",
+      "winner": 0,
+      "distinct_final_frame_fingerprints": 1024,
+      "distinct_trace_fingerprints": 1024,
+      "actual_simulated_ticks": 16384,
+      "median_wall_seconds": 0.3404465740022715,
+      "search_branches_per_second": 3007.8140836076313,
+      "simulation_ticks_per_second": 48125.0253377221,
+      "telemetry": [
+        [
+          1793741430.9373765,
+          0.0,
+          9.0,
+          26.56
+        ],
+        [
+          1793741431.1546514,
+          0.0,
+          9.0,
+          26.55
+        ],
+        [
+          1793741431.377011,
+          0.0,
+          9.0,
+          26.55
+        ],
+        [
+          1793741431.597797,
+          0.0,
+          9.0,
+          26.55
+        ],
+        [
+          1793741431.8150308,
+          0.0,
+          9.0,
+          26.45
+        ]
+      ],
+      "peak_vram_mib": 9.0,
+      "peak_gpu_util_percent": 0.0
+    },
+    {
+      "backend": "cpu",
+      "workers": 16,
+      "command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-1024x16-2026-11-03.specs.bin",
+        "100",
+        "16",
+        "16",
+        "4393102",
+        "--final-only"
+      ],
+      "validation_command": [
+        "build-project-exact/irisu-search-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-1024x16-2026-11-03.specs.bin",
+        "100",
+        "16",
+        "16",
+        "4393102",
+        "--final-only"
+      ],
+      "warmup": {
+        "wall_seconds": 0.2584941050008638,
+        "metadata": {
+          "identity": "experimental-native-exact-search-oracle-v2",
+          "candidates": 1024,
+          "workers": 16,
+          "prefix_ticks": 100,
+          "horizon": 16,
+          "simulated_ticks": 16384,
+          "trace_every_tick": false,
+          "prefix_ms": 8.87724,
+          "branch_rollout_rank_ms": 244.83364,
+          "total_ms": 253.72102,
+          "winner": 0
+        }
+      },
+      "runs": [
+        {
+          "wall_seconds": 0.2572013570024865,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 1024,
+            "workers": 16,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "trace_every_tick": false,
+            "prefix_ms": 8.738315,
+            "branch_rollout_rank_ms": 242.130851,
+            "total_ms": 250.88169,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 0.2502971180001623,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 1024,
+            "workers": 16,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "trace_every_tick": false,
+            "prefix_ms": 9.218689,
+            "branch_rollout_rank_ms": 236.236143,
+            "total_ms": 245.4647,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 0.2755474209989188,
+          "metadata": {
+            "identity": "experimental-native-exact-search-oracle-v2",
+            "candidates": 1024,
+            "workers": 16,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "trace_every_tick": false,
+            "prefix_ms": 9.385306,
+            "branch_rollout_rank_ms": 261.000902,
+            "total_ms": 270.396357,
+            "winner": 0
+          }
+        }
+      ],
+      "parity": true,
+      "result_sha256": "7977d82101064667360f5c0a4ecdcce684c030101c6a63290a866d6b28977a76",
+      "winner": 0,
+      "distinct_final_frame_fingerprints": 1024,
+      "distinct_trace_fingerprints": 1024,
+      "actual_simulated_ticks": 16384,
+      "median_wall_seconds": 0.2572013570024865,
+      "search_branches_per_second": 3981.3164748975278,
+      "simulation_ticks_per_second": 63701.063598360444,
+      "telemetry": [
+        [
+          1793741432.2796674,
+          0.0,
+          9.0,
+          26.65
+        ],
+        [
+          1793741432.4991024,
+          0.0,
+          9.0,
+          26.65
+        ],
+        [
+          1793741432.7167432,
+          0.0,
+          9.0,
+          26.65
+        ],
+        [
+          1793741432.9363623,
+          0.0,
+          9.0,
+          26.65
+        ]
+      ],
+      "peak_vram_mib": 9.0,
+      "peak_gpu_util_percent": 0.0
+    },
+    {
+      "backend": "cuda",
+      "workers": 0,
+      "command": [
+        "build-project-cuda/clone/cuda/irisu-cuda-search",
+        "build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-1024x16-2026-11-03.specs.bin",
+        "100",
+        "16",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix",
+        "--isolated-warps",
+        "--final-only",
+        "--block-threads",
+        "128",
+        "--stack-kib",
+        "16",
+        "--skip-compaction-check"
+      ],
+      "validation_command": [
+        "build-project-cuda/clone/cuda/irisu-cuda-search",
+        "build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-1024x16-2026-11-03.specs.bin",
+        "100",
+        "16",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix",
+        "--isolated-warps",
+        "--final-only",
+        "--block-threads",
+        "128",
+        "--stack-kib",
+        "16"
+      ],
+      "warmup": {
+        "wall_seconds": 10.91747170999588,
+        "metadata": {
+          "identity": "experimental-cuda-game-search-v2",
+          "promotion_eligible": false,
+          "candidates": 1024,
+          "prefix_ticks": 100,
+          "horizon": 16,
+          "simulated_ticks": 16384,
+          "failed_candidates": 0,
+          "trace_every_tick": false,
+          "cache_guest": true,
+          "block_threads": 128,
+          "stack_kib": 16,
+          "host_prefix": true,
+          "host_prefix_ms": 156.931649,
+          "prefix_ms": 37.616638184,
+          "branch_ms": 7.971839905,
+          "rollout_ms": 10393.8046875,
+          "rank_compact_ms": 2.386944056,
+          "validation_ms": 185.876480103,
+          "compaction_check_enabled": true,
+          "total_ms": 10865.929425,
+          "allocated_bytes": 1674455072,
+          "peak_guest_bytes": 359392,
+          "compaction_errors": 0,
+          "winner": 0
+        }
+      },
+      "runs": [
+        {
+          "wall_seconds": 10.587526973002241,
+          "metadata": {
+            "identity": "experimental-cuda-game-search-v2",
+            "promotion_eligible": false,
+            "candidates": 1024,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "failed_candidates": 0,
+            "trace_every_tick": false,
+            "cache_guest": true,
+            "block_threads": 128,
+            "stack_kib": 16,
+            "host_prefix": true,
+            "host_prefix_ms": 151.622023,
+            "prefix_ms": 37.370880127,
+            "branch_ms": 7.281663895,
+            "rollout_ms": 10257.4921875,
+            "rank_compact_ms": 2.402303934,
+            "validation_ms": 0.003072,
+            "compaction_check_enabled": false,
+            "total_ms": 10536.160673,
+            "allocated_bytes": 1674455072,
+            "peak_guest_bytes": 359392,
+            "compaction_errors": 0,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 10.643617736001033,
+          "metadata": {
+            "identity": "experimental-cuda-game-search-v2",
+            "promotion_eligible": false,
+            "candidates": 1024,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "failed_candidates": 0,
+            "trace_every_tick": false,
+            "cache_guest": true,
+            "block_threads": 128,
+            "stack_kib": 16,
+            "host_prefix": true,
+            "host_prefix_ms": 150.570222,
+            "prefix_ms": 39.482368469,
+            "branch_ms": 7.369728088,
+            "rollout_ms": 10313.29296875,
+            "rank_compact_ms": 2.393088102,
+            "validation_ms": 0.002048,
+            "compaction_check_enabled": false,
+            "total_ms": 10592.686602,
+            "allocated_bytes": 1674455072,
+            "peak_guest_bytes": 359392,
+            "compaction_errors": 0,
+            "winner": 0
+          }
+        },
+        {
+          "wall_seconds": 9.976147380002658,
+          "metadata": {
+            "identity": "experimental-cuda-game-search-v2",
+            "promotion_eligible": false,
+            "candidates": 1024,
+            "prefix_ticks": 100,
+            "horizon": 16,
+            "simulated_ticks": 16384,
+            "failed_candidates": 0,
+            "trace_every_tick": false,
+            "cache_guest": true,
+            "block_threads": 128,
+            "stack_kib": 16,
+            "host_prefix": true,
+            "host_prefix_ms": 147.458555,
+            "prefix_ms": 36.662273407,
+            "branch_ms": 7.558144093,
+            "rollout_ms": 9651.524414062,
+            "rank_compact_ms": 2.39411211,
+            "validation_ms": 0.002048,
+            "compaction_check_enabled": false,
+            "total_ms": 9925.404044,
+            "allocated_bytes": 1674455072,
+            "peak_guest_bytes": 359392,
+            "compaction_errors": 0,
+            "winner": 0
+          }
+        }
+      ],
+      "parity": true,
+      "result_sha256": "7977d82101064667360f5c0a4ecdcce684c030101c6a63290a866d6b28977a76",
+      "winner": 0,
+      "distinct_final_frame_fingerprints": 1024,
+      "distinct_trace_fingerprints": 1024,
+      "actual_simulated_ticks": 16384,
+      "median_wall_seconds": 10.587526973002241,
+      "search_branches_per_second": 96.71758122658464,
+      "simulation_ticks_per_second": 1547.4812996253543,
+      "telemetry": [
+        [
+          1793741443.9844902,
+          100.0,
+          9.0,
+          46.45
+        ],
+        [
+          1793741444.199623,
+          74.0,
+          4315.0,
+          43.46
+        ],
+        [
+          1793741444.4142716,
+          10.0,
+          4337.0,
+          91.29
+        ],
+        [
+          1793741444.6291082,
+          100.0,
+          4337.0,
+          82.55
+        ],
+        [
+          1793741444.8440018,
+          100.0,
+          4337.0,
+          76.89
+        ],
+        [
+          1793741445.060478,
+          100.0,
+          4337.0,
+          75.25
+        ],
+        [
+          1793741445.2753048,
+          100.0,
+          4337.0,
+          72.46
+        ],
+        [
+          1793741445.4905996,
+          100.0,
+          4337.0,
+          71.1
+        ],
+        [
+          1793741445.706304,
+          100.0,
+          4337.0,
+          71.79
+        ],
+        [
+          1793741445.9222054,
+          100.0,
+          4337.0,
+          70.82
+        ],
+        [
+          1793741446.1371086,
+          100.0,
+          4337.0,
+          70.25
+        ],
+        [
+          1793741446.3517869,
+          100.0,
+          4337.0,
+          70.35
+        ],
+        [
+          1793741446.5663483,
+          100.0,
+          4337.0,
+          69.68
+        ],
+        [
+          1793741446.781048,
+          100.0,
+          4337.0,
+          70.06
+        ],
+        [
+          1793741446.9957466,
+          100.0,
+          4337.0,
+          69.19
+        ],
+        [
+          1793741447.2104583,
+          100.0,
+          4337.0,
+          69.18
+        ],
+        [
+          1793741447.425535,
+          100.0,
+          4337.0,
+          68.92
+        ],
+        [
+          1793741447.6406505,
+          100.0,
+          4337.0,
+          68.81
+        ],
+        [
+          1793741447.855456,
+          100.0,
+          4337.0,
+          68.61
+        ],
+        [
+          1793741448.0710359,
+          100.0,
+          4337.0,
+          68.61
+        ],
+        [
+          1793741448.2880287,
+          100.0,
+          4337.0,
+          68.6
+        ],
+        [
+          1793741448.5026534,
+          100.0,
+          4337.0,
+          68.15
+        ],
+        [
+          1793741448.7174459,
+          100.0,
+          4337.0,
+          68.23
+        ],
+        [
+          1793741448.9319806,
+          100.0,
+          4337.0,
+          68.25
+        ],
+        [
+          1793741449.150894,
+          100.0,
+          4337.0,
+          67.93
+        ],
+        [
+          1793741449.365831,
+          100.0,
+          4337.0,
+          67.94
+        ],
+        [
+          1793741449.580668,
+          100.0,
+          4337.0,
+          67.65
+        ],
+        [
+          1793741449.795403,
+          100.0,
+          4337.0,
+          67.38
+        ],
+        [
+          1793741450.0141547,
+          100.0,
+          4337.0,
+          67.35
+        ],
+        [
+          1793741450.2288792,
+          100.0,
+          4337.0,
+          67.55
+        ],
+        [
+          1793741450.4433641,
+          100.0,
+          4337.0,
+          67.55
+        ],
+        [
+          1793741450.6585517,
+          100.0,
+          4337.0,
+          67.36
+        ],
+        [
+          1793741450.8740618,
+          100.0,
+          4337.0,
+          67.26
+        ],
+        [
+          1793741451.0891645,
+          100.0,
+          4337.0,
+          67.16
+        ],
+        [
+          1793741451.3043373,
+          100.0,
+          4337.0,
+          67.26
+        ],
+        [
+          1793741451.519647,
+          100.0,
+          4337.0,
+          66.51
+        ],
+        [
+          1793741451.7365189,
+          100.0,
+          4337.0,
+          64.2
+        ],
+        [
+          1793741451.9511175,
+          100.0,
+          4337.0,
+          61.98
+        ],
+        [
+          1793741452.1659405,
+          100.0,
+          4337.0,
+          60.91
+        ],
+        [
+          1793741452.380964,
+          100.0,
+          4337.0,
+          59.95
+        ],
+        [
+          1793741452.5983484,
+          100.0,
+          4337.0,
+          58.31
+        ],
+        [
+          1793741452.813217,
+          100.0,
+          4337.0,
+          53.09
+        ],
+        [
+          1793741453.0280802,
+          100.0,
+          4337.0,
+          50.38
+        ],
+        [
+          1793741453.2430239,
+          100.0,
+          4337.0,
+          47.71
+        ],
+        [
+          1793741453.4617634,
+          100.0,
+          4337.0,
+          47.11
+        ],
+        [
+          1793741453.6763525,
+          100.0,
+          4337.0,
+          45.77
+        ],
+        [
+          1793741453.891384,
+          100.0,
+          4337.0,
+          45.09
+        ],
+        [
+          1793741454.106057,
+          100.0,
+          4337.0,
+          44.8
+        ],
+        [
+          1793741454.3232741,
+          100.0,
+          4337.0,
+          44.71
+        ],
+        [
+          1793741454.554468,
+          100.0,
+          9.0,
+          46.55
+        ],
+        [
+          1793741454.7702222,
+          99.0,
+          4315.0,
+          43.74
+        ],
+        [
+          1793741454.9875715,
+          82.0,
+          4337.0,
+          95.8
+        ],
+        [
+          1793741455.2026265,
+          100.0,
+          4337.0,
+          82.34
+        ],
+        [
+          1793741455.4176772,
+          100.0,
+          4337.0,
+          77.38
+        ],
+        [
+          1793741455.6326463,
+          100.0,
+          4337.0,
+          74.77
+        ],
+        [
+          1793741455.8476157,
+          100.0,
+          4337.0,
+          73.22
+        ],
+        [
+          1793741456.0633202,
+          100.0,
+          4337.0,
+          70.81
+        ],
+        [
+          1793741456.2800746,
+          100.0,
+          4337.0,
+          72.33
+        ],
+        [
+          1793741456.4953642,
+          100.0,
+          4337.0,
+          70.33
+        ],
+        [
+          1793741456.7100608,
+          100.0,
+          4337.0,
+          70.91
+        ],
+        [
+          1793741456.9281225,
+          100.0,
+          4337.0,
+          70.42
+        ],
+        [
+          1793741457.143176,
+          100.0,
+          4337.0,
+          70.13
+        ],
+        [
+          1793741457.3587792,
+          100.0,
+          4337.0,
+          69.47
+        ],
+        [
+          1793741457.5737586,
+          100.0,
+          4337.0,
+          69.66
+        ],
+        [
+          1793741457.788891,
+          100.0,
+          4337.0,
+          69.46
+        ],
+        [
+          1793741458.0048013,
+          100.0,
+          4337.0,
+          69.0
+        ],
+        [
+          1793741458.219377,
+          100.0,
+          4337.0,
+          69.02
+        ],
+        [
+          1793741458.43412,
+          100.0,
+          4337.0,
+          68.83
+        ],
+        [
+          1793741458.6498344,
+          100.0,
+          4337.0,
+          68.79
+        ],
+        [
+          1793741458.8643374,
+          100.0,
+          4337.0,
+          68.81
+        ],
+        [
+          1793741459.0789032,
+          100.0,
+          4337.0,
+          68.06
+        ],
+        [
+          1793741459.2935538,
+          100.0,
+          4337.0,
+          68.44
+        ],
+        [
+          1793741459.508019,
+          100.0,
+          4337.0,
+          67.86
+        ],
+        [
+          1793741459.7227297,
+          100.0,
+          4337.0,
+          67.96
+        ],
+        [
+          1793741459.9376793,
+          100.0,
+          4337.0,
+          67.94
+        ],
+        [
+          1793741460.152801,
+          100.0,
+          4337.0,
+          67.76
+        ],
+        [
+          1793741460.3690932,
+          100.0,
+          4337.0,
+          67.76
+        ],
+        [
+          1793741460.5841963,
+          100.0,
+          4337.0,
+          67.67
+        ],
+        [
+          1793741460.7987041,
+          100.0,
+          4337.0,
+          67.76
+        ],
+        [
+          1793741461.0130486,
+          100.0,
+          4337.0,
+          67.65
+        ],
+        [
+          1793741461.2281516,
+          100.0,
+          4337.0,
+          67.57
+        ],
+        [
+          1793741461.4429054,
+          100.0,
+          4337.0,
+          67.38
+        ],
+        [
+          1793741461.6577957,
+          100.0,
+          4337.0,
+          67.35
+        ],
+        [
+          1793741461.8726058,
+          100.0,
+          4337.0,
+          67.47
+        ],
+        [
+          1793741462.08723,
+          100.0,
+          4337.0,
+          66.99
+        ],
+        [
+          1793741462.3018486,
+          100.0,
+          4337.0,
+          66.32
+        ],
+        [
+          1793741462.5207734,
+          100.0,
+          4337.0,
+          63.32
+        ],
+        [
+          1793741462.7353587,
+          100.0,
+          4337.0,
+          60.91
+        ],
+        [
+          1793741462.9502134,
+          100.0,
+          4337.0,
+          59.85
+        ],
+        [
+          1793741463.164873,
+          100.0,
+          4337.0,
+          57.24
+        ],
+        [
+          1793741463.3794274,
+          100.0,
+          4337.0,
+          54.92
+        ],
+        [
+          1793741463.5940716,
+          100.0,
+          4337.0,
+          50.0
+        ],
+        [
+          1793741463.8102593,
+          100.0,
+          4337.0,
+          49.61
+        ],
+        [
+          1793741464.0250027,
+          100.0,
+          4337.0,
+          48.27
+        ],
+        [
+          1793741464.2415333,
+          100.0,
+          4337.0,
+          46.44
+        ],
+        [
+          1793741464.4562266,
+          100.0,
+          4337.0,
+          46.24
+        ],
+        [
+          1793741464.6721349,
+          100.0,
+          4337.0,
+          45.08
+        ],
+        [
+          1793741464.8869,
+          100.0,
+          4337.0,
+          45.08
+        ],
+        [
+          1793741465.1021624,
+          100.0,
+          4337.0,
+          44.13
+        ],
+        [
+          1793741465.317027,
+          100.0,
+          4315.0,
+          44.51
+        ],
+        [
+          1793741465.5318704,
+          49.0,
+          4337.0,
+          83.02
+        ],
+        [
+          1793741465.748156,
+          100.0,
+          4337.0,
+          95.41
+        ],
+        [
+          1793741465.962992,
+          100.0,
+          4337.0,
+          83.05
+        ],
+        [
+          1793741466.17825,
+          100.0,
+          4337.0,
+          78.25
+        ],
+        [
+          1793741466.3931277,
+          100.0,
+          4337.0,
+          73.33
+        ],
+        [
+          1793741466.608192,
+          100.0,
+          4337.0,
+          73.33
+        ],
+        [
+          1793741466.8261538,
+          100.0,
+          4337.0,
+          73.43
+        ],
+        [
+          1793741467.0408478,
+          100.0,
+          4337.0,
+          70.64
+        ],
+        [
+          1793741467.255503,
+          100.0,
+          4337.0,
+          71.41
+        ],
+        [
+          1793741467.470273,
+          100.0,
+          4337.0,
+          71.12
+        ],
+        [
+          1793741467.684993,
+          100.0,
+          4337.0,
+          70.82
+        ],
+        [
+          1793741467.8996694,
+          100.0,
+          4337.0,
+          70.24
+        ],
+        [
+          1793741468.1147184,
+          100.0,
+          4337.0,
+          70.05
+        ],
+        [
+          1793741468.3303201,
+          100.0,
+          4337.0,
+          69.5
+        ],
+        [
+          1793741468.545134,
+          100.0,
+          4337.0,
+          69.5
+        ],
+        [
+          1793741468.7602425,
+          100.0,
+          4337.0,
+          69.41
+        ],
+        [
+          1793741468.976472,
+          100.0,
+          4337.0,
+          69.07
+        ],
+        [
+          1793741469.1934695,
+          100.0,
+          4337.0,
+          69.1
+        ],
+        [
+          1793741469.4085906,
+          100.0,
+          4337.0,
+          68.81
+        ],
+        [
+          1793741469.6240485,
+          100.0,
+          4337.0,
+          68.78
+        ],
+        [
+          1793741469.8387024,
+          100.0,
+          4337.0,
+          68.83
+        ],
+        [
+          1793741470.0560627,
+          100.0,
+          4337.0,
+          68.34
+        ],
+        [
+          1793741470.271176,
+          100.0,
+          4337.0,
+          68.6
+        ],
+        [
+          1793741470.4858742,
+          100.0,
+          4337.0,
+          67.86
+        ],
+        [
+          1793741470.7008674,
+          100.0,
+          4337.0,
+          68.02
+        ],
+        [
+          1793741470.9187725,
+          100.0,
+          4337.0,
+          67.93
+        ],
+        [
+          1793741471.1343234,
+          100.0,
+          4337.0,
+          67.84
+        ],
+        [
+          1793741471.3492107,
+          100.0,
+          4337.0,
+          68.06
+        ],
+        [
+          1793741471.565543,
+          100.0,
+          4337.0,
+          67.83
+        ],
+        [
+          1793741471.7811444,
+          100.0,
+          4337.0,
+          68.12
+        ],
+        [
+          1793741471.9970284,
+          100.0,
+          4337.0,
+          67.82
+        ],
+        [
+          1793741472.2118201,
+          100.0,
+          4337.0,
+          67.57
+        ],
+        [
+          1793741472.4273562,
+          100.0,
+          4337.0,
+          67.74
+        ],
+        [
+          1793741472.646243,
+          100.0,
+          4337.0,
+          67.73
+        ],
+        [
+          1793741472.8635736,
+          100.0,
+          4337.0,
+          66.41
+        ],
+        [
+          1793741473.0845845,
+          100.0,
+          4337.0,
+          64.77
+        ],
+        [
+          1793741473.304873,
+          100.0,
+          4337.0,
+          62.54
+        ],
+        [
+          1793741473.52145,
+          100.0,
+          4337.0,
+          61.39
+        ],
+        [
+          1793741473.7384357,
+          100.0,
+          4337.0,
+          58.11
+        ],
+        [
+          1793741473.9539695,
+          100.0,
+          4337.0,
+          54.73
+        ],
+        [
+          1793741474.1721463,
+          100.0,
+          4337.0,
+          51.08
+        ],
+        [
+          1793741474.3889987,
+          100.0,
+          4337.0,
+          50.19
+        ],
+        [
+          1793741474.6079094,
+          100.0,
+          4337.0,
+          48.95
+        ],
+        [
+          1793741474.8253253,
+          100.0,
+          4337.0,
+          47.31
+        ],
+        [
+          1793741475.0415833,
+          100.0,
+          4337.0,
+          45.0
+        ]
+      ],
+      "peak_vram_mib": 4337.0,
+      "peak_gpu_util_percent": 100.0
+    }
+  ],
+  "runtime_identity": {
+    "path": "artifacts/gpu-exact-20261103/final-search-identity.json",
+    "sha256": "48ed29679efb50c0872e4b3725d04cbabb7354df10ab1072da2592f375fcc6f0",
+    "verified_after_measurement": true,
+    "production_exact_training_admitted": false
+  },
+  "native_runtime_linkage": {
+    "path": "artifacts/gpu-exact-20261103/final-native-oracle-linkage.json",
+    "sha256": "dc7ea636c03acd383bc48f91cff124ae1940d2eedaf86eb4a1392b596e1066ee",
+    "physics_host_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5"
+  },
+  "gpu_wall_time_divided_by_fastest_measured_cpu": 41.16435113870681
+}

@@ -1,0 +1,9 @@
+{
+  "schema": "irisu-native-search-child-failure-cleanup-v1",
+  "scope": "intentionally killed one owned fork/COW rollout; parent failed closed and reaped/killed all observed owned children",
+  "parent_returncode": 1,
+  "observed_children": 8,
+  "leftover_children": [],
+  "stderr": "native candidate child failed\n",
+  "binary_sha256": "cf4865e017afa0f559569d1d5ac834cb39cd4d23385c17224953e85e9ace48e1"
+}

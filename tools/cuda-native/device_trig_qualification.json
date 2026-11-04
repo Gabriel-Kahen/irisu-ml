@@ -1,0 +1,139 @@
+{
+  "schema": "irisu-device-trig-qualification-v1",
+  "default_profile": 0,
+  "selected_profile": 0,
+  "decision": "Library sample policy passed but approximate profile rejected for small incremental timing change; intrinsic failed stated error policy. No performance promotion.",
+  "source_pins": {
+    "clone/cuda_native/solver_math.hpp": "a3f236969e6dc08728384a1f1ccccc973aa2efdd426ac0eca09e8e97c0655879",
+    "tools/cuda-native/device_trig_validate.cu": "5843c60621115978ee30668d0938b9c1fdfe4d568ed80d15125d30fcf34de5d2",
+    "tools/cuda-native/device_trig_contract.md": "ccb96c9857cf5f8bca24d7ede3a7d48f04da4abf5f4a27a5b297ffd36de6f25c"
+  },
+  "host": {
+    "path": "artifacts/gpu-efficiency2-20261104/trig-host.json",
+    "sha256": "0bfe10ff1296bdb7fbb4ff8e78929a81f086dd79d1ff303960e793e8e62efba8",
+    "result": {
+      "schema": "irisu-device-trig-sampled-error-v1",
+      "backend": "host",
+      "selected_profile": 1,
+      "random_per_family": 1000000,
+      "samples_per_mode": 3001056,
+      "absolute_limit": 9.5367431640625e-07,
+      "ulp_limit": 8,
+      "norm_limit": 3.814697265625e-06,
+      "modes": [
+        {
+          "profile": 1,
+          "name": "library-sincosf",
+          "passed_sample_bounds": true,
+          "samples": 3001056,
+          "accepted": 2570976,
+          "rejected": 430080,
+          "admission_mismatches": 0,
+          "nonfinite_outputs": 0,
+          "zero_mismatches": 0,
+          "hook_mismatches": 0,
+          "different_result_bits": 0,
+          "bound_failures": 0,
+          "max_sine_ulp": 0,
+          "max_cosine_ulp": 0,
+          "max_sine_absolute": 0,
+          "max_cosine_absolute": 0,
+          "max_unit_norm_error": 8.395898021262838e-08,
+          "first_bad_angle_bits": 18446744073709551615
+        },
+        {
+          "profile": 2,
+          "name": "intrinsic-__sincosf",
+          "passed_sample_bounds": true,
+          "samples": 3001056,
+          "accepted": 2570976,
+          "rejected": 430080,
+          "admission_mismatches": 0,
+          "nonfinite_outputs": 0,
+          "zero_mismatches": 0,
+          "hook_mismatches": 0,
+          "different_result_bits": 0,
+          "bound_failures": 0,
+          "max_sine_ulp": 0,
+          "max_cosine_ulp": 0,
+          "max_sine_absolute": 0,
+          "max_cosine_absolute": 0,
+          "max_unit_norm_error": 8.395898021262838e-08,
+          "first_bad_angle_bits": 18446744073709551615
+        }
+      ],
+      "scope": "Sampled local trig error only; host must remain bit exact; no trajectory error bound, native parity, memory or performance admission"
+    }
+  },
+  "gpu": {
+    "path": "artifacts/gpu-efficiency2-20261104/trig-gpu.json",
+    "sha256": "8390620c39e7f95644b59f321c674811aa79578a9e5dc9c9c723f18288275b52",
+    "result": {
+      "schema": "irisu-device-trig-sampled-error-v1",
+      "backend": "cuda",
+      "selected_profile": 1,
+      "random_per_family": 1000000,
+      "samples_per_mode": 3001056,
+      "absolute_limit": 9.5367431640625e-07,
+      "ulp_limit": 8,
+      "norm_limit": 3.814697265625e-06,
+      "modes": [
+        {
+          "profile": 1,
+          "name": "library-sincosf",
+          "passed_sample_bounds": true,
+          "samples": 3001056,
+          "accepted": 2570976,
+          "rejected": 430080,
+          "admission_mismatches": 0,
+          "nonfinite_outputs": 0,
+          "zero_mismatches": 0,
+          "hook_mismatches": 0,
+          "different_result_bits": 662757,
+          "bound_failures": 0,
+          "max_sine_ulp": 1,
+          "max_cosine_ulp": 1,
+          "max_sine_absolute": 5.960464477539063e-08,
+          "max_cosine_absolute": 5.960464477539063e-08,
+          "max_unit_norm_error": 1.6628630561399405e-07,
+          "first_bad_angle_bits": 18446744073709551615
+        },
+        {
+          "profile": 2,
+          "name": "intrinsic-__sincosf",
+          "passed_sample_bounds": false,
+          "samples": 3001056,
+          "accepted": 2570976,
+          "rejected": 430080,
+          "admission_mismatches": 0,
+          "nonfinite_outputs": 0,
+          "zero_mismatches": 0,
+          "hook_mismatches": 0,
+          "different_result_bits": 2570740,
+          "bound_failures": 2551540,
+          "max_sine_ulp": 2046091021,
+          "max_cosine_ulp": 2046106511,
+          "max_sine_absolute": 0.07008219324052334,
+          "max_cosine_absolute": 0.07007912546396255,
+          "max_unit_norm_error": 4.878717021483681e-07,
+          "first_bad_angle_bits": 1162335893
+        }
+      ],
+      "scope": "Sampled local trig error only; host must remain bit exact; no trajectory error bound, native parity, memory or performance admission"
+    }
+  },
+  "root_pilot": {
+    "path": "artifacts/gpu-efficiency2-20261104/trig1-pilot.json",
+    "sha256": "56629c50a4b6260399c6574769cb9a9d779a0f01443abba91694f4e94aa033e7",
+    "comparison_scope": "outcome",
+    "candidate_wall_seconds": 1.8242144329997245,
+    "native_packet_equal": false,
+    "native_discrete_results_and_ranks_equal": true,
+    "changed_hash_fields": {
+      "body_hash": 12274,
+      "trace_hash": 12274
+    },
+    "note": "One root-owned pilot; no paired incremental speed claim versus the exact DIV-enabled profile."
+  },
+  "scope": "Sampled local trig errors and a short outcome/rank search pilot only. No accumulated trajectory bound, full-native parity, or approximate-profile admission."
+}

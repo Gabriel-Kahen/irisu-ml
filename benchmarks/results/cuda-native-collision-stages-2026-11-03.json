@@ -1,0 +1,101 @@
+{
+  "schema": "irisu-independent-typed-collision-stages-v1",
+  "date": "2026-11-03",
+  "promotion_eligible": false,
+  "scope": "Independent CUDA narrow phase only. Full60-byte manifold comparisons preserve native unused slots and accumulated impulses. No full-world/search or5x speed admission.",
+  "native_dso_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+  "polygon_results": [
+    {
+      "family": "poly-circle",
+      "cases": 4184,
+      "native_equal": true,
+      "native_output_sha256": "af11080b3030c24ccae20184f98502d484b2d74f5856bd734743a91a856267ad",
+      "cuda_output_sha256": "af11080b3030c24ccae20184f98502d484b2d74f5856bd734743a91a856267ad",
+      "case_sha256": "115b2d929751db649d5a08ef867fbe24901650cc1c2a03cdb175212c95cd0fd0",
+      "runner_sha256": "6ab4485c960bda84aea3ea4d23effeffe35723b578be0b7ef78bf9a8116fa800",
+      "metadata": {
+        "schema": "irisu-native-collision-stage-v1",
+        "backend": "cuda",
+        "scope": "collision stage only",
+        "cases": 4184,
+        "contacts": 1430,
+        "rejected": 0,
+        "warmups": 1,
+        "repeats": 3,
+        "median_stage_ms": 0.034816001,
+        "elapsed_before_stdout_ms": 74.139349,
+        "registers": 80,
+        "local_bytes": 744,
+        "promotion_eligible": false,
+        "samples_ms": [
+          0.035808001,
+          0.034784,
+          0.034816001
+        ]
+      },
+      "raw_report": "artifacts/gpu-native-20261103/poly-circle-gpu-expanded.json",
+      "raw_report_sha256": "09da23439fcf8912d2bb34eb4a8ae40928474cf68097aa1149ebbbf9c4637dae"
+    },
+    {
+      "family": "poly-poly",
+      "cases": 4126,
+      "native_equal": true,
+      "native_output_sha256": "4d7f626081a37f35be628e565c7fe3d2f6bb4d3d0f9b2138c91b449b1948d7cf",
+      "cuda_output_sha256": "4d7f626081a37f35be628e565c7fe3d2f6bb4d3d0f9b2138c91b449b1948d7cf",
+      "case_sha256": "744cb72792ed4e0e8a39146fb16e3becffdbc20a7611ae5f5482d038a7174276",
+      "runner_sha256": "6ab4485c960bda84aea3ea4d23effeffe35723b578be0b7ef78bf9a8116fa800",
+      "metadata": {
+        "schema": "irisu-native-collision-stage-v1",
+        "backend": "cuda",
+        "scope": "collision stage only",
+        "cases": 4126,
+        "contacts": 2322,
+        "rejected": 0,
+        "warmups": 1,
+        "repeats": 3,
+        "median_stage_ms": 0.123903997,
+        "elapsed_before_stdout_ms": 67.014225,
+        "registers": 80,
+        "local_bytes": 744,
+        "promotion_eligible": false,
+        "samples_ms": [
+          0.123903997,
+          0.123903997,
+          0.123903997
+        ]
+      },
+      "raw_report": "artifacts/gpu-native-20261103/poly-poly-gpu-expanded.json",
+      "raw_report_sha256": "55486495d98d124fb64dee51b8ad70e87925a45fd9c1cd21717a7953659a60a0"
+    }
+  ],
+  "circle_gate": "benchmarks/results/cuda-native-circle-million-benchmark-2026-11-03.json",
+  "factory_gate": "benchmarks/results/cuda-native-factory-stage-2026-11-03.json",
+  "host_domain": {
+    "pass": true,
+    "domain_checks": 11,
+    "transactional_collision_and_factory_rejection": true
+  },
+  "compute_sanitizer": {
+    "polygon_collision_errors": 0,
+    "factory_errors": 0,
+    "logs_sha256": {
+      "artifacts/gpu-native-20261103/factory-gpu-memcheck.log": "4eff9888aac4684fb0b975e1aae9526934d87fc9553c6fca526a2ec6ab8579ed",
+      "artifacts/gpu-native-20261103/poly-poly-gpu-memcheck.log": "6b6a8a405019a780463072cd34171c5bd3ee89d24ef56b5b4692f6327bc4e573",
+      "artifacts/gpu-native-20261103/collision-factory-build.log": "977fb42cf5cb8f9a5da3afd2311f25ee57e801bf82f19c1e513b3e72a6bca118"
+    }
+  },
+  "source_sha256_at_capture": {
+    "clone/cuda_native/collision.hpp": "38c8578f0ac64bf1ed2e2c3ae8f22e967a1ca992bad25e3ee85ec733d3008fa6",
+    "clone/cuda_native/factory.hpp": "3ab2cef30efa346baae00655b834cd27b5720573349f46817a12d57dbe37c688",
+    "clone/cuda_native/types.hpp": "6764c26b03d10ecb29abdf6b8e0a0fbe57457549fdc8096b16e25ff0a21a39d7",
+    "clone/cuda_native/solver_math.hpp": "8463aa8ab69d9af2f72b6fafee0ae378b3a7e00d8c6afd721bda7ee1902cb939",
+    "tools/cuda-exact/x87_numeric.cuh": "ce53bc2730e24227ebc83cf95699a75bb81b8f1739d8ead0d9764a25825b3a5e",
+    "tools/cuda-native/collision_runner.cu": "a1e11d37b827840175621fb007ad9716a2675db37140d36007240a1a04907dc6",
+    "tools/cuda-native/collision_domain.cpp": "5f7be2f824129a826aa2061ac144239c2546874e5687c1873936cab484f3445c",
+    "tools/cuda-native/collision_wire.hpp": "5136c89512203872167d388447e0f0fafd2c911fdb6589e20b0d56838fb68faf"
+  },
+  "original_backend_modified": false,
+  "original_backend_diff_base": "2afadce",
+  "input_domain": "Finite cached native shapes; polygons<=8vertices. Native registry must canonicalize mixed polygon/circle order. Unsupported geometry/numerics reject explicitly. NoGuest or fallback.",
+  "reproduce_polygon_command": "python3 tools/cuda-native/oracle_collision_v2.py --oracle artifacts/cuda-native-20261103/oracle-collision-v2 --library .local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so --runner build-cuda-native/clone/cuda_native/irisu-native-collision --gpu --family poly-poly --random 4096 --output artifacts/gpu-native-20261103/poly-poly-gpu-expanded.json"
+}

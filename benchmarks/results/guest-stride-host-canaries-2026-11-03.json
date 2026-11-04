@@ -1,0 +1,36 @@
+{
+  "schema": "irisu-guest-stride-host-canaries-v1",
+  "status": "passed",
+  "scope": "HostASan+UBSan tests; twoexecutables, onegenericbytepath andone CUDAprimitivebranchcompiledonhost; NOTactualGPUexecution",
+  "commands": [
+    "g++-14 -std=c++20 -O1 -fsanitize=address,undefined tools/cuda-exact/guest_stride_validate.cpp -o artifacts/gpu-exact-20261103/optimization2/guest-stride-host",
+    "artifacts/gpu-exact-20261103/optimization2/guest-stride-host",
+    "g++-14 -std=c++20 -O1 -fsanitize=address,undefined -D__CUDA_ARCH__=700 tools/cuda-exact/guest_stride_validate.cpp -o artifacts/gpu-exact-20261103/optimization2/guest-stride-gpu-branches-host",
+    "artifacts/gpu-exact-20261103/optimization2/guest-stride-gpu-branches-host"
+  ],
+  "lanes": 33,
+  "padded_lanes": 64,
+  "random_memory_transitions": 30000,
+  "allocator_transitions": 10000,
+  "checks": [
+    "unaligned16/32/64bitstore/load acrosswordboundaries",
+    "forward/backwardoverlapcopyagainststd::memmove",
+    "fillsagainststd::memset",
+    "alllogicalbytesagainstindependentflatbuffers",
+    "neighbor/inactivecohortlanesandoutercanaries",
+    "logicalboundsandunsupportedstridefailclosed",
+    "size_tmappedoffsetabove32bits",
+    "stride1vs32allocatorchoicesandcompletearenabytes"
+  ],
+  "source_sha256": {
+    "clone/cuda/guest.hpp": "3fd285ccf0bf97cd52ff5bdadee42a260587518037c3aba4c400012afd228a0c",
+    "clone/cuda/world.cuh": "470f5c793c37c79fbc50a6936ad3c3aeb258f2ae306c0f32a06cc125e1b84c99",
+    "tools/cuda-exact/guest_stride_validate.cpp": "b6f3a748b6d5177ef39db9d917b3efed3a90b0418332b91b85372470bf5500a4"
+  },
+  "default_word_stride": 1,
+  "production_search_packed_stride_enabled": false,
+  "notes": [
+    "Gueststoragepointerandword_stride aretransportmetadata,excludedfromcanonicalGueststatehash.",
+    "Physicsprobeprototypeonly; fullgameclone/compactiontranspositionnotimplemented."
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "schema": "irisu-independent-native-dynamic-world-gpu-v1",
+  "date": "2026-11-03",
+  "promotion_eligible": false,
+  "scope": "Distinct typed from-scratch world execution on V100, all wrapper shapes and real integer SAP/PairManager. Actual native ELF32 initialized physical state/order supplies every expected frame. No Guest or host/native physics fallback inside GPU kernels.",
+  "native_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+  "native_packet": {
+    "path": "artifacts/cuda-native-20261103/dynamic-scene/packets.bin",
+    "sha256": "a37db52f06158ed949c927e813b792e6b5cb6615f548156fa6c455eb5d6e8011",
+    "bytes": 46944,
+    "format": "dynamic magic/version1,16cases\u00d7192steps,349semantic32-bitwords percase; explicit wrapper geometry and recorded create/destroy/origin/velocity ops; per-step64-bit canonical native digest. Independent of sizeofWorld/ShapeState."
+  },
+  "host": {
+    "pass": true,
+    "dynamic_scenes": 16,
+    "steps_each": 192,
+    "native_fullstep_frames": 3072,
+    "field_comparisons": 54410190,
+    "all_shape_pairs": true,
+    "pair_add_remove": true,
+    "destroy_reuse": true,
+    "origin_velocity_setters": true,
+    "partial_proxy_creations": 4,
+    "frozen_origin_calls": 4,
+    "broadphase_live_state_and_free_lists": true,
+    "fallback_calls": 0
+  },
+  "gpu": {
+    "pass": true,
+    "benchmark": false,
+    "worlds": 16,
+    "ticks_each": 192,
+    "attempted_world_steps": 3072,
+    "all_native_hashes_equal": true,
+    "trace_every_tick": true,
+    "warmups": 0,
+    "repeats": 1,
+    "registers_per_thread": 170,
+    "local_bytes_per_thread": 680,
+    "scene_bytes": 1682584,
+    "rollout_kernel_ms": [
+      625.708008
+    ],
+    "resident_launch_sync_ms": [
+      625.716413
+    ],
+    "cold_scene_setup_kernel_ms": [
+      7.836672
+    ],
+    "process_total_ms": 718.905068,
+    "timing_scope": "resident sequential physics+recorded lifecycle operations; setup separately reported; benchmark final hash/download outside rollout timer",
+    "fallback_calls": 0
+  },
+  "memcheck": {
+    "tool": "compute-sanitizer memcheck",
+    "exit_code": 0,
+    "errors": 0,
+    "log": "artifacts/cuda-native-20261103/dynamic-scene/gpu-memcheck.log",
+    "sha256": "d4b916128f4a7b2bc374a443f8fe3d46d74cfe8c46f12e94fbc89b5a1ff5b48b"
+  },
+  "physical_comparison": "Canonical body/contact-list and contact-edge order with bodytags, all initialized body fields/mass/COM/matrices/velocities/flags/sleep; initialized active shape vertices/normals/core/OBB/material/filter/proxy data; active manifold geometry/impulses/IDs; live SAP endpoints/proxies/queries and pair keys/status/token order/hash/free lists/counters/timestamps/quantization. Host word/field comparison precedes GPUhash qualification.",
+  "exclusions": "Allocation addresses/custom traceIDs, padding, native uninitialized inactive geometry/manifold/SAP tails and free-slot opaque userData. No general joints or arbitrary malformed memory/FPU emulation claim.",
+  "gpu_resources": {
+    "trace": {
+      "registers": 170,
+      "stack_bytes": 680,
+      "spill_load_bytes": 0,
+      "spill_store_bytes": 0
+    },
+    "physics_without_trace": {
+      "registers": 170,
+      "stack_bytes": 472,
+      "spill_load_bytes": 0,
+      "spill_store_bytes": 0
+    },
+    "final_hash": {
+      "registers": 56,
+      "stack_bytes": 320
+    },
+    "initialization": {
+      "registers": 122,
+      "stack_bytes": 432
+    },
+    "scene_bytes": 1682584,
+    "source": "ptxas buildlog, cudaFuncGetAttributes"
+  },
+  "timing_mode": {
+    "command": [
+      "build-cuda-native/clone/cuda_native/irisu-cuda-native-dynamic-scene-runner",
+      "artifacts/cuda-native-20261103/dynamic-scene/packets.bin",
+      "--benchmark",
+      "--worlds",
+      "512",
+      "--warmups",
+      "1",
+      "--repeats",
+      "3"
+    ],
+    "implementation": "Separate no-trace advance kernel performs resident sequential complete world steps and recorded lifecycle operations. Cold scene initialization is separately eventtimed. Final canonical hash, download and comparison occur after the rollout event/wall timer. Process wall and individual samples are retained.",
+    "tested_performance_claim": false,
+    "note": "This receipt is correctness only. Qualified trace625.7ms includes every-step hash; no physics throughput claim. Native persistentCPU1/8/16 comparison remains separate."
+  },
+  "bounded_runner": "Actor registry16taglimit returns capacity before additionalallocation; parserbounds initialactors8/ops16/worlds8192/ticks100000 and cumulative corpusframes1million. Scene bodypool512 admits Irisu static actorpool200 plus boundaries/ground/pending replacements; arbitrary native worlds remain capacity-bounded.",
+  "source_snapshot": {
+    "path": "artifacts/cuda-native-20261103/dynamic-scene/gpu-source-snapshot",
+    "manifest_sha256": "c1c87a4745a18e30ae15ed73d6478b7b40902fcfbedec6fb3e3f9244b591f90d",
+    "source_sha256": {
+      "clone/cuda_native/types.hpp": "6764c26b03d10ecb29abdf6b8e0a0fbe57457549fdc8096b16e25ff0a21a39d7",
+      "clone/cuda_native/world.hpp": "11ccd005afec41ac8c10ee2060a774cbe682dd297db0c233d7aae394122261b7",
+      "clone/cuda_native/world_shapes.hpp": "a57a96737d713765901e8735c28504465585c8906aeac122b8177b3d1d5f35d3",
+      "clone/cuda_native/world_contacts.hpp": "6f72e836de47b20d5e693121a873871af29ad720a4d86a99e3460f90f69c20fa",
+      "clone/cuda_native/world_pipeline.hpp": "244ad2ca5f83b56d64f416803810cc7c5144cd4e1287b715afcfa4fc2b474fce",
+      "clone/cuda_native/world_scene.hpp": "698e98b0682baba6c13414c3e5eb2ea7d1247aa1142bc26c33f7ded4a488cf13",
+      "clone/cuda_native/solver_math.hpp": "8463aa8ab69d9af2f72b6fafee0ae378b3a7e00d8c6afd721bda7ee1902cb939",
+      "clone/cuda_native/solver.hpp": "1d36a4f7e739af6958486121b88454c161bca267df4e96a11ee9a89b530823ff",
+      "clone/cuda_native/collision.hpp": "38c8578f0ac64bf1ed2e2c3ae8f22e967a1ca992bad25e3ee85ec733d3008fa6",
+      "clone/cuda_native/factory.hpp": "3ab2cef30efa346baae00655b834cd27b5720573349f46817a12d57dbe37c688",
+      "clone/cuda_native/broadphase.hpp": "0678b3c434508301931daf35b0a1176a6ee46c825f498266420d96a6bc20c378",
+      "clone/cuda_native/broadphase_algorithm.inc": "d666412957b87b68722a72d3c014ceb227651961ed458794b4ff103283e99fb3",
+      "tools/cuda-exact/x87_numeric.cuh": "ce53bc2730e24227ebc83cf95699a75bb81b8f1739d8ead0d9764a25825b3a5e",
+      "tools/cuda-native/scene_native.hpp": "e0f32fd92e49589504c5da3128c791e9004b74e949e2c6f7aacac8847defd36a",
+      "tools/cuda-native/scene_wire.hpp": "bc096d74d00ac8cb8e18b3e9c0491561d08fd3ade7e68141296a8b9b93113a0b",
+      "tools/cuda-native/factory_wire.hpp": "d82ac3e5a6302fa8c7c49f4a2f82e2bc19f87ed25424bd24d7b42f931b83d632",
+      "tools/cuda-native/scene_dynamic_wire.hpp": "49685605d7d156873e334a6d3e97d3d9cfba249fa1c45b89ef4ccd3d3e84d50c",
+      "tools/cuda-native/scene_dynamic_native.hpp": "7ed2516588fe001abd516ed4dc820073438c86172b6633073db8b4fdb6c81786",
+      "tools/cuda-native/scene_dynamic_validate.cpp": "f7d617b16e05832c15cf2321b8b7650d7b95ad038895bd51ece1083b7722f70a",
+      "tools/cuda-native/scene_dynamic_runner.cu": "27b479528ca0e23cc79d689ba4c353610dd7e38cb303258861bc4115664f5ee5",
+      "tools/cuda-native/oracle_native.h": "ffce80e395aa5655e2e52241cfff70fadc506dde423dc3ed1b864946dc40ef26"
+    }
+  },
+  "commands": {
+    "build": "cmake --build build-cuda-native --target irisu-cuda-native-dynamic-scene-runner -j1",
+    "gpu": "env -u CUDA_VISIBLE_DEVICES build-cuda-native/clone/cuda_native/irisu-cuda-native-dynamic-scene-runner artifacts/cuda-native-20261103/dynamic-scene/packets.bin",
+    "memcheck": "GPU command prefixed /opt/cuda/compute-sanitizer/compute-sanitizer --tool memcheck --error-exitcode 77"
+  },
+  "artifacts": {
+    "artifacts/cuda-native-20261103/dynamic-scene/packet-build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/cuda-native-20261103/dynamic-scene/packet-result.json": "1f28a7b9713ceb1e846399f6f30a81e1dd1b39b7670158784d4faccaaf199117",
+    "artifacts/cuda-native-20261103/dynamic-scene/packet-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/cuda-native-20261103/dynamic-scene/gpu-build.log": "336b866e90c101a12b1109e0654be03df40f269ea7cfad18f2f2264e80f90fc8",
+    "artifacts/cuda-native-20261103/dynamic-scene/gpu-result.json": "7fb6ece6e772e3771f796ef62ba2d3dd324d35aec853d6f075df4679c4090bc7",
+    "artifacts/cuda-native-20261103/dynamic-scene/gpu-stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/cuda-native-20261103/dynamic-scene/gpu-memcheck.log": "d4b916128f4a7b2bc374a443f8fe3d46d74cfe8c46f12e94fbc89b5a1ff5b48b",
+    "build-cuda-native/clone/cuda_native/irisu-cuda-native-dynamic-scene-runner": "31091001a465fea24240b18e937b6af6790f428f619c5a77b1bf4f7e336d5ee7",
+    "build-cuda-native/clone/cuda_native/CMakeFiles/irisu-cuda-native-dynamic-scene-runner.dir/flags.make": "610ed9fa3e356564e79079952ce2fd36ddb4cdac168bfbc10afffbe69da39b2f"
+  }
+}

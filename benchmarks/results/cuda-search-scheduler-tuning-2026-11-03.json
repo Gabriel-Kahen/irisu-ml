@@ -1,0 +1,1503 @@
+{
+  "schema": "irisu-real-search-scheduler-tuning-v2",
+  "scope": "single warmed correctness-checked scheduler trials; not final throughput benchmark",
+  "prefix": 100,
+  "horizon": 4,
+  "candidates": 1024,
+  "trace_every_tick": false,
+  "gpu_sha256": "4264bef9bc305be6631edc05d7d38735ac5d2e2400e276fe938423cd67f98b23",
+  "cpu_sha256": "cf4865e017afa0f559569d1d5ac834cb39cd4d23385c17224953e85e9ace48e1",
+  "cases": [
+    {
+      "block": 1,
+      "isolated": false,
+      "global": false,
+      "wall_seconds": 2.320933476999926,
+      "metadata": {
+        "identity": "experimental-cuda-game-search-v2",
+        "promotion_eligible": false,
+        "candidates": 1024,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 4096,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "cache_guest": true,
+        "block_threads": 1,
+        "stack_kib": 16,
+        "host_prefix": true,
+        "host_prefix_ms": 144.195287,
+        "prefix_ms": 35.520511627,
+        "branch_ms": 7.497727871,
+        "rollout_ms": 2002.917358398,
+        "rank_compact_ms": 2.408447981,
+        "validation_ms": 0.002048,
+        "compaction_check_enabled": false,
+        "total_ms": 2270.519795,
+        "allocated_bytes": 1674455072,
+        "peak_guest_bytes": 359392,
+        "compaction_errors": 0,
+        "winner": 0
+      },
+      "parity": true,
+      "command": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/irisu-cuda-search",
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/search-tuning/1024-h4.specs.bin",
+        "100",
+        "4",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix",
+        "--final-only",
+        "--skip-compaction-check",
+        "--block-threads",
+        "1"
+      ]
+    },
+    {
+      "block": 4,
+      "isolated": false,
+      "global": false,
+      "wall_seconds": 2.7980065459996695,
+      "metadata": {
+        "identity": "experimental-cuda-game-search-v2",
+        "promotion_eligible": false,
+        "candidates": 1024,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 4096,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "cache_guest": true,
+        "block_threads": 4,
+        "stack_kib": 16,
+        "host_prefix": true,
+        "host_prefix_ms": 144.503703,
+        "prefix_ms": 35.473407745,
+        "branch_ms": 7.129087925,
+        "rollout_ms": 2477.135986328,
+        "rank_compact_ms": 2.39411211,
+        "validation_ms": 0.002048,
+        "compaction_check_enabled": false,
+        "total_ms": 2746.783356,
+        "allocated_bytes": 1674455072,
+        "peak_guest_bytes": 359392,
+        "compaction_errors": 0,
+        "winner": 0
+      },
+      "parity": true,
+      "command": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/irisu-cuda-search",
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/search-tuning/1024-h4.specs.bin",
+        "100",
+        "4",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix",
+        "--final-only",
+        "--skip-compaction-check",
+        "--block-threads",
+        "4"
+      ]
+    },
+    {
+      "block": 8,
+      "isolated": false,
+      "global": false,
+      "wall_seconds": 3.1075632749998476,
+      "metadata": {
+        "identity": "experimental-cuda-game-search-v2",
+        "promotion_eligible": false,
+        "candidates": 1024,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 4096,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "cache_guest": true,
+        "block_threads": 8,
+        "stack_kib": 16,
+        "host_prefix": true,
+        "host_prefix_ms": 144.454298,
+        "prefix_ms": 34.642944336,
+        "branch_ms": 7.291903973,
+        "rollout_ms": 2788.799560547,
+        "rank_compact_ms": 2.399231911,
+        "validation_ms": 0.002048,
+        "compaction_check_enabled": false,
+        "total_ms": 3056.696051,
+        "allocated_bytes": 1674455072,
+        "peak_guest_bytes": 359392,
+        "compaction_errors": 0,
+        "winner": 0
+      },
+      "parity": true,
+      "command": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/irisu-cuda-search",
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/search-tuning/1024-h4.specs.bin",
+        "100",
+        "4",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix",
+        "--final-only",
+        "--skip-compaction-check",
+        "--block-threads",
+        "8"
+      ]
+    },
+    {
+      "block": 16,
+      "isolated": false,
+      "global": false,
+      "wall_seconds": 4.205870796999079,
+      "metadata": {
+        "identity": "experimental-cuda-game-search-v2",
+        "promotion_eligible": false,
+        "candidates": 1024,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 4096,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "cache_guest": true,
+        "block_threads": 16,
+        "stack_kib": 16,
+        "host_prefix": true,
+        "host_prefix_ms": 145.926899,
+        "prefix_ms": 37.763072968,
+        "branch_ms": 7.215104103,
+        "rollout_ms": 3877.303222656,
+        "rank_compact_ms": 2.402303934,
+        "validation_ms": 0.002048,
+        "compaction_check_enabled": false,
+        "total_ms": 4152.417706,
+        "allocated_bytes": 1674455072,
+        "peak_guest_bytes": 359392,
+        "compaction_errors": 0,
+        "winner": 0
+      },
+      "parity": true,
+      "command": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/irisu-cuda-search",
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/search-tuning/1024-h4.specs.bin",
+        "100",
+        "4",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix",
+        "--final-only",
+        "--skip-compaction-check",
+        "--block-threads",
+        "16"
+      ]
+    },
+    {
+      "block": 32,
+      "isolated": false,
+      "global": false,
+      "wall_seconds": 5.052948014999856,
+      "metadata": {
+        "identity": "experimental-cuda-game-search-v2",
+        "promotion_eligible": false,
+        "candidates": 1024,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 4096,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "cache_guest": true,
+        "block_threads": 32,
+        "stack_kib": 16,
+        "host_prefix": true,
+        "host_prefix_ms": 146.470553,
+        "prefix_ms": 35.205120087,
+        "branch_ms": 7.275519848,
+        "rollout_ms": 4729.736328125,
+        "rank_compact_ms": 2.39411211,
+        "validation_ms": 0.002048,
+        "compaction_check_enabled": false,
+        "total_ms": 5001.567194,
+        "allocated_bytes": 1674455072,
+        "peak_guest_bytes": 359392,
+        "compaction_errors": 0,
+        "winner": 0
+      },
+      "parity": true,
+      "command": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/irisu-cuda-search",
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/search-tuning/1024-h4.specs.bin",
+        "100",
+        "4",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix",
+        "--final-only",
+        "--skip-compaction-check",
+        "--block-threads",
+        "32"
+      ]
+    },
+    {
+      "block": 64,
+      "isolated": false,
+      "global": false,
+      "wall_seconds": 5.480457967998518,
+      "metadata": {
+        "identity": "experimental-cuda-game-search-v2",
+        "promotion_eligible": false,
+        "candidates": 1024,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 4096,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "cache_guest": true,
+        "block_threads": 64,
+        "stack_kib": 16,
+        "host_prefix": true,
+        "host_prefix_ms": 145.481762,
+        "prefix_ms": 35.090431213,
+        "branch_ms": 7.520256042,
+        "rollout_ms": 5159.134277344,
+        "rank_compact_ms": 2.388992071,
+        "validation_ms": 0.002048,
+        "compaction_check_enabled": false,
+        "total_ms": 5428.874443,
+        "allocated_bytes": 1674455072,
+        "peak_guest_bytes": 359392,
+        "compaction_errors": 0,
+        "winner": 0
+      },
+      "parity": true,
+      "command": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/irisu-cuda-search",
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/search-tuning/1024-h4.specs.bin",
+        "100",
+        "4",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix",
+        "--final-only",
+        "--skip-compaction-check",
+        "--block-threads",
+        "64"
+      ]
+    },
+    {
+      "block": 128,
+      "isolated": false,
+      "global": false,
+      "wall_seconds": 5.432776450004894,
+      "metadata": {
+        "identity": "experimental-cuda-game-search-v2",
+        "promotion_eligible": false,
+        "candidates": 1024,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 4096,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "cache_guest": true,
+        "block_threads": 128,
+        "stack_kib": 16,
+        "host_prefix": true,
+        "host_prefix_ms": 144.244119,
+        "prefix_ms": 34.696193695,
+        "branch_ms": 7.694335938,
+        "rollout_ms": 5111.318359375,
+        "rank_compact_ms": 2.393088102,
+        "validation_ms": 0.002048,
+        "compaction_check_enabled": false,
+        "total_ms": 5380.535765,
+        "allocated_bytes": 1674455072,
+        "peak_guest_bytes": 359392,
+        "compaction_errors": 0,
+        "winner": 0
+      },
+      "parity": true,
+      "command": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/irisu-cuda-search",
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/search-tuning/1024-h4.specs.bin",
+        "100",
+        "4",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix",
+        "--final-only",
+        "--skip-compaction-check",
+        "--block-threads",
+        "128"
+      ]
+    },
+    {
+      "block": 32,
+      "isolated": true,
+      "global": false,
+      "wall_seconds": 2.3487290639968705,
+      "metadata": {
+        "identity": "experimental-cuda-game-search-v2",
+        "promotion_eligible": false,
+        "candidates": 1024,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 4096,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "cache_guest": true,
+        "block_threads": 32,
+        "stack_kib": 16,
+        "host_prefix": true,
+        "host_prefix_ms": 144.101507,
+        "prefix_ms": 37.334014893,
+        "branch_ms": 7.299071789,
+        "rollout_ms": 2025.38293457,
+        "rank_compact_ms": 2.417664051,
+        "validation_ms": 0.003072,
+        "compaction_check_enabled": false,
+        "total_ms": 2297.785766,
+        "allocated_bytes": 1674455072,
+        "peak_guest_bytes": 359392,
+        "compaction_errors": 0,
+        "winner": 0
+      },
+      "parity": true,
+      "command": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/irisu-cuda-search",
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/search-tuning/1024-h4.specs.bin",
+        "100",
+        "4",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix",
+        "--final-only",
+        "--skip-compaction-check",
+        "--block-threads",
+        "32",
+        "--isolated-warps"
+      ]
+    },
+    {
+      "block": 128,
+      "isolated": true,
+      "global": false,
+      "wall_seconds": 2.0789790659982827,
+      "metadata": {
+        "identity": "experimental-cuda-game-search-v2",
+        "promotion_eligible": false,
+        "candidates": 1024,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 4096,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "cache_guest": true,
+        "block_threads": 128,
+        "stack_kib": 16,
+        "host_prefix": true,
+        "host_prefix_ms": 144.936004,
+        "prefix_ms": 34.236415863,
+        "branch_ms": 7.325695992,
+        "rollout_ms": 1760.977905273,
+        "rank_compact_ms": 2.411520004,
+        "validation_ms": 0.002048,
+        "compaction_check_enabled": false,
+        "total_ms": 2028.167279,
+        "allocated_bytes": 1674455072,
+        "peak_guest_bytes": 359392,
+        "compaction_errors": 0,
+        "winner": 0
+      },
+      "parity": true,
+      "command": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/irisu-cuda-search",
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/search-tuning/1024-h4.specs.bin",
+        "100",
+        "4",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix",
+        "--final-only",
+        "--skip-compaction-check",
+        "--block-threads",
+        "128",
+        "--isolated-warps"
+      ]
+    },
+    {
+      "block": 4,
+      "isolated": false,
+      "global": true,
+      "wall_seconds": 2.7950010350032244,
+      "metadata": {
+        "identity": "experimental-cuda-game-search-v2",
+        "promotion_eligible": false,
+        "candidates": 1024,
+        "prefix_ticks": 100,
+        "horizon": 4,
+        "simulated_ticks": 4096,
+        "failed_candidates": 0,
+        "trace_every_tick": false,
+        "cache_guest": false,
+        "block_threads": 4,
+        "stack_kib": 16,
+        "host_prefix": true,
+        "host_prefix_ms": 145.088184,
+        "prefix_ms": 36.243457794,
+        "branch_ms": 7.291903973,
+        "rollout_ms": 2477.391845703,
+        "rank_compact_ms": 2.399231911,
+        "validation_ms": 0.002048,
+        "compaction_check_enabled": false,
+        "total_ms": 2744.16968,
+        "allocated_bytes": 1674455072,
+        "peak_guest_bytes": 359392,
+        "compaction_errors": 0,
+        "winner": 0
+      },
+      "parity": true,
+      "command": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/irisu-cuda-search",
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-cuda/clone/cuda/generated/guest_image.bin",
+        "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/search-tuning/1024-h4.specs.bin",
+        "100",
+        "4",
+        "1",
+        "1",
+        "4393102",
+        "--host-prefix",
+        "--final-only",
+        "--skip-compaction-check",
+        "--block-threads",
+        "4",
+        "--global-guest"
+      ]
+    }
+  ],
+  "telemetry": [
+    [
+      1793740511.7112675,
+      100.0,
+      15.0,
+      46.09
+    ],
+    [
+      1793740511.926347,
+      65.0,
+      4315.0,
+      43.18
+    ],
+    [
+      1793740512.141166,
+      19.0,
+      4337.0,
+      86.83
+    ],
+    [
+      1793740512.3563156,
+      100.0,
+      4337.0,
+      80.49
+    ],
+    [
+      1793740512.573019,
+      100.0,
+      4337.0,
+      71.82
+    ],
+    [
+      1793740512.7878218,
+      100.0,
+      4337.0,
+      69.18
+    ],
+    [
+      1793740513.0055826,
+      100.0,
+      4337.0,
+      67.73
+    ],
+    [
+      1793740513.2204852,
+      100.0,
+      4337.0,
+      67.07
+    ],
+    [
+      1793740513.4353266,
+      100.0,
+      4337.0,
+      66.59
+    ],
+    [
+      1793740513.6504664,
+      100.0,
+      4337.0,
+      58.17
+    ],
+    [
+      1793740513.8654206,
+      100.0,
+      4337.0,
+      51.6
+    ],
+    [
+      1793740514.082041,
+      100.0,
+      25.0,
+      46.29
+    ],
+    [
+      1793740514.2993293,
+      61.0,
+      4329.0,
+      57.51
+    ],
+    [
+      1793740514.5140948,
+      100.0,
+      4337.0,
+      65.63
+    ],
+    [
+      1793740514.7288513,
+      100.0,
+      4337.0,
+      62.24
+    ],
+    [
+      1793740514.9439347,
+      100.0,
+      4337.0,
+      62.14
+    ],
+    [
+      1793740515.1598551,
+      100.0,
+      4337.0,
+      61.46
+    ],
+    [
+      1793740515.3748798,
+      100.0,
+      4337.0,
+      60.4
+    ],
+    [
+      1793740515.5895176,
+      100.0,
+      4337.0,
+      59.33
+    ],
+    [
+      1793740515.8044486,
+      100.0,
+      4337.0,
+      58.27
+    ],
+    [
+      1793740516.0218127,
+      100.0,
+      4337.0,
+      55.67
+    ],
+    [
+      1793740516.2367334,
+      100.0,
+      4337.0,
+      52.55
+    ],
+    [
+      1793740516.4514706,
+      100.0,
+      4337.0,
+      48.99
+    ],
+    [
+      1793740516.6664991,
+      100.0,
+      4337.0,
+      43.86
+    ],
+    [
+      1793740516.8839774,
+      100.0,
+      29.0,
+      46.28
+    ],
+    [
+      1793740517.0989497,
+      33.0,
+      4337.0,
+      55.37
+    ],
+    [
+      1793740517.31373,
+      58.0,
+      4337.0,
+      61.37
+    ],
+    [
+      1793740517.5285954,
+      100.0,
+      4337.0,
+      60.79
+    ],
+    [
+      1793740517.7435157,
+      100.0,
+      4337.0,
+      60.39
+    ],
+    [
+      1793740517.9592938,
+      100.0,
+      4337.0,
+      60.0
+    ],
+    [
+      1793740518.1740959,
+      100.0,
+      4337.0,
+      57.49
+    ],
+    [
+      1793740518.3895125,
+      100.0,
+      4337.0,
+      57.21
+    ],
+    [
+      1793740518.6046288,
+      100.0,
+      4337.0,
+      56.62
+    ],
+    [
+      1793740518.8215175,
+      100.0,
+      4337.0,
+      55.26
+    ],
+    [
+      1793740519.0365846,
+      100.0,
+      4337.0,
+      52.28
+    ],
+    [
+      1793740519.2516208,
+      100.0,
+      4337.0,
+      49.37
+    ],
+    [
+      1793740519.466357,
+      100.0,
+      4337.0,
+      47.33
+    ],
+    [
+      1793740519.6812963,
+      100.0,
+      4337.0,
+      45.31
+    ],
+    [
+      1793740519.912449,
+      100.0,
+      9.0,
+      46.18
+    ],
+    [
+      1793740520.1278634,
+      73.0,
+      4315.0,
+      43.37
+    ],
+    [
+      1793740520.3426642,
+      16.0,
+      4337.0,
+      55.36
+    ],
+    [
+      1793740520.557391,
+      100.0,
+      4337.0,
+      56.04
+    ],
+    [
+      1793740520.7725751,
+      100.0,
+      4337.0,
+      56.04
+    ],
+    [
+      1793740520.9874227,
+      100.0,
+      4337.0,
+      55.85
+    ],
+    [
+      1793740521.2021644,
+      100.0,
+      4337.0,
+      55.65
+    ],
+    [
+      1793740521.4169729,
+      100.0,
+      4337.0,
+      55.75
+    ],
+    [
+      1793740521.634033,
+      100.0,
+      4337.0,
+      54.78
+    ],
+    [
+      1793740521.8487496,
+      100.0,
+      4337.0,
+      51.32
+    ],
+    [
+      1793740522.0635326,
+      100.0,
+      4337.0,
+      49.56
+    ],
+    [
+      1793740522.27847,
+      100.0,
+      4337.0,
+      49.57
+    ],
+    [
+      1793740522.4940786,
+      100.0,
+      4337.0,
+      49.55
+    ],
+    [
+      1793740522.708986,
+      100.0,
+      4337.0,
+      49.56
+    ],
+    [
+      1793740522.9236255,
+      100.0,
+      4337.0,
+      49.19
+    ],
+    [
+      1793740523.1392198,
+      100.0,
+      4337.0,
+      49.09
+    ],
+    [
+      1793740523.3539994,
+      100.0,
+      4337.0,
+      48.51
+    ],
+    [
+      1793740523.5688844,
+      100.0,
+      4337.0,
+      47.74
+    ],
+    [
+      1793740523.7837236,
+      100.0,
+      4337.0,
+      46.09
+    ],
+    [
+      1793740523.9986827,
+      100.0,
+      4337.0,
+      43.76
+    ],
+    [
+      1793740524.214574,
+      100.0,
+      317.0,
+      45.6
+    ],
+    [
+      1793740524.4297383,
+      37.0,
+      4337.0,
+      52.57
+    ],
+    [
+      1793740524.6455035,
+      52.0,
+      4337.0,
+      50.93
+    ],
+    [
+      1793740524.86029,
+      100.0,
+      4337.0,
+      50.24
+    ],
+    [
+      1793740525.0751038,
+      100.0,
+      4337.0,
+      50.34
+    ],
+    [
+      1793740525.290914,
+      100.0,
+      4337.0,
+      50.25
+    ],
+    [
+      1793740525.5059626,
+      100.0,
+      4337.0,
+      50.15
+    ],
+    [
+      1793740525.7210102,
+      100.0,
+      4337.0,
+      50.06
+    ],
+    [
+      1793740525.93598,
+      100.0,
+      4337.0,
+      50.07
+    ],
+    [
+      1793740526.150692,
+      100.0,
+      4337.0,
+      50.06
+    ],
+    [
+      1793740526.3655012,
+      100.0,
+      4337.0,
+      50.05
+    ],
+    [
+      1793740526.580106,
+      100.0,
+      4337.0,
+      49.95
+    ],
+    [
+      1793740526.795331,
+      100.0,
+      4337.0,
+      50.03
+    ],
+    [
+      1793740527.00786,
+      100.0,
+      4337.0,
+      50.05
+    ],
+    [
+      1793740527.2241845,
+      100.0,
+      4337.0,
+      50.05
+    ],
+    [
+      1793740527.439353,
+      100.0,
+      4337.0,
+      49.96
+    ],
+    [
+      1793740527.654144,
+      100.0,
+      4337.0,
+      49.56
+    ],
+    [
+      1793740527.8687892,
+      100.0,
+      4337.0,
+      49.37
+    ],
+    [
+      1793740528.0836296,
+      100.0,
+      4337.0,
+      49.09
+    ],
+    [
+      1793740528.2985258,
+      100.0,
+      4337.0,
+      48.79
+    ],
+    [
+      1793740528.5170643,
+      100.0,
+      4337.0,
+      48.03
+    ],
+    [
+      1793740528.7320457,
+      100.0,
+      4337.0,
+      46.96
+    ],
+    [
+      1793740528.9470263,
+      100.0,
+      4337.0,
+      44.63
+    ],
+    [
+      1793740529.1745126,
+      100.0,
+      9.0,
+      46.19
+    ],
+    [
+      1793740529.389424,
+      100.0,
+      4315.0,
+      43.47
+    ],
+    [
+      1793740529.6038587,
+      75.0,
+      4337.0,
+      49.37
+    ],
+    [
+      1793740529.8202116,
+      100.0,
+      4337.0,
+      49.74
+    ],
+    [
+      1793740530.0351052,
+      100.0,
+      4337.0,
+      49.66
+    ],
+    [
+      1793740530.249534,
+      100.0,
+      4337.0,
+      49.37
+    ],
+    [
+      1793740530.4655893,
+      100.0,
+      4337.0,
+      49.48
+    ],
+    [
+      1793740530.6829958,
+      100.0,
+      4337.0,
+      49.39
+    ],
+    [
+      1793740530.8974986,
+      100.0,
+      4337.0,
+      49.38
+    ],
+    [
+      1793740531.1124542,
+      100.0,
+      4337.0,
+      49.19
+    ],
+    [
+      1793740531.3275924,
+      100.0,
+      4337.0,
+      49.28
+    ],
+    [
+      1793740531.5448275,
+      100.0,
+      4337.0,
+      49.26
+    ],
+    [
+      1793740531.7594795,
+      100.0,
+      4337.0,
+      49.16
+    ],
+    [
+      1793740531.9739752,
+      100.0,
+      4337.0,
+      49.28
+    ],
+    [
+      1793740532.1884885,
+      100.0,
+      4337.0,
+      49.28
+    ],
+    [
+      1793740532.4031231,
+      100.0,
+      4337.0,
+      49.18
+    ],
+    [
+      1793740532.6179855,
+      100.0,
+      4337.0,
+      49.07
+    ],
+    [
+      1793740532.8326468,
+      100.0,
+      4337.0,
+      48.99
+    ],
+    [
+      1793740533.0494816,
+      100.0,
+      4337.0,
+      48.81
+    ],
+    [
+      1793740533.2641819,
+      100.0,
+      4337.0,
+      48.69
+    ],
+    [
+      1793740533.479058,
+      100.0,
+      4337.0,
+      47.9
+    ],
+    [
+      1793740533.6938875,
+      100.0,
+      4337.0,
+      47.16
+    ],
+    [
+      1793740533.909074,
+      100.0,
+      4337.0,
+      45.12
+    ],
+    [
+      1793740534.1244457,
+      100.0,
+      4337.0,
+      44.25
+    ],
+    [
+      1793740534.3388972,
+      100.0,
+      4337.0,
+      43.67
+    ],
+    [
+      1793740534.5538182,
+      100.0,
+      4337.0,
+      43.67
+    ],
+    [
+      1793740534.768567,
+      100.0,
+      4315.0,
+      44.83
+    ],
+    [
+      1793740534.9831593,
+      5.0,
+      4337.0,
+      50.34
+    ],
+    [
+      1793740535.1978571,
+      96.0,
+      4337.0,
+      49.56
+    ],
+    [
+      1793740535.4150288,
+      100.0,
+      4337.0,
+      48.97
+    ],
+    [
+      1793740535.6314714,
+      100.0,
+      4337.0,
+      49.1
+    ],
+    [
+      1793740535.8469062,
+      100.0,
+      4337.0,
+      49.09
+    ],
+    [
+      1793740536.062354,
+      100.0,
+      4337.0,
+      48.9
+    ],
+    [
+      1793740536.2777226,
+      100.0,
+      4337.0,
+      48.9
+    ],
+    [
+      1793740536.4926505,
+      100.0,
+      4337.0,
+      48.9
+    ],
+    [
+      1793740536.7072964,
+      100.0,
+      4337.0,
+      48.81
+    ],
+    [
+      1793740536.922261,
+      100.0,
+      4337.0,
+      48.81
+    ],
+    [
+      1793740537.1401684,
+      100.0,
+      4337.0,
+      48.9
+    ],
+    [
+      1793740537.3547537,
+      100.0,
+      4337.0,
+      48.7
+    ],
+    [
+      1793740537.5696778,
+      100.0,
+      4337.0,
+      48.71
+    ],
+    [
+      1793740537.7844973,
+      100.0,
+      4337.0,
+      48.81
+    ],
+    [
+      1793740538.0019321,
+      100.0,
+      4337.0,
+      48.71
+    ],
+    [
+      1793740538.216865,
+      100.0,
+      4337.0,
+      48.61
+    ],
+    [
+      1793740538.4319487,
+      100.0,
+      4337.0,
+      48.51
+    ],
+    [
+      1793740538.6468139,
+      100.0,
+      4337.0,
+      48.32
+    ],
+    [
+      1793740538.8638792,
+      100.0,
+      4337.0,
+      48.13
+    ],
+    [
+      1793740539.0790794,
+      100.0,
+      4337.0,
+      48.03
+    ],
+    [
+      1793740539.2941813,
+      100.0,
+      4337.0,
+      47.35
+    ],
+    [
+      1793740539.5088892,
+      100.0,
+      4337.0,
+      45.99
+    ],
+    [
+      1793740539.725918,
+      100.0,
+      4337.0,
+      44.73
+    ],
+    [
+      1793740539.9408305,
+      100.0,
+      4337.0,
+      43.76
+    ],
+    [
+      1793740540.1565797,
+      100.0,
+      21.0,
+      46.39
+    ],
+    [
+      1793740540.3729753,
+      36.0,
+      4317.0,
+      60.17
+    ],
+    [
+      1793740540.5881534,
+      51.0,
+      4337.0,
+      78.66
+    ],
+    [
+      1793740540.8028884,
+      100.0,
+      4337.0,
+      79.23
+    ],
+    [
+      1793740541.0177715,
+      100.0,
+      4337.0,
+      72.84
+    ],
+    [
+      1793740541.2329772,
+      100.0,
+      4337.0,
+      69.47
+    ],
+    [
+      1793740541.450057,
+      100.0,
+      4337.0,
+      68.14
+    ],
+    [
+      1793740541.665073,
+      100.0,
+      4337.0,
+      67.75
+    ],
+    [
+      1793740541.8801093,
+      100.0,
+      4337.0,
+      65.13
+    ],
+    [
+      1793740542.095052,
+      100.0,
+      4337.0,
+      59.92
+    ],
+    [
+      1793740542.3121827,
+      100.0,
+      4337.0,
+      51.68
+    ],
+    [
+      1793740542.527513,
+      100.0,
+      67.0,
+      46.57
+    ],
+    [
+      1793740542.7423391,
+      41.0,
+      4337.0,
+      75.43
+    ],
+    [
+      1793740542.9569886,
+      50.0,
+      4337.0,
+      88.96
+    ],
+    [
+      1793740543.1748962,
+      100.0,
+      4337.0,
+      77.88
+    ],
+    [
+      1793740543.389958,
+      100.0,
+      4337.0,
+      72.01
+    ],
+    [
+      1793740543.6050696,
+      100.0,
+      4337.0,
+      70.64
+    ],
+    [
+      1793740543.8201957,
+      100.0,
+      4337.0,
+      66.67
+    ],
+    [
+      1793740544.0364482,
+      100.0,
+      4337.0,
+      61.17
+    ],
+    [
+      1793740544.2514036,
+      100.0,
+      4337.0,
+      54.01
+    ],
+    [
+      1793740544.4661796,
+      100.0,
+      4337.0,
+      45.7
+    ],
+    [
+      1793740544.6811242,
+      84.0,
+      4315.0,
+      43.85
+    ],
+    [
+      1793740544.898715,
+      7.0,
+      4337.0,
+      70.35
+    ],
+    [
+      1793740545.1136866,
+      100.0,
+      4337.0,
+      64.65
+    ],
+    [
+      1793740545.3283508,
+      100.0,
+      4337.0,
+      62.14
+    ],
+    [
+      1793740545.5436413,
+      100.0,
+      4337.0,
+      61.47
+    ],
+    [
+      1793740545.7613175,
+      100.0,
+      4337.0,
+      60.8
+    ],
+    [
+      1793740545.9761248,
+      100.0,
+      4337.0,
+      59.72
+    ],
+    [
+      1793740546.1913505,
+      100.0,
+      4337.0,
+      59.14
+    ],
+    [
+      1793740546.406057,
+      100.0,
+      4337.0,
+      57.49
+    ],
+    [
+      1793740546.6233053,
+      100.0,
+      4337.0,
+      54.6
+    ],
+    [
+      1793740546.838275,
+      100.0,
+      4337.0,
+      51.04
+    ],
+    [
+      1793740547.0545325,
+      100.0,
+      4337.0,
+      48.02
+    ],
+    [
+      1793740547.269561,
+      100.0,
+      4337.0,
+      43.86
+    ]
+  ]
+}

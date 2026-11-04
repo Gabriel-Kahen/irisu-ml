@@ -1,0 +1,476 @@
+{
+  "schema": "irisu-final-paired-gpu-search-campaign-v1",
+  "date": "2026-11-04",
+  "status": "passed",
+  "goal": {
+    "target_speedup": 5,
+    "achieved": true,
+    "measured_speedup": 6.458022917826505,
+    "scope": "This specific large cached-prefix search campaign against the actual-native v2 CPU controller; not universal or single-world speedup."
+  },
+  "promotion_eligible": false,
+  "enabled_by_default": false,
+  "hardware": {
+    "cpu": "AMD Ryzen 7 3700X, 8 physical cores / 16 logical CPUs",
+    "gpu": "Tesla V100-PCIE-32GB, sm70",
+    "cuda": "12.9.86",
+    "driver": "580.178.04",
+    "cuda_host_compiler": "GCC 14.3.1",
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "device_storage_bytes": 27848507556
+  },
+  "workload": {
+    "distinct_candidate_specs": 12288,
+    "distinct_native_results": 12288,
+    "batches": 20,
+    "horizon": 4,
+    "prefix_ticks": 100,
+    "prefix_preparations": 1,
+    "future_ticks": 983040,
+    "result_packet_bytes": 3194896,
+    "trace_every_tick": false,
+    "repeated_batches": "Each batch recomputes all 12,288 futures from the same immutable checkpoint. This is fanout throughput, not a deeper adaptive search."
+  },
+  "timing": {
+    "scope": "One process and one prefix per campaign on both backends. External wall includes loading, allocation, execution, output and teardown. CPU verification-free wall is an additional conservative control.",
+    "warmup_campaigns": 3,
+    "paired_rounds": 3,
+    "cpu_runs_per_configuration": 3,
+    "gpu_runs": 6,
+    "best_cpu_workers": 8,
+    "cpu_verification_free_medians": {
+      "8": 30.062683493992637,
+      "16": 30.10801897799878
+    },
+    "gpu_full_wall_median_seconds": 4.655090865504462,
+    "gpu_full_wall_range_seconds": [
+      4.623424566001631,
+      4.657617231001495
+    ],
+    "conservative_speedup": 6.458022917826505,
+    "cpu_full_wall": {
+      "8": {
+        "median_seconds": 30.100999674992636,
+        "range_seconds": [
+          29.823325459990883,
+          30.830232035004883
+        ]
+      },
+      "16": {
+        "median_seconds": 30.146340653998777,
+        "range_seconds": [
+          30.09419098700164,
+          31.126270566994208
+        ]
+      }
+    },
+    "fastest_cpu_verification_free_over_slowest_gpu": 6.39477921430365
+  },
+  "fairness": {
+    "cpu": "Actual pinned native DSO; one retained parent checkpoint; fork/COW candidates; native v2 dedicated MAP_PRIVATE MADV_DONTFORK parent verification buffers.",
+    "cpu_verification_subtracted_for_headline": true,
+    "gpu_prefix_guards_included": true,
+    "all_setup_output_teardown_included": true,
+    "unrelated_processes_modified": false,
+    "conditions_note": "First five CPU runs ended with CPU pressure avg10 0.98\u20131.16%; last 16-worker sample rose to 7.86%. All samples retained. Headline uses 8-worker median; fastest CPU / slowest GPU still 6.39x. Earlier heavily contended measurements are excluded."
+  },
+  "gpu_profile": {
+    "numeric": "IRISU_CUDA_NATIVE_BOUNDED_MATH=ON, audited graphs, strict RN operations",
+    "copy_u64": true,
+    "reuse_prefix": true,
+    "physical_snapshot": true,
+    "scene_transport_bytes": 832656,
+    "omitted_scene_scratch_and_padding_bytes": 849928,
+    "host_prefix": false,
+    "guest_calls": 0,
+    "fallback_calls": 0,
+    "physics": "Initialization/reset, body creation, prefix and every future execute on GPU. Host prepares empty object storage only.",
+    "selected_continuation_checks": "Disabled in timing only; pass independently with all persistent bytes, both poison patterns, memcheck and initcheck."
+  },
+  "inputs": {
+    "native": {
+      "path": "/home/gabe/Documents/ChatGPT/irisu/build-project-exact/irisu-native-search-campaign",
+      "sha256": "566d4abaf0c6507845b356fb2d26b3637fe1737e5131fd37e99171e4bb245d72"
+    },
+    "gpu": {
+      "path": "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-bounded/clone/cuda_native/irisu-cuda-native-search-runner",
+      "sha256": "2f27d7ff719f66a53b9883ed602f654a1af5bab43dfa0d8c12fe6bc835967f72"
+    },
+    "replay": {
+      "path": "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+      "sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79"
+    },
+    "specs": {
+      "path": "/home/gabe/Documents/ChatGPT/irisu/artifacts/cuda-native-20261103/search/specs12288-distinct.bin",
+      "sha256": "29fc880c37e2cced33ca14849f1c6f85471ddd1eaed7f4b0015479b455484c3c"
+    },
+    "expected": {
+      "path": "/home/gabe/Documents/ChatGPT/irisu/artifacts/cuda-native-20261103/search/distinct12288-native-w8-r0.bin",
+      "sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0"
+    },
+    "library": {
+      "path": "/home/gabe/Documents/ChatGPT/irisu/.local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+      "sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5"
+    }
+  },
+  "inputs_unchanged": true,
+  "qualified_source_sha256": {
+    "clone/cuda/game.cuh": "454025dc78c0b7769f85c885d49576f19e2a610ce5fe779dd926336a7bbef507",
+    "clone/cuda/game_support.cuh": "a04980514e30cacd2b158622dfb072b4618b95c5b69b87d942ea505bcb9408c5",
+    "clone/cuda/game_tables.cuh": "3ddd4c93f2856cb779a964a82d23aae78aca826d03f3d64809fe56c9ea1cf330",
+    "clone/cuda/game_types.cuh": "654e1a2738ddb0ae7e1862e8a8d887a109fac908c5afb02f7fb0344c9202fac7",
+    "clone/cuda/search.hpp": "7665ee83ea1b216b6a6b9d529332ffe90d47ec2a68cad2f2862527506e5bc412",
+    "clone/cuda_native/broadphase.hpp": "0678b3c434508301931daf35b0a1176a6ee46c825f498266420d96a6bc20c378",
+    "clone/cuda_native/broadphase_algorithm.inc": "d666412957b87b68722a72d3c014ceb227651961ed458794b4ff103283e99fb3",
+    "clone/cuda_native/collision.hpp": "38c8578f0ac64bf1ed2e2c3ae8f22e967a1ca992bad25e3ee85ec733d3008fa6",
+    "clone/cuda_native/factory.hpp": "3ab2cef30efa346baae00655b834cd27b5720573349f46817a12d57dbe37c688",
+    "clone/cuda_native/game_adapter.cuh": "14ab6527e8522501c5405641ac6ff04a415967e6adab871e9a15c68eea03b964",
+    "clone/cuda_native/game_world.cuh": "a61d3169711d4b09154768c50efcf039fe7f951cf72dcca3788020acbeb1eabf",
+    "clone/cuda_native/solver.hpp": "1d36a4f7e739af6958486121b88454c161bca267df4e96a11ee9a89b530823ff",
+    "clone/cuda_native/solver_math.hpp": "d93aeec682fe5968d5fc6c76f67f14f6c9e4ea2520ae5122ae71304d5c1f719b",
+    "clone/cuda_native/types.hpp": "6764c26b03d10ecb29abdf6b8e0a0fbe57457549fdc8096b16e25ff0a21a39d7",
+    "clone/cuda_native/world.hpp": "11ccd005afec41ac8c10ee2060a774cbe682dd297db0c233d7aae394122261b7",
+    "clone/cuda_native/world_contacts.hpp": "6f72e836de47b20d5e693121a873871af29ad720a4d86a99e3460f90f69c20fa",
+    "clone/cuda_native/world_pipeline.hpp": "244ad2ca5f83b56d64f416803810cc7c5144cd4e1287b715afcfa4fc2b474fce",
+    "clone/cuda_native/world_scene.hpp": "698e98b0682baba6c13414c3e5eb2ea7d1247aa1142bc26c33f7ded4a488cf13",
+    "clone/cuda_native/world_shapes.hpp": "a57a96737d713765901e8735c28504465585c8906aeac122b8177b3d1d5f35d3",
+    "tools/cuda-exact/game_digest.hpp": "75a038839de86868b34c3ef319de3759663e31f96d8de65e00416f7c3552ae2a",
+    "tools/cuda-exact/search_io.hpp": "b9f3385f5d8b15f94d561645bddc8860f7a39774864e40dfb0b2b1bd8494d62d",
+    "tools/cuda-exact/x87_numeric.cuh": "ce53bc2730e24227ebc83cf95699a75bb81b8f1739d8ead0d9764a25825b3a5e",
+    "tools/cuda-native/search_runner.cu": "2b183b2bc4cf6bb540bc35b81205a1aabe8b7678e52edc8df493df730f73314c"
+  },
+  "commands": {
+    "native": [
+      "/home/gabe/Documents/ChatGPT/irisu/build-project-exact/irisu-native-search-campaign",
+      "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+      "/home/gabe/Documents/ChatGPT/irisu/artifacts/cuda-native-20261103/search/specs12288-distinct.bin",
+      "100",
+      "4",
+      "8",
+      "20",
+      "4393102",
+      "--final-only"
+    ],
+    "gpu": [
+      "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-bounded/clone/cuda_native/irisu-cuda-native-search-runner",
+      "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+      "/home/gabe/Documents/ChatGPT/irisu/artifacts/cuda-native-20261103/search/specs12288-distinct.bin",
+      "100",
+      "4",
+      "--final-only",
+      "--copy-u64",
+      "--reuse-prefix",
+      "--physical-snapshot",
+      "--warmups",
+      "0",
+      "--repeats",
+      "20",
+      "--skip-compaction-check"
+    ]
+  },
+  "samples": [
+    {
+      "backend": "native",
+      "workers": 8,
+      "round": 0,
+      "wall_seconds": 30.830232035004883,
+      "verification_free_seconds": 30.792277177004884,
+      "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+      "output_bytes": 3194896,
+      "native_packet_equal": true,
+      "conditions": {
+        "before": {
+          "cpu_pressure": "some avg10=0.49 avg60=0.14 avg300=1.14 total=1229752070\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "3.58 3.51 9.88 1/5478 1194845"
+        },
+        "after": {
+          "cpu_pressure": "some avg10=1.16 avg60=0.55 avg300=1.14 total=1230323811\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "6.26 4.16 9.89 2/5390 1443747"
+        }
+      }
+    },
+    {
+      "backend": "gpu",
+      "workers": 0,
+      "round": 0,
+      "wall_seconds": 4.657050870009698,
+      "verification_free_seconds": 4.657050870009698,
+      "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+      "output_bytes": 3194896,
+      "native_packet_equal": true,
+      "conditions": {
+        "before": {
+          "cpu_pressure": "some avg10=1.16 avg60=0.55 avg300=1.14 total=1230323833\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "6.26 4.16 9.89 3/5390 1443747"
+        },
+        "after": {
+          "cpu_pressure": "some avg10=0.92 avg60=0.55 avg300=1.13 total=1230346433\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "6.00 4.14 9.85 1/5287 1444231"
+        }
+      }
+    },
+    {
+      "backend": "native",
+      "workers": 16,
+      "round": 0,
+      "wall_seconds": 30.146340653998777,
+      "verification_free_seconds": 30.10801897799878,
+      "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+      "output_bytes": 3194896,
+      "native_packet_equal": true,
+      "conditions": {
+        "before": {
+          "cpu_pressure": "some avg10=0.92 avg60=0.55 avg300=1.13 total=1230346439\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "6.00 4.14 9.85 3/5287 1444231"
+        },
+        "after": {
+          "cpu_pressure": "some avg10=1.13 avg60=0.75 avg300=1.12 total=1230890968\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "6.81 4.51 9.79 5/5262 1693022"
+        }
+      }
+    },
+    {
+      "backend": "gpu",
+      "workers": 0,
+      "round": 0,
+      "wall_seconds": 4.657617231001495,
+      "verification_free_seconds": 4.657617231001495,
+      "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+      "output_bytes": 3194896,
+      "native_packet_equal": true,
+      "conditions": {
+        "before": {
+          "cpu_pressure": "some avg10=1.13 avg60=0.75 avg300=1.12 total=1230890989\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "6.81 4.51 9.79 7/5263 1693023"
+        },
+        "after": {
+          "cpu_pressure": "some avg10=0.76 avg60=0.70 avg300=1.10 total=1230922883\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "6.66 4.52 9.77 2/5271 1693480"
+        }
+      }
+    },
+    {
+      "backend": "native",
+      "workers": 16,
+      "round": 1,
+      "wall_seconds": 30.09419098700164,
+      "verification_free_seconds": 30.05564670200164,
+      "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+      "output_bytes": 3194896,
+      "native_packet_equal": true,
+      "conditions": {
+        "before": {
+          "cpu_pressure": "some avg10=0.76 avg60=0.70 avg300=1.10 total=1230922988\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "6.66 4.52 9.77 3/5271 1693480"
+        },
+        "after": {
+          "cpu_pressure": "some avg10=1.12 avg60=0.91 avg300=1.12 total=1231536636\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "7.38 4.90 9.73 1/5303 1942398"
+        }
+      }
+    },
+    {
+      "backend": "gpu",
+      "workers": 0,
+      "round": 1,
+      "wall_seconds": 4.653130860999227,
+      "verification_free_seconds": 4.653130860999227,
+      "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+      "output_bytes": 3194896,
+      "native_packet_equal": true,
+      "conditions": {
+        "before": {
+          "cpu_pressure": "some avg10=1.12 avg60=0.91 avg300=1.12 total=1231536639\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "7.38 4.90 9.73 1/5303 1942398"
+        },
+        "after": {
+          "cpu_pressure": "some avg10=0.75 avg60=0.85 avg300=1.10 total=1231552926\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "6.95 4.85 9.68 2/5303 1942856"
+        }
+      }
+    },
+    {
+      "backend": "native",
+      "workers": 8,
+      "round": 1,
+      "wall_seconds": 30.100999674992636,
+      "verification_free_seconds": 30.062683493992637,
+      "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+      "output_bytes": 3194896,
+      "native_packet_equal": true,
+      "conditions": {
+        "before": {
+          "cpu_pressure": "some avg10=0.75 avg60=0.85 avg300=1.10 total=1231552933\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "6.95 4.85 9.68 3/5303 1942856"
+        },
+        "after": {
+          "cpu_pressure": "some avg10=0.98 avg60=0.91 avg300=1.08 total=1232105494\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "7.63 5.22 9.65 1/5259 2191856"
+        }
+      }
+    },
+    {
+      "backend": "gpu",
+      "workers": 0,
+      "round": 1,
+      "wall_seconds": 4.623424566001631,
+      "verification_free_seconds": 4.623424566001631,
+      "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+      "output_bytes": 3194896,
+      "native_packet_equal": true,
+      "conditions": {
+        "before": {
+          "cpu_pressure": "some avg10=0.98 avg60=0.91 avg300=1.08 total=1232105615\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "7.63 5.22 9.65 1/5259 2191856"
+        },
+        "after": {
+          "cpu_pressure": "some avg10=0.66 avg60=0.85 avg300=1.07 total=1232122257\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "7.26 5.18 9.62 1/5268 2192388"
+        }
+      }
+    },
+    {
+      "backend": "native",
+      "workers": 8,
+      "round": 2,
+      "wall_seconds": 29.823325459990883,
+      "verification_free_seconds": 29.784433856990884,
+      "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+      "output_bytes": 3194896,
+      "native_packet_equal": true,
+      "conditions": {
+        "before": {
+          "cpu_pressure": "some avg10=0.66 avg60=0.85 avg300=1.07 total=1232122286\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "7.26 5.18 9.62 1/5268 2192388"
+        },
+        "after": {
+          "cpu_pressure": "some avg10=0.98 avg60=0.91 avg300=1.06 total=1232676347\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "8.07 5.59 9.61 2/5246 2441334"
+        }
+      }
+    },
+    {
+      "backend": "gpu",
+      "workers": 0,
+      "round": 2,
+      "wall_seconds": 4.637119943014113,
+      "verification_free_seconds": 4.637119943014113,
+      "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+      "output_bytes": 3194896,
+      "native_packet_equal": true,
+      "conditions": {
+        "before": {
+          "cpu_pressure": "some avg10=0.98 avg60=0.91 avg300=1.06 total=1232676359\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "8.07 5.59 9.61 2/5246 2441334"
+        },
+        "after": {
+          "cpu_pressure": "some avg10=0.65 avg60=0.85 avg300=1.05 total=1232693102\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "8.07 5.59 9.61 2/5240 2441795"
+        }
+      }
+    },
+    {
+      "backend": "native",
+      "workers": 16,
+      "round": 2,
+      "wall_seconds": 31.126270566994208,
+      "verification_free_seconds": 31.088000554994206,
+      "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+      "output_bytes": 3194896,
+      "native_packet_equal": true,
+      "conditions": {
+        "before": {
+          "cpu_pressure": "some avg10=0.65 avg60=0.85 avg300=1.05 total=1232693113\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "8.07 5.59 9.61 2/5240 2441795"
+        },
+        "after": {
+          "cpu_pressure": "some avg10=7.86 avg60=3.02 avg300=1.52 total=1234666928\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "9.29 6.16 9.65 1/5243 2691117"
+        }
+      }
+    },
+    {
+      "backend": "gpu",
+      "workers": 0,
+      "round": 2,
+      "wall_seconds": 4.657589875001577,
+      "verification_free_seconds": 4.657589875001577,
+      "output_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+      "output_bytes": 3194896,
+      "native_packet_equal": true,
+      "conditions": {
+        "before": {
+          "cpu_pressure": "some avg10=7.86 avg60=3.02 avg300=1.52 total=1234666935\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "9.29 6.16 9.65 1/5243 2691117"
+        },
+        "after": {
+          "cpu_pressure": "some avg10=4.44 avg60=2.76 avg300=1.50 total=1234687319\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+          "load": "8.95 6.14 9.63 1/5250 2691630"
+        }
+      }
+    }
+  ],
+  "qualification": {
+    "native_packets_equal": true,
+    "prefix_mutation_errors": 0,
+    "failed_candidates": 0,
+    "compaction_errors": 0,
+    "search": "tools/cuda-native/search_physical_qualification.json",
+    "snapshot": "benchmarks/results/cuda-native-physical-snapshot-2026-11-04.json",
+    "numeric_and_full_gpu_record": "benchmarks/results/cuda-native-bounded-math-2026-11-03.json",
+    "full_gpu_record": {
+      "steps": 97219,
+      "frame_rows": 97220,
+      "native_digest_bytes": 9333120,
+      "native_digest_sha256": "9d972bbf361cfa58de555891ebcf96d2cd7b109839bc00868079d60aa03577ed",
+      "fallback_calls": 0,
+      "scope": "Continuous bounded-profile GPU run; frame digest equality, not hidden allocator memory; hashes included so not a throughput measurement."
+    },
+    "default_cpu_tests": {
+      "passed": 8,
+      "failed": 0,
+      "command": "cmake --build build-project-cpu -j2 && ctest --test-dir build-project-cpu --output-on-failure",
+      "wall_seconds": 17.01
+    }
+  },
+  "preservation": {
+    "comparison_base": "2afadce",
+    "unchanged_paths": [
+      "clone/cuda",
+      "tools/cuda-exact",
+      "clone/core",
+      "clone/include",
+      "third_party/box2d_legacy",
+      "tools/exact-physics-prototype"
+    ],
+    "replay_and_native_library_unchanged": true,
+    "defaults_unchanged": true
+  },
+  "raw_artifacts": {
+    "artifacts/gpu-native-20261103/final-paired-campaign.json": "66192b5e5831b5aba78b928950da679bdf059f4e1c530126b9c6fc3b8d033336",
+    "artifacts/gpu-native-20261103/final-paired-campaign.log": "85d4e9c740f433b9e08837d9ebd4be5425ed4973160d9af414e87a086e8b36d4"
+  },
+  "reproduction": "tools/cuda-native/search_README.md and tools/cuda-native/benchmark_campaign.py. After measurements only failure reporting was added to the benchmark script; execution/timing path unchanged.",
+  "limitations": [
+    "Small cold searches still favor CPU. No 5x single-game claim.",
+    "Fixed-capacity experimental engine; no joint creation or generic native-world admission.",
+    "The native CPU control retains its existing fork/COW strategy; no claim against every possible optimized CPU implementation."
+  ]
+}
