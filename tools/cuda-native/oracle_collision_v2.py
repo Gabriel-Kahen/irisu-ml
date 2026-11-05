@@ -61,6 +61,17 @@ def generate(count, seed, family):
                     shape(0, 2, 2, value(bits)), conservative)
     else:
         for conservative in (0, 1):
+            # Captured seed270515404/update2942 SAT reference-face tie.
+            # Preserve raw transforms: reconstructing their angles can move
+            # this case away from the native binary32 threshold boundary.
+            points = [(-1.2, 1.2), (-1.2, -1.2), (1.2, -1.2), (1.2, 1.2)]
+            first, second = shape(1, vertices=points), shape(1, vertices=points)
+            first[2:8] = [0x41b42b61, 0x41cd27b7, 0x3f780712,
+                          0xbe7d8f6d, 0x3e7d8f6d, 0x3f780712]
+            second[2:8] = [0x41a475f6, 0x41dd0d7a, 0xbf77fa4d,
+                           0x3e7e56f6, 0xbe7e56f6, 0xbf77fa4d]
+            add(f'reference-face-threshold-rounding-c{conservative}',
+                first, second, conservative)
             for dx in (0., value(word(2.) - 1), 2., value(word(2.) + 1), 3.):
                 for angle in (0., math.pi / 4, math.pi / 2):
                     add(f'boxes-d{dx}-a{angle}-c{conservative}',

@@ -209,7 +209,10 @@ NATIVE_HD inline StageResult collide_poly(Manifold& manifold,const ShapeState& a
   const float separation_b=max_separation(m,edge_b,b,a,conservative);
   if(!m.ok())return {m.status};
   if(separation_b>0&&!conservative){manifold=out;return {};}
-  const bool flip=separation_b>m.add(m.mul(0.98f,separation_a),0.001f);
+  // Native b2CollidePoly stores the reference-face threshold to binary32
+  // before comparing (0x5785); retaining the PC53 sum changes near ties.
+  const float reference_threshold=m.add_store(m.mul(0.98f,separation_a),0.001f);
+  const bool flip=separation_b>reference_threshold;
   const auto& first=flip?b:a;const auto& second=flip?a:b;const auto edge=flip?edge_b:edge_a;
   ClipVertex incident[2]{},clipped1[2]{},clipped2[2]{};incident_edge(m,incident,first,edge,second);
   auto v1=first.vertices[edge],v2=first.vertices[edge+1<first.vertex_count?edge+1:0];
