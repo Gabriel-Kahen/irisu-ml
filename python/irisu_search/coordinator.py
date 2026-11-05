@@ -6,6 +6,7 @@ import json
 import math
 import os
 import random
+import struct
 import time
 import uuid
 from collections import OrderedDict
@@ -23,6 +24,10 @@ from .proposals import (
 )
 from .scheduler import next_job
 from .verification import NativeVerifier, read_replay, replay_bytes, sha256_file
+
+
+class RolloutBatchRejected(RuntimeError):
+    """Every candidate was rejected while the resident worker remained healthy."""
 
 
 @contextmanager
@@ -252,6 +257,8 @@ class Coordinator:
         progress = self.store.get_meta(f"progress:{job['id']}")
         if progress:
             parent = self.store.get_checkpoint(progress["checkpoint_id"])
+            if progress.get("rollout_rejected"):
+                raise RolloutBatchRejected("all candidate rollouts were rejected; diagnostics preserved")
         allocation_state = parent["summary"]
         total_ticks = progress.get("simulated_ticks", 0) if progress else 0
         published = progress.get("published", []) if progress else []
@@ -288,16 +295,43 @@ class Coordinator:
             output = self.engine.batch(handle, horizon, candidates)
             elapsed = time.monotonic() - batch_start
             results = output["results"]
-            if len(results) != len(candidates):
+            rejected = output.get("rejected", [])
+            if len(results) + len(rejected) != len(candidates):
                 raise RuntimeError("engine returned wrong candidate count")
             total_ticks += output["simulated_ticks"]
+            paired = []
+            indices = set()
+            for position, row in enumerate(results):
+                index = row.get("candidate_index", None if rejected else position)
+                if type(index) is not int or not 0 <= index < len(candidates) or index in indices:
+                    raise RuntimeError("engine returned invalid candidate indices")
+                indices.add(index)
+                paired.append((candidates[index], row))
+            for failure in rejected:
+                index = failure.get("candidate_index")
+                if type(index) is not int or not 0 <= index < len(candidates) or index in indices:
+                    raise RuntimeError("engine returned invalid candidate indices")
+                indices.add(index)
+                trace = failure["words"]
+                blob = self.store.put_blob(struct.pack(f"<{len(trace)}I", *trace))
+                self.store.event("rollout_rejected", {"job_id": job["id"], "attempt_token": job["token"],
+                    "parent_checkpoint_id": parent["id"], "seed": parent["seed"], "horizon": horizon,
+                    "candidate_index": index, "candidate": candidates[index],
+                    "executed_words_blob": blob, "executed_word_count": len(trace),
+                    "diagnostic": failure["diagnostic"]})
+            if not results:
+                self.store.set_meta(f"progress:{job['id']}", {"checkpoint_id": parent["id"],
+                    "batches": batches + 1, "simulated_ticks": total_ticks, "published": published,
+                    "rollout_rejected": True, "observed_terminal": observed_terminal})
+                self._prune()
+                raise RolloutBatchRejected("all candidate rollouts were rejected; diagnostics preserved")
             survivors = select_survivors(results, self.config.survivors, self.guide,
                                          horizon=horizon, budget_seconds=budget_seconds)
             survivor_handles = {r["handle"] for r in survivors}
             rows = {}
             retained = []
             terminal_ids = []
-            for candidate, row in zip(candidates, results):
+            for candidate, row in paired:
                 self.store.add_example(self._example(parent["summary"], row["summary"], candidate,
                                                      elapsed / max(1, len(results)), row.get("group_deltas", ()), row.get("metrics")))
                 if row["handle"] in survivor_handles or row["summary"].get("terminated"):
@@ -395,8 +429,17 @@ class Coordinator:
                     # durable completed batches now, without counting them twice.
                     ticks = 0 if retry else max(0, saved.get("simulated_ticks", 0) - job.get("simulated_ticks", 0))
                     self.store.fail(job["id"], job["token"], str(error), retry=retry,
-                                    cost_seconds=time.monotonic() - started, simulated_ticks=ticks)
-                    raise
+                                    cost_seconds=time.monotonic() - started, simulated_ticks=ticks,
+                                    rollout_rejected=isinstance(error, RolloutBatchRejected))
+                    if not isinstance(error, RolloutBatchRejected):
+                        raise
+                    self.store.set_meta(f"progress:{job['id']}", None)
+                    count += 1
+                    if progress:
+                        progress({"job": job["id"], "kind": job["kind"], "seed": job["seed"],
+                                  "completed_jobs": count, "status": "failed", "result": {"rejected": True},
+                                  "champion": self.store.champion()})
+                    continue
                 count += 1
                 completed = self.store.completed_jobs()
                 if self.config.train_every_jobs and completed % self.config.train_every_jobs == 0 and time.monotonic() < deadline:

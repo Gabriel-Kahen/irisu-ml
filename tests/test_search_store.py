@@ -168,6 +168,32 @@ def test_permanent_failed_attempt_settles_known_ticks_exactly_once(tmp_path):
         assert store.seeds()[0]["attempts"] == 0
 
 
+@pytest.mark.parametrize("kind,expected", [("bootstrap", 1), ("expand", 0)])
+def test_exhausted_rejection_counts_bootstrap_probe_once_after_interruption(tmp_path, kind, expected):
+    with initialized(tmp_path) as store:
+        key = store.enqueue(kind, 7)
+        first = store.claim("worker")
+        store.fail(key, first["token"], "interrupted", retry=True, cost_seconds=2)
+        assert store.seeds()[0]["attempts"] == 0
+        second = store.claim("worker")
+        for _ in range(2):
+            store.fail(key, second["token"], "all candidates rejected", cost_seconds=3,
+                       simulated_ticks=8, rollout_rejected=True)
+        assert store.jobs()[0]["status"] == "failed"
+        assert store.seeds()[0]["attempts"] == expected
+        assert store.seeds()[0]["search_seconds"] == 5
+        assert store.report()["simulated_ticks"] == 8
+
+
+def test_rejected_probe_cannot_be_marked_as_a_retry(tmp_path):
+    with initialized(tmp_path) as store:
+        key = store.enqueue("bootstrap", 7)
+        job = store.claim("worker")
+        with pytest.raises(ValueError, match="permanently exhausted"):
+            store.fail(key, job["token"], "interrupted", retry=True, rollout_rejected=True)
+        assert store.jobs()[0]["status"] == "running"
+
+
 def test_bounded_sample_stratifies_seeds_and_donates_unused_quota(tmp_path):
     with initialized(tmp_path) as store:
         for seed, count in ((7, 1), (8, 100), (9, 100)):

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import json
 from pathlib import Path
+import struct
 import sys
 
 import pytest
@@ -101,6 +103,142 @@ def config(**kwargs):
                   minimum_seed_seconds=.001, finalist_seconds=.1)
     values.update(kwargs)
     return CampaignConfig(**values)
+
+
+class RejectingEngine(FakeEngine):
+    """A healthy worker rejects candidates without retaining their invalid states."""
+
+    def __init__(self, rejected=(0,), reject_batches=None, **kwargs):
+        super().__init__(**kwargs)
+        self.reject_indices = rejected
+        self.reject_batches = reject_batches
+
+    def batch(self, handle, horizon, candidates):
+        output = super().batch(handle, horizon, candidates)
+        reject = self.reject_indices if self.reject_batches is None or len(self.batches) <= self.reject_batches else ()
+        accepted, rejected = [], []
+        for index, row in enumerate(output["results"]):
+            if index in reject:
+                self.release([row["handle"]])
+                rejected.append({"candidate_index": index, "words": row["words"],
+                    "diagnostic": {"physics_status": 1, "status": "capacity", "tick": row["summary"]["tick"]}})
+            else:
+                accepted.append({**row, "candidate_index": index})
+        return {**output, "results": accepted, "rejected": rejected}
+
+
+def test_mixed_rejections_keep_candidate_lineage_and_do_not_train_on_failed_states(tmp_path, monkeypatch):
+    import irisu_search.coordinator as module
+    from irisu_search.neural import features
+    candidates = [{"mode": 0, "words": [i], "search_seed": 10 + i, "horizon": 2,
+                   "operator": operator} for i, operator in enumerate(("recruit", "preserve", "payout", "repair"))]
+    monkeypatch.setattr(module, "generate", lambda *_: deepcopy(candidates))
+    monkeypatch.setattr(module, "select_candidates", lambda _, rows, *args: rows)
+    with Store(tmp_path) as store:
+        engine = RejectingEngine(terminal_tick=2)
+        coordinator = Coordinator(store, engine, config(maximum_ticks=2), FakeVerifier(engine))
+        key = store.enqueue("bootstrap", 7, payload={"search_seed": 5, "horizon": 2})
+        before = engine.summary(7, [])
+        coordinator.run(seconds=1, max_jobs=1)
+        assert store.jobs()[0]["status"] == "done"
+        assert store.report()["simulated_ticks"] == 8
+        descendants = [store.get_checkpoint(row["id"]) for row in store.checkpoints() if row["summary"]["tick"]]
+        assert {tuple(row["words"]) for row in descendants} == {(1, 0), (2, 0), (3, 0)}
+        assert all(row["operator"] == candidates[row["words"][0]]["operator"] for row in descendants)
+        proposal_examples = [row for row in store.examples() if row["role"] == "proposal"]
+        assert len(proposal_examples) == 3
+        assert [row["features"] for row in proposal_examples] == [
+            features(before, {**candidate, "budget_seconds": .05}) for candidate in candidates[1:]]
+        events = store.db.execute("SELECT payload FROM events WHERE kind='rollout_rejected'").fetchall()
+        assert len(events) == 1
+        evidence = json.loads(events[0][0])
+        assert evidence["job_id"] == key and evidence["candidate_index"] == 0
+        assert evidence["candidate"]["operator"] == "recruit"
+        assert evidence["diagnostic"]["status"] == "capacity"
+        assert store.get_blob(evidence["executed_words_blob"]) == struct.pack("<2I", 0, 0)
+        assert store.get_checkpoint(evidence["parent_checkpoint_id"])["words"] == []
+        coordinator.close()
+
+
+def test_all_rejected_job_settles_work_and_campaign_continues(tmp_path):
+    with Store(tmp_path) as store:
+        engine = RejectingEngine(rejected=range(4), reject_batches=1, terminal_tick=2)
+        coordinator = Coordinator(store, engine, config(maximum_ticks=2), FakeVerifier(engine))
+        first = store.enqueue("bootstrap", 7, payload={"search_seed": 5, "horizon": 2})
+        store.ensure_seed(8)
+        second = store.enqueue("bootstrap", 8, payload={"search_seed": 6, "horizon": 2})
+        coordinator.run(seconds=1, max_jobs=2)
+        jobs = {row["id"]: row for row in store.jobs()}
+        assert jobs[first]["status"] == "failed" and jobs[first]["simulated_ticks"] == 8
+        assert jobs[second]["status"] == "done" and jobs[second]["simulated_ticks"] == 8
+        assert store.report()["simulated_ticks"] == 16
+        assert store.get_meta(f"progress:{first}") is None
+        assert next(row for row in store.seeds() if row["seed"] == 7)["attempts"] == 1
+        assert store.db.execute("SELECT COUNT(*) FROM events WHERE kind='rollout_rejected'").fetchone()[0] == 4
+        assert all(row["seed"] == 8 for row in store.examples())
+        assert not any(row["summary"]["tick"] for row in store.checkpoints() if row["seed"] == 7)
+        coordinator.close()
+        assert not engine.handles
+
+
+def test_exhausted_seed_probes_do_not_block_discovery_of_new_seeds(tmp_path, monkeypatch):
+    import irisu_search.scheduler as scheduler
+    monkeypatch.setattr(scheduler, "choose_lane", lambda *_: "seed")
+    with Store(tmp_path) as store:
+        engine = RejectingEngine(rejected=range(4), terminal_tick=2)
+        cfg = config(initial_seeds=1, attempts_per_seed=1, maximum_ticks=2)
+        coordinator = Coordinator(store, engine, cfg, FakeVerifier(engine))
+        known = {row["seed"] for row in store.seeds()}
+        coordinator.run(seconds=1, max_jobs=2)
+        assert len(store.jobs("failed")) == 2
+        assert all(row["attempts"] == 1 for row in store.seeds())
+        key = scheduler.next_job(store, cfg)
+        fresh = next(row for row in store.jobs() if row["id"] == key)
+        assert fresh["seed"] not in known
+        assert fresh["payload"]["attempt"] == 0
+        coordinator.close()
+
+
+def test_all_rejected_batch_accounts_preceding_successful_batch(tmp_path):
+    class RejectSecondBatch(RejectingEngine):
+        def batch(self, handle, horizon, candidates):
+            self.reject_indices = range(4) if len(self.batches) == 1 else ()
+            return super().batch(handle, horizon, candidates)
+    with Store(tmp_path) as store:
+        engine = RejectSecondBatch(terminal_tick=6)
+        coordinator = Coordinator(store, engine, config(maximum_ticks=6, job_seconds=.2), FakeVerifier(engine))
+        key = store.enqueue("bootstrap", 7, payload={"search_seed": 5, "horizon": 2})
+        coordinator.run(seconds=1, max_jobs=1)
+        assert engine.batch_starts == [0, 2]
+        assert store.jobs()[0]["status"] == "failed"
+        assert store.jobs()[0]["simulated_ticks"] == store.report()["simulated_ticks"] == 16
+        assert store.get_meta(f"progress:{key}") is None
+        coordinator.close()
+
+
+def test_interruption_after_rejected_batch_does_not_reexecute_or_lose_ticks(tmp_path, monkeypatch):
+    cfg = config(maximum_ticks=2)
+    with Store(tmp_path) as store:
+        engine = RejectingEngine(rejected=range(4), terminal_tick=2)
+        first = Coordinator(store, engine, cfg, FakeVerifier(engine))
+        key = store.enqueue("bootstrap", 7, payload={"search_seed": 5, "horizon": 2})
+        def interrupt_prune():
+            raise KeyboardInterrupt("interrupted after rejected trace publication")
+        monkeypatch.setattr(first, "_prune", interrupt_prune)
+        with pytest.raises(KeyboardInterrupt):
+            first.run(seconds=1, max_jobs=1)
+        assert store.get_meta(f"progress:{key}")["rollout_rejected"]
+        assert store.jobs()[0]["status"] == "pending" and store.report()["simulated_ticks"] == 0
+        first.close()
+        resumed_engine = RejectingEngine(rejected=range(4), terminal_tick=2)
+        resumed = Coordinator(store, resumed_engine, cfg, FakeVerifier(resumed_engine))
+        resumed.run(seconds=1, max_jobs=1)
+        assert resumed_engine.batches == []
+        assert store.jobs()[0]["status"] == "failed"
+        assert store.report()["simulated_ticks"] == 8
+        assert store.get_meta(f"progress:{key}") is None
+        assert store.db.execute("SELECT COUNT(*) FROM events WHERE kind='rollout_rejected'").fetchone()[0] == 4
+        resumed.close()
 
 
 def test_multi_seed_campaign_resumes_and_continues_after_terminal_archives(tmp_path):
