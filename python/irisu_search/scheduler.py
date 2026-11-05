@@ -112,7 +112,10 @@ def next_job(store, config, guide=None):
     horizon = config.horizon
     if lane == "probe":
         horizon = max(config.bootstrap_ticks, horizon * 4)
-        if seed.get("status") == "finalist":
+        # Probe depth follows actual investment, independently of tournament
+        # classification: outstanding bootstrap attempts must not cap a
+        # developed discovery seed at the short probe horizon for hours.
+        if seed.get("search_seconds", 0) >= config.finalist_seconds:
             horizon = max(horizon, config.bootstrap_ticks * 4)
     elif lane == "wildcard":
         horizon *= rng.choice((1, 2, 4))

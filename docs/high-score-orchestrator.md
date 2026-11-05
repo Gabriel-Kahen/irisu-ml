@@ -123,7 +123,10 @@ independent bootstrap attempts each. Retries of an interrupted attempt do not
 count as additional attempts. New seeds continue to enter by default. Seed
 shortlists combine live-group potential with verified results after a minimum
 wall-time investment. Promoted seeds receive deeper work; finalists must first
-receive the configured second-stage investment. Discovery seeds remain eligible for live development while their remaining
+receive the configured second-stage investment. Probe horizons can also deepen
+after that actual investment while independent bootstrap attempts are still
+pending; tournament status remains unchanged. The sample worker timeout allows
+up to 600 seconds for a dense long probe to reach its batch boundary. Discovery seeds remain eligible for live development while their remaining
 bootstrap attempts are scheduled; they need not wait for promotion to receive
 deeper work. Dormant seeds remain eligible through the wildcard lane. Early
 score alone is not an elimination rule.
