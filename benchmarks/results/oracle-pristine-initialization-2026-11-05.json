@@ -91,8 +91,12 @@
         "frame_bytes": 0
       }
     ],
-    "location": "pinned b2PairManager::Commit+145, null result from Find; zero replay steps requested still crashes",
-    "evidence_directory": "/home/gabe/Documents/ChatGPT/irisu/artifacts/verification-diagnostic-391769539-20261105"
+    "location": "With the archived frozen runtime-library layout: pinned b2PairManager::Commit+145, null result from Find; zero replay steps requested still crashes.",
+    "evidence_directory": "/home/gabe/Documents/ChatGPT/irisu/artifacts/verification-diagnostic-391769539-20261105",
+    "environment": {
+      "LD_LIBRARY_PATH": "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-search-fixed-20261105-120819/runtime/lib",
+      "LD_PRELOAD": "removed"
+    }
   },
   "repair": "Read fixed-size header, set x87 control word, construct/reset exact Simulator before allocating variable replay input; same initialization ordering as existing pristine native factory. Native terminal/header, digest stream and verifier acceptance are retained. Nonzero oracle exit reports status or signal even with empty stderr.",
   "cases": [
@@ -454,6 +458,71 @@
     "CPU-only; no CUDA binary, physics-library or frozen campaign modifications; service remains stopped.",
     "Full independent oracle frame streams and terminal/header validation passed on the archived 22508-word candidate and published 97219-word record.",
     "The resident-worker diagnostic adds only a final-frame field to a derived source copy; compares all 12 final digest words, not every intermediate resident-worker frame. Published old/new independent oracle streams compare every byte.",
-    "Initialization workaround preserves the pinned original library; varied startup cases are finite coverage, not a proof for every allocator/runtime configuration."
-  ]
+    "Initialization workaround preserves the pinned original library; varied startup cases are finite coverage, not a proof for every allocator/runtime configuration.",
+    "The old initializer is not claimed to crash universally: identical DSO contents under a shorter guest path can pass. The independent frozen-layout old-fail/new-pass gate establishes finite tested-layout coverage; a new frozen successor must preflight the archived candidate and published record in its own exact library environment."
+  ],
+  "layout_sensitive_independent_review": {
+    "reviewer": "/root/parity_fix_review",
+    "evidence_source": "Independent reviewer messages in the parent task; results below are reviewer-reported, not an additional local rerun.",
+    "crashing_environment": {
+      "LD_LIBRARY_PATH": "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-search-fixed-20261105-120819/runtime/lib",
+      "IRISU_SEARCH_ORACLE_LIBRARY": "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-search-fixed-20261105-120819/runtime/lib/libirisu_box2d_msvc_exact_multiworld.so",
+      "replay_path_pattern": "/tmp/irisu-verify-*/candidate.rpy"
+    },
+    "noncrashing_old_environment": {
+      "LD_LIBRARY_PATH": "/home/gabe/Documents/ChatGPT/irisu/.local/exact-runtime-20260824/exact-runtime/guest"
+    },
+    "library_comparison": [
+      {
+        "filename": "libirisu_box2d_msvc_exact_multiworld.so",
+        "frozen_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+        "guest_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+        "identical": true
+      },
+      {
+        "filename": "libstdc++.so.6",
+        "frozen_sha256": "90abf0c6a98625b812132ea9af960ee8b036e3f519e368de1084fb50532ba021",
+        "guest_sha256": "90abf0c6a98625b812132ea9af960ee8b036e3f519e368de1084fb50532ba021",
+        "identical": true
+      }
+    ],
+    "direct_differential": {
+      "same_archived_replay_bytes": true,
+      "old_frozen_maximum_steps_0": {
+        "returncode": -11,
+        "signal": "SIGSEGV",
+        "frame_bytes": 0
+      },
+      "old_frozen_full": {
+        "returncode": -11,
+        "signal": "SIGSEGV",
+        "frame_bytes": 0
+      },
+      "old_guest_maximum_steps_0": {
+        "returncode": 0,
+        "frame_bytes": 96
+      },
+      "old_guest_full": {
+        "returncode": 0,
+        "frame_rows": 22509
+      }
+    },
+    "tests": [
+      {
+        "oracle": "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-search-fixed-20261105-120819/runtime/bin/irisu-game-oracle",
+        "suite": "tests/test_search_oracle_initialization.py",
+        "result": "5 failed; all fail at the 22508-word case with SIGSEGV(-11), including each seed at maximum-steps=0",
+        "command_kind": "reproduction command equivalent to reviewer-reported gate",
+        "command": "PYTHONPATH=python IRISU_SEARCH_ORACLE=/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-search-fixed-20261105-120819/runtime/bin/irisu-game-oracle IRISU_SEARCH_ORACLE_LIBRARY=/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-search-fixed-20261105-120819/runtime/lib/libirisu_box2d_msvc_exact_multiworld.so uv run --no-project --with pytest python -m pytest -q tests/test_search_oracle_initialization.py"
+      },
+      {
+        "oracle": "/home/gabe/.codex/worktrees/irisu-oracle-pristine/irisu/build-oracle-pristine/irisu-game-oracle",
+        "suite": "tests/test_search_verification.py tests/test_search_oracle_initialization.py",
+        "result": "18 passed in 14.43s",
+        "command_kind": "reproduction command equivalent to reviewer-reported gate",
+        "command": "PYTHONPATH=python IRISU_SEARCH_ORACLE=/home/gabe/.codex/worktrees/irisu-oracle-pristine/irisu/build-oracle-pristine/irisu-game-oracle IRISU_SEARCH_ORACLE_LIBRARY=/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-search-fixed-20261105-120819/runtime/lib/libirisu_box2d_msvc_exact_multiworld.so uv run --no-project --with pytest python -m pytest -q tests/test_search_verification.py tests/test_search_oracle_initialization.py"
+      }
+    ],
+    "interpretation": "The old oracle crash is allocator/loader-layout sensitive. Changing LD_LIBRARY_PATH text/layout can alter startup behavior despite byte-identical physics and libstdc++ DSOs. Earlier focused tests using the shorter guest library path passed the repaired oracle but do not alone discriminate the old initializer. The frozen-layout differential is the causal regression gate."
+  }
 }
