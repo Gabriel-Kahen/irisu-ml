@@ -144,11 +144,14 @@ class Engine:
 
     @staticmethod
     def _result(result: Any) -> dict[str, Any]:
-        if not isinstance(result, dict) or type(result.get("handle")) is not int:
+        if (not isinstance(result, dict) or type(result.get("handle")) is not int
+                or not 1 <= result["handle"] <= 0xFFFFFFFF):
             raise EngineError("malformed checkpoint result")
         summary = result.get("summary")
         if not isinstance(summary, dict) or not isinstance(result.get("words"), list):
             raise EngineError("missing checkpoint summary or trace")
+        if summary.get("failed", False) is not False:
+            raise EngineError("engine accepted a failed simulation state")
         try:
             _words(result["words"])
         except ValueError as exc:
@@ -197,16 +200,47 @@ class Engine:
             lines.append(f"{mode} {seed} {len(values)} " + " ".join(map(str, values)))
         reply = self._request("\n".join(lines) + "\n")
         results = reply.get("results")
-        if not isinstance(results, list) or len(results) != len(candidates):
+        rejected = reply.get("rejected", [])
+        partial = "rejected" in reply
+        if (not isinstance(results, list) or not isinstance(rejected, list)
+                or len(results) + len(rejected) != len(candidates)):
             raise EngineError("engine returned wrong candidate count")
-        for result in results:
+        indices = set()
+        for position, result in enumerate(results):
             self._result(result)
             if len(result["words"]) > horizon:
                 raise EngineError("engine exceeded requested horizon")
+            index = result.get("candidate_index", None if partial else position)
+            if type(index) is not int or not 0 <= index < len(candidates) or index in indices:
+                raise EngineError("invalid or duplicate candidate index")
+            indices.add(index)
+            result["candidate_index"] = index
+        for failure in rejected:
+            if (not isinstance(failure, dict) or "handle" in failure
+                    or not isinstance(failure.get("words"), list)
+                    or not isinstance(failure.get("diagnostic"), dict) or not failure["diagnostic"]):
+                raise EngineError("malformed rejected rollout")
+            index = failure.get("candidate_index")
+            if type(index) is not int or not 0 <= index < len(candidates) or index in indices:
+                raise EngineError("invalid or duplicate candidate index")
+            indices.add(index)
+            try:
+                _words(failure["words"])
+            except ValueError as exc:
+                raise EngineError("rejected rollout contains an invalid replay word") from exc
+            if len(failure["words"]) > horizon:
+                raise EngineError("rejected rollout exceeded requested horizon")
         handles = [r["handle"] for r in results]
         if len(set(handles)) != len(handles) or handle in handles:
             raise EngineError("engine reused an immutable checkpoint handle")
-        reply["simulated_ticks"] = sum(len(r["words"]) for r in results)
+        ticks = sum(len(r["words"]) for r in results + rejected)
+        if (partial or "simulated_ticks" in reply) and (
+            type(reply.get("simulated_ticks")) is not int or reply["simulated_ticks"] != ticks
+        ):
+            raise EngineError("engine simulated tick accounting disagrees with traces")
+        reply["results"] = sorted(results, key=lambda row: row["candidate_index"])
+        reply["rejected"] = sorted(rejected, key=lambda row: row["candidate_index"])
+        reply["simulated_ticks"] = ticks
         return reply
 
     def release(self, handles: Iterable[int]) -> None:

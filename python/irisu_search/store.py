@@ -432,15 +432,22 @@ class Store:
                             (status, now, cost, ticks, settlement, job_id, token))
             self.db.execute("UPDATE jobs SET status=?,result=?,error=?,cost_seconds=cost_seconds+?,simulated_ticks=simulated_ticks+?,lease_until=NULL,updated=? WHERE id=?",
                             ("pending" if retry else status, _json(payload) if status == "done" else None, payload.get("error") if status == "failed" else None, cost, ticks, now, job_id))
+            completed_probe = status == "done" or (
+                status == "failed" and not retry and payload.get("rollout_rejected") is True)
             self.db.execute("UPDATE seeds SET search_seconds=search_seconds+?,jobs=jobs+1,attempts=attempts+? WHERE seed=?",
-                            (cost, int(row["kind"] == "bootstrap" and status == "done"), row["seed"]))
+                            (cost, int(row["kind"] == "bootstrap" and completed_probe), row["seed"]))
 
     def finish(self, job_id: str, token: str, result: dict[str, Any], cost_seconds: float = 0, simulated_ticks: int = 0) -> None:
         self._settle(job_id, token, "done", result, cost_seconds, simulated_ticks)
 
     def fail(self, job_id: str, token: str, error: str, retry: bool = False, cost_seconds: float = 0,
-             simulated_ticks: int = 0) -> None:
-        self._settle(job_id, token, "failed", {"error": str(error)}, cost_seconds, simulated_ticks, retry)
+             simulated_ticks: int = 0, *, rollout_rejected: bool = False) -> None:
+        if type(rollout_rejected) is not bool or rollout_rejected and retry:
+            raise ValueError("rollout rejection must identify a permanently exhausted probe")
+        payload = {"error": str(error)}
+        if rollout_rejected:
+            payload["rollout_rejected"] = True
+        self._settle(job_id, token, "failed", payload, cost_seconds, simulated_ticks, retry)
 
     def jobs(self, status: str | None = None) -> list[dict[str, Any]]:
         sql = "SELECT * FROM jobs" + (" WHERE status=?" if status else "") + " ORDER BY created,id"

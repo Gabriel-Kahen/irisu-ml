@@ -24,7 +24,8 @@ cmake --build build-project-exact --target irisu-search-engine irisu-game-oracle
 Build the resident CUDA service in the accelerated physics configuration:
 
 ```sh
-cmake -S . -B build-cuda-native-efficiency3
+cmake -S . -B build-cuda-native-efficiency3 \
+  -DIRISU_CUDA_NATIVE_ORCHESTRATOR_MAX_CONTACTS=4096
 cmake --build build-cuda-native-efficiency3 --target irisu-cuda-search-engine -j 2
 ```
 
@@ -37,6 +38,26 @@ with the typed host implementation; future simulation remains on the GPU. Adapti
 batches across SMs; `--threads N` overrides it for profiling. The sample campaign
 uses 128 candidates and eight live survivors, with a 512-checkpoint device pool.
 The independent native verifier remains authoritative for exported records.
+
+The resident worker's contact capacity is independent of short-horizon benchmark
+profiles: `IRISU_CUDA_NATIVE_ORCHESTRATOR_MAX_CONTACTS` defaults to4096 even when
+`IRISU_CUDA_NATIVE_MAX_CONTACTS=512`. Worker identity reports `max_contacts` and
+`checkpoint_bytes`. Dense, long continuations can exceed512 contacts; spare
+checkpoint slots do not enlarge a simulated world's contact pool.
+
+A per-candidate simulation rejection preserves healthy siblings. The worker
+returns original candidate indices, rejected input traces and physics diagnostics,
+and resets rejected slots before reuse. The coordinator stores `rollout_rejected`
+events and immutable trace blobs, excludes invalid states from checkpoints and
+training, and counts all attempted updates in the job's simulated-work ledger.
+If every candidate is rejected, that job fails and the campaign continues; a
+completed exhausted bootstrap probe counts once toward its seed's attempt budget.
+Transport, protocol and CUDA infrastructure errors still stop the run.
+
+See the [failure reproduction and recovery checks](resident-rollout-recovery.md).
+Upgrading a frozen campaign starts a new campaign directory with the new
+engine/planner identity and imports its previous best verified replay. Existing
+campaign archives and receipts retain their original provenance.
 
 The separate [GPU-first acceleration tools](../tools/cuda-native/gpu_first_README.md)
 provide wider sparse-input fanouts, GPU-prepared checkpoint banks and optional

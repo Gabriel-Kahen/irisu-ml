@@ -28,6 +28,11 @@ option(IRISU_CUDA_NATIVE_PARALLEL_PHASES "Enable optional worker-warp physics st
 option(IRISU_CUDA_NATIVE_COLLISION_CACHE "Enable optional exact device collision memoization" OFF)
 set(IRISU_CUDA_NATIVE_MAX_CONTACTS "4096" CACHE STRING "Typed World/solver contact capacity; native SAP remains 4096")
 set_property(CACHE IRISU_CUDA_NATIVE_MAX_CONTACTS PROPERTY STRINGS 512 1024 4096)
+set(IRISU_CUDA_NATIVE_ORCHESTRATOR_MAX_CONTACTS "4096" CACHE STRING "Resident search contact capacity; separate from short-horizon benchmark profiles")
+set_property(CACHE IRISU_CUDA_NATIVE_ORCHESTRATOR_MAX_CONTACTS PROPERTY STRINGS 512 1024 4096)
+if(NOT IRISU_CUDA_NATIVE_ORCHESTRATOR_MAX_CONTACTS MATCHES "^(512|1024|4096)$")
+  message(FATAL_ERROR "Resident search contact capacity must be 512, 1024 or 4096")
+endif()
 if(NOT IRISU_CUDA_NATIVE_MAX_CONTACTS MATCHES "^(512|1024|4096)$")
   message(FATAL_ERROR "Typed contact capacity must be 512, 1024 or 4096")
 endif()
@@ -47,6 +52,10 @@ if(CMAKE_CUDA_COMPILER_VERSION VERSION_GREATER_EQUAL 13 AND
 endif()
 
 function(irisu_native_cuda target source)
+  set(contact_capacity "${IRISU_CUDA_NATIVE_MAX_CONTACTS}")
+  if(ARGC GREATER 2)
+    set(contact_capacity "${ARGV2}")
+  endif()
   add_executable(${target} "${PROJECT_SOURCE_DIR}/${source}")
   set_target_properties(${target} PROPERTIES CUDA_ARCHITECTURES "${IRISU_CUDA_NATIVE_ARCHITECTURES}"
     CUDA_STANDARD 20 CUDA_STANDARD_REQUIRED YES)
@@ -74,7 +83,7 @@ function(irisu_native_cuda target source)
     IRISU_CUDA_NATIVE_PERSISTENT_SOLVER=$<BOOL:${IRISU_CUDA_NATIVE_PERSISTENT_SOLVER}>
     IRISU_CUDA_NATIVE_PARALLEL_PHASES=$<BOOL:${IRISU_CUDA_NATIVE_PARALLEL_PHASES}>
     IRISU_CUDA_NATIVE_COLLISION_CACHE=$<BOOL:${IRISU_CUDA_NATIVE_COLLISION_CACHE}>
-    IRISU_CUDA_NATIVE_MAX_CONTACTS=${IRISU_CUDA_NATIVE_MAX_CONTACTS})
+    IRISU_CUDA_NATIVE_MAX_CONTACTS=${contact_capacity})
 endfunction()
 
 irisu_native_cuda(irisu-native-collision tools/cuda-native/collision_runner.cu)
@@ -139,7 +148,7 @@ if(IRISU_BUILD_TESTS)
 endif()
 
 # Persistent orchestration service, using this build's existing numeric profile.
-irisu_native_cuda(irisu-cuda-search-engine tools/orchestrator/cuda_engine.cu)
+irisu_native_cuda(irisu-cuda-search-engine tools/orchestrator/cuda_engine.cu ${IRISU_CUDA_NATIVE_ORCHESTRATOR_MAX_CONTACTS})
 target_compile_options(irisu-cuda-search-engine PRIVATE
   "$<$<COMPILE_LANGUAGE:CUDA>:--expt-relaxed-constexpr;--Ofast-compile=${IRISU_CUDA_NATIVE_GAME_FAST_COMPILE}>")
 if(IRISU_CUDA_NATIVE_MAX_REGISTERS)
