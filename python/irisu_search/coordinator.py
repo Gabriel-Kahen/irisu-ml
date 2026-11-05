@@ -78,6 +78,7 @@ class Coordinator:
         self.verifier = verifier or NativeVerifier(config.oracle, config.oracle_library, config.engine_timeout)
         self.identity = planner_identity(engine.identity, self.verifier.identity)
         self.cache = OrderedDict()
+        self.replay_references = {}
         self.owner = f"{os.getpid()}:{uuid.uuid4().hex}"
         self.guide = None
         self.model_identity = None
@@ -142,6 +143,20 @@ class Coordinator:
             raise RuntimeError("checkpoint reconstruction disagrees with stored summary")
         self._remember(key, row["handle"])
         return row["handle"]
+
+    def _replay_inputs(self, parent, horizon):
+        baseline_id = self.store.get_meta(f"baseline:{parent['seed']}")
+        if not baseline_id:
+            return [], []
+        cached = self.replay_references.get(parent["seed"])
+        if not cached or cached[0] != baseline_id:
+            cached = (baseline_id, self.store.get_checkpoint(baseline_id)["words"])
+            self.replay_references[parent["seed"]] = cached
+        reference = cached[1]
+        tick = parent["summary"]["tick"]
+        suffix = reference[tick:tick + horizon]
+        baseline = suffix if reference[:tick] == parent["words"] else []
+        return baseline, suffix
 
     def _publish(self, parent, row, operator, cost, search_seed):
         suffix = row["words"]
@@ -273,16 +288,12 @@ class Coordinator:
                           self.config.maximum_ticks - parent["summary"]["tick"])
             if horizon < 1 or parent["summary"].get("terminated") or parent["summary"].get("truncated"):
                 break
-            baseline = []
-            baseline_id = self.store.get_meta(f"baseline:{job['seed']}")
-            if baseline_id:
-                reference = self.store.get_checkpoint(baseline_id)["words"]
-                if reference[:len(parent["words"])] == parent["words"]:
-                    baseline = reference[len(parent["words"]):len(parent["words"]) + horizon]
+            baseline, reference = self._replay_inputs(parent, horizon)
+            held = parent["words"][-1] & 3 if parent["words"] else 0
             search_seed = (payload["search_seed"] + batches) & 0xffffffff
             candidates = generate(parent["summary"], self.config.candidates * 2, search_seed,
-                                  payload.get("operator", "recruit"), baseline, horizon)
-            held = parent["words"][-1] & 3 if parent["words"] else 0
+                                  payload.get("operator", "recruit"), baseline, horizon,
+                                  reference, held)
             for c in candidates:
                 if c["mode"] and c["words"] and held & c["words"][0] & 3:
                     c["words"] = [0, *c["words"]][:horizon]

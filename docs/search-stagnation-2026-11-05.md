@@ -186,3 +186,25 @@ Owning frozen sources:
 `runtime/python/irisu_search/{scheduler,store,coordinator,proposals}.py` beneath
 the campaign's parent directory. The working-tree versions may contain fixes
 that the preserved running campaign does not use.
+
+## Follow-up implementation
+
+The follow-up adds timed replay repairs and removes the tournament gate from
+probe depth. A seed that has received `finalist_seconds` of search can receive
+an 8,192-tick probe while still classified as discovery. Actual tournament
+promotion continues to require its configured independent attempts. The sample
+worker timeout is 600 seconds to accommodate dense long batches.
+
+Reference repairs reserve bounded candidate capacity for shot suppression and
+short injections followed by the original inputs at their original absolute
+ticks. Diverged branches can continue that reference, but only an exact matching
+prefix supplies the incumbent baseline. Held-button releases preserve the timing
+of later reference inputs. Native integration checks reconstruct changed branches
+from reset and verify that the original parent remains immutable. These changes
+address the missing repair operator described above; they do not guarantee a
+record improvement.
+
+The published update also includes the previously qualified native polygon
+reference-face rounding fix and its CPU/GPU qualification receipt. The successor
+can reuse the identical qualified engine binary while recording its original
+binary source commit separately from the new planner source commit.

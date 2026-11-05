@@ -103,7 +103,12 @@ preparation, timing and continuation repair. These are candidate generators,
 not guarantees that a named goal succeeds. Exact rollout consequences decide.
 Held-button edges are preserved; injected same-button shots receive a release
 update when needed. The original replay suffix is retained as a baseline when
-its prefix matches the parent; otherwise the baseline is waiting.
+its prefix matches the parent; otherwise the baseline is waiting. A separate
+reserved repair allocation can inject or suppress a shot and then resume the
+reference inputs at their original absolute ticks. Diverged branches can also
+follow those reference inputs without being labeled incumbent; the actual
+changed-board outcome still requires independent verification. Reference recipes
+are cached by immutable checkpoint identity rather than decoded for every batch.
 
 Search returns true cumulative `chain` and `num`, live members, geometry, rot,
 hit counts and pending clear/deletion state. Per-branch group deltas survive
