@@ -17,7 +17,7 @@
   "candidates": 128,
   "survivors": 8,
   "job_seconds": 30,
-  "engine_timeout": 180,
+  "engine_timeout": 600,
   "maximum_ticks": 160000,
   "checkpoint_limit": 1024,
   "archive_bytes": 268435456,

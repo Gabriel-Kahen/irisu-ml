@@ -28,6 +28,35 @@ int main(){try{
   if(!collide(out,a,far)||out.point_count!=0||out.points[0].normal_impulse!=7||out.points[1].id!=0xdeadbeef)
     throw std::runtime_error("no-contact result lost preserved fields");
   ++checks;
+  // Seed270515404, update2942: native0x5785 rounds the SAT reference-face
+  // threshold to binary32. The separation ties that stored threshold, while
+  // retaining its binary64 sum selects the opposite face and contact IDs.
+  ShapeState first{},second{};
+  first.kind=second.kind=ShapeKind::polygon;
+  first.vertex_count=second.vertex_count=4;
+  first.position={0x1.6856c2p+4f,0x1.9a4f6ep+4f};
+  second.position={0x1.48ebecp+4f,0x1.ba1af4p+4f};
+  first.R={{0x1.f00e24p-1f,-0x1.fb1edap-3f},{0x1.fb1edap-3f,0x1.f00e24p-1f}};
+  second.R={{-0x1.eff49ap-1f,0x1.fcadecp-3f},{-0x1.fcadecp-3f,-0x1.eff49ap-1f}};
+  const Vec2 vertices[]={{-1.2f,1.2f},{-1.2f,-1.2f},{1.2f,-1.2f},{1.2f,1.2f}};
+  const Vec2 normals[]={{-1,-0.0f},{0,-1},{1,-0.0f},{0,1}};
+  for(unsigned i=0;i<4;++i){
+    first.vertices[i]=second.vertices[i]=vertices[i];
+    first.normals[i]=second.normals[i]=normals[i];
+  }
+  Manifold tied{};
+  tied.points[0].normal_impulse=7;tied.points[0].tangent_impulse=-3;
+  tied.points[1].normal_impulse=11;tied.points[1].tangent_impulse=5;
+  // Complete60-byte output from pinned native b2CollidePoly, including
+  // preserved impulse sentinels and reference/incident feature IDs.
+  const std::uint32_t expected[]={
+    0x41ab6022,0x41d15e7a,0xbb957000,0x40e00000,0xc0400000,0,
+    0x41ad4968,0x41d8d2a0,0xbbae3000,0x41300000,0x40a00000,0x00010000,
+    0xbf780712,0x3e7d8f6d,2};
+  static_assert(sizeof(expected)==sizeof(tied));
+  if(!collide(tied,first,second)||std::memcmp(&tied,expected,sizeof(tied)))
+    throw std::runtime_error("native SAT reference-face threshold rounding diverged");
+  ++checks;
   BodyDefinition bd{};ShapeDefinition sd{};BodyState body{};ShapeState shape{};
   unsigned char before_body[sizeof(body)],before_shape[sizeof(shape)];
   body.position={17,23};shape.radius=19;std::memcpy(before_body,&body,sizeof(body));std::memcpy(before_shape,&shape,sizeof(shape));sd.radius=-1;

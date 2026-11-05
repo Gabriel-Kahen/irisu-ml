@@ -81,6 +81,7 @@ class Store:
               cost_seconds REAL NOT NULL, search_seed INTEGER NOT NULL, cell TEXT NOT NULL,
               active INTEGER NOT NULL DEFAULT 1, created REAL NOT NULL);
             CREATE INDEX IF NOT EXISTS checkpoints_seed ON checkpoints(seed, active);
+            CREATE INDEX IF NOT EXISTS checkpoints_import ON checkpoints(active) WHERE operator='import';
             CREATE TABLE IF NOT EXISTS jobs(
               id TEXT PRIMARY KEY, kind TEXT NOT NULL, seed INTEGER NOT NULL REFERENCES seeds(seed),
               checkpoint_id TEXT REFERENCES checkpoints(id), payload TEXT NOT NULL,
@@ -281,6 +282,10 @@ class Store:
             if type(value) is not int or value < 1:
                 raise ValueError("archive quotas must be positive integers")
         rows = self.checkpoints(active=True)
+        # Imported branching roots remain eligible even after a temporary
+        # quota squeeze. Cold search descendants are still evidence only.
+        rows += [self._checkpoint(row) for row in self.db.execute(
+            "SELECT * FROM checkpoints WHERE active=0 AND operator='import'")]
         def rank(row: dict[str, Any]) -> tuple[Any, ...]:
             s = row["summary"]
             live = [g for g in s.get("groups", []) if g.get("members")]
@@ -309,26 +314,58 @@ class Store:
         for row in rows:
             if row["id"] in kept:
                 cells[(row["seed"], row["cell"])] += 1
+
+        def retain(row: dict[str, Any], *, baseline: bool = False) -> None:
+            nonlocal used_bytes
+            cell = (row["seed"], row["cell"])
+            if row["id"] in kept or (not baseline and cells[cell] >= per_cell):
+                return
+            if len(kept) >= max_checkpoints or used_bytes + row["trace_bytes"] > max_trace_bytes:
+                return
+            kept.add(row["id"])
+            cells[cell] += 1
+            used_bytes += row["trace_bytes"]
+
+        # Reserve replay coverage before ranking descendants. If quotas are
+        # tight, visit both ends and progressively bisect the replay instead
+        # of keeping only its highest-potential late states.
+        roots = {}
+        for seed, values in by_seed.items():
+            ordered = sorted((r for r in values if r["operator"] == "import"
+                              and not r["summary"].get("terminated")
+                              and not r["summary"].get("truncated")),
+                             key=lambda r: (r["summary"]["tick"], r["id"]))
+            indices = [len(ordered) - 1, 0] if len(ordered) > 1 else [0] if ordered else []
+            gaps = [(-len(ordered), 0, len(ordered) - 1)] if len(ordered) > 2 else []
+            while gaps:
+                _, left, right = heapq.heappop(gaps)
+                middle = (left + right) // 2
+                indices.append(middle)
+                for lo, hi in ((left, middle), (middle, right)):
+                    if hi - lo > 1:
+                        heapq.heappush(gaps, (lo - hi, lo, hi))
+            roots[seed] = [ordered[index] for index in indices]
+        for depth in range(max((len(values) for values in roots.values()), default=0)):
+            for seed in sorted(roots):
+                if depth < len(roots[seed]):
+                    retain(roots[seed][depth], baseline=True)
         # Round-robin across seeds stops one large archive consuming the entire pool.
-        pools = {seed: sorted(values, key=rank, reverse=True) for seed, values in by_seed.items()}
+        # Terminals have no continuation to explore. Keep each seed's best
+        # active and leave the remaining immutable terminal evidence cold.
+        pools = {seed: sorted((r for r in values if not r["summary"].get("terminated")),
+                              key=rank, reverse=True) for seed, values in by_seed.items()}
         for depth in range(max((len(v) for v in pools.values()), default=0)):
             for seed in sorted(pools):
                 if depth >= len(pools[seed]):
                     continue
                 row = pools[seed][depth]
-                cell = (seed, row["cell"])
-                if row["id"] in kept or cells[cell] >= per_cell:
-                    continue
-                if len(kept) >= max_checkpoints or used_bytes + row["trace_bytes"] > max_trace_bytes:
-                    continue
-                kept.add(row["id"])
-                cells[cell] += 1
-                used_bytes += row["trace_bytes"]
+                retain(row)
         with self._transaction():
             for row in rows:
-                if row["id"] not in kept:
-                    self.db.execute("UPDATE checkpoints SET active=0 WHERE id=?", (row["id"],))
-        return {"active": len(kept), "deactivated": len(rows) - len(kept), "trace_bytes": used_bytes,
+                active = row["id"] in kept
+                if row["active"] != active:
+                    self.db.execute("UPDATE checkpoints SET active=? WHERE id=?", (int(active), row["id"]))
+        return {"active": len(kept), "deactivated": sum(r["active"] and r["id"] not in kept for r in rows), "trace_bytes": used_bytes,
                 "protected": len(protected), "protected_over_budget": len(kept) > max_checkpoints or used_bytes > max_trace_bytes}
 
     def enqueue(self, kind: str, seed: int, checkpoint_id: str | None = None, payload: dict[str, Any] | None = None,

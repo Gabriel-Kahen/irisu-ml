@@ -78,6 +78,7 @@ class Coordinator:
         self.verifier = verifier or NativeVerifier(config.oracle, config.oracle_library, config.engine_timeout)
         self.identity = planner_identity(engine.identity, self.verifier.identity)
         self.cache = OrderedDict()
+        self.replay_references = {}
         self.owner = f"{os.getpid()}:{uuid.uuid4().hex}"
         self.guide = None
         self.model_identity = None
@@ -142,6 +143,20 @@ class Coordinator:
             raise RuntimeError("checkpoint reconstruction disagrees with stored summary")
         self._remember(key, row["handle"])
         return row["handle"]
+
+    def _replay_inputs(self, parent, horizon):
+        baseline_id = self.store.get_meta(f"baseline:{parent['seed']}")
+        if not baseline_id:
+            return [], []
+        cached = self.replay_references.get(parent["seed"])
+        if not cached or cached[0] != baseline_id:
+            cached = (baseline_id, self.store.get_checkpoint(baseline_id)["words"])
+            self.replay_references[parent["seed"]] = cached
+        reference = cached[1]
+        tick = parent["summary"]["tick"]
+        suffix = reference[tick:tick + horizon]
+        baseline = suffix if reference[:tick] == parent["words"] else []
+        return baseline, suffix
 
     def _publish(self, parent, row, operator, cost, search_seed):
         suffix = row["words"]
@@ -273,16 +288,12 @@ class Coordinator:
                           self.config.maximum_ticks - parent["summary"]["tick"])
             if horizon < 1 or parent["summary"].get("terminated") or parent["summary"].get("truncated"):
                 break
-            baseline = []
-            baseline_id = self.store.get_meta(f"baseline:{job['seed']}")
-            if baseline_id:
-                reference = self.store.get_checkpoint(baseline_id)["words"]
-                if reference[:len(parent["words"])] == parent["words"]:
-                    baseline = reference[len(parent["words"]):len(parent["words"]) + horizon]
+            baseline, reference = self._replay_inputs(parent, horizon)
+            held = parent["words"][-1] & 3 if parent["words"] else 0
             search_seed = (payload["search_seed"] + batches) & 0xffffffff
             candidates = generate(parent["summary"], self.config.candidates * 2, search_seed,
-                                  payload.get("operator", "recruit"), baseline, horizon)
-            held = parent["words"][-1] & 3 if parent["words"] else 0
+                                  payload.get("operator", "recruit"), baseline, horizon,
+                                  reference, held)
             for c in candidates:
                 if c["mode"] and c["words"] and held & c["words"][0] & 3:
                     c["words"] = [0, *c["words"]][:horizon]
@@ -330,7 +341,7 @@ class Coordinator:
             survivor_handles = {r["handle"] for r in survivors}
             rows = {}
             retained = []
-            terminal_ids = []
+            terminal_scores = {}
             for candidate, row in paired:
                 self.store.add_example(self._example(parent["summary"], row["summary"], candidate,
                                                      elapsed / max(1, len(results)), row.get("group_deltas", ()), row.get("metrics")))
@@ -341,11 +352,11 @@ class Coordinator:
                     if row["handle"] in survivor_handles:
                         retained.append((key, row["handle"]))
                     if row["summary"].get("terminated"):
-                        terminal_ids.append(key)
+                        terminal_scores[key] = row["summary"]["canonical_score"]
                 if row["handle"] not in survivor_handles:
                     self.engine.release([row["handle"]])
-            if terminal_ids:
-                best = max(terminal_ids, key=lambda key: self.store.get_checkpoint(key)["summary"]["canonical_score"])
+            if terminal_scores:
+                best = max(terminal_scores, key=terminal_scores.__getitem__)
                 self._verify(best)
                 observed_terminal = True
                 attempt_observed_terminal = True
@@ -358,7 +369,7 @@ class Coordinator:
                 self._remember(key, resident)
             batches += 1
             if not live:
-                self.store.set_meta(f"progress:{job['id']}", {"checkpoint_id": best if terminal_ids else parent["id"],
+                self.store.set_meta(f"progress:{job['id']}", {"checkpoint_id": best if terminal_scores else parent["id"],
                     "batches": batches, "simulated_ticks": total_ticks, "published": published,
                     "completed": True, "observed_terminal": observed_terminal})
                 break

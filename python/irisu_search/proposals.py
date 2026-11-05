@@ -60,11 +60,14 @@ def exploration_key(summary):
             min(summary.get("gauge", 0), 20000) / 20000)
 
 
-def generate(summary, count, search_seed, operator="recruit", baseline=(), horizon=384):
+def generate(summary, count, search_seed, operator="recruit", baseline=(), horizon=384,
+             reference=(), held=0):
     """Return variable-length prefixes followed by board-responsive continuation.
 
     Grouped pieces with one existing hit are not direct-shot targets. Pairing
     proposals recruit ungrouped pieces; two existing groups are never merged.
+    Reference repairs resume the original inputs at their absolute tick instead
+    of replacing the known continuation with a reactive controller.
     """
     if type(count) is not int or count < 1 or type(horizon) is not int or horizon < 1:
         raise ValueError("candidate count and horizon must be positive integers")
@@ -82,7 +85,7 @@ def generate(summary, count, search_seed, operator="recruit", baseline=(), horiz
             output.append({"mode": candidate_mode, "search_seed": rng.getrandbits(32),
                            "words": list(words), "operator": label, "horizon": horizon})
 
-    add(list(baseline[:horizon]), 0, "incumbent")
+    add(list(baseline[:horizon]), 0, "incumbent" if baseline or not reference else "wait")
     add([], mode, operator)
     add([], 0, "wait")
     bodies = sorted((b for b in summary.get("bodies", []) if not b.get("pending_delete")
@@ -138,6 +141,43 @@ def generate(summary, count, search_seed, operator="recruit", baseline=(), horiz
         output.append({"mode": rng.choice((1, 2, 3)), "search_seed": rng.getrandbits(32),
                        "words": [0] * rng.randrange(0, min(33, horizon)),
                        "operator": operator, "horizon": horizon})
+    if reference and count > 1:
+        reference = list(reference[:horizon])
+        repairs = []
+        limit = min(count - 1, max(2, math.ceil((count - 1) / 4)))
+        identities = {(0, tuple(output[0]["words"]))}
+
+        def repair(words, label):
+            identity = (0, tuple(words))
+            if identity not in identities:
+                identities.add(identity)
+                repairs.append({"mode": 0, "search_seed": rng.getrandbits(32),
+                                "words": words, "operator": label, "horizon": horizon,
+                                "replay_repair": True})
+
+        repair(reference, "replay-reference")
+        # Suppressing an existing shot is useful even when the board has no
+        # safe geometric target. Input timing after that tick stays identical.
+        for index, word in enumerate(reference):
+            if word & 3:
+                changed = reference.copy()
+                changed[index] = 0
+                repair(changed, "replay-repair")
+                break
+        for candidate in output[1:]:
+            if len(repairs) >= limit:
+                break
+            prefix = candidate["words"]
+            if not candidate["mode"] or not any(word & 3 for word in prefix):
+                continue
+            # Release an already-held button before the injected edge, without
+            # shifting the original inputs after the intervention interval.
+            if held & prefix[0] & 3:
+                prefix = [0, *prefix]
+            prefix = prefix[:horizon]
+            repair(prefix + reference[len(prefix):], "replay-repair")
+        repairs = repairs[:limit]
+        output = output[:1] + repairs + output[1:count - len(repairs)]
     return output[:count]
 
 
@@ -157,9 +197,12 @@ def select_candidates(summary, candidates, count, guide=None, exploration_fracti
     explore = min(len(remaining), max(1, math.ceil((count - 1) * exploration_fraction)))
     random_part = rng.sample(remaining, explore)
     rest = [x for x in remaining if all(x is not y for y in random_part)]
+    repair_limit = min(max(1, math.ceil((count - 1) / 4)), count - 1 - explore)
+    repairs = [x for x in rest if x.get("replay_repair")][:repair_limit]
+    rest = [x for x in rest if all(x is not y for y in repairs)]
     if guide:
         rest.sort(key=lambda x: guide.predict(summary, x)["priority"], reverse=True)
-    return fixed + rest[:max(0, count - len(fixed) - len(random_part))] + random_part
+    return fixed + repairs + rest[:max(0, count - len(fixed) - len(repairs) - len(random_part))] + random_part
 
 
 def select_survivors(results, count, guide=None, *, horizon=384, budget_seconds=30):
