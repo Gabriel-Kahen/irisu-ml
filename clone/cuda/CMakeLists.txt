@@ -7,6 +7,7 @@ endif()
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
 find_package(OpenMP COMPONENTS CXX REQUIRED)
 option(IRISU_CUDA_REGION_LOCAL_GUEST "Experimentally cache guest registers inside each region" OFF)
+option(IRISU_CUDA_FUNCTION_CALLS "Experimentally translate original functions with native device calls" OFF)
 option(IRISU_CUDA_SEPARATE_REGIONS "Compile translated regions as separate device objects" ON)
 option(IRISU_CUDA_FAST_COMPILE "Use lowest-optimization CUDA consumer builds for iteration only" OFF)
 set(IRISU_CUDA_GAME_FAST_COMPILE "mid" CACHE STRING "Game consumer device compile tradeoff: 0, min, mid, max")
@@ -65,6 +66,9 @@ if(IRISU_CUDA_EXACT_HOST)
   set(translation_options)
   if(IRISU_CUDA_REGION_LOCAL_GUEST)
     list(APPEND translation_options --region-local-guest)
+  endif()
+  if(IRISU_CUDA_FUNCTION_CALLS)
+    list(APPEND translation_options --function-calls)
   endif()
   execute_process(COMMAND "${Python3_EXECUTABLE}" "${translator}"
     "${IRISU_CUDA_EXACT_HOST}" "${generated}" ${translation_options}
@@ -126,6 +130,10 @@ if(IRISU_CUDA_EXACT_HOST)
   target_link_libraries(irisu-cuda-search PRIVATE irisu_cuda_search)
   add_executable(irisu-cuda-search-session ../../tools/cuda-exact/search_session_runner.cpp)
   target_link_libraries(irisu-cuda-search-session PRIVATE irisu_cuda_search)
+  # These C++ entry points still perform the final CUDA device link. Inherit
+  # the device architecture explicitly instead of CMake's host-wide default.
+  set_target_properties(irisu-cuda-search irisu-cuda-search-session PROPERTIES
+    CUDA_ARCHITECTURES "${IRISU_CUDA_ARCHITECTURES}")
   foreach(probe IN ITEMS irisu-cuda-physics-probe irisu-cuda-game-probe irisu-cuda-game-segments irisu_cuda_search)
     target_link_libraries(${probe} PRIVATE OpenSSL::Crypto)
     target_compile_options(${probe} PRIVATE
@@ -158,8 +166,10 @@ if(IRISU_BUILD_TESTS)
 endif()
 
 add_executable(irisu-guest-memory-validate ../../tools/cuda-exact/guest_memory_validate.cpp)
+add_executable(irisu-guest-stride-validate ../../tools/cuda-exact/guest_stride_validate.cpp)
 if(IRISU_BUILD_TESTS)
   add_test(NAME irisu-guest-memory-validate COMMAND irisu-guest-memory-validate)
+  add_test(NAME irisu-guest-stride-validate COMMAND irisu-guest-stride-validate)
 endif()
 
 if(IRISU_BUILD_TESTS)

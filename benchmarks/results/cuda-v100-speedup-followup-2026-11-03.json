@@ -1,0 +1,204 @@
+{
+  "schema": "irisu-v100-speedup-followup-final-v1",
+  "date": "2026-11-03",
+  "branch": "codex/v100-exact-backend",
+  "target": {
+    "speedup_over_best_tested_native_cpu": 5,
+    "achieved": false,
+    "decision": "gave_up_on_this_optimization_approach",
+    "further_optimization_jobs_running": false
+  },
+  "best_fixed_future_result": {
+    "workload": "512 distinct candidates, prefix 100, four future ticks each; 2,048 actual ticks, final-only trace mode on both backends.",
+    "gpu_prototype": "31 scalarized call-free functions; original-function translation, dense arenas, isolated warps",
+    "gpu_wall_median_seconds": 1.2853970849973848,
+    "cpu8_wall_median_seconds": 0.06813632099510869,
+    "gpu_slower_than_cpu_factor": 18.865079097676258,
+    "speedup_over_contemporaneous_gpu_control": 1.2406752999639672,
+    "speedup_over_original_pre_followup_gpu_median": 1.1752407902821422,
+    "original_gpu_median_seconds": 1.5106510859986884,
+    "original_baseline_receipt": {
+      "path": "benchmarks/results/cuda-search-warmed-v4-linked-512x4-2026-11-03.json",
+      "sha256": "b69e8ed359a2c84f2ab51d4bf9de0b3be046f30d39c10291cf361b4c14af5cc8"
+    },
+    "timing_contract": "One warmup pervariant/stride with fullselectedstatecompaction+continuationverification, then3 interleaved timedpairs eachstride. Every candidate/result/rankwire equals native on everyrun. Processwall includes setup/prefix/rollout/ranking/download; GPUevent phases storedseparately. Allcompilersidle, GPUexclusive. Small512x4 workload; no extrapolation to largecampaigns.",
+    "comparison_limit": "Fixed futures/results/ranking match. GPU additionally compacts selected checkpoints; fixed-future CPU workers discard child states. Separate native resident matrix retains CPU checkpoint processes.",
+    "original_baseline_comparison_scope": "Ratio against the preserved pre-followup median; this historical comparison was not freshly paired."
+  },
+  "experiments": [
+    {
+      "name": "Explicit final device-link sm70",
+      "result": "Exact parity; no useful speed gain."
+    },
+    {
+      "name": "Native function calls",
+      "result": "Qualified optional translation of 386 original functions, bounded native calls, and invalid-PC/callback/budget safety; alone no search improvement."
+    },
+    {
+      "name": "Interleaved arenas",
+      "result": "Native and full-state mapping gates pass. Packed 512x4 is 4.513x slower than matched isolated dense execution; remains optional."
+    },
+    {
+      "name": "Typed velocity solver",
+      "result": "Full post-call semantics qualified; paired 512x4 gain of 1.232x over matched control."
+    },
+    {
+      "name": "General scalar leaves",
+      "result": "210 statically admitted; 31 dynamically selected and qualified. Best paired 512x4 gain is 1.241x, still 18.865x slower than CPU."
+    },
+    {
+      "name": "Full compiler optimization",
+      "result": "Ofast0 frontend timed out at 300 seconds without an object or runtime result. Corrected mid frontend plus ptxasO3 has exact parity but is about 1.1 percent slower; not adopted."
+    },
+    {
+      "name": "Restricted Guest references",
+      "result": "No useful host speed gain; not adopted."
+    },
+    {
+      "name": "Hardware PC profiling",
+      "result": "Setup succeeds but actual sampling ends with insufficient privileges (35); zero PC records. No stall or hot-PC claims."
+    }
+  ],
+  "scalar_qualification": {
+    "static_admitted_functions": 210,
+    "selected_runtime_qualified_functions": 31,
+    "host_full_guest_budget_arena_comparisons": 75220,
+    "gpu_mixed_physics_worlds": 33,
+    "steps_each": 600,
+    "gpu_negative_fault_budget_fallback_cases": 13,
+    "resident_native_candidate_nodes": 288,
+    "warmup_selected_state_and_independent_continuation_pass": true,
+    "every_timed_candidate_result_and_rank_matches_native": true,
+    "reported_physics_kernel_registers_per_thread": 254,
+    "scope": "Valid native-engine arenas and existing admitted numeric domain. Other 179 static admissions remain unqualified. Two repeated physics trajectories plus a mixed-game lifecycle gate; no exhaustive semantic proof."
+  },
+  "native_resident_comparison": {
+    "scope": "Native exact prefix once; selected fork/COW states retained across depths; same Session-v4 results, lifecycle and selection as the supplied GPU capture. Python parity/hash work excluded from process wall timers. GPU not timed by this tool.",
+    "worker_cases": [
+      {
+        "workers": 1,
+        "median_wall_seconds": 24.280518708997988,
+        "median_prefix_ms": 2765.589169,
+        "median_branch_rollout_ms": 21449.187075,
+        "median_rank_selection_ms": 46.494312
+      },
+      {
+        "workers": 8,
+        "median_wall_seconds": 5.899568128996179,
+        "median_prefix_ms": 2769.601369,
+        "median_branch_rollout_ms": 3089.274483,
+        "median_rank_selection_ms": 27.03073
+      },
+      {
+        "workers": 16,
+        "median_wall_seconds": 4.952657654997893,
+        "median_prefix_ms": 2776.174111,
+        "median_branch_rollout_ms": 2145.880567,
+        "median_rank_selection_ms": 24.071222
+      }
+    ],
+    "historical_gpu_wall_seconds": 322.9347473430025,
+    "historical_gpu_wall_over_fastest_warmed_cpu": 65.2043346903088,
+    "fresh_paired_gpu_campaign": false,
+    "complete_packet_parity_all_12_runs": true,
+    "candidate_nodes": 3872,
+    "actual_simulated_branches": 3456,
+    "actual_simulated_ticks": 206412,
+    "verification_scope": "Every saved final-only Result/rank/selected-child/lifecycle byte matches independent native resident execution. This adds every-leaf final-result qualification to the older winner-reset verification; not a new per-tick fulltrace campaign or scalar large-campaign timing."
+  },
+  "why_stopped": [
+    "Direct calls, arena layout and compiler changes did not produce major gains.",
+    "The 31 scalar leaves improve the fixed workload modestly; eligible dynamic leaves cover 24 to 28 percent of guest blocks in the fixtures.",
+    "Remaining function calls and escaped stack addresses need substantially broader verified compiler or physics work; high register pressure already limits the scalar path.",
+    "Observed results remain far from 5x faster; no theoretical impossibility proof is claimed."
+  ],
+  "default_validation": {
+    "build_succeeded": true,
+    "cpu_ctests_passed": 13,
+    "gpu_component_ctests_passed": 2,
+    "total_ctests_passed": 15,
+    "failed": 0,
+    "function_calls_enabled_by_default": false,
+    "arena_word_stride_default": 1,
+    "production_exact_training_admitted": false,
+    "runtime_identity": {
+      "path": "artifacts/gpu-exact-speedup-20261103/final-default-identity.json",
+      "sha256": "a63df8b97e8c8214df7054b78d9daa3cf911436a7f51d71b9e63d3ec71a9bf64"
+    },
+    "runtime_identity_verified": true
+  },
+  "preservation": {
+    "original_replay": {
+      "path": "irisu-high-score-4393101.rpy",
+      "sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79"
+    },
+    "native_physics_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+    "original_record_score": 4393101,
+    "original_replay_unchanged": true,
+    "old_continuous_service": {
+      "ActiveState": "inactive",
+      "SubState": "dead",
+      "MainPID": 0
+    },
+    "remote_push_or_deployment_performed": false
+  },
+  "evidence": [
+    {
+      "path": "benchmarks/results/generic-scalar-leaf-final-probe-2026-11-03.json",
+      "sha256": "87fbe6298393dc6370a93983ab92db034f34ec4a92a72279b662c82f1e71c789"
+    },
+    {
+      "path": "benchmarks/results/typed-velocity-leaf-gpu-2026-11-03.json",
+      "sha256": "fc8522dcdb88131669e829a65abc5d4ea59d64838e1e63ac66e45caaa89b5f44"
+    },
+    {
+      "path": "benchmarks/results/cuda-function-call-translation-2026-11-03.json",
+      "sha256": "4cd166ae3017e34dc5b5fa08429a0c10869557cf35a3e15e923d0965e3a52606"
+    },
+    {
+      "path": "benchmarks/results/cuda-function-dispatch-safety-2026-11-03.json",
+      "sha256": "2be1006d6d47cd4aee405c4b50451bcb98ec385eb86d0d9322107e2f150f87e5"
+    },
+    {
+      "path": "benchmarks/results/cuda-search-stride-v100-2026-11-03.json",
+      "sha256": "4336e099db820024ff608c0bb385e2133de60de18280b715938ec3f49393dfad"
+    },
+    {
+      "path": "benchmarks/results/guest-stride-host-canaries-2026-11-03.json",
+      "sha256": "c571848c010cd0d58c50db2269c0da04521f6db4bfb49dc9278b8bef9a82e589"
+    },
+    {
+      "path": "benchmarks/results/host-restrict-regions-2026-11-03.json",
+      "sha256": "79adaf547813f9dc5042a7854cced56b0bef8ff2e2c129a16850fe659c8fb816"
+    },
+    {
+      "path": "benchmarks/results/host-game-api-phase-profile-2026-11-03.json",
+      "sha256": "52e38f866d35ddb41c954c4b1310ba9eb71a6128c9b3c1bb1fdcfe4e4e9213eb"
+    },
+    {
+      "path": "benchmarks/results/cuda-device-link-speedup-diagnosis-2026-11-03.json",
+      "sha256": "cbfb511b4247422c0b74d012125e624db41334c10d695bc9c0d8c98919f5f8b9"
+    },
+    {
+      "path": "benchmarks/results/cuda-consumer-full-opt-screen-2026-11-03.json",
+      "sha256": "f0f2454561f48ad65ab9b0b56e054197d541645d1c84ea5e731959fd0ae91a8b"
+    },
+    {
+      "path": "benchmarks/results/cuda-cupti-actual-sampling-2026-11-03.json",
+      "sha256": "4051a205d6ede252a771fc463320046a75f19772882d89d71107ce280330ace7"
+    },
+    {
+      "path": "benchmarks/results/cuda-native-resident-search-qualification-2026-11-03.json",
+      "sha256": "d26edc3552d66d91b21d9c0303b0c6730fdae6b88b798d2af7166f739f55ff88"
+    },
+    {
+      "path": "benchmarks/results/cuda-native-resident-warmed-final-v4-2026-11-03.json",
+      "sha256": "abe96172ac678c42172c6b8d9f1c4ee6afcc42b83c3a9a8638ffa72d6421d6b4"
+    },
+    {
+      "path": "benchmarks/results/cuda-default-final-validation-2026-11-03.json",
+      "sha256": "57fccc755d6031022a5454c5f4f19f55f313f0dd26cc765dba09dd3435a899ea"
+    }
+  ],
+  "guide": "docs/cuda-exact.md"
+}

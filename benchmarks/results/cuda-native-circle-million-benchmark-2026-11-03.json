@@ -1,0 +1,564 @@
+{
+  "schema": "irisu-native-circle-stage-benchmark-v1",
+  "promotion_eligible": false,
+  "scope": "Circle narrow phase only; exact pinned original native ELF32 functions, persistent CPU pthread workers with PC53 per thread, and new typed CUDA. No world/game/search speed claim.",
+  "timing_contract": {
+    "process": "One process warmup then timed process repeats; startup, input parse/preparation, native pin or CUDA init, all stage warmups/repeats, last full output and cleanup included. Python comparison/hashing excluded.",
+    "stage": "Native timer includes barrier dispatch, fresh60Bmanifold input and actual original function; native76Bshape inputs prepared before stage timer. GPU kernel includes geometry adapter, fresh60Bmanifold and typed function; CUDA allocation/transfers excluded from kernel event samples. Native shape immutability checked by the separate authoritative oracle outside all process timers.",
+    "stage_warmups": 1,
+    "stage_repeats": 7,
+    "process_warmups": 1,
+    "process_repeats": 3
+  },
+  "corpus": {
+    "seed": 661003,
+    "random_cases": 999916,
+    "cases": 1000000,
+    "generator": "circle-float-boundaries-v1"
+  },
+  "inputs_sha256": {
+    "cases": "d084628fe85330fb6b64ea5a9ad8689c6e4b586be28d76aadaec3768c407648b",
+    "native_library": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+    "oracle": "8f8c7c1c92532c7ceeeb3c5cb8bde49ae27772df7584294939339886f1af3a4c",
+    "native_benchmark": "425fec304b297333de06cb2e54f049c2db1a1eaeffa4b103ae965901fb075a2f",
+    "gpu_runner": "6ab4485c960bda84aea3ea4d23effeffe35723b578be0b7ef78bf9a8116fa800"
+  },
+  "native_reference_metadata": "{\"identity\":\"experimental-native-circle-stage-v1\",\"native_sha256\":\"ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5\",\"cases\":1000000,\"contacts\":624583,\"disjoint\":375417,\"shape_mutation_errors\":0,\"manifold_bytes\":60}\n",
+  "native_result_sha256": "16c06490ac278657748615f67eeb53b232c36cf17df047b56b1bf74c673f13cf",
+  "sentinel_check": {
+    "disjoint": 375417,
+    "contact": 624583,
+    "unused_second_points_and_warm_impulses_preserved": true
+  },
+  "cases": [
+    {
+      "backend": "native-cpu",
+      "threads": 1,
+      "command": [
+        "artifacts/cuda-native-20261103/benchmark-collision",
+        ".local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+        "artifacts/cuda-native-20261103/circle-million-benchmark.cases.bin",
+        "--threads",
+        "1",
+        "--warmups",
+        "1",
+        "--repeats",
+        "7"
+      ],
+      "warmups": [
+        {
+          "wall_seconds": 0.3300853710024967,
+          "metadata": {
+            "schema": "irisu-native-circle-benchmark-v1",
+            "backend": "native-elf32",
+            "threads": 1,
+            "cases": 1000000,
+            "contacts": 624583,
+            "warmups": 1,
+            "repeats": 7,
+            "median_stage_ms": 24.317119993,
+            "elapsed_before_stdout_ms": 263.424683005,
+            "samples_ms": [
+              24.209846996,
+              24.131438002,
+              24.576092996,
+              24.377025001,
+              24.330566004,
+              24.317119993,
+              24.282073997
+            ]
+          },
+          "result_sha256": "16c06490ac278657748615f67eeb53b232c36cf17df047b56b1bf74c673f13cf",
+          "full_manifold_parity": true
+        }
+      ],
+      "runs": [
+        {
+          "wall_seconds": 0.32947652499569813,
+          "metadata": {
+            "schema": "irisu-native-circle-benchmark-v1",
+            "backend": "native-elf32",
+            "threads": 1,
+            "cases": 1000000,
+            "contacts": 624583,
+            "warmups": 1,
+            "repeats": 7,
+            "median_stage_ms": 24.246817,
+            "elapsed_before_stdout_ms": 262.743069001,
+            "samples_ms": [
+              24.245525002,
+              24.259250998,
+              24.256555997,
+              24.246817,
+              24.168559,
+              24.113033004,
+              24.286122002
+            ]
+          },
+          "result_sha256": "16c06490ac278657748615f67eeb53b232c36cf17df047b56b1bf74c673f13cf",
+          "full_manifold_parity": true
+        },
+        {
+          "wall_seconds": 0.33168028100044467,
+          "metadata": {
+            "schema": "irisu-native-circle-benchmark-v1",
+            "backend": "native-elf32",
+            "threads": 1,
+            "cases": 1000000,
+            "contacts": 624583,
+            "warmups": 1,
+            "repeats": 7,
+            "median_stage_ms": 24.295639999,
+            "elapsed_before_stdout_ms": 265.033629,
+            "samples_ms": [
+              24.201512001,
+              24.295639999,
+              24.295700006,
+              24.254542001,
+              24.404106006,
+              24.315368004,
+              24.200419001
+            ]
+          },
+          "result_sha256": "16c06490ac278657748615f67eeb53b232c36cf17df047b56b1bf74c673f13cf",
+          "full_manifold_parity": true
+        },
+        {
+          "wall_seconds": 0.33702119199733716,
+          "metadata": {
+            "schema": "irisu-native-circle-benchmark-v1",
+            "backend": "native-elf32",
+            "threads": 1,
+            "cases": 1000000,
+            "contacts": 624583,
+            "warmups": 1,
+            "repeats": 7,
+            "median_stage_ms": 24.470592,
+            "elapsed_before_stdout_ms": 267.903857999,
+            "samples_ms": [
+              24.470592,
+              24.534412995,
+              24.995699994,
+              24.461776003,
+              24.439864002,
+              24.670481004,
+              24.361395001
+            ]
+          },
+          "result_sha256": "16c06490ac278657748615f67eeb53b232c36cf17df047b56b1bf74c673f13cf",
+          "full_manifold_parity": true
+        }
+      ],
+      "median_wall_seconds": 0.33168028100044467,
+      "median_stage_ms": 24.295639999
+    },
+    {
+      "backend": "native-cpu",
+      "threads": 8,
+      "command": [
+        "artifacts/cuda-native-20261103/benchmark-collision",
+        ".local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+        "artifacts/cuda-native-20261103/circle-million-benchmark.cases.bin",
+        "--threads",
+        "8",
+        "--warmups",
+        "1",
+        "--repeats",
+        "7"
+      ],
+      "warmups": [
+        {
+          "wall_seconds": 0.21637297699635383,
+          "metadata": {
+            "schema": "irisu-native-circle-benchmark-v1",
+            "backend": "native-elf32",
+            "threads": 8,
+            "cases": 1000000,
+            "contacts": 624583,
+            "warmups": 1,
+            "repeats": 7,
+            "median_stage_ms": 9.857536994,
+            "elapsed_before_stdout_ms": 147.724955,
+            "samples_ms": [
+              9.857536994,
+              9.463537998,
+              9.621537998,
+              10.356834002,
+              10.587101996,
+              10.419003002,
+              9.655142002
+            ]
+          },
+          "result_sha256": "16c06490ac278657748615f67eeb53b232c36cf17df047b56b1bf74c673f13cf",
+          "full_manifold_parity": true
+        }
+      ],
+      "runs": [
+        {
+          "wall_seconds": 0.2258700299935299,
+          "metadata": {
+            "schema": "irisu-native-circle-benchmark-v1",
+            "backend": "native-elf32",
+            "threads": 8,
+            "cases": 1000000,
+            "contacts": 624583,
+            "warmups": 1,
+            "repeats": 7,
+            "median_stage_ms": 10.439420998,
+            "elapsed_before_stdout_ms": 153.851117,
+            "samples_ms": [
+              10.734751999,
+              10.439420998,
+              10.717981003,
+              10.501538999,
+              10.015565999,
+              9.497783996,
+              10.060591996
+            ]
+          },
+          "result_sha256": "16c06490ac278657748615f67eeb53b232c36cf17df047b56b1bf74c673f13cf",
+          "full_manifold_parity": true
+        },
+        {
+          "wall_seconds": 0.22259943999961251,
+          "metadata": {
+            "schema": "irisu-native-circle-benchmark-v1",
+            "backend": "native-elf32",
+            "threads": 8,
+            "cases": 1000000,
+            "contacts": 624583,
+            "warmups": 1,
+            "repeats": 7,
+            "median_stage_ms": 10.089557,
+            "elapsed_before_stdout_ms": 154.868289001,
+            "samples_ms": [
+              10.089557,
+              10.689366005,
+              10.645793006,
+              10.079357997,
+              9.933410004,
+              9.884987995,
+              10.478235006
+            ]
+          },
+          "result_sha256": "16c06490ac278657748615f67eeb53b232c36cf17df047b56b1bf74c673f13cf",
+          "full_manifold_parity": true
+        },
+        {
+          "wall_seconds": 0.21695530400029384,
+          "metadata": {
+            "schema": "irisu-native-circle-benchmark-v1",
+            "backend": "native-elf32",
+            "threads": 8,
+            "cases": 1000000,
+            "contacts": 624583,
+            "warmups": 1,
+            "repeats": 7,
+            "median_stage_ms": 9.372054003,
+            "elapsed_before_stdout_ms": 145.275355004,
+            "samples_ms": [
+              9.726507001,
+              9.433100998,
+              9.443029001,
+              9.349081002,
+              9.337247998,
+              9.199036002,
+              9.372054003
+            ]
+          },
+          "result_sha256": "16c06490ac278657748615f67eeb53b232c36cf17df047b56b1bf74c673f13cf",
+          "full_manifold_parity": true
+        }
+      ],
+      "median_wall_seconds": 0.22259943999961251,
+      "median_stage_ms": 10.089557
+    },
+    {
+      "backend": "native-cpu",
+      "threads": 16,
+      "command": [
+        "artifacts/cuda-native-20261103/benchmark-collision",
+        ".local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+        "artifacts/cuda-native-20261103/circle-million-benchmark.cases.bin",
+        "--threads",
+        "16",
+        "--warmups",
+        "1",
+        "--repeats",
+        "7"
+      ],
+      "warmups": [
+        {
+          "wall_seconds": 0.21765819899883354,
+          "metadata": {
+            "schema": "irisu-native-circle-benchmark-v1",
+            "backend": "native-elf32",
+            "threads": 16,
+            "cases": 1000000,
+            "contacts": 624583,
+            "warmups": 1,
+            "repeats": 7,
+            "median_stage_ms": 9.989457004,
+            "elapsed_before_stdout_ms": 149.257434994,
+            "samples_ms": [
+              9.761032999,
+              10.215727001,
+              9.989457004,
+              10.140313007,
+              9.811649002,
+              9.944542006,
+              10.062155001
+            ]
+          },
+          "result_sha256": "16c06490ac278657748615f67eeb53b232c36cf17df047b56b1bf74c673f13cf",
+          "full_manifold_parity": true
+        }
+      ],
+      "runs": [
+        {
+          "wall_seconds": 0.2201601899942034,
+          "metadata": {
+            "schema": "irisu-native-circle-benchmark-v1",
+            "backend": "native-elf32",
+            "threads": 16,
+            "cases": 1000000,
+            "contacts": 624583,
+            "warmups": 1,
+            "repeats": 7,
+            "median_stage_ms": 9.941707,
+            "elapsed_before_stdout_ms": 150.899384998,
+            "samples_ms": [
+              9.744291998,
+              9.792203002,
+              9.779268004,
+              9.941707,
+              10.184588,
+              10.138048999,
+              10.110115997
+            ]
+          },
+          "result_sha256": "16c06490ac278657748615f67eeb53b232c36cf17df047b56b1bf74c673f13cf",
+          "full_manifold_parity": true
+        },
+        {
+          "wall_seconds": 0.23258254699612735,
+          "metadata": {
+            "schema": "irisu-native-circle-benchmark-v1",
+            "backend": "native-elf32",
+            "threads": 16,
+            "cases": 1000000,
+            "contacts": 624583,
+            "warmups": 1,
+            "repeats": 7,
+            "median_stage_ms": 10.161444001,
+            "elapsed_before_stdout_ms": 151.844810002,
+            "samples_ms": [
+              9.866803996,
+              10.088124998,
+              10.161444001,
+              10.093945995,
+              10.390940003,
+              10.518472001,
+              10.391270004
+            ]
+          },
+          "result_sha256": "16c06490ac278657748615f67eeb53b232c36cf17df047b56b1bf74c673f13cf",
+          "full_manifold_parity": true
+        },
+        {
+          "wall_seconds": 0.21841506700002356,
+          "metadata": {
+            "schema": "irisu-native-circle-benchmark-v1",
+            "backend": "native-elf32",
+            "threads": 16,
+            "cases": 1000000,
+            "contacts": 624583,
+            "warmups": 1,
+            "repeats": 7,
+            "median_stage_ms": 10.180500001,
+            "elapsed_before_stdout_ms": 152.041132003,
+            "samples_ms": [
+              10.944430001,
+              10.260832004,
+              10.239251003,
+              10.165651999,
+              10.108332999,
+              10.180500001,
+              9.904084995
+            ]
+          },
+          "result_sha256": "16c06490ac278657748615f67eeb53b232c36cf17df047b56b1bf74c673f13cf",
+          "full_manifold_parity": true
+        }
+      ],
+      "median_wall_seconds": 0.2201601899942034,
+      "median_stage_ms": 10.161444001
+    },
+    {
+      "backend": "cuda",
+      "threads": 128,
+      "command": [
+        "build-cuda-native/clone/cuda_native/irisu-native-collision",
+        "artifacts/cuda-native-20261103/circle-million-benchmark.cases.bin",
+        "--gpu",
+        "--threads",
+        "128",
+        "--warmups",
+        "1",
+        "--repeats",
+        "7"
+      ],
+      "warmups": [
+        {
+          "wall_seconds": 0.26585083400277654,
+          "metadata": {
+            "schema": "irisu-native-collision-stage-v1",
+            "backend": "cuda",
+            "scope": "collision stage only",
+            "cases": 1000000,
+            "contacts": 624583,
+            "rejected": 0,
+            "warmups": 1,
+            "repeats": 7,
+            "median_stage_ms": 2.427903891,
+            "elapsed_before_stdout_ms": 149.336917,
+            "registers": 42,
+            "local_bytes": 0,
+            "promotion_eligible": false,
+            "samples_ms": [
+              2.420736074,
+              2.445312023,
+              2.412544012,
+              2.427903891,
+              2.445312023,
+              2.43302393,
+              2.392064095
+            ]
+          },
+          "result_sha256": "16c06490ac278657748615f67eeb53b232c36cf17df047b56b1bf74c673f13cf",
+          "full_manifold_parity": true
+        }
+      ],
+      "runs": [
+        {
+          "wall_seconds": 0.2386017559983884,
+          "metadata": {
+            "schema": "irisu-native-collision-stage-v1",
+            "backend": "cuda",
+            "scope": "collision stage only",
+            "cases": 1000000,
+            "contacts": 624583,
+            "rejected": 0,
+            "warmups": 1,
+            "repeats": 7,
+            "median_stage_ms": 2.449408054,
+            "elapsed_before_stdout_ms": 140.339494,
+            "registers": 42,
+            "local_bytes": 0,
+            "promotion_eligible": false,
+            "samples_ms": [
+              2.383872032,
+              2.449408054,
+              2.444288015,
+              2.446336031,
+              2.512896061,
+              2.532351971,
+              2.534399986
+            ]
+          },
+          "result_sha256": "16c06490ac278657748615f67eeb53b232c36cf17df047b56b1bf74c673f13cf",
+          "full_manifold_parity": true
+        },
+        {
+          "wall_seconds": 0.23230794600385707,
+          "metadata": {
+            "schema": "irisu-native-collision-stage-v1",
+            "backend": "cuda",
+            "scope": "collision stage only",
+            "cases": 1000000,
+            "contacts": 624583,
+            "rejected": 0,
+            "warmups": 1,
+            "repeats": 7,
+            "median_stage_ms": 2.388992071,
+            "elapsed_before_stdout_ms": 140.091173,
+            "registers": 42,
+            "local_bytes": 0,
+            "promotion_eligible": false,
+            "samples_ms": [
+              2.371583939,
+              2.399231911,
+              2.367487907,
+              2.39411211,
+              2.365439892,
+              2.388992071,
+              2.393088102
+            ]
+          },
+          "result_sha256": "16c06490ac278657748615f67eeb53b232c36cf17df047b56b1bf74c673f13cf",
+          "full_manifold_parity": true
+        },
+        {
+          "wall_seconds": 0.2356280010062619,
+          "metadata": {
+            "schema": "irisu-native-collision-stage-v1",
+            "backend": "cuda",
+            "scope": "collision stage only",
+            "cases": 1000000,
+            "contacts": 624583,
+            "rejected": 0,
+            "warmups": 1,
+            "repeats": 7,
+            "median_stage_ms": 2.397216082,
+            "elapsed_before_stdout_ms": 141.062347,
+            "registers": 42,
+            "local_bytes": 0,
+            "promotion_eligible": false,
+            "samples_ms": [
+              2.397216082,
+              2.405375957,
+              2.431999922,
+              2.360320091,
+              2.401279926,
+              2.362368107,
+              2.372575998
+            ]
+          },
+          "result_sha256": "16c06490ac278657748615f67eeb53b232c36cf17df047b56b1bf74c673f13cf",
+          "full_manifold_parity": true
+        }
+      ],
+      "median_wall_seconds": 0.2356280010062619,
+      "median_stage_ms": 2.397216082
+    }
+  ],
+  "fastest_cpu_stage_ms_divided_by_gpu_stage_ms": 4.208864222028025,
+  "fastest_cpu_wall_divided_by_gpu_wall": 0.9343549538000475,
+  "native_library_unchanged": true,
+  "summary": {
+    "fastest_native_stage_threads": 8,
+    "fastest_native_stage_ms": 10.089557,
+    "gpu_stage_ms": 2.397216082,
+    "gpu_stage_advantage": 4.208864222028025,
+    "fastest_native_wall_threads": 16,
+    "fastest_native_wall_seconds": 0.2201601899942034,
+    "gpu_wall_seconds": 0.2356280010062619,
+    "gpu_wall_divided_by_fastest_native_wall": 1.0702570751436296
+  },
+  "all_16_process_outputs_full_native_parity": true,
+  "native_library_pin_after": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+  "hardware_at_report": "Tesla V100-PCIE-32GB, GPU-190591ef-22de-5bc4-0ba4-35864ecab28a, 580.178.04, 250.00 W",
+  "build_contract": {
+    "native": "gcc -m32 -std=c11 -O3 -fno-fast-math -ffp-contract=off tools/cuda-native/benchmark_collision.c -lcrypto -ldl -lpthread; measured arithmetic executes the original pinned DSO",
+    "gpu": "CUDA12.9 sm70 target; --fmad=false --ftz=false --prec-div=true --prec-sqrt=true; CMake flags in clone/cuda_native/CMakeLists.txt; actual binary hash recorded above"
+  },
+  "source_sha256_at_report": {
+    "tools/cuda-native/benchmark_collision.c": "c18db4aa51133fcc091075ab35706d45ba743a06ac94440b6498c90046b98e37",
+    "tools/cuda-native/benchmark_collision.py": "98e2b17789d1a814d20c0b3d672922b0e523332ebe1d704ce910af8141ede99f",
+    "tools/cuda-native/oracle_collision.py": "7ae023ca919580fe850f165c258d6c21fdff566432a1477e38e346c39746beae",
+    "tools/cuda-native/collision_runner.cu": "a1e11d37b827840175621fb007ad9716a2675db37140d36007240a1a04907dc6",
+    "clone/cuda_native/collision.hpp": "38c8578f0ac64bf1ed2e2c3ae8f22e967a1ca992bad25e3ee85ec733d3008fa6",
+    "clone/cuda_native/solver_math.hpp": "8463aa8ab69d9af2f72b6fafee0ae378b3a7e00d8c6afd721bda7ee1902cb939"
+  },
+  "conclusion": "Actual pinned native circle function versus typed CUDA, all1,000,000manifolds exact: GPU4.21x stage advantage over fastest tested nativeCPU8; complete microbenchmark processwall~7.0%slower than nativeCPU16. This is a circle-stage ceiling measurement, not complete world/game/search performance or admission."
+}

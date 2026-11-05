@@ -1,0 +1,126 @@
+{
+  "schema": "irisu-div-store-qualification-v1",
+  "default_enabled": false,
+  "source_pins": {
+    "clone/cuda_native/solver_math.hpp": "00a60a423289d27bdb6f15ad8dc89490b60bfdd5f5bf9618b62851778d29d597",
+    "clone/cuda_native/solver.hpp": "b18dbf0356d32fe798be74ab9e62bb34747064554ee9bbe983e6f3ce0ce05e60",
+    "clone/cuda_native/solver_hot.hpp": "0e6c7ef47b7d44f5781e7008bc0142230d7157a327958b225df47a28f8fca7cc",
+    "clone/cuda_native/factory.hpp": "3c230baf957136a21ab59ffa724b3930b7150b378bc3033658b5e5f16cb01a58",
+    "clone/cuda_native/collision.hpp": "b9bdef3922ad4aafedef08df0d56d724958f9228f09a84ae1da4d25702863d32",
+    "clone/cuda_native/broadphase.hpp": "393c0c989fb1e04b7a2d315f5b5e13b0cf95d47a0ffd3e10bd81f990fa0bb96f",
+    "clone/cuda_native/game_adapter.cuh": "3d37a29ed1dfaa4a4481a37f47e276efe9af2b383a6c5138514cbd2da426ca0f",
+    "tools/cuda-native/div_store_validate.cu": "0a827c41b828920b32c9a9260a15727adc082d22df9060b5fb170aaf3e491d8a",
+    "tools/cuda-native/div_store_contract.md": "f24c6dc1573ea98badbdf9c95344b01c070dd357a907ff4a131944985c9a6cf4"
+  },
+  "rewritten_adjacent_sites": 27,
+  "host_numeric": {
+    "path": "artifacts/gpu-efficiency2-20261104/div-store-host.json",
+    "sha256": "a51d4ac2b8d4e558464e8aa7d90b417665094ce070d9a72284cb54f9e6be3abb",
+    "result": {
+      "schema": "irisu-f32-div-store-qualifier-v1",
+      "passed": true,
+      "backend": "host",
+      "random_pairs": 1000000,
+      "boundary_pairs": 1183744,
+      "pairs": 2183744,
+      "comparisons": 2216544,
+      "mismatches": 0,
+      "status_mismatches": 0,
+      "accepted_bit_mismatches": 0,
+      "rejected_bit_differences": 0,
+      "first": 18446744073709551615,
+      "a_bits": 0,
+      "b_bits": 0,
+      "kind": 0,
+      "expected_bits": 0,
+      "actual_bits": 0,
+      "expected_status": 0,
+      "actual_status": 0,
+      "scope": "Adjacent F32 quotients and exact integral numerators; checked generic fallbacks, all statuses, accepted result bits; no native-world or performance admission"
+    }
+  },
+  "gpu_numeric": {
+    "path": "artifacts/gpu-efficiency2-20261104/div-gpu.json",
+    "sha256": "ddfe672caae3400a32a798417dbfb09990f6adc36ff0d599dcbc8452b9f5bcae",
+    "result": {
+      "schema": "irisu-f32-div-store-qualifier-v1",
+      "passed": true,
+      "backend": "cuda",
+      "random_pairs": 1000000,
+      "boundary_pairs": 1183744,
+      "pairs": 2183744,
+      "comparisons": 2216544,
+      "mismatches": 0,
+      "status_mismatches": 0,
+      "accepted_bit_mismatches": 0,
+      "rejected_bit_differences": 0,
+      "first": 18446744073709551615,
+      "a_bits": 0,
+      "b_bits": 0,
+      "kind": 0,
+      "expected_bits": 0,
+      "actual_bits": 0,
+      "expected_status": 0,
+      "actual_status": 0,
+      "scope": "Adjacent F32 quotients and exact integral numerators; checked generic fallbacks, all statuses, accepted result bits; no native-world or performance admission"
+    }
+  },
+  "host_full_record": {
+    "path": "artifacts/gpu-efficiency2-20261104/div-game-host-qualified.json",
+    "sha256": "20ee5ed0ad327fa515ec61507a35ca1cb0963a48c875c640a50fe63321775116",
+    "result": {
+      "passed": true,
+      "steps": 97219,
+      "frames": 97220,
+      "bytes": 9333120,
+      "output_sha256": "9d972bbf361cfa58de555891ebcf96d2cd7b109839bc00868079d60aa03577ed",
+      "native_reference": "artifacts/gpu-efficiency-20261104/final-full-game.native.frames.bin",
+      "native_reference_sha256": "9d972bbf361cfa58de555891ebcf96d2cd7b109839bc00868079d60aa03577ed",
+      "metadata": {
+        "backend": "typed-host-full-game",
+        "steps": 97219,
+        "tick": 97219,
+        "failed": false,
+        "physics_status": 0,
+        "live_score": 4393699,
+        "recorded_final_score": 4393101,
+        "level": 100,
+        "chain": 70,
+        "clone_verified": false,
+        "kernel_ms_including_frame_hashes": 0.0,
+        "elapsed_seconds": 8.863153116,
+        "world_bytes": 582480,
+        "scene_bytes": 507032,
+        "guest_calls": 0,
+        "fallback_calls": 0
+      },
+      "max_contacts": 512,
+      "f32_div_store": true,
+      "fallback_calls": 0,
+      "scope": "Actual complete native frame packet equality for checked host with new adjacent F32 division stores; not GPU timing"
+    }
+  },
+  "host_interleaved_stage": {
+    "path": "artifacts/gpu-efficiency2-20261104/solver-interleaved-div-host.json",
+    "sha256": "ad66201320216c5cd953de2e6128050d003a2db6e85dd35c704dca99db404212",
+    "result": {
+      "schema": "irisu-interleaved-solver-qualifier-v1",
+      "passed": true,
+      "backend": "host",
+      "cases": 152,
+      "native_captured_cases": 96,
+      "iterations": 8,
+      "rejections": 56,
+      "mismatches": 0,
+      "body_capacity": 32,
+      "constraint_capacity": 64,
+      "full_body_and_constraint_bytes_compared": true,
+      "native_oracle_directly_compared": false,
+      "scope": "Temporary layout versus unchanged solver stages on native-captured and numeric failure inputs; no rollout performance claim"
+    }
+  },
+  "pending_for_profile_admission": [
+    "GPU complete-game/scene/memory qualification with flag enabled"
+  ],
+  "performance_claim": "No incremental speed claim; root owns matched end-to-end evidence."
+}

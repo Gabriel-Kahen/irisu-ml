@@ -1,0 +1,297 @@
+{
+  "schema": "irisu-cupti-actual-pc-sampling-attempt-v1",
+  "promotion_eligible": false,
+  "scope": "One actual complete512x4 search on preserved explicit-sm70-linked v4 binary. Diagnostic instrumentation wall time is not a benchmark.",
+  "conclusion": "CUPTI dedicated PC sampling setup succeeds but actual collection teardown returns CUPTI_ERROR_INSUFFICIENT_PRIVILEGES35; zero PC records collected. No stall/hot-function findings can be inferred. Nonadmin tracing capability remains separate.",
+  "usable_pc_records": 0,
+  "raw_log_sha256": "53ccf7686c21932fdc008543debd819b232493f65bbd7ecf65de0ee0da93312d",
+  "capture": {
+    "command": [
+      "artifacts/gpu-exact-speedup-20261103/device-link/irisu-cuda-search-linked-sm70",
+      "build-project-cuda/clone/cuda/generated/guest_image.bin",
+      "irisu-high-score-4393101.rpy",
+      "benchmarks/results/cuda-search-warmed-v4-linked-512x4-2026-11-03.specs.bin",
+      "100",
+      "4",
+      "1",
+      "1",
+      "4393102",
+      "--host-prefix",
+      "--isolated-warps",
+      "--final-only",
+      "--block-threads",
+      "128",
+      "--stack-kib",
+      "16",
+      "--skip-compaction-check"
+    ],
+    "environment": {
+      "CUDA_INJECTION64_PATH": "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-speedup-20261103/libirisu-cupti-pc.so",
+      "IRISU_CUPTI_OUTPUT": "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-speedup-20261103/baseline-512x4-pcs.jsonl"
+    },
+    "returncode": 0,
+    "wall_seconds": 1.655215313003282,
+    "stderr": "{\"identity\":\"experimental-cuda-game-search-v2\",\"promotion_eligible\":false,\"candidates\":512,\"prefix_ticks\":100,\"horizon\":4,\"simulated_ticks\":2048,\"failed_candidates\":0,\"trace_every_tick\":false,\"cache_guest\":true,\"block_threads\":128,\"stack_kib\":16,\"host_prefix\":true,\"host_prefix_ms\":146.426087000,\"prefix_ms\":56.581825256,\"branch_ms\":4.540383816,\"rollout_ms\":1252.224975586,\"rank_compact_ms\":2.353152037,\"validation_ms\":0.002048000,\"compaction_check_enabled\":false,\"total_ms\":1591.004320000,\"allocated_bytes\":839104544,\"peak_guest_bytes\":359392,\"compaction_errors\":0,\"winner\":0}\n",
+    "result_sha256": "f1c22a7da492f250ae1c3af02968d6091912d22859d12c6c5a978520cf32767f",
+    "exact_native_parity": true
+  },
+  "api_rows": [
+    {
+      "kind": "api",
+      "api": "cuptiSubscribe",
+      "status": 0,
+      "message": "CUPTI_SUCCESS"
+    },
+    {
+      "kind": "api",
+      "api": "cuptiEnableDomain(resource)",
+      "status": 0,
+      "message": "CUPTI_SUCCESS"
+    },
+    {
+      "kind": "api",
+      "api": "cuptiPCSamplingEnable",
+      "status": 0,
+      "message": "CUPTI_SUCCESS"
+    },
+    {
+      "kind": "api",
+      "api": "cuptiPCSamplingGetNumStallReasons",
+      "status": 0,
+      "message": "CUPTI_SUCCESS"
+    },
+    {
+      "kind": "api",
+      "api": "cuptiPCSamplingGetStallReasons",
+      "status": 0,
+      "message": "CUPTI_SUCCESS"
+    },
+    {
+      "kind": "stall",
+      "index": 37,
+      "name": "smsp__pcsamp_warps_issue_stalled_wait_not_issued"
+    },
+    {
+      "kind": "stall",
+      "index": 36,
+      "name": "smsp__pcsamp_warps_issue_stalled_wait"
+    },
+    {
+      "kind": "stall",
+      "index": 35,
+      "name": "smsp__pcsamp_warps_issue_stalled_tex_throttle_not_issued"
+    },
+    {
+      "kind": "stall",
+      "index": 33,
+      "name": "smsp__pcsamp_warps_issue_stalled_sleeping_not_issued"
+    },
+    {
+      "kind": "stall",
+      "index": 31,
+      "name": "smsp__pcsamp_warps_issue_stalled_short_scoreboard_not_issued"
+    },
+    {
+      "kind": "stall",
+      "index": 30,
+      "name": "smsp__pcsamp_warps_issue_stalled_short_scoreboard"
+    },
+    {
+      "kind": "stall",
+      "index": 10,
+      "name": "smsp__pcsamp_warps_issue_stalled_imc_miss"
+    },
+    {
+      "kind": "stall",
+      "index": 12,
+      "name": "smsp__pcsamp_warps_issue_stalled_lg_throttle"
+    },
+    {
+      "kind": "stall",
+      "index": 8,
+      "name": "smsp__pcsamp_warps_issue_stalled_drain"
+    },
+    {
+      "kind": "stall",
+      "index": 14,
+      "name": "smsp__pcsamp_warps_issue_stalled_long_scoreboard"
+    },
+    {
+      "kind": "stall",
+      "index": 7,
+      "name": "smsp__pcsamp_warps_issue_stalled_dispatch_stall_not_issued"
+    },
+    {
+      "kind": "stall",
+      "index": 6,
+      "name": "smsp__pcsamp_warps_issue_stalled_dispatch_stall"
+    },
+    {
+      "kind": "stall",
+      "index": 19,
+      "name": "smsp__pcsamp_warps_issue_stalled_membar_not_issued"
+    },
+    {
+      "kind": "stall",
+      "index": 4,
+      "name": "smsp__pcsamp_warps_issue_stalled_branch_resolving"
+    },
+    {
+      "kind": "stall",
+      "index": 5,
+      "name": "smsp__pcsamp_warps_issue_stalled_branch_resolving_not_issued"
+    },
+    {
+      "kind": "stall",
+      "index": 11,
+      "name": "smsp__pcsamp_warps_issue_stalled_imc_miss_not_issued"
+    },
+    {
+      "kind": "stall",
+      "index": 0,
+      "name": "smsp__pcsamp_sample_count"
+    },
+    {
+      "kind": "stall",
+      "index": 2,
+      "name": "smsp__pcsamp_warps_issue_stalled_barrier"
+    },
+    {
+      "kind": "stall",
+      "index": 34,
+      "name": "smsp__pcsamp_warps_issue_stalled_tex_throttle"
+    },
+    {
+      "kind": "stall",
+      "index": 15,
+      "name": "smsp__pcsamp_warps_issue_stalled_long_scoreboard_not_issued"
+    },
+    {
+      "kind": "stall",
+      "index": 1,
+      "name": "smsp__pcsamp_samples_data_dropped"
+    },
+    {
+      "kind": "stall",
+      "index": 25,
+      "name": "smsp__pcsamp_warps_issue_stalled_no_instructions_not_issued"
+    },
+    {
+      "kind": "stall",
+      "index": 3,
+      "name": "smsp__pcsamp_warps_issue_stalled_barrier_not_issued"
+    },
+    {
+      "kind": "stall",
+      "index": 9,
+      "name": "smsp__pcsamp_warps_issue_stalled_drain_not_issued"
+    },
+    {
+      "kind": "stall",
+      "index": 22,
+      "name": "smsp__pcsamp_warps_issue_stalled_misc"
+    },
+    {
+      "kind": "stall",
+      "index": 24,
+      "name": "smsp__pcsamp_warps_issue_stalled_no_instructions"
+    },
+    {
+      "kind": "stall",
+      "index": 13,
+      "name": "smsp__pcsamp_warps_issue_stalled_lg_throttle_not_issued"
+    },
+    {
+      "kind": "stall",
+      "index": 17,
+      "name": "smsp__pcsamp_warps_issue_stalled_math_pipe_throttle_not_issued"
+    },
+    {
+      "kind": "stall",
+      "index": 32,
+      "name": "smsp__pcsamp_warps_issue_stalled_sleeping"
+    },
+    {
+      "kind": "stall",
+      "index": 18,
+      "name": "smsp__pcsamp_warps_issue_stalled_membar"
+    },
+    {
+      "kind": "stall",
+      "index": 21,
+      "name": "smsp__pcsamp_warps_issue_stalled_mio_throttle_not_issued"
+    },
+    {
+      "kind": "stall",
+      "index": 20,
+      "name": "smsp__pcsamp_warps_issue_stalled_mio_throttle"
+    },
+    {
+      "kind": "stall",
+      "index": 23,
+      "name": "smsp__pcsamp_warps_issue_stalled_misc_not_issued"
+    },
+    {
+      "kind": "stall",
+      "index": 26,
+      "name": "smsp__pcsamp_warps_issue_stalled_not_selected"
+    },
+    {
+      "kind": "stall",
+      "index": 29,
+      "name": "smsp__pcsamp_warps_issue_stalled_selected_not_issued"
+    },
+    {
+      "kind": "stall",
+      "index": 16,
+      "name": "smsp__pcsamp_warps_issue_stalled_math_pipe_throttle"
+    },
+    {
+      "kind": "stall",
+      "index": 27,
+      "name": "smsp__pcsamp_warps_issue_stalled_not_selected_not_issued"
+    },
+    {
+      "kind": "stall",
+      "index": 28,
+      "name": "smsp__pcsamp_warps_issue_stalled_selected"
+    },
+    {
+      "kind": "api",
+      "api": "cuptiPCSamplingSetConfigurationAttribute",
+      "status": 0,
+      "message": "CUPTI_SUCCESS"
+    },
+    {
+      "kind": "api",
+      "api": "cuptiPCSamplingDisable",
+      "status": 35,
+      "message": "CUPTI_ERROR_INSUFFICIENT_PRIVILEGES"
+    }
+  ],
+  "captured_injection_binary_sha256": "0ef651142f9a773e3137173361cb158103786d9de3febd702c62f3574504de28",
+  "source": "tools/cuda-exact/cupti_pc_injection.cpp",
+  "source_note": "Final source adds an explicit sampling_complete:false summary on failed collection; capture source had same control flow and reported the exact API error, without that extra summary row.",
+  "compile_command": [
+    "g++",
+    "-std=c++20",
+    "-O2",
+    "-fPIC",
+    "-shared",
+    "tools/cuda-exact/cupti_pc_injection.cpp",
+    "-I/opt/cuda/include",
+    "-I/opt/cuda/extras/CUPTI/include",
+    "-L/opt/cuda/lib64",
+    "-L/opt/cuda/extras/CUPTI/lib64",
+    "-lcuda",
+    "-lcupti",
+    "-Wl,-rpath,/opt/cuda/extras/CUPTI/lib64",
+    "-o",
+    "libirisu-cupti-pc.so"
+  ],
+  "next_without_counter_access": [
+    "CUPTI runtime/driver callback counts and activity timings need no hardware counters.",
+    "Optional translated-host function entry counters can rank physics call frequencies on identical replay inputs; profiling counts must not be treated as GPU stall weights."
+  ],
+  "no_additional_counter_attempts_planned": true
+}

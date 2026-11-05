@@ -1,0 +1,207 @@
+{
+  "schema": "irisu-native-collision-oracle-bootstrap-v1",
+  "promotion_eligible": false,
+  "scope": "Independent pinned native stage capture plus initial typed host/GPU equality. Circle v1 and geometry-wire v2 are separate frozen formats. Timings below are diagnostic, not a genuine native CPU/GPU performance comparison; no world/search admission.",
+  "native_pin": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+  "circle": {
+    "schema": "irisu-native-circle-stage-parity-v1",
+    "promotion_eligible": false,
+    "scope": "Hidden pinned native circle narrow-phase stage only; full 60-byte manifold equality including untouched warm impulses/second point. No full world or search admission or performance claim.",
+    "corpus": {
+      "generator": "circle-float-boundaries-v1",
+      "random_cases": 4096,
+      "seed": 661003,
+      "cases": 4180
+    },
+    "native_command": [
+      "artifacts/cuda-native-20261103/oracle-collision",
+      ".local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+      "artifacts/cuda-native-20261103/circle-native-first.cases.bin"
+    ],
+    "native_metadata": "{\"identity\":\"experimental-native-circle-stage-v1\",\"native_sha256\":\"ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5\",\"cases\":4180,\"contacts\":2604,\"disjoint\":1576,\"shape_mutation_errors\":0,\"manifold_bytes\":60}\n",
+    "inputs_sha256": {
+      "native_library": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+      "native_oracle": "8f8c7c1c92532c7ceeeb3c5cb8bde49ae27772df7584294939339886f1af3a4c",
+      "cases": "f61a6df102dfdfadb279abdc95d14ed1f47bba0fc658acb91138fd8598889335"
+    },
+    "native_result_sha256": "e2cafabb701aeac008bb6e540ad9b9fd63c4a0cdb946da10a8632bdda25600f5",
+    "sentinel_check": {
+      "disjoint": 1576,
+      "contact": 2604,
+      "unused_second_points_and_warm_impulses_preserved": true
+    },
+    "typed_parity": null,
+    "native_dso_unchanged": true
+  },
+  "poly_circle": {
+    "schema": "irisu-native-collision-wire-v2-parity",
+    "promotion_eligible": false,
+    "scope": "Independent native narrow-phase stage only; complete60Bmanifold and inputshapeimmutability. No world/search/performance admission.",
+    "family": "poly-circle",
+    "cases": 152,
+    "seed": 661003,
+    "random_cases": 64,
+    "native_command": [
+      "artifacts/cuda-native-20261103/oracle-collision-v2",
+      ".local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+      "artifacts/cuda-native-20261103/poly-circle-native-small.cases.bin"
+    ],
+    "native_metadata": "{\"schema\":\"irisu-native-collision-v2\",\"cases\":152,\"circle_cases\":0,\"poly_circle_cases\":152,\"poly_cases\":0,\"contacts\":83,\"shape_mutation_errors\":0,\"native_sha256\":\"ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5\"}\n",
+    "native_result_sha256": "82dc1061a317a3169f7625fa01d2ed33ad1dea38c8c52736451f0c8545bf4c7e",
+    "cases_sha256": "e35ac97ce00a3520306d952afaf71c1462e1358cfdbd78fbeded23be497081df",
+    "native_dso_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+    "native_oracle_sha256": "b5c0ed9e6bb22795c4fc356bf8c4b1ed3e7987b2dfe7e7dff866cbbf1cf38705",
+    "accumulated_impulses_preserved": true,
+    "typed_parity": null,
+    "native_library_unchanged": true
+  },
+  "poly_poly_native_only": {
+    "schema": "irisu-native-collision-wire-v2-parity",
+    "promotion_eligible": false,
+    "scope": "Independent native narrow-phase stage only; complete60Bmanifold and inputshapeimmutability. No world/search/performance admission.",
+    "family": "poly-poly",
+    "cases": 94,
+    "seed": 661003,
+    "random_cases": 64,
+    "native_command": [
+      "artifacts/cuda-native-20261103/oracle-collision-v2",
+      ".local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+      "artifacts/cuda-native-20261103/poly-poly-native-small.cases.bin"
+    ],
+    "native_metadata": "{\"schema\":\"irisu-native-collision-v2\",\"cases\":94,\"circle_cases\":0,\"poly_circle_cases\":0,\"poly_cases\":94,\"contacts\":60,\"shape_mutation_errors\":0,\"native_sha256\":\"ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5\"}\n",
+    "native_result_sha256": "5ebc2d2f42a76ee6f5ad6dbb4c3e57cc2ae6635a043e371a356b2dffa4396c95",
+    "cases_sha256": "d748f8a599a1d71292c8c73f22323678078a8982cce0e2b096bbbe68e561d026",
+    "native_dso_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+    "native_oracle_sha256": "b5c0ed9e6bb22795c4fc356bf8c4b1ed3e7987b2dfe7e7dff866cbbf1cf38705",
+    "accumulated_impulses_preserved": true,
+    "typed_parity": null,
+    "native_library_unchanged": true
+  },
+  "native_thread_pool_correctness": {
+    "scope": "Small correctness smoke only; not final benchmark",
+    "cases": [
+      {
+        "threads": 1,
+        "parity": true,
+        "metadata": {
+          "schema": "irisu-native-circle-benchmark-v1",
+          "backend": "native-elf32",
+          "threads": 1,
+          "cases": 4180,
+          "contacts": 2604,
+          "warmups": 1,
+          "repeats": 3,
+          "median_stage_ms": 0.093367003,
+          "elapsed_before_stdout_ms": 2.550138995,
+          "samples_ms": [
+            0.099317998,
+            0.093367003,
+            0.092155002
+          ]
+        }
+      },
+      {
+        "threads": 8,
+        "parity": true,
+        "metadata": {
+          "schema": "irisu-native-circle-benchmark-v1",
+          "backend": "native-elf32",
+          "threads": 8,
+          "cases": 4180,
+          "contacts": 2604,
+          "warmups": 1,
+          "repeats": 3,
+          "median_stage_ms": 0.053893,
+          "elapsed_before_stdout_ms": 2.469315998,
+          "samples_ms": [
+            0.053893,
+            0.070634,
+            0.047200002
+          ]
+        }
+      },
+      {
+        "threads": 16,
+        "parity": true,
+        "metadata": {
+          "schema": "irisu-native-circle-benchmark-v1",
+          "backend": "native-elf32",
+          "threads": 16,
+          "cases": 4180,
+          "contacts": 2604,
+          "warmups": 1,
+          "repeats": 3,
+          "median_stage_ms": 0.069321997,
+          "elapsed_before_stdout_ms": 2.666019,
+          "samples_ms": [
+            0.069211997,
+            0.069321997,
+            0.077336997
+          ]
+        }
+      }
+    ]
+  },
+  "negative_checks": [
+    {
+      "case": "pin",
+      "returncode": 1,
+      "output_bytes": 0,
+      "stderr": "native-stage-oracle: native library SHA-256 pin mismatch\n"
+    },
+    {
+      "case": "flag",
+      "returncode": 1,
+      "output_bytes": 0,
+      "stderr": "native-stage-oracle: invalid radius/conservative flag\n"
+    }
+  ],
+  "typed_circle_host_gpu": [
+    {
+      "mode": "host",
+      "returncode": 0,
+      "wall_seconds": 0.004487589998461772,
+      "stderr": "{\"schema\":\"irisu-native-circle-stage-v1\",\"backend\":\"typed-host\",\"scope\":\"circle collision stage only\",\"cases\":4180,\"contacts\":2604,\"rejected\":0,\"warmups\":1,\"repeats\":3,\"median_stage_ms\":0.218766000,\"elapsed_before_stdout_ms\":1.729317000,\"registers\":0,\"local_bytes\":0,\"promotion_eligible\":false}\n",
+      "bytes": 250800,
+      "sha256": "e2cafabb701aeac008bb6e540ad9b9fd63c4a0cdb946da10a8632bdda25600f5",
+      "native_equal": true
+    },
+    {
+      "mode": "gpu",
+      "returncode": 0,
+      "wall_seconds": 0.1260109939976246,
+      "stderr": "{\"schema\":\"irisu-native-circle-stage-v1\",\"backend\":\"cuda\",\"scope\":\"circle collision stage only\",\"cases\":4180,\"contacts\":2604,\"rejected\":0,\"warmups\":1,\"repeats\":3,\"median_stage_ms\":0.017408000,\"elapsed_before_stdout_ms\":80.328967000,\"registers\":42,\"local_bytes\":0,\"promotion_eligible\":false}\n",
+      "bytes": 250800,
+      "sha256": "e2cafabb701aeac008bb6e540ad9b9fd63c4a0cdb946da10a8632bdda25600f5",
+      "native_equal": true
+    }
+  ],
+  "typed_poly_circle_host_gpu": [
+    {
+      "mode": "host",
+      "returncode": 0,
+      "wall_seconds": 0.0016532749941688962,
+      "stderr": "{\"schema\":\"irisu-native-collision-stage-v1\",\"backend\":\"typed-host\",\"scope\":\"collision stage only\",\"cases\":152,\"contacts\":83,\"rejected\":0,\"warmups\":1,\"repeats\":3,\"median_stage_ms\":0.035237000,\"elapsed_before_stdout_ms\":0.199219000,\"registers\":0,\"local_bytes\":0,\"promotion_eligible\":false,\"samples_ms\":[0.036369000,0.035237000,0.035076000]}\n",
+      "bytes": 9120,
+      "sha256": "82dc1061a317a3169f7625fa01d2ed33ad1dea38c8c52736451f0c8545bf4c7e",
+      "native_equal": true
+    },
+    {
+      "mode": "gpu",
+      "returncode": 0,
+      "wall_seconds": 0.11854668200248852,
+      "stderr": "{\"schema\":\"irisu-native-collision-stage-v1\",\"backend\":\"cuda\",\"scope\":\"collision stage only\",\"cases\":152,\"contacts\":83,\"rejected\":0,\"warmups\":1,\"repeats\":3,\"median_stage_ms\":0.029696001,\"elapsed_before_stdout_ms\":74.672121000,\"registers\":68,\"local_bytes\":224,\"promotion_eligible\":false,\"samples_ms\":[0.030719999,0.029696001,0.029696001]}\n",
+      "bytes": 9120,
+      "sha256": "82dc1061a317a3169f7625fa01d2ed33ad1dea38c8c52736451f0c8545bf4c7e",
+      "native_equal": true
+    }
+  ],
+  "source_sha256": {
+    "tools/cuda-native/oracle_native.h": "0184f7db92afbc05c467c8e56ccf904e5b6507242d1df3e7ff9001e5cb38d3ca",
+    "tools/cuda-native/oracle_collision.c": "6ee63f18c09becef58904897e5463574566b02b8230959b4c79fb5c4522636e9",
+    "tools/cuda-native/oracle_collision.py": "7ae023ca919580fe850f165c258d6c21fdff566432a1477e38e346c39746beae",
+    "tools/cuda-native/oracle_contract.md": "e6b3218312c3d7c6b758be05424c91829056a570874513efc45d7058dfc01177",
+    "tools/cuda-native/oracle_collision_v2.cpp": "85acceb0910f3005edc679369f348f3a51ba8b872c4362b875777793bc66d32f",
+    "tools/cuda-native/oracle_collision_v2.py": "ec8582437f95211d07d87c1a4af79209495257662a1a88adf5116826b299c54d"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "identity": "compact-live-value-byte-mask-20261104",
+  "scope": "Host-only classification of every byte in four live Game vector element types; not a GPU checkpoint or performance qualification",
+  "original_failure": {
+    "phase": 9,
+    "game_offset": 51505,
+    "vector": "NativePhysicsWorld.contacts_",
+    "storage_offset": 50544,
+    "element": 17,
+    "element_bytes": 56,
+    "element_offset": 9,
+    "diagnosis": "ABI padding after boundary at byte8, before point at byte16; actual native Frame and active Scene still matched"
+  },
+  "comparison_change": "Ignore only explicitly enumerated LIVE element padding. Every named value field, scalar/header byte, RNG/configuration state and live pointer remains compared. Unknown element types remain byte-exact. Descriptor and transport unchanged.",
+  "compiler": "c++ (GCC) 16.2.1 20260810",
+  "build": "c++ -std=c++20 -O0 -I/opt/cuda/include tools/cuda-native/compact_padding_validate.cpp -o /tmp/irisu-compact-padding-validate",
+  "run": "/tmp/irisu-compact-padding-validate",
+  "pass": true,
+  "single_byte_perturbations": 464,
+  "body_value_enumeration": "independent game_digest::visit_body",
+  "types": {
+    "Body": {"bytes": 280, "value_bytes": 260, "padding_bytes": 20},
+    "Contact": {"bytes": 56, "value_bytes": 49, "padding_bytes": 7},
+    "ScriptedOrigin": {"bytes": 32, "value_bytes": 28, "padding_bytes": 4},
+    "Entry": {"bytes": 96, "value_bytes": 82, "padding_bytes": 14}
+  },
+  "source_sha256": {
+    "clone/cuda_native/compact_game_snapshot.cuh": "fa707d3292ffc943c9832082d94961aca04a2d1ccb55ef2217e0db190344b920",
+    "tools/cuda-native/compact_padding_validate.cpp": "93d35ceebd29862ec073f219f684fa9dcf2ef0a5a2d12b7803713cbb4f549c93",
+    "tools/cuda-native/compact_game_snapshot_validate.cu": "3f62e353e8af26061ef41569cb9b96ca62664bf0c0cd6c6bfa37376b6002ef70"
+  },
+  "gpu_rerun": "Parent coordinates after this host-only mask gate",
+  "performance_claim": false
+}

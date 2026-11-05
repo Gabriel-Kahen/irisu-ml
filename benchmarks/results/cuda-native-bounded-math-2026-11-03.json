@@ -1,0 +1,135 @@
+{
+  "schema": "irisu-optional-bounded-device-math-qualification-v1",
+  "date": "2026-11-03",
+  "promotion_eligible": false,
+  "enabled_by_default": false,
+  "compile_option": "IRISU_CUDA_NATIVE_BOUNDED_MATH=ON",
+  "scope": "Current audited finite-F32 store-to-store physics graphs only. Device Context.add/sub/mul retain the same RN binary64 values but omit Number range guards. Host alwayschecked. Not a generic uncheckedContext contract.",
+  "retained_checks": [
+    "F32stores normal-double argument and finite-float result",
+    "division operands/result/nonzero/underflow",
+    "sqrt domain/range",
+    "trig admission",
+    "sticky failure",
+    "counts/indices/shape and structuralguards"
+  ],
+  "numeric_contract": "tools/cuda-native/bounded_math_contract.md",
+  "component_reports": {
+    "checked_numeric": {
+      "path": "artifacts/gpu-native-20261103/checked-math-numerical.json",
+      "sha256": "84e679010c04e05c729d9626e86baa1d3cc9d7d13e4971a60a6fa0abc154dab2",
+      "pass": true,
+      "data": {
+        "schema": "irisu-bounded-math-qualifier-v1",
+        "passed": true,
+        "bounded_math_compiled": false,
+        "cases": 1072,
+        "rejected_cases": 23,
+        "accepted_cases": 1049,
+        "host_checked_and_device_checked_equal": true,
+        "selected_device_equal": true,
+        "failure_output_bits_compared": false,
+        "scope": "Numerical boundary graphs plus circle and constraint construction; no full native physics, game, search or performance admission"
+      }
+    },
+    "bounded_numeric": {
+      "path": "artifacts/gpu-native-20261103/bounded-math-numerical.json",
+      "sha256": "3fa4f7abdec89129cbd2bc73850cbd121213e934996b74321858846054650c96",
+      "pass": true,
+      "data": {
+        "schema": "irisu-bounded-math-qualifier-v1",
+        "passed": true,
+        "bounded_math_compiled": true,
+        "cases": 1072,
+        "rejected_cases": 23,
+        "accepted_cases": 1049,
+        "host_checked_and_device_checked_equal": true,
+        "selected_device_equal": true,
+        "failure_output_bits_compared": false,
+        "scope": "Numerical boundary graphs plus circle and constraint construction; no full native physics, game, search or performance admission"
+      }
+    },
+    "factory": {
+      "path": "artifacts/gpu-native-20261103/bounded-factory.json",
+      "sha256": "135316e256e462a7c6a4ca9a9a142b270808fb89043239bac5ce71b9f709b446",
+      "pass": true
+    },
+    "circle": {
+      "path": "artifacts/gpu-native-20261103/bounded-circle.json",
+      "sha256": "ae6330b0e0948fd904457d73aceb1160b939749b689b216d77264d054794166b",
+      "pass": true
+    },
+    "poly_circle": {
+      "path": "artifacts/gpu-native-20261103/bounded-poly-circle.json",
+      "sha256": "01df9996f0c6edd4022703e6365f061f7fac9bf1aa7f1507fb205ae81f38df9c",
+      "pass": true
+    },
+    "poly_poly": {
+      "path": "artifacts/gpu-native-20261103/bounded-poly-poly.json",
+      "sha256": "eff32338da1b15d91374c871ee91919ce8d65ed00aed2b0d592dc60fd9155fda",
+      "pass": true
+    },
+    "dynamic_world": {
+      "path": "artifacts/gpu-native-20261103/bounded-dynamic-scene.json",
+      "sha256": "6e8765bfae67ac13f564d7caab100a058f705872547ae1009bc3b5bd71f04572",
+      "pass": true,
+      "frames": 3072
+    }
+  },
+  "solver_native_stages": {
+    "status": "passed",
+    "stage_cases": 160,
+    "all_physical_output_bytes_equal_native": true,
+    "report": "artifacts/gpu-native-20261103/bounded-solver/comparison.json",
+    "sha256": "85c0e2f3a94108a80d2be20362a9ecaa79efb40e84965838faa85637e97537a6"
+  },
+  "memory_checks": {
+    "artifacts/gpu-native-20261103/bounded-math-memcheck.log": "337c86a9529e53b6ad36b148b1034103b1c7cc9e0a1f14fdb356f8104739abce",
+    "artifacts/gpu-native-20261103/bounded-dynamic-memcheck.log": "b80da98b6c94e4711fedabc5ff4630a54221c80418d42101ef0497fc4bb0dcb9",
+    "artifacts/gpu-native-20261103/bounded-solver/memcheck.log": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425"
+  },
+  "canonical_gpu_record": {
+    "passed": true,
+    "continuous_steps": 97219,
+    "frame_rows": 97220,
+    "wire_bytes": 9333120,
+    "wire_sha256": "9d972bbf361cfa58de555891ebcf96d2cd7b109839bc00868079d60aa03577ed",
+    "metadata": [
+      {
+        "backend": "cuda-native-full-game",
+        "steps": 97219,
+        "tick": 97219,
+        "failed": false,
+        "physics_status": 0,
+        "live_score": 4393699,
+        "recorded_final_score": 4393101,
+        "level": 100,
+        "chain": 70,
+        "clone_verified": false,
+        "kernel_ms_including_frame_hashes": 139174.375,
+        "elapsed_seconds": 139.290782198,
+        "world_bytes": 582480,
+        "scene_bytes": 1682584,
+        "guest_calls": 0,
+        "fallback_calls": 0
+      }
+    ],
+    "source_stable": true,
+    "inputs_stable": true,
+    "report": "artifacts/gpu-native-20261103/bounded-game-canonical.json",
+    "report_sha256": "f1b9c754fcaaf4822af4c06b1d700d6882b50406d7a54a8eb621261ea666033d",
+    "binary_sha256": "e176b5cca8f8134fed3137866a8f6fd31bc44933f71ff52e3e44a77db77ee2ae",
+    "native_dso_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+    "original_replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+    "scope": "Full native frame digests, not raw hidden native allocator bytes. Qualifier hashes everyframe;139s is not a throughput benchmark."
+  },
+  "search_qualification": "tools/cuda-native/search_bounded_qualification.json",
+  "source_sha256_at_capture": {
+    "clone/cuda_native/solver_math.hpp": "d93aeec682fe5968d5fc6c76f67f14f6c9e4ea2520ae5122ae71304d5c1f719b",
+    "clone/cuda_native/CMakeLists.txt": "a180c69473d6302141d1e6f927910f5e09733954cead04ef0823d64b2818c949",
+    "tools/cuda-native/bounded_math_contract.md": "51a4ec1e819d4a03c210c4951588c14dae072ed134419cc8edb193c319c1816d",
+    "tools/cuda-native/bounded_math_validate.cu": "187c328a339350bf95e1e9a1351cb6f3e651937d1d48de728d7d76649e0eba11"
+  },
+  "performance_claim": "None from these correctness gates; timing evidence kept in separate search receipts. Checkeddefault retained.",
+  "old_implementation_modified": false
+}

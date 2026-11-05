@@ -1,0 +1,72 @@
+{
+  "schema": "irisu-default-cuda-build-closeout-v1",
+  "date": "2026-11-03",
+  "scope": "Current default optional CUDA configuration; function calls OFF, region-local Guest OFF, search arena word stride default1. No algorithm/default changes made in this validation task.",
+  "configuration": {
+    "build_directory": "build-project-cuda",
+    "build_type": "Release",
+    "architecture": "70",
+    "function_calls": false,
+    "region_local_guest": false,
+    "separate_regions": true,
+    "game_fast_compile": "mid",
+    "host_optimization": "2",
+    "ptxas_optimization": "1",
+    "build_jobs": 4
+  },
+  "initial_build": {
+    "exit_code": 2,
+    "reason": "inline device constant table required internal linkage in non-RDC arithmetic target; owner fixed storage to static outside __CUDACC_RDC__, preserving all table values.",
+    "log": "artifacts/gpu-exact-speedup-20261103/default-final/build.log",
+    "sha256": "a64bf576b00d8b71cec22df41ba6f96b7db7ba5286b03ba894f7aef5cdf77ea0"
+  },
+  "retry_build": {
+    "exit_code": 0,
+    "command": "cmake --build build-project-cuda -j4",
+    "log": "artifacts/gpu-exact-speedup-20261103/default-final/build-retry.log",
+    "sha256": "f75621fd0edc0ba593781de1daec5053b8b9a03862cbafb6c22fe6c6f3209176"
+  },
+  "cpu_ctest": {
+    "command": "ctest --test-dir build-project-cuda --output-on-failure -j4 -E 'irisu-cuda-(arithmetic|batch)-smoke'",
+    "passed": 13,
+    "failed": 0,
+    "elapsed_seconds": 16.27,
+    "log": "artifacts/gpu-exact-speedup-20261103/default-final/ctest-cpu.log",
+    "sha256": "03b5f0be377971bd0b1f020dddce71d18ffab561bd9f4119943e5615c797cd91",
+    "note": "Run after new host validators built; subsequent fix affects only device constant-table storage/linkage, so CPU tests were not repeated."
+  },
+  "gpu_ctest": {
+    "command": "ctest --test-dir build-project-cuda --output-on-failure -j1 -R 'irisu-cuda-(arithmetic|batch)-smoke'",
+    "passed": 2,
+    "failed": 0,
+    "elapsed_seconds": 0.25,
+    "log": "artifacts/gpu-exact-speedup-20261103/default-final/ctest-gpu.log",
+    "sha256": "bc98a6990c3f1137364c476fdfbcf6733946a500277f685b79033067f2f21511",
+    "scope": "Actual device arithmetic and batch component smokes; exclusive GPU slot; no full-game replay or search performance claim."
+  },
+  "source_sha256": {
+    "clone/cuda/CMakeLists.txt": "2ca9f8119750599f397c290b1419ee5bad9136a2a290aa580135b78df11a7321",
+    "clone/cuda/guest.hpp": "3fd285ccf0bf97cd52ff5bdadee42a260587518037c3aba4c400012afd228a0c",
+    "clone/cuda/world.cuh": "470f5c793c37c79fbc50a6936ad3c3aeb258f2ae306c0f32a06cc125e1b84c99",
+    "clone/cuda/search.hpp": "7665ee83ea1b216b6a6b9d529332ffe90d47ec2a68cad2f2862527506e5bc412",
+    "tools/cuda-exact/x87_numeric.cuh": "ce53bc2730e24227ebc83cf95699a75bb81b8f1739d8ead0d9764a25825b3a5e",
+    "tools/cuda-exact/guest_stride_validate.cpp": "b6f3a748b6d5177ef39db9d917b3efed3a90b0418332b91b85372470bf5500a4"
+  },
+  "binary_sha256": {
+    "build-project-cuda/clone/cuda/irisu-cuda-arithmetic-validate": "d88b7308caceb161f8e0cd43a7121324a2b850fafcf8a577d45b6cf532d9338f",
+    "build-project-cuda/clone/cuda/irisu-cuda-batch-validate": "c0d38bc0365d3730fc07055f413e91cbc17f0e93dba501173bd3927387d83903",
+    "build-project-cuda/clone/cuda/irisu-cuda-physics-probe": "311adbd74265b3c87913bc04a25aeaddeb437aca559dab29323d5e4c5b25914a",
+    "build-project-cuda/clone/cuda/irisu-cuda-game-probe": "39c2435292b9d596c95930d67269343f37a1a11e00ea98511fb09351187eaa5d",
+    "build-project-cuda/clone/cuda/irisu-cuda-game-segments": "36d8e1f2cf20ba29d8714a29903de4bbca6211ac1ed205a44e8f14f4d25fefc5",
+    "build-project-cuda/clone/cuda/irisu-cuda-search": "011664ab3435aad91a0e2c024823cd30a66dc8afb098a37a9cc4a4d521b5865b",
+    "build-project-cuda/clone/cuda/irisu-cuda-search-session": "0f0efb1b13c96a87f40ad8da2615944cf6c78323ae49e7da0d871532734f4183",
+    "build-project-cuda/clone/cuda/irisu-guest-stride-validate": "597ce7dc96155d4d02d6b6d434c1f51921f080891c1810064dd1dc44c9a774eb"
+  },
+  "result": {
+    "full_default_build": "passed",
+    "cpu_tests_passed": 13,
+    "gpu_tests_passed": 2,
+    "tests_failed": 0,
+    "all_registered_tests_accounted_for": 15
+  }
+}

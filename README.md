@@ -2,7 +2,7 @@
 
 A headless simulator, ML environment, and
 [playable web client](https://irisu.online/) for **Irisu Syndrome! v2.03
-normal mode**. The project is complete; its final verified run scored
+normal mode**. Its published verified run scored
 **4,393,101** points.
 
 [Play in your browser](https://irisu.online/) ·
@@ -89,6 +89,21 @@ general policy transfer.
 The optional [CUDA exact-host experiments](docs/cuda-exact.md) target the V100
 with translated MSVC physics, relocatable worlds and batched search. They carry
 a separate experimental identity and workload-specific parity evidence.
+
+The [GPU-first acceleration guide](tools/cuda-native/gpu_first_README.md) covers
+the typed V100 search backend, exact shared checkpoints, bounded resident
+frontiers, and optional cooperative physics. Matched GPU-only benchmarks showed
+6% higher throughput for the large frontier and 58% for the small batch. The
+existing hybrid remains faster on the large benchmark; experimental solver,
+cache, and scheduling modes remain opt-in. Native parity and timing receipts are
+linked from the guide.
+
+## High-score orchestrator
+
+The [persistent high-score orchestrator](docs/high-score-orchestrator.md) explores
+new seeds, preserves live combo groups, rebuilds continuations, and trains optional
+neural guidance. Native and resident CUDA workers share a batched interface;
+prospective records are independently verified by the native exact oracle.
 
 ## Playable web client
 

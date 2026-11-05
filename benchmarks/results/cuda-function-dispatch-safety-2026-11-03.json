@@ -1,0 +1,51 @@
+{
+  "schema": "irisu-function-dispatch-safety-v1",
+  "promotion_eligible": false,
+  "scope": "Host execution of actual generated function-call dispatcher and actual compiled host region objects. No GPU kernels. Guards reject out-of-text PCs without spinning; callbacks bypass text bounds; budget exhaustion propagates through direct native calls.",
+  "compile_command": [
+    "g++-14",
+    "-std=c++20",
+    "-O0",
+    "-DIRISU_GUEST_SEPARATE_REGIONS=1",
+    "tools/cuda-exact/dispatch_safety.cpp",
+    "-Ibuild-cuda-function-calls/clone/cuda/generated",
+    "-I/opt/cuda/include",
+    "build-cuda-function-calls/clone/cuda/CMakeFiles/irisu-cuda-search.dir/cmake_device_link.o",
+    "build-cuda-function-calls/clone/cuda/libirisu_cuda_search.a",
+    "build-cuda-function-calls/clone/cuda/libirisu_cuda_regions.a",
+    "build-cuda-function-calls/clone/cuda/libirisu_cuda_batch.a",
+    "-L/opt/cuda/lib64",
+    "-lcudart",
+    "-lcrypto",
+    "-Wl,-rpath,/opt/cuda/lib64",
+    "-o",
+    "artifacts/gpu-exact-speedup-20261103/dispatch-safety"
+  ],
+  "run_command": [
+    "artifacts/gpu-exact-speedup-20261103/dispatch-safety",
+    "8288",
+    "86863",
+    "8240",
+    "4278190080"
+  ],
+  "result": {
+    "invalid_pc_cases": 4,
+    "callback_cases": 2,
+    "zero_budget_case": true,
+    "positive_budget_cases": 2,
+    "normal_return_sentinel": true,
+    "pass": true
+  },
+  "stderr": "",
+  "empty_owner_intervals_in_pin": 0,
+  "empty_owner_case_exercised": false,
+  "inputs_sha256": {
+    "tools/cuda-exact/translate.py": "09954408174d9d16fb51dff2dd809b4d6cf5053cb8e2570ce189cda2869d3bed",
+    "tools/cuda-exact/dispatch_safety.cpp": "6d32f814cd801249a1ab01daa4c4b852e70989176def647bbddfd331a5084888",
+    "build-cuda-function-calls/clone/cuda/generated/guest_blocks.inc": "c9196d4a75b01bdfc147ea38b995e5d91dc87bf0b6df4234bf13fb9852b2338e",
+    "build-cuda-function-calls/clone/cuda/generated/manifest.json": "eab16e82f412ea3c2d874ae0c54d17ab078a4fdc4a727ff73f69f3d5987c589b",
+    "build-cuda-function-calls/clone/cuda/libirisu_cuda_regions.a": "6b8f6eb74c77aa93722c8164abd4087aaae157713bc0bb66089db1765d37675b",
+    "artifacts/gpu-exact-speedup-20261103/dispatch-safety": "9aa862c9fe56af3ab11c32e5bbc30192e46b944e9e0d24f92c52be4062c0c2c4"
+  },
+  "review": "Current pinned image has386 STT_FUNC boundaries and386 occupied owners. Lookup now bounds low/high and includes every original owner. Native call depth0..8 means up to9 entered region frames, requiring independent GPU stack/compaction qualification."
+}

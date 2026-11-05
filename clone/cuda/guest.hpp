@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 
@@ -27,11 +28,25 @@ struct Guest {
   std::uint64_t instructions{};
   std::uint32_t free_head{}, allocation_reuses{};
   unsigned char* memory{};
+  // Storage transport only: guest addresses/capacity remain logical bytes.
+  // A stride-32 cohort interleaves adjacent worlds' 32-bit words.
+  std::uint32_t word_stride{1};
+
+  IRISU_GUEST_HD std::size_t byte_offset(std::uint32_t a) const {
+    return std::size_t(a & ~3u) * word_stride + (a & 3u);
+  }
+  IRISU_GUEST_HD unsigned char byte_at(std::uint32_t a) const {
+    return memory[byte_offset(a)];
+  }
+  IRISU_GUEST_HD void byte_at(std::uint32_t a, unsigned char value) {
+    memory[byte_offset(a)] = value;
+  }
 
   IRISU_GUEST_HD void fail(Error e) {
     if (!error) { error=e; fault_pc=pc; fault_value=st(); }
   }
   IRISU_GUEST_HD bool valid(std::uint32_t a, unsigned n) {
+    if (word_stride != 1 && word_stride != 32) { fail(bad_address); return false; }
     if (a > capacity || n > capacity-a) { fail(bad_address); return false; }
     return true;
   }
@@ -40,13 +55,19 @@ struct Guest {
     if (valid(a,sizeof(T))) {
 #ifdef __CUDA_ARCH__
       if constexpr (sizeof(T)==4) {
-        if(!(a&3)){union{std::uint32_t word;T value;}u;u.word=*reinterpret_cast<const std::uint32_t*>(memory+a);return u.value;}
+        if(!(a&3)){union{std::uint32_t word;T value;}u;u.word=*reinterpret_cast<const std::uint32_t*>(memory+byte_offset(a));return u.value;}
       } else if constexpr (sizeof(T)==8) {
-        if(!(a&7)){union{std::uint64_t word;T value;}u;u.word=*reinterpret_cast<const std::uint64_t*>(memory+a);return u.value;}
+        if(word_stride==1 && !(a&7)){union{std::uint64_t word;T value;}u;u.word=*reinterpret_cast<const std::uint64_t*>(memory+a);return u.value;}
+        if(!(a&3)){
+          union{std::uint64_t word;T value;}u;
+          const auto low=*reinterpret_cast<const std::uint32_t*>(memory+byte_offset(a));
+          const auto high=*reinterpret_cast<const std::uint32_t*>(memory+byte_offset(a+4));
+          u.word=std::uint64_t(low)|(std::uint64_t(high)<<32);return u.value;
+        }
       }
 #endif
       auto* p=reinterpret_cast<unsigned char*>(&v);
-      for (unsigned i=0;i<sizeof(T);++i) p[i]=memory[a+i];
+      for (unsigned i=0;i<sizeof(T);++i) p[i]=byte_at(a+i);
     }
     return v;
   }
@@ -54,13 +75,18 @@ struct Guest {
     if (valid(a,sizeof(T))) {
 #ifdef __CUDA_ARCH__
       if constexpr (sizeof(T)==4) {
-        if(!(a&3)){union{T value;std::uint32_t word;}u;u.value=v;*reinterpret_cast<std::uint32_t*>(memory+a)=u.word;return;}
+        if(!(a&3)){union{T value;std::uint32_t word;}u;u.value=v;*reinterpret_cast<std::uint32_t*>(memory+byte_offset(a))=u.word;return;}
       } else if constexpr (sizeof(T)==8) {
-        if(!(a&7)){union{T value;std::uint64_t word;}u;u.value=v;*reinterpret_cast<std::uint64_t*>(memory+a)=u.word;return;}
+        if(word_stride==1 && !(a&7)){union{T value;std::uint64_t word;}u;u.value=v;*reinterpret_cast<std::uint64_t*>(memory+a)=u.word;return;}
+        if(!(a&3)){
+          union{T value;std::uint64_t word;}u;u.value=v;
+          *reinterpret_cast<std::uint32_t*>(memory+byte_offset(a))=std::uint32_t(u.word);
+          *reinterpret_cast<std::uint32_t*>(memory+byte_offset(a+4))=std::uint32_t(u.word>>32);return;
+        }
       }
 #endif
       auto* p=reinterpret_cast<unsigned char*>(&v);
-      for (unsigned i=0;i<sizeof(T);++i) memory[a+i]=p[i];
+      for (unsigned i=0;i<sizeof(T);++i) byte_at(a+i,p[i]);
     }
   }
   IRISU_GUEST_HD void push(std::uint32_t v) { r[4]-=4; store(r[4],v); }
@@ -105,26 +131,26 @@ struct Guest {
   IRISU_GUEST_HD void fill(std::uint32_t a,std::uint32_t value,std::uint32_t n) {
     if(!valid(a,n))return;
     value&=255;
-    while(n&&(a&3)){memory[a++]=value;--n;}
+    while(n&&(a&3)){byte_at(a++,value);--n;}
     const auto word=value*0x01010101u;
     while(n>=4){store<std::uint32_t>(a,word);a+=4;n-=4;}
-    while(n--){memory[a++]=value;}
+    while(n--){byte_at(a++,value);}
   }
   IRISU_GUEST_HD void copy(std::uint32_t a,std::uint32_t b,std::uint32_t n) {
     if(!valid(a,n)||!valid(b,n))return;
     if(a<b){
       if((a&3)==(b&3)){
-        while(n&&(a&3)){memory[a++]=memory[b++];--n;}
+        while(n&&(a&3)){byte_at(a++,byte_at(b++));--n;}
         while(n>=4){store<std::uint32_t>(a,load<std::uint32_t>(b));a+=4;b+=4;n-=4;}
       }
-      while(n--){memory[a++]=memory[b++];}
+      while(n--){byte_at(a++,byte_at(b++));}
     }else if(a>b){
       a+=n;b+=n;
       if((a&3)==(b&3)){
-        while(n&&(a&3)){memory[--a]=memory[--b];--n;}
+        while(n&&(a&3)){byte_at(--a,byte_at(--b));--n;}
         while(n>=4){a-=4;b-=4;store<std::uint32_t>(a,load<std::uint32_t>(b));n-=4;}
       }
-      while(n--){memory[--a]=memory[--b];}
+      while(n--){byte_at(--a,byte_at(--b));}
     }
   }
   IRISU_GUEST_HD void release(std::uint32_t a) {

@@ -151,7 +151,8 @@ class Lower:
         raise ValueError(m)
 
 
-def generate(source: Path, output: Path, region_shift: int = 10, region_local_guest: bool = False):
+def generate(source: Path, output: Path, region_shift: int = 10, region_local_guest: bool = False,
+             function_calls: bool = False):
     digest=hashlib.sha256(source.read_bytes()).hexdigest()
     if digest!=PIN: raise SystemExit(f'input host hash is {digest}; expected {PIN}')
     output.mkdir(parents=True,exist_ok=True)
@@ -214,6 +215,14 @@ def generate(source: Path, output: Path, region_shift: int = 10, region_local_gu
                 if i.mnemonic=='ret':break
                 at+=i.size
         instructions=sorted(decoded.values(),key=lambda i:i.address)
+        function_starts=sorted({low}|{s['st_value'] for s in symbol_list
+            if s['st_info']['type']=='STT_FUNC' and low<=s['st_value']<high})
+        if function_calls:
+            from bisect import bisect_right
+            def owner(address):
+                return function_starts[bisect_right(function_starts,address)-1]
+        else:
+            def owner(address): return address>>region_shift
         starts={i.address for i in instructions if i.mnemonic.startswith('j') or i.mnemonic in ('call','ret')}
         starts.update(entries)
         starts.update(v for v in symbols.values() if text['sh_addr']<=v<text['sh_addr']+text['sh_size'])
@@ -252,24 +261,32 @@ def generate(source: Path, output: Path, region_shift: int = 10, region_local_gu
         region=None
         regions=[]
         grouped={}
-        for i in instructions: grouped.setdefault(i.address>>region_shift,[]).append(i)
+        for i in instructions: grouped.setdefault(owner(i.address),[]).append(i)
+        declarations='\n'.join(f'IRISU_GUEST_HD IRISU_GUEST_NOINLINE void region_{r}(Guest&, std::uint64_t&'+
+            (', unsigned' if function_calls else '')+');' for r in grouped)+'\n'
+        write_generated(output/'guest_region_declarations.inc',declarations)
+        if function_calls:
+            code.append('#include "guest_region_declarations.inc"')
         region_sources=[]
         for region, group in grouped.items():
             region_start=len(code)
             regions.append(region);starts.add(group[0].address)
             argument='original' if region_local_guest else 'g'
-            code.append(f'IRISU_GUEST_HD IRISU_GUEST_NOINLINE IRISU_GUEST_REGION_INLINE void region_{region}(Guest& {argument}, std::uint64_t& budget) {{')
+            extra=', unsigned native_depth' if function_calls else ''
+            code.append(f'IRISU_GUEST_HD IRISU_GUEST_NOINLINE IRISU_GUEST_REGION_INLINE void region_{region}(Guest& {argument}, std::uint64_t& budget{extra}) {{')
             if region_local_guest:
                 # Worlds keep their Guest object outside the guest byte arena.
                 # Every exit (including faults and budget exhaustion) commits
                 # all scalar/stack/allocator state before the next dispatcher.
                 code.extend(['Guest g=original;', 'struct Commit { Guest& source;Guest& destination;',
                     'IRISU_GUEST_HD ~Commit(){destination=source;} } commit{g,original};'])
-            code.extend(['dispatch:',f'if(g.error || (g.pc>>{region_shift})!={region}u) return;', 'switch(g.pc) {'])
+            outside=(f'g.pc<{region}u || g.pc>={function_starts[function_starts.index(region)+1] if function_starts.index(region)+1<len(function_starts) else high}u'
+                     if function_calls else f'(g.pc>>{region_shift})!={region}u')
+            code.extend(['dispatch:',f'if(g.error || {outside}) return;', 'switch(g.pc) {'])
             code.extend(f'case {i.address}u: goto block_{i.address};' for i in group if i.address in starts)
             code.extend(['default:g.fail(bad_pc);return;','}'])
             def edge(target):
-                if target>>region_shift==region and target in decoded:
+                if owner(target)==region and target in decoded:
                     return f'goto block_{target};'
                 return f'g.pc={target}u;return;'
             for i in group:
@@ -281,7 +298,18 @@ def generate(source: Path, output: Path, region_shift: int = 10, region_local_gu
                     elif i.mnemonic=='jmp' and i.operands[0].type==X86_OP_IMM:
                         s=edge(i.operands[0].imm)
                     elif i.mnemonic=='call' and i.operands[0].type==X86_OP_IMM:
-                        s=f'g.push({i.address+i.size}u);'+edge(i.operands[0].imm)
+                        target=i.operands[0].imm;ret=i.address+i.size
+                        if function_calls and target in decoded:
+                            # Keep the authoritative guest return stack. Native
+                            # calls only accelerate known callees; unresolved
+                            # edges unwind to the dispatcher without losing it.
+                            # Bound native nesting and trampoline deeper calls.
+                            s=(f'g.push({ret}u);g.pc={target}u;'
+                               f'if(native_depth<8)region_{owner(target)}(g,budget,native_depth+1);'
+                               f'if(g.error||g.pc!={ret}u)return;'+edge(ret))
+                        else:s=f'g.push({ret}u);'+edge(target)
+                    elif i.mnemonic=='ret' and function_calls:
+                        s=Lower(i,live_after[i.address]).emit().replace('continue;','return;')
                     else:
                         s=Lower(i,live_after[i.address]).emit().replace('continue;','goto dispatch;')
                 except (ValueError,KeyError,IndexError) as exc:
@@ -301,17 +329,25 @@ def generate(source: Path, output: Path, region_shift: int = 10, region_local_gu
             unit='\n'.join('#include '+json.dumps(str(p)) for p in includes)+'\n'
             unit+='#ifdef __CUDACC__\n#define IRISU_GUEST_NOINLINE __noinline__\n#else\n#define IRISU_GUEST_NOINLINE __attribute__((noinline))\n#endif\n'
             unit+='#define IRISU_GUEST_REGION_INLINE\nnamespace irisu::cuda_guest {\n'
+            if function_calls:unit+='#include "guest_region_declarations.inc"\n'
             unit+=f'#include "{region_name}.inc"\n}}\n'
             write_generated(output/f'{region_name}.cu', unit)
             region_sources.append(f'{region_name}.cu')
-        write_generated(output/'guest_region_declarations.inc', '\n'.join(
-            f'IRISU_GUEST_HD IRISU_GUEST_NOINLINE void region_{r}(Guest&, std::uint64_t&);' for r in regions)+'\n')
         write_generated(output/'region_sources.cmake', 'set(IRISU_CUDA_GENERATED_REGION_SOURCES\n'+
             '\n'.join(f'  "${{CMAKE_CURRENT_LIST_DIR}}/{p}"' for p in region_sources)+'\n)\n')
         code.append('#endif')
+        if function_calls:
+            def lookup_tree(values):
+                if len(values)==1:return f'return {values[0]}u;'
+                mid=len(values)//2
+                return f'if(pc<{values[mid]}u){{{lookup_tree(values[:mid])}}}else{{{lookup_tree(values[mid:])}}}'
+            code.append('IRISU_GUEST_HD inline unsigned function_region(unsigned pc){'+
+                        f'if(pc<{low}u||pc>={high}u)return UINT32_MAX;'+
+                        lookup_tree(function_starts)+'}')
+        selector='function_region(g.pc)' if function_calls else f'g.pc>>{region_shift}'
         code.extend(['IRISU_GUEST_HD IRISU_GUEST_NOINLINE inline void execute(Guest& g,std::uint64_t budget=100000000) {',
-                     f'while(g.pc&&!g.error&&budget){{if(callback(g)){{--budget;++g.instructions;continue;}}switch(g.pc>>{region_shift}){{'])
-        code.extend(f'case {r}:region_{r}(g,budget);break;' for r in regions)
+                     f'while(g.pc&&!g.error&&budget){{if(callback(g)){{--budget;++g.instructions;continue;}}switch({selector}){{'])
+        code.extend(f'case {r}:region_{r}(g,budget'+(',0' if function_calls else '')+');break;' for r in regions)
         code.extend(['default:g.fail(bad_pc);break;','}}if(g.pc&&!g.error)g.fail(budget_exhausted);','}'])
         write_generated(output/'guest_blocks.inc', '\n'.join(code)+'\n')
         write_generated(output/'guest_image.bin', image)
@@ -327,6 +363,7 @@ def generate(source: Path, output: Path, region_shift: int = 10, region_local_gu
         manifest=dict(version=1,region_shift=region_shift,region_local_guest=region_local_guest,region_sources=region_sources,source_sha256=digest,image_bytes=len(image),image_sha256=image_sha,exports=public,imports=imports,
                       instructions=len(instructions),dead_flag_writes=sum(not live_after[i.address] and i.mnemonic in flag_writers for i in instructions),mnemonics=dict(Counter(i.mnemonic for i in instructions)),unsupported=unsupported,
                       attestation='experimental; CPU comparison required; no promotion authority')
+        if function_calls:manifest['function_calls']=True
         write_generated(output/'manifest.json', json.dumps(manifest,indent=2)+'\n')
         # Export addresses allow callers to build ABI stacks without x86 decoding.
         write_generated(output/'guest_exports.inc', '\n'.join(f'constexpr std::uint32_t {k}={v}u;' for k,v in public.items())+'\n')
@@ -353,5 +390,6 @@ if __name__=='__main__':
     parser.add_argument('output',type=Path)
     parser.add_argument('--region-shift', type=int, choices=range(8,15), default=10, help='log2 guest-code bytes per optimizer function')
     parser.add_argument('--region-local-guest', action='store_true', help='experimental per-region Guest cache with unconditional writeback')
+    parser.add_argument('--function-calls', action='store_true', help='experimental original-function regions and bounded native device calls')
     args=parser.parse_args()
-    generate(args.source,args.output,args.region_shift,args.region_local_guest)
+    generate(args.source,args.output,args.region_shift,args.region_local_guest,args.function_calls)

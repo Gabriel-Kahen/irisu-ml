@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import platform
 from pathlib import Path
 import subprocess
 
@@ -15,6 +16,25 @@ SCHEMA = 'irisu-cuda-experimental-identity-v1'
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def host_identity() -> dict:
+    keys = {'vendor_id', 'cpu family', 'model', 'model name', 'stepping', 'microcode'}
+    cpu = {}
+    for line in Path('/proc/cpuinfo').read_text().splitlines():
+        if not line.strip() and cpu:
+            break
+        if ':' in line:
+            key, value = (part.strip() for part in line.split(':', 1))
+            if key in keys:
+                cpu[key] = value
+    return {'architecture': platform.machine(), 'cpu_reference': cpu}
+
+
+def device_identity() -> str:
+    return subprocess.check_output(
+        ['nvidia-smi', '--query-gpu=name,uuid,driver_version,memory.total,compute_cap',
+         '--format=csv,noheader,nounits'], text=True).strip()
 
 
 def named(path: Path) -> str:
@@ -51,6 +71,12 @@ def create(binary: Path, generated: Path, host: Path, build_command: str) -> dic
         paths.update(p for p in (ROOT / directory).rglob('*')
                      if p.is_file() and p.suffix in {'.hpp', '.cuh', '.cu', '.cpp', '.c', '.py', '.json', '.txt', '.inc'})
     paths.update(p for p in generated.iterdir() if p.is_file())
+    build = next((parent for parent in binary.resolve().parents
+                  if (parent / 'CMakeCache.txt').is_file()), None)
+    if build is not None:
+        paths.add(build / 'CMakeCache.txt')
+        for pattern in ('flags.make', 'link.txt', 'CMakeCUDACompiler.cmake', 'CMakeCXXCompiler.cmake'):
+            paths.update(build.rglob(pattern))
     capture = lambda command: subprocess.check_output(command, cwd=ROOT, text=True).strip()
     return {
         'schema': SCHEMA,
@@ -62,13 +88,14 @@ def create(binary: Path, generated: Path, host: Path, build_command: str) -> dic
         'binary': named(binary), 'generated': named(generated), 'host': named(host),
         'build_command': build_command,
         'files_sha256': {named(p): sha256(p) for p in sorted(paths)},
-        'device': capture(['nvidia-smi', '--query-gpu=name,uuid,driver_version,memory.total,compute_cap',
-                           '--format=csv,noheader,nounits']),
+        'device': device_identity(), 'host_machine': host_identity(),
     }
 
 
 def verify(receipt: dict) -> None:
-    if receipt.get('schema') != SCHEMA or receipt.get('production_exact_training_admitted') is not False:
+    if (receipt.get('schema') != SCHEMA or
+        receipt.get('backend') != 'cuda-translated-msvc-experimental' or
+        receipt.get('production_exact_training_admitted') is not False):
         raise ValueError('unsupported identity or attempted production promotion')
     paths = receipt['files_sha256']
     for name in (receipt['binary'], receipt['host']):
@@ -78,6 +105,10 @@ def verify(receipt: dict) -> None:
         if sha256(ROOT / name) != expected:
             raise ValueError(f'identity changed: {name}')
     check_generated(ROOT / receipt['generated'], ROOT / receipt['host'])
+    if receipt.get('host_machine') != host_identity():
+        raise ValueError('CPU reference architecture or microcode differs from captured identity')
+    if receipt.get('device') != device_identity():
+        raise ValueError('GPU hardware or driver differs from captured experimental identity')
 
 
 def main() -> None:

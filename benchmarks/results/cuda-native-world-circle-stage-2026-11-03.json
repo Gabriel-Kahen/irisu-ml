@@ -1,0 +1,188 @@
+{
+  "schema": "irisu-independent-cuda-native-world-circle-stage-v1",
+  "date": "2026-11-03",
+  "promotion_eligible": false,
+  "scope": "Distinct typed fixed-array world, no Guest/register interpreter. Exact shape-free body integration/sleep and interim fixed-pair circle pipeline. Full collision/broadphase/game backend is not qualified by this receipt.",
+  "native_oracle": {
+    "sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+    "path": ".local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+    "pin": "SHA256 over held file descriptor, dlopen that same /proc/self/fd path via oracle_native.h. ELF32 actual native methods and wrapper, no translated oracle."
+  },
+  "host_shape_free_and_shape_cache": {
+    "pass": true,
+    "native_scenes": 128,
+    "steps_per_scene": 64,
+    "native_sleep_islands": 2048,
+    "shape_quick_sync_cases": 4096,
+    "hidden_field_comparisons": 841472,
+    "backend": "independent-typed-shape-free",
+    "full_collision_backend": false
+  },
+  "host_circle_fullstep": {
+    "pass": true,
+    "circle_scenes": 8,
+    "steps_each": 64,
+    "native_fullstep_frames": 512,
+    "all_semantic_words_equal": true,
+    "pair_topology": "fixed-imported-native-pair",
+    "fallback_calls": 0,
+    "full_broadphase_backend": false
+  },
+  "gpu_circle_fullstep": {
+    "pass": true,
+    "backend": "independent-typed-cuda",
+    "scenes": 8,
+    "ticks_each": 64,
+    "native_fullstep_frames": 512,
+    "all_semantic_hashes_equal": true,
+    "fallback_calls": 0,
+    "instrumented_kernel_ms": 155.546585,
+    "registers_per_thread": 95,
+    "local_bytes_per_thread": 512,
+    "bytes_per_world": 688200,
+    "scratch_bytes_per_world": 847872,
+    "fixed_pair_topology_only": true,
+    "performance_benchmark": false
+  },
+  "memcheck": {
+    "exit_code": 0,
+    "error_count": 0,
+    "command": "env -u CUDA_VISIBLE_DEVICES /opt/cuda/compute-sanitizer/compute-sanitizer --tool memcheck --error-exitcode 77 build-cuda-native/clone/cuda_native/irisu-cuda-native-scene-runner artifacts/cuda-native-20261103/scene/circle-packets.bin",
+    "note": "Memcheck was run on the first qualified circle build; frozen final rebuild preserves the executed circle path and resource usage, adding only unused polygon collision functions."
+  },
+  "resource_report": {
+    "registers_per_thread": 95,
+    "stack_frame_bytes": 512,
+    "spill_store_bytes": 0,
+    "spill_load_bytes": 0,
+    "world_bytes": 688200,
+    "scratch_bytes_per_world": 847872,
+    "source": "ptxas frozen-build output and cudaFuncGetAttributes",
+    "instrumented_kernel_ms": 155.546585,
+    "performance_benchmark": false,
+    "timing_limit": "Includes a full semantic digest and fixed-capacity scans on every step; eight low-occupancy scenes, not an optimized throughput workload or speedup claim."
+  },
+  "stage_order": [
+    "narrowphase and contact-node transitions",
+    "native DFS island order",
+    "force/damping velocity integration",
+    "typed constraint construction and warm PreSolve",
+    "velocity iterations",
+    "position integration",
+    "position solver iterations/convergence",
+    "PostSolve persistent impulses",
+    "shape cache/swept AABB synchronization and force clearing",
+    "island sleep and static island-flag cleanup",
+    "fixed eligible-pair-set guard"
+  ],
+  "coverage": {
+    "shape_free_worlds": 128,
+    "shape_free_steps_each": 64,
+    "sleep_islands": 2048,
+    "shape_quick_sync_cases": 4096,
+    "hidden_field_comparisons": 841472,
+    "circle_worlds": 8,
+    "circle_steps_each": 64,
+    "circle_native_fullstep_frames": 512,
+    "circle_cases": "Two circles plus native shape-free ground body; static/dynamic and dynamic/dynamic, gravity0 or-0.25, initial penetration, persistent contact/impulses and eventual sleep. Native scene imported before first step only.",
+    "shape_free_cases": "Static/dynamic and allow-sleep flags; dt0/0.016/0.03125; randomized velocities/forces/torques/damping/rotations; deferred destruction, slot reuse, snapshot restore/continuation; sleep thresholds.",
+    "comparison": "Host circle compares every versioned semantic word; GPU compares per-step FNV64 over the same semantic words. Includes all active body fields, cached circle geometry/material/filter/proxy IDs, contact graph indices/flags, all60 manifold bytes including unused slots. Excludes padding, scratch and absent broadphase state."
+  },
+  "source_snapshot": {
+    "path": "artifacts/cuda-native-20261103/scene/source-snapshot",
+    "manifest_sha256": "d760311b22e1c120014fba3b297bb97a9236a95320b47459378b1b1fed9e81e1",
+    "hashes_unchanged_during_frozen_gpu_build": true,
+    "source_sha256": {
+      "clone/cuda_native/types.hpp": "5e7a84862b163d32d81db0d68f6401ba64400c3ffdd5de138399913309b9faf8",
+      "clone/cuda_native/world.hpp": "31ffe29c319ff2fed37c134698672bbfb4b329ec5a1cd0fb29ee27138cb692b8",
+      "clone/cuda_native/world_shapes.hpp": "9ca7cf5faec377acc6310321291135a03912275c2fba5618e170d19a56cb36e2",
+      "clone/cuda_native/world_pipeline.hpp": "91d7a4d6528f93585ef540c45ca640aa1a5acc82b4e41d085055fe04f91f0718",
+      "clone/cuda_native/solver_math.hpp": "8463aa8ab69d9af2f72b6fafee0ae378b3a7e00d8c6afd721bda7ee1902cb939",
+      "clone/cuda_native/solver.hpp": "1d36a4f7e739af6958486121b88454c161bca267df4e96a11ee9a89b530823ff",
+      "clone/cuda_native/collision.hpp": "38c8578f0ac64bf1ed2e2c3ae8f22e967a1ca992bad25e3ee85ec733d3008fa6",
+      "tools/cuda-exact/x87_numeric.cuh": "ce53bc2730e24227ebc83cf95699a75bb81b8f1739d8ead0d9764a25825b3a5e",
+      "tools/cuda-native/scene_runner.cu": "f0ad744548a14125cb5ed8cf4f7df00facca26d13b717d3449fe9c0f298c0327",
+      "tools/cuda-native/scene_wire.hpp": "39021cad84ad35577e02716dbf98af74f1cdd1e025dc1b864a81e75a31299539",
+      "tools/cuda-native/scene_native.hpp": "6aa7e4f9c9e2361fcc9ecd89c07992d6001222d57b1f96e94329da6d7a65310f",
+      "tools/cuda-native/scene_validate.cpp": "1d114ff865cad142e386eac29e0e81c4d6ebbc995441dc856de76233a634b951",
+      "tools/cuda-native/scene_circle_validate.cpp": "c907bc759fb2dcab31619fc252e9233a6dc0bb37feb4eb5d4440afda6c130c2e",
+      "tools/cuda-native/oracle_native.h": "0184f7db92afbc05c467c8e56ccf904e5b6507242d1df3e7ff9001e5cb38d3ca",
+      "tools/cuda-native/scene_contract.md": "3ccd5c35f76031c820f41b075775844c934ed66e1ddc02db1ab146447c4bffee"
+    }
+  },
+  "packet_reproduction": {
+    "previous_packet_sha256": "d817297e949cbd0f6dd01650ab0330950c99f563fcfcab3024630da072fbeaf1",
+    "current_oracle_packet_sha256": "d817297e949cbd0f6dd01650ab0330950c99f563fcfcab3024630da072fbeaf1",
+    "byte_identical": true,
+    "bytes": 180368
+  },
+  "commands": {
+    "host_build": "c++ -m32 -std=c++20 -O2 -ffp-contract=off -fno-fast-math -I/opt/cuda/include tools/cuda-native/scene_circle_validate.cpp -ldl -lcrypto -o artifacts/cuda-native-20261103/scene/scene-circle-validate",
+    "host_shape_free_build": "Same flags, source tools/cuda-native/scene_validate.cpp",
+    "gpu_build": "cmake --build build-cuda-native --target irisu-cuda-native-scene-runner -j1",
+    "gpu_run": "env -u CUDA_VISIBLE_DEVICES build-cuda-native/clone/cuda_native/irisu-cuda-native-scene-runner artifacts/cuda-native-20261103/scene/circle-packets.bin"
+  },
+  "gpu_flags": "sm70, C++20, --fmad=false --ftz=false --prec-div=true --prec-sqrt=true, -Xcompiler=-ffp-contract=off,-fno-fast-math, default independent target optimization; no Guest library/RDC required.",
+  "binaries": {
+    "artifacts/cuda-native-20261103/scene/scene-validate": "9abb8d18b65f51bb2ef37d255d8762f0077b611bb0503180d231972bb057b322",
+    "artifacts/cuda-native-20261103/scene/scene-circle-validate": "14f4f4dbd802d813bc3fbdb9587421caed7b7dc7afea1e6f4a98684525d87454",
+    "build-cuda-native/clone/cuda_native/irisu-cuda-native-scene-runner": "f64fbf2172954f53d10a4825d1b9c1df3ff159abbfd23e96ea3b707172476006"
+  },
+  "artifacts": {
+    "result.json": {
+      "path": "artifacts/cuda-native-20261103/scene/result.json",
+      "sha256": "c521d4390affa3230101db78d2ba1dbaebe7b599701f6e36f6e4a7aaf1f7b7cd"
+    },
+    "build.log": {
+      "path": "artifacts/cuda-native-20261103/scene/build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "circle-result.json": {
+      "path": "artifacts/cuda-native-20261103/scene/circle-result.json",
+      "sha256": "6f738c4974bd2cd59ebf4ed5574285e2040d1ecef39616a3889011e2774c13f2"
+    },
+    "circle-build.log": {
+      "path": "artifacts/cuda-native-20261103/scene/circle-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "circle-packets.bin": {
+      "path": "artifacts/cuda-native-20261103/scene/circle-packets.bin",
+      "sha256": "d817297e949cbd0f6dd01650ab0330950c99f563fcfcab3024630da072fbeaf1"
+    },
+    "packet-reproduction.json": {
+      "path": "artifacts/cuda-native-20261103/scene/packet-reproduction.json",
+      "sha256": "e3cb0c95479adeba2acc81544cbde68f049b2b735d1f4705cb9bc27becc40e3e"
+    },
+    "gpu-result.json": {
+      "path": "artifacts/cuda-native-20261103/scene/gpu-result.json",
+      "sha256": "c06fec614004e10a91e8ec2464dcf9f8d9a8f8d4f4998cc219ac2cc713dff022"
+    },
+    "gpu-build.log": {
+      "path": "artifacts/cuda-native-20261103/scene/gpu-build.log",
+      "sha256": "a9b2229329c0bfca6ebdc1fb10ea073cbc7a7e89c77f61ac65613c37f889f9cc"
+    },
+    "gpu-frozen-result.json": {
+      "path": "artifacts/cuda-native-20261103/scene/gpu-frozen-result.json",
+      "sha256": "4d73ab463beda6169576d4bac6c29eda56954b2fa301d7bb311ce3b4f10881e8"
+    },
+    "gpu-frozen-build.log": {
+      "path": "artifacts/cuda-native-20261103/scene/gpu-frozen-build.log",
+      "sha256": "ba5afc3794b94f9c5b8130db6fa2dadb51a7c393f1d19cfafa6998541b3e2570"
+    },
+    "memcheck.log": {
+      "path": "artifacts/cuda-native-20261103/scene/memcheck.log",
+      "sha256": "920f0b6bd9d52e191d9a4b56615e905b6114130309ca6da4cb2e93284bb80db8"
+    },
+    "source-snapshot/manifest.json": {
+      "path": "artifacts/cuda-native-20261103/scene/source-snapshot/manifest.json",
+      "sha256": "d760311b22e1c120014fba3b297bb97a9236a95320b47459378b1b1fed9e81e1"
+    }
+  },
+  "limits": [
+    "The imported native scene provides initial mass, COM, shapes, proxy IDs, caches and contacts; typed actor/fixture construction is not yet implemented.",
+    "Fixed-pair mode rejects potential pair add/remove or boundary exit with bridge_required and invalidates the lane. It does not approximate the missing integer SAP/PairManager stage.",
+    "No joints, polygon scene pipeline, complete broadphase snapshots, Simulator game parity, general malformed-memory or exhaustive numeric-domain proof.",
+    "Cold broadphase/node validation is bounded by the imported trusted scene contract; full new backend admission remains separate.",
+    "Old physics, Guest and default backend are untouched. Numeric primitives are reused without their interpreter."
+  ]
+}

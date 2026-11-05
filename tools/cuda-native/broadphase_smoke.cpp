@@ -1,0 +1,4 @@
+#include "../../clone/cuda_native/broadphase.hpp"
+#include <cassert>
+struct Callback {unsigned adds{},removes{};unsigned PairAdded(unsigned,unsigned){return ++adds;}void PairRemoved(unsigned,unsigned,unsigned){++removes;}};
+int main(){irisu::cuda_native::BroadPhase broadphase{};Callback callback;using irisu::cuda_native::Status;assert(broadphase.Initialize({{-100,-100},{100,100}})==Status::ok);auto a=broadphase.CreateProxy({{0,0},{1,1}},1,callback);auto b=broadphase.CreateProxy({{.5f,.5f},{2,2}},2,callback);assert(callback.adds==1&&broadphase.Validate());broadphase.MoveProxy(b,{{5,5},{6,6}});assert(!callback.removes);broadphase.Commit(callback);assert(callback.removes==1&&broadphase.Validate());broadphase.DestroyProxy(a,callback);broadphase.DestroyProxy(b,callback);assert(!broadphase.m_proxyCount&&broadphase.Validate()&&broadphase.error==Status::ok);}

@@ -1,0 +1,2188 @@
+{
+  "schema": "irisu-gpu-efficiency3-v1",
+  "created_utc": "2026-11-04T21:26:18.802888+00:00",
+  "status": "passed",
+  "promotion_eligible": false,
+  "scope": "Exact experimental cached-prefix search; same candidate outputs, explicit actual-work reduction; not universal throughput, arbitrary-state admission, a new score, or production deployment.",
+  "baseline_commit": "558216d07666d073be76a1b02edaef5497ac93dc",
+  "baseline_binary": {
+    "path": "artifacts/gpu-efficiency3-20261104/search-baseline",
+    "sha256": "ecae0ba59b1025a2967d05a5130213f910bf15417d9fbcf5ac751eadb59fd8fb"
+  },
+  "workload": {
+    "distinct_candidates": 12288,
+    "horizon": 4,
+    "batches": 20,
+    "logical_future_ticks": 983040,
+    "shared_initial_prefix_ticks": 100,
+    "shared_initial_prefix_backend": "checked-typed-CPU",
+    "CPU_checkpoint_mode_extra_ticks": 6,
+    "result_packet_bytes": 3194896,
+    "result_packet_sha256": "9f97cf4fa4a667ab1e7c9944c1c080fd3186c7342a401f720c55c8b2f5801df0",
+    "timing": "Complete child process; allocation, original prefix, checkpoint preparation/uploads, every suffix, output, raw guards, teardown. Extra selected independent replays/continuations qualify separately."
+  },
+  "final_paired_campaigns": {
+    "same-work": {
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/final-same-work-paired.json",
+        "sha256": "5fb96eee7420d8ae9cf918af885637e7de5a93e4b34c2cac2e65ba3610c6eecf"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8299660269985907,
+          "candidate": 1.7688088309951127
+        },
+        "speedup": 1.0345753565517148
+      },
+      "candidate_range_seconds": [
+        1.7676678790012375,
+        1.7753470720053883
+      ],
+      "rounds": 3,
+      "all_native_packets_equal": true,
+      "allocated_bytes": 13396413647,
+      "gpu_search_ticks_per_process": 983040,
+      "cpu_shared_checkpoint_ticks_per_process": 0,
+      "compile_profile": {
+        "light_shape_sync": true,
+        "cached_rotation": true,
+        "f32_store": false,
+        "f32_div_store": false,
+        "device_trig": 0,
+        "max_contacts": 512,
+        "bounded_store": true,
+        "sparse_reset": false,
+        "inline_step": true,
+        "entry_index": false,
+        "wide_rebind": true,
+        "cached_velocity": false,
+        "local_velocity": true,
+        "local_position": true,
+        "contact_anchors": true,
+        "split_construct": false
+      },
+      "raw_shared_guard_checks_per_process": 0,
+      "raw_shared_guard_errors": 0
+    },
+    "gpu-shared": {
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/final-gpu-shared-paired.json",
+        "sha256": "bae13265938881b5db726ce9035571cd77eab2deeba1fc4430c8ab120f2c6c48"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8243022810056573,
+          "candidate": 1.503288772990345
+        },
+        "speedup": 1.2135408138362875
+      },
+      "candidate_range_seconds": [
+        1.5028191220044391,
+        1.5067450659989845
+      ],
+      "rounds": 3,
+      "all_native_packets_equal": true,
+      "allocated_bytes": 13400849095,
+      "gpu_search_ticks_per_process": 614680,
+      "cpu_shared_checkpoint_ticks_per_process": 0,
+      "compile_profile": {
+        "light_shape_sync": true,
+        "cached_rotation": true,
+        "f32_store": false,
+        "f32_div_store": false,
+        "device_trig": 0,
+        "max_contacts": 512,
+        "bounded_store": true,
+        "sparse_reset": false,
+        "inline_step": true,
+        "entry_index": false,
+        "wide_rebind": true,
+        "cached_velocity": false,
+        "local_velocity": true,
+        "local_position": true,
+        "contact_anchors": true,
+        "split_construct": false
+      },
+      "raw_shared_guard_checks_per_process": 0,
+      "raw_shared_guard_errors": 0
+    },
+    "host-shared": {
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/final-host-shared-paired.json",
+        "sha256": "b129a2e7a28c496405063453ecd0e9508034eabecc91d9b8bc48181a6e624fec"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8301951020112028,
+          "candidate": 1.379781322000781
+        },
+        "speedup": 1.3264385253144968
+      },
+      "candidate_range_seconds": [
+        1.378153519006446,
+        1.3896474759967532
+      ],
+      "rounds": 3,
+      "all_native_packets_equal": true,
+      "allocated_bytes": 13405208695,
+      "gpu_search_ticks_per_process": 614560,
+      "cpu_shared_checkpoint_ticks_per_process": 6,
+      "compile_profile": {
+        "light_shape_sync": true,
+        "cached_rotation": true,
+        "f32_store": false,
+        "f32_div_store": false,
+        "device_trig": 0,
+        "max_contacts": 512,
+        "bounded_store": true,
+        "sparse_reset": false,
+        "inline_step": true,
+        "entry_index": false,
+        "wide_rebind": true,
+        "cached_velocity": false,
+        "local_velocity": true,
+        "local_position": true,
+        "contact_anchors": true,
+        "split_construct": false
+      },
+      "raw_shared_guard_checks_per_process": 20,
+      "raw_shared_guard_errors": 0
+    }
+  },
+  "elapsed_time_reduction_fraction": 0.2461015109894359,
+  "build": {
+    "directory": "build-cuda-native-efficiency3",
+    "configuration": {
+      "path": "build-cuda-native-efficiency3/CMakeCache.txt",
+      "sha256": "0403f626578238e9fec3284175abb8e8cf7f252ceb6cecd38a5665eb79e78cac"
+    },
+    "search_flags": {
+      "path": "build-cuda-native-efficiency3/clone/cuda_native/CMakeFiles/irisu-cuda-native-search-runner.dir/flags.make",
+      "sha256": "6924e26a4f62b0793e403a4ea92f8bc8400a0fcc65e84a34460b9cf0c1440948"
+    },
+    "binaries": {
+      "irisu-native-shared_future_plan-validate": {
+        "path": "build-cuda-native-efficiency3/clone/cuda_native/irisu-native-shared_future_plan-validate",
+        "sha256": "9abe717bf95fec98c1a1833a70f8b2df70826d527f636d375f8d356395a4dd02"
+      },
+      "irisu-cuda-native-game-runner": {
+        "path": "build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-native-game-runner",
+        "sha256": "8c71e2eb65e6fe53c2682f27143f638132b10ad960197e7e0121a0722f566e66"
+      },
+      "irisu-cuda-native-dynamic-scene-runner": {
+        "path": "build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-native-dynamic-scene-runner",
+        "sha256": "bc33346822d0737bd5c062f71044d2fdd73fa7cb3c7048b8284321de07bec3d3"
+      },
+      "irisu-native-cached-velocity-validate": {
+        "path": "build-cuda-native-efficiency3/clone/cuda_native/irisu-native-cached-velocity-validate",
+        "sha256": "cad4b02e6297d41727c65f0b245d6d1334bc9aabe7e7062d7fd53dec754c4c00"
+      },
+      "irisu-cuda-native-search-runner": {
+        "path": "build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-native-search-runner",
+        "sha256": "c21f26393c12d4dac61ed6a6062a4673cdbff3a586d3dd05a87f17ba2e7c84c2"
+      },
+      "irisu-native-local-position-validate": {
+        "path": "build-cuda-native-efficiency3/clone/cuda_native/irisu-native-local-position-validate",
+        "sha256": "aa7ccaf12009a87e998aae9fbcb30481f167149ab9cf2cf28ee145183c5f95bb"
+      },
+      "irisu-native-shared_future-validate": {
+        "path": "build-cuda-native-efficiency3/clone/cuda_native/irisu-native-shared_future-validate",
+        "sha256": "4495b029dbd17851eae27509ab3573f6e69020e907aba99058a1b7b116332d12"
+      },
+      "irisu-native-compact-snapshot-validate": {
+        "path": "build-cuda-native-efficiency3/clone/cuda_native/irisu-native-compact-snapshot-validate",
+        "sha256": "e5d9f027bec5f4754ffb8f80b67344881d08c6c8c847c393ef4bf02260d40ef6"
+      },
+      "irisu-native-compact-game-validate": {
+        "path": "build-cuda-native-efficiency3/clone/cuda_native/irisu-native-compact-game-validate",
+        "sha256": "7308bd3f859486917ea0cd69bb7d69f6fbabfe69fd8665837aa6b5040d63f6d5"
+      }
+    },
+    "compiled_source_pins": {
+      "clone/bindings/c_api.cpp": "2668c6d8153c91316350d5fb4dee8e1c0f7e72f1b2b45cc813ed1d62e009631d",
+      "clone/bindings/web_api.cpp": "bc18d268ae994931e31fc24d23ae7ca30f19038da3af14a4e72202cfc5c949df",
+      "clone/cli/main.cpp": "5961e99cd083ecf1263d426c8fc49d2e5dbf0bc471eb5c6964994aa62b13bcb9",
+      "clone/core/config.cpp": "2dae49b87434456ee40c3ad9c338b0f114abc7907829b63b4b5a2035222cc0e3",
+      "clone/core/config_io.cpp": "a5935b878709b662fc985e0c4800691ffa3b34220eb0a011fe76c3f694689424",
+      "clone/core/dx_random.cpp": "87bbd8c19ab697f5282688bdeb14c930bab48ca409f910275dfb0a0c177eb32c",
+      "clone/core/normal_rules.cpp": "96859737fb2eefa82de75e3dc769264f712bb85dc9b6b29d2d4cc58d8e4516ae",
+      "clone/core/physics.cpp": "668a468c5dc3a0216bfefe89d5a5885eb6bd7da5494f10f3962b827a966a74d2",
+      "clone/core/simulator.cpp": "7849ac8dc07cbc8fb15b8994dd233555882008581e89c4443926c7752441e61f",
+      "clone/cuda/CMakeLists.txt": "2ca9f8119750599f397c290b1419ee5bad9136a2a290aa580135b78df11a7321",
+      "clone/cuda/batch.cu": "a08e5470bbf130dbfa1bb487f6de4661f80f51d0169971a914f4aa6683534a2b",
+      "clone/cuda/batch.hpp": "b0c5dd9e9c00571e84ce730e91b644020e336dd2aedfab399f24033a19cb9b9c",
+      "clone/cuda/game.cuh": "454025dc78c0b7769f85c885d49576f19e2a610ce5fe779dd926336a7bbef507",
+      "clone/cuda/game_support.cuh": "a04980514e30cacd2b158622dfb072b4618b95c5b69b87d942ea505bcb9408c5",
+      "clone/cuda/game_tables.cuh": "3ddd4c93f2856cb779a964a82d23aae78aca826d03f3d64809fe56c9ea1cf330",
+      "clone/cuda/game_types.cuh": "654e1a2738ddb0ae7e1862e8a8d887a109fac908c5afb02f7fb0344c9202fac7",
+      "clone/cuda/guest.hpp": "3fd285ccf0bf97cd52ff5bdadee42a260587518037c3aba4c400012afd228a0c",
+      "clone/cuda/guest_program.cuh": "e1ecabdafc458efeca43389b8b6fbc0eee59229ed6af3b6c3702056e488a724c",
+      "clone/cuda/physics_game.cuh": "c15ba8c8e6c41a4a415c67eafed11b74a15dea6524e23575a5ce7227203b5a1e",
+      "clone/cuda/search.cu": "c326667ac5be22a32e74c65cfa19ffe37d60a609bbc711172cf7c06ab7a65a35",
+      "clone/cuda/search.hpp": "7665ee83ea1b216b6a6b9d529332ffe90d47ec2a68cad2f2862527506e5bc412",
+      "clone/cuda/search_session.hpp": "33c3322d63d03329e84d8930a0c6f9c988b7f3dd78517fd61947677a5ac8e218",
+      "clone/cuda/search_session.inc": "7438597f6b106fbf9c53c876ecef7b403106f529267d6f9c17b629527f71565e",
+      "clone/cuda/world.cuh": "470f5c793c37c79fbc50a6936ad3c3aeb258f2ae306c0f32a06cc125e1b84c99",
+      "clone/cuda_native/CMakeLists.txt": "854f0222b1712788ed6b9f59014d573b829bfddfeedc856c37564f42b0515510",
+      "clone/cuda_native/broadphase.hpp": "393c0c989fb1e04b7a2d315f5b5e13b0cf95d47a0ffd3e10bd81f990fa0bb96f",
+      "clone/cuda_native/broadphase_algorithm.inc": "d666412957b87b68722a72d3c014ceb227651961ed458794b4ff103283e99fb3",
+      "clone/cuda_native/collision.hpp": "b9bdef3922ad4aafedef08df0d56d724958f9228f09a84ae1da4d25702863d32",
+      "clone/cuda_native/compact_game_snapshot.cuh": "064ab2bd680e1931a2e94765d938ecad19336085f012dde028d6f8d07f88a1f0",
+      "clone/cuda_native/compact_snapshot.cuh": "93939383b839cda814cc0cff423595f792f4049966178c49754aa8664afe80bd",
+      "clone/cuda_native/entry_index.cuh": "ad1e9eeec03a6d7e2dcdbc36992c9e6e69f4b5496e505e23a5462a77bbbdb6c8",
+      "clone/cuda_native/factory.hpp": "3c230baf957136a21ab59ffa724b3930b7150b378bc3033658b5e5f16cb01a58",
+      "clone/cuda_native/game_adapter.cuh": "1122329fbe2714cbe78fcc0c10982b1698eb1e03d92f968227f278dad7e80668",
+      "clone/cuda_native/game_world.cuh": "788b94d89a26729a2a8cc180475f9d097cb0a4d7f32ef87f2b1c750668ee84a3",
+      "clone/cuda_native/solver.hpp": "b18dbf0356d32fe798be74ab9e62bb34747064554ee9bbe983e6f3ce0ce05e60",
+      "clone/cuda_native/solver_hot.hpp": "0e6c7ef47b7d44f5781e7008bc0142230d7157a327958b225df47a28f8fca7cc",
+      "clone/cuda_native/solver_interleaved.hpp": "93f6575c01c3f71eeaa890e174f25c7d7167b3f283da149d1caca4545a51074f",
+      "clone/cuda_native/solver_math.hpp": "a3f236969e6dc08728384a1f1ccccc973aa2efdd426ac0eca09e8e97c0655879",
+      "clone/cuda_native/types.hpp": "5f92c1d6cf0095dcd4d846dd4c24b724cb570a53b02ffd2b2552782dc2492dfc",
+      "clone/cuda_native/world.hpp": "ed04ffe27050e69db4b6f63498320db925f66ba49b543c299edf51402acc221d",
+      "clone/cuda_native/world_contacts.hpp": "9f12bd238c3ddc3008172dc676ab9517b707eb6f923949ae7eebcd421c709c7c",
+      "clone/cuda_native/world_pipeline.hpp": "81fdd8abbd79687f0bea16cc451da70c5c1dd02338d23b92ca473dc8fa1b2b5c",
+      "clone/cuda_native/world_scene.hpp": "9a84f9d03a644967bfbdfd451eaa8c9ec9cd6fb52e1353c9c269c39115c6226b",
+      "clone/cuda_native/world_shapes.hpp": "4de6657239442ad0c17123273a2447ee8be13825c344847601628907cd8374ee",
+      "clone/include/irisu/config.hpp": "0ba54ee5bb5205b2b34b48f47493cb6f6f4fea3a34805d48a9dc878d8665dcd3",
+      "clone/include/irisu/config_io.hpp": "a6b7e7ce38a8b2ff23a3096342c56eca62741d5aadb8f50782e80639998923fe",
+      "clone/include/irisu/dx_random.hpp": "5ccf1a5ce994d8a5cea5c79187142dde21d3b89113f3db5ac423056b5c8cf1c4",
+      "clone/include/irisu/floating_point.hpp": "2c3e8975b407a29bddfe2cdb31e2c22970425c192806f3809d99eb9fbb3265dd",
+      "clone/include/irisu/math.hpp": "ac00c53c47ef46a3b87360d7b50ae08c7819c1b1d422625a40fbab1ee02572e3",
+      "clone/include/irisu/normal_rules.hpp": "fd9c8f5ce6d61e9b9ddeb5cc6f680789bb6c3988c5f2727ca41ada3005639025",
+      "clone/include/irisu/physics.hpp": "92fe9f258873243f01278a394f1670e56e6984a64a2fa3d101c79bfe4c8319fe",
+      "clone/include/irisu/simulator.hpp": "f3a135406e01a884abc0d5b2dddec561316d9943c4bf206c19514992e084e29f",
+      "clone/include/irisu/types.hpp": "37f315c90f0ab7ced3a08b91a3a77bd94feccab97dcff9f5a06cd3fc37522ab8",
+      "tools/cuda-exact/arithmetic_validate.cu": "fb98ac41ab74b7506af08649fd0018fe59a92c292b9df07a74a8b7904c52259e",
+      "tools/cuda-exact/batch_validate.cu": "da066e9a1cb6e8a4fe09d90d044fe2fa72cc6a1991d163ea91306421f29608fb",
+      "tools/cuda-exact/cupti_pc_injection.cpp": "82896d1fbc2986a9130d41a639efb16e63b3429a813c4555124017a91d2008bc",
+      "tools/cuda-exact/cupti_probe.cpp": "bd584cd7fb0fb4afd85d7f369b02581af12d1fc4167c199ee427cbe76744342e",
+      "tools/cuda-exact/direct-leaf/fallback_probe.cu": "697bae0a91ac25e664a711d8c436c19faf94287ea227c8b88acdf1013169b5e5",
+      "tools/cuda-exact/direct-leaf/hook.hpp": "6e84c641da1eb0c9e3e78e7adead023d3f14fd0e5a687815e34f925b524b5efc",
+      "tools/cuda-exact/direct-leaf/support.cuh": "7b166523215f4b268a23fbe62f9dca11d40bb650ccb7351575455b1eb0ebafcf",
+      "tools/cuda-exact/direct-leaf/verification.hpp": "bbc34d21ed03936c2e40797cbc97b5a90d5f1858db8dfb52a1ece0bd9322bddb",
+      "tools/cuda-exact/dispatch_safety.cpp": "6d32f814cd801249a1ab01daa4c4b852e70989176def647bbddfd331a5084888",
+      "tools/cuda-exact/game_digest.hpp": "75a038839de86868b34c3ef319de3759663e31f96d8de65e00416f7c3552ae2a",
+      "tools/cuda-exact/game_oracle.cpp": "dd4a06223321bad2f841b7838b32351500999490e3013250f597fa8bd1725012",
+      "tools/cuda-exact/game_probe.cu": "ab56e2a17f27a084550deee6abe5001cded6d6af884897cd8de8d917241531f0",
+      "tools/cuda-exact/game_segments.cu": "4c468647d281e6a22ca62a161f978566d91622abce4124d3e3354faf563a6c85",
+      "tools/cuda-exact/game_validate.cpp": "5db009af1051ce4ae2946a33e1fc3efc09e17b1fa6be408dad15ae25bf36be1b",
+      "tools/cuda-exact/guest_memory_validate.cpp": "a7c2a572797b958b56114552b183a0d2a71cf4e8deb0be0d0bca469f139b214e",
+      "tools/cuda-exact/guest_stride_validate.cpp": "b6f3a748b6d5177ef39db9d917b3efed3a90b0418332b91b85372470bf5500a4",
+      "tools/cuda-exact/image_identity.hpp": "b05295ca56342b0f21c462830c4ae7fb94fb3f535ef681e2907fc2947537d657",
+      "tools/cuda-exact/image_identity_validate.cpp": "be08b9ba1623cb94666f9b5b6cf2582dbb66edb6e79928b27dc38b3906dcacca",
+      "tools/cuda-exact/physics_probe.cu": "59c40e10ee4df283204caaacb2ecfe9aa9ca77325228206947a4c4cf5df62978",
+      "tools/cuda-exact/region_writeback_validate.cpp": "6fae755fe69ecf83253cf45fef5a51954c694f2eb209c43c2328ac8c90258a1a",
+      "tools/cuda-exact/region_writeback_validate.cu": "cc65d9816dc0d28317b74890da3e3734062cede6731d92b826c6befa924d94b0",
+      "tools/cuda-exact/requirements.txt": "631b63f29fa7016e73e378cc1bc798fe50eb977e82433e8912c0c3b3c9355b51",
+      "tools/cuda-exact/search_io.hpp": "b9f3385f5d8b15f94d561645bddc8860f7a39774864e40dfb0b2b1bd8494d62d",
+      "tools/cuda-exact/search_logic_validate.cpp": "137582c1a3d2613f25330e5bc2336709d26e97ab6745fd8c028dd1a27a89ba68",
+      "tools/cuda-exact/search_oracle.cpp": "6a05cac5d2959705a40d16e8fb51b841d82fe5e2cf3c93b057ad97e675ce7506",
+      "tools/cuda-exact/search_runner.cpp": "971fbd914ec33203f45b0d73d0865533cd65d8e0f52e7c9477d5553db606e775",
+      "tools/cuda-exact/search_session_oracle.cpp": "872b5e7f17be3475ef24afab2006a295ab36428afff88e276817c4a85c4e0b76",
+      "tools/cuda-exact/search_session_runner.cpp": "f437c9d6b74b329bd12faee7ca5d1cd3107a2737fcfab3d684afa84e7fc9b64b",
+      "tools/cuda-exact/x87_numeric.cuh": "ce53bc2730e24227ebc83cf95699a75bb81b8f1739d8ead0d9764a25825b3a5e",
+      "tools/cuda-native/batched_search_runner.cu": "1830c6005e858c9c6248fb2e5b670814a96f96a8bfc6e476ac9a8ea40f92b35e",
+      "tools/cuda-native/body_ref_validate.cu": "d6c2558d48a4b00bbbb7cb8761b6f1f356bd1ed4df0e27adfdf0366e619bba06",
+      "tools/cuda-native/bounded_math_validate.cu": "187c328a339350bf95e1e9a1351cb6f3e651937d1d48de728d7d76649e0eba11",
+      "tools/cuda-native/bounded_store_validate.cu": "2248618883541c35959e858034927ddf63a0afd48c6cbccf4d3ebe16cefc74d5",
+      "tools/cuda-native/broadphase_domain.cpp": "c21c6e581879dda381c693df7cf872c75d9d25fd0a6bc2918fae6471bd7422c2",
+      "tools/cuda-native/broadphase_runner.cu": "670e05fc4ed743672e8da4e2a76e2ab3c2c731c260790550f65201772ecde47b",
+      "tools/cuda-native/broadphase_smoke.cpp": "343dacba2a5321b8cbec55f407b51039592659c362f4da714239d397ac458aed",
+      "tools/cuda-native/broadphase_wire.hpp": "f3b0f398e643b8c164c36d5b89c188d8d709f9a37e5d3228caa9e0192e41a13a",
+      "tools/cuda-native/cached_rotation_validate.cpp": "b3b6e279a3eb3673ac1a7b50da89ec469b9a4539cc41280ac6d2c38a76e8c401",
+      "tools/cuda-native/collision_domain.cpp": "5f7be2f824129a826aa2061ac144239c2546874e5687c1873936cab484f3445c",
+      "tools/cuda-native/collision_runner.cu": "a1e11d37b827840175621fb007ad9716a2675db37140d36007240a1a04907dc6",
+      "tools/cuda-native/collision_wire.hpp": "5136c89512203872167d388447e0f0fafd2c911fdb6589e20b0d56838fb68faf",
+      "tools/cuda-native/compact_game_snapshot_validate.cu": "725f0b12016ff6f52e0909be25943592d5273bc13fb51445b1e38a43b00b85d1",
+      "tools/cuda-native/compact_padding_validate.cpp": "93d35ceebd29862ec073f219f684fa9dcf2ef0a5a2d12b7803713cbb4f549c93",
+      "tools/cuda-native/compact_snapshot_validate.cu": "91e8e513bdf67070397e995ebc73dc2448e2a141113145f54290ad41d6eae8fb",
+      "tools/cuda-native/contact_capacity_validate.cpp": "a84df970008e051a0c34fb739f01364e89bdddb4b72e881b53cfe2bcf58c560b",
+      "tools/cuda-native/device_trig_validate.cu": "5843c60621115978ee30668d0938b9c1fdfe4d568ed80d15125d30fcf34de5d2",
+      "tools/cuda-native/div_store_validate.cu": "0a827c41b828920b32c9a9260a15727adc082d22df9060b5fb170aaf3e491d8a",
+      "tools/cuda-native/entry_index_validate.cpp": "08e8480a72661da5e7aa1c4ecdcc07e32928de8b3f07f2873104cc6a598e3689",
+      "tools/cuda-native/factory_runner.cu": "8e361f4cee8d062bb31e30fd1e22b4152d06039feca2814006edf549b6838052",
+      "tools/cuda-native/factory_validate.cpp": "e86ffe6b3c2524b2333e9a48c65ee34b463066153eff35e0ac0179db951e0fca",
+      "tools/cuda-native/factory_wire.hpp": "d82ac3e5a6302fa8c7c49f4a2f82e2bc19f87ed25424bd24d7b42f931b83d632",
+      "tools/cuda-native/game_runner.cu": "2d8ebcf457e789d8d8924218e69884cf056d6414636ba863255316adca1345d2",
+      "tools/cuda-native/instrumented_runner.cu": "b08031e336c2e50ce0a94917cba1bd9225c287b62a24b0c99af5bc5fbe681976",
+      "tools/cuda-native/instrumented_runner_v2.cu": "311d670347045414d0642443e225241a6572aa1cf2fb92636bf74575f27ccdb4",
+      "tools/cuda-native/instrumented_runner_v3.cu": "ca49cf81fa92f1a4c61d5b57a1f55d872251fb675d957846df47ecfa3acdbcf4",
+      "tools/cuda-native/native_search_campaign.cpp": "0fd6866465d1af45967f909f441a342e14931a2c58a4a75ae157b28aefa0cefa",
+      "tools/cuda-native/oracle_broadphase.cpp": "9dd1dfecb65b6c9f3e5cc7480b5595e99bc9ac1eb58fe3e66e4500cab4d707e6",
+      "tools/cuda-native/oracle_collision_v2.cpp": "85acceb0910f3005edc679369f348f3a51ba8b872c4362b875777793bc66d32f",
+      "tools/cuda-native/prefix_guard.cuh": "1e156c77aac9b83c14b72e62e5488c8a8cdccb6f7ac13ec3f8006d1a4e13b4c4",
+      "tools/cuda-native/prefix_guard_validate.cu": "1434286262047c2f82dece34c3fe95bdbad005e415c478cbd8639c53d5a28058",
+      "tools/cuda-native/scene_circle_validate.cpp": "c907bc759fb2dcab31619fc252e9233a6dc0bb37feb4eb5d4440afda6c130c2e",
+      "tools/cuda-native/scene_dynamic_native.hpp": "7ed2516588fe001abd516ed4dc820073438c86172b6633073db8b4fdb6c81786",
+      "tools/cuda-native/scene_dynamic_runner.cu": "27b479528ca0e23cc79d689ba4c353610dd7e38cb303258861bc4115664f5ee5",
+      "tools/cuda-native/scene_dynamic_validate.cpp": "f7d617b16e05832c15cf2321b8b7650d7b95ad038895bd51ece1083b7722f70a",
+      "tools/cuda-native/scene_dynamic_wire.hpp": "49685605d7d156873e334a6d3e97d3d9cfba249fa1c45b89ef4ccd3d3e84d50c",
+      "tools/cuda-native/scene_native.hpp": "e0f32fd92e49589504c5da3128c791e9004b74e949e2c6f7aacac8847defd36a",
+      "tools/cuda-native/scene_runner.cu": "e119d2644de9c00c7be9f7a1cb1f3f087f3400151de4fd3b7df892b4adc85f87",
+      "tools/cuda-native/scene_validate.cpp": "1d114ff865cad142e386eac29e0e81c4d6ebbc995441dc856de76233a634b951",
+      "tools/cuda-native/scene_wire.hpp": "bc096d74d00ac8cb8e18b3e9c0491561d08fd3ade7e68141296a8b9b93113a0b",
+      "tools/cuda-native/search_accel.cuh": "1d1773ed78cf6b70aa667a8f6fdc4bcf67315669966e8746e0d0cbee1084abe0",
+      "tools/cuda-native/search_accel_validate.cu": "61bd1c80c03f205457a4bca37711402984a31971c58fdbfa17395812f46aa4f4",
+      "tools/cuda-native/search_runner.cu": "65500d41ba71159b2cb11589ead49158d4e534a382e36bc893d63a466650f3cd",
+      "tools/cuda-native/snapshot_validate.cu": "47c5149d8f362fcaf21ca552fb866abfa6e0fb605929bff3258f8d0bdb4f8df2",
+      "tools/cuda-native/solver_domain.cpp": "6cc5978ca98d0b026b7c7fdb2a7e4f2ab9c7e3c88d71e7842c45428a3e5ff3f9",
+      "tools/cuda-native/solver_interleaved_domain.cpp": "89cefb29e469f4aa579f20f01cdf50450dc34376f8d17199339ca1bc63a4a899",
+      "tools/cuda-native/solver_interleaved_validate.cu": "907206305fba07d42c8c0b09096d7085faa410041001226a953d5b3e515c719a",
+      "tools/cuda-native/solver_runner.cu": "c9203ac7ddddea952e0dbc2c1943d86a72670c743d1bc9ee3a54a8e4c177b033",
+      "tools/cuda-native/solver_stage_bridge.hpp": "6dd9eb870e7a93cf5f07f697f0375bfab6ad01c7d5bfb89154687dca30de645f",
+      "tools/cuda-native/store_math_validate.cu": "ff186f606313adaf2c4ce754e17708285812f32590eca3b281ecf83c7ece5c74",
+      "clone/cuda_native/solver_position_local.hpp": "38b326048b682b3552f9c50bdd5e45edcd947f375148df8bffd47e460a57e545",
+      "clone/cuda_native/solver_velocity_cached.hpp": "c076bd5b185e97c6e3642eced74e558a48dd4416ee4346dcd192c8cb25e9381c",
+      "clone/cuda_native/solver_velocity_contact.hpp": "13d162db1208d96baf873bd6e080374e291586ac1713207eb2b5f799011c7247",
+      "clone/cuda_native/solver_velocity_local.hpp": "7cefb0fb29224a8f3467a15e4ae1e909d75fb2fe683332d457d779805b41d48e",
+      "tools/cuda-native/shared_future_plan.hpp": "a26913d70efb06920493bac242a10e88887431e0d970be4b7cb7b483d35095e9",
+      "tools/cuda-native/shared_future_plan_validate.cpp": "a8d1bbaea2412d6019607b0a55504e8c442585293c14df27b9a41d044cb26de5",
+      "tools/cuda-native/shared_future_validate.cpp": "e4851026c0975fb97e443919293772d87f7759720e84f18ffecd9134d07cf22f",
+      "tools/cuda-native/solver_position_local_validate.cu": "3e6adba4041f9ce041d18bb2cb40e5e9644e5fb585b424a55fe02a9e491a6fbf",
+      "tools/cuda-native/solver_velocity_cached_validate.cu": "207e485d76f4bae0032c6b8add9f65990333c386b1b013b030eb71c8bed5372d"
+    },
+    "qualification_scripts": {
+      "qualify_search_efficiency.py": {
+        "path": "tools/cuda-native/qualify_search_efficiency.py",
+        "sha256": "10f91fc2ad0c5b6ec481a61a7d911afb05aa1d4e3bbf4ead967885ee8d3a58f2"
+      },
+      "qualify_game.py": {
+        "path": "tools/cuda-native/qualify_game.py",
+        "sha256": "6b5ad953f6eb9f17f0037d865f92cd43e01cfd3d03c2c440f4ecdaf35dd5ad1f"
+      }
+    },
+    "source_pins_unchanged_after_build_and_gates": true,
+    "commands": [
+      "cmake capacity512 configuration plus LOCAL_VELOCITY=ON, LOCAL_POSITION=ON, CONTACT_ANCHORS=ON; other new experiments OFF",
+      "cmake --build build-cuda-native-efficiency3 --target named executables in raw build logs -j2"
+    ],
+    "logs": [
+      {
+        "path": "artifacts/gpu-efficiency3-20261104/selected-components-build.log",
+        "sha256": "60d99dd16e318cbfd6dfcc24b43fb26cfb017c7c48c157506ff467f458b2af5e"
+      },
+      {
+        "path": "artifacts/gpu-efficiency3-20261104/selected-final-components-build.log",
+        "sha256": "9bab5a828c01a6d104747838495b8e5dd6744e535738f19fb747a02abd296e0b"
+      },
+      {
+        "path": "artifacts/gpu-efficiency3-20261104/selected-final-search-build.log",
+        "sha256": "1b54d5a5fe524ae69df3b6e9725053f180b4acf62f240d8f9d1b3b4e12640a9b"
+      }
+    ]
+  },
+  "native_full_record": {
+    "raw": {
+      "path": "artifacts/gpu-efficiency3-20261104/gates/full-record.json",
+      "sha256": "47c563ea0313c03c7303264ac8adb28fbaa98ec3d73ec3d21547899352a2f15e"
+    },
+    "passed": true,
+    "steps": 97219,
+    "rows": 97220,
+    "exact_frame_bytes_equal": true,
+    "native_and_typed_sha256": "9d972bbf361cfa58de555891ebcf96d2cd7b109839bc00868079d60aa03577ed",
+    "typed_metadata": {
+      "backend": "cuda-native-full-game",
+      "steps": 97219,
+      "tick": 97219,
+      "failed": false,
+      "physics_status": 0,
+      "live_score": 4393699,
+      "recorded_final_score": 4393101,
+      "level": 100,
+      "chain": 70,
+      "clone_verified": false,
+      "kernel_ms_including_frame_hashes": 97760.46875,
+      "elapsed_seconds": 97.836735375,
+      "world_bytes": 582480,
+      "scene_bytes": 507032,
+      "guest_calls": 0,
+      "fallback_calls": 0
+    }
+  },
+  "search_qualification": {
+    "gpu-shared-search": {
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/gates/spread-gpu-shared-search/qualification.json",
+        "sha256": "b10b3c593ec4e2fb7ce380159373307fd522d160bbb50e447c97dfd66aaf6a10"
+      },
+      "cases": 11,
+      "all_native_packets_equal": true,
+      "candidate_counts": [
+        8,
+        512,
+        12288
+      ],
+      "prefixes": [
+        100,
+        2000,
+        96000,
+        97150,
+        97218
+      ],
+      "all_fixtures_activate_sharing": true,
+      "all_small_leaves_independently_replayed": true
+    },
+    "host-shared-search": {
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/gates/spread-host-shared-search/qualification.json",
+        "sha256": "401e6d890d311d190708b27f8cd139053bb32e1e84159216470ddbb28a9e5d2c"
+      },
+      "cases": 9,
+      "all_native_packets_equal": true,
+      "candidate_counts": [
+        8,
+        512,
+        12288
+      ],
+      "prefixes": [
+        100,
+        2000,
+        96000,
+        97150,
+        97218
+      ],
+      "all_fixtures_activate_sharing": true,
+      "all_small_leaves_independently_replayed": true
+    }
+  },
+  "component_and_snapshot_results": {
+    "velocity-cached": {
+      "schema": "irisu-cached-velocity-qualifier-v1",
+      "passed": true,
+      "backend": "cuda",
+      "local_velocity": false,
+      "cache_anchors": true,
+      "contact_anchors": false,
+      "cases": 256,
+      "native_captured_cases": 32,
+      "iterations": 10,
+      "rejections": 192,
+      "cached_cases": 116,
+      "fallback_cases": 140,
+      "mismatches": 0,
+      "full_body_and_constraint_bytes_compared": true,
+      "scope": "Cached/local velocity versus unchanged repeated stage on native-captured and invalid/numeric-failure inputs; no full-world admission"
+    },
+    "velocity-cached-local": {
+      "schema": "irisu-cached-velocity-qualifier-v1",
+      "passed": true,
+      "backend": "cuda",
+      "local_velocity": true,
+      "cache_anchors": true,
+      "contact_anchors": false,
+      "cases": 256,
+      "native_captured_cases": 32,
+      "iterations": 10,
+      "rejections": 192,
+      "cached_cases": 116,
+      "fallback_cases": 140,
+      "mismatches": 0,
+      "full_body_and_constraint_bytes_compared": true,
+      "scope": "Cached/local velocity versus unchanged repeated stage on native-captured and invalid/numeric-failure inputs; no full-world admission"
+    },
+    "velocity-local": {
+      "schema": "irisu-cached-velocity-qualifier-v1",
+      "passed": true,
+      "backend": "cuda",
+      "local_velocity": true,
+      "cache_anchors": false,
+      "contact_anchors": false,
+      "cases": 256,
+      "native_captured_cases": 32,
+      "iterations": 10,
+      "rejections": 192,
+      "cached_cases": 0,
+      "fallback_cases": 0,
+      "mismatches": 0,
+      "full_body_and_constraint_bytes_compared": true,
+      "scope": "Cached/local velocity versus unchanged repeated stage on native-captured and invalid/numeric-failure inputs; no full-world admission"
+    },
+    "velocity-contact": {
+      "schema": "irisu-cached-velocity-qualifier-v1",
+      "passed": true,
+      "backend": "cuda",
+      "local_velocity": false,
+      "cache_anchors": false,
+      "contact_anchors": true,
+      "cases": 256,
+      "native_captured_cases": 32,
+      "iterations": 10,
+      "rejections": 192,
+      "cached_cases": 0,
+      "fallback_cases": 0,
+      "mismatches": 0,
+      "full_body_and_constraint_bytes_compared": true,
+      "scope": "Cached/local velocity versus unchanged repeated stage on native-captured and invalid/numeric-failure inputs; no full-world admission"
+    },
+    "velocity-contact-local": {
+      "schema": "irisu-cached-velocity-qualifier-v1",
+      "passed": true,
+      "backend": "cuda",
+      "local_velocity": true,
+      "cache_anchors": false,
+      "contact_anchors": true,
+      "cases": 256,
+      "native_captured_cases": 32,
+      "iterations": 10,
+      "rejections": 192,
+      "cached_cases": 0,
+      "fallback_cases": 0,
+      "mismatches": 0,
+      "full_body_and_constraint_bytes_compared": true,
+      "scope": "Cached/local velocity versus unchanged repeated stage on native-captured and invalid/numeric-failure inputs; no full-world admission"
+    },
+    "position-raw": {
+      "schema": "irisu-local-position-qualifier-v1",
+      "passed": true,
+      "backend": "cuda",
+      "canonical_rotation": false,
+      "cases": 256,
+      "native_captured_cases": 32,
+      "iterations": 10,
+      "rejections": 193,
+      "mismatches": 0,
+      "full_body_and_constraint_bytes_compared": true,
+      "scope": "Local position versus unchanged repeated stage on native-captured and invalid/numeric-failure inputs; no full-world admission"
+    },
+    "position-canonical": {
+      "schema": "irisu-local-position-qualifier-v1",
+      "passed": true,
+      "backend": "cuda",
+      "canonical_rotation": true,
+      "cases": 256,
+      "native_captured_cases": 32,
+      "iterations": 10,
+      "rejections": 193,
+      "mismatches": 0,
+      "full_body_and_constraint_bytes_compared": true,
+      "scope": "Local position versus unchanged repeated stage on native-captured and invalid/numeric-failure inputs; no full-world admission"
+    },
+    "dynamic": {
+      "pass": true,
+      "benchmark": false,
+      "worlds": 16,
+      "ticks_each": 192,
+      "attempted_world_steps": 3072,
+      "all_native_hashes_equal": true,
+      "trace_every_tick": true,
+      "warmups": 0,
+      "repeats": 1,
+      "registers_per_thread": 126,
+      "local_bytes_per_thread": 608,
+      "scene_bytes": 507032,
+      "rollout_kernel_ms": [
+        391.335938
+      ],
+      "resident_launch_sync_ms": [
+        391.34556
+      ],
+      "cold_scene_setup_kernel_ms": [
+        3.981312
+      ],
+      "process_total_ms": 481.0023,
+      "timing_scope": "resident sequential physics+recorded lifecycle operations; setup separately reported; benchmark final hash/download outside rollout timer",
+      "fallback_calls": 0
+    },
+    "compact-scene": {
+      "pass": true,
+      "snapshot_profile": "active-World-and-full-SAP",
+      "performance_claim": false,
+      "virgin_scratch": false,
+      "virgin_scope": "none; SceneScratch poisoned",
+      "persistent_prefix_initialized_once": true,
+      "native_cases": 16,
+      "ticks_each": 192,
+      "lanes": 64,
+      "snapshots": 12288,
+      "native_frame_checks": 9216,
+      "zero_iteration_steps": 3072,
+      "warm_zero_iteration_steps": 1796,
+      "pending_destroy_witnesses": 64,
+      "origin_calls": 80,
+      "sleeping_body_witnesses": 4848,
+      "frozen_body_witnesses": 10328,
+      "scene_bytes": 507032,
+      "full_physical_prefix_bytes": 388240,
+      "scratch_bytes": 118788,
+      "all_active_bytes_and_metadata_equal_before_and_after": true,
+      "inactive_payload_equality": false,
+      "actor_mapping_bytes_equal": true,
+      "pool_scan_and_reachable_list_clear": true,
+      "summed_scene_transport_bytes": 1203649088,
+      "fallback_calls": 0
+    },
+    "compact-game-100": {
+      "pass": true,
+      "performance_claim": false,
+      "prefix_backend": "typed-host-checked",
+      "prefix": 100,
+      "snapshots": 192,
+      "actual_native_frame_checks": 192,
+      "virgin": false,
+      "virgin_scope": "none; Game and SceneScratch poisoned each snapshot",
+      "all_persistent_storage_initialized_once": true,
+      "warm_point_witnesses": 3726,
+      "pending_delete_snapshots": 10,
+      "sleeping_body_witnesses": 533,
+      "frozen_body_witnesses": 0,
+      "game_transport_bytes_sum": 2223768,
+      "scene_transport_bytes_sum": 20302956,
+      "live_game_value_fields_and_active_scene_equal_before_after": true,
+      "live_element_padding_mismatches_ignored": 592,
+      "pointer_tails_zero_restored": true,
+      "inactive_payload_equality": false,
+      "full_SAP_bytes_preserved": true,
+      "fallback_calls": 0
+    },
+    "compact-game-96000": {
+      "pass": true,
+      "performance_claim": false,
+      "prefix_backend": "typed-host-checked",
+      "prefix": 96000,
+      "snapshots": 192,
+      "actual_native_frame_checks": 192,
+      "virgin": false,
+      "virgin_scope": "none; Game and SceneScratch poisoned each snapshot",
+      "all_persistent_storage_initialized_once": true,
+      "warm_point_witnesses": 4261,
+      "pending_delete_snapshots": 18,
+      "sleeping_body_witnesses": 1489,
+      "frozen_body_witnesses": 960,
+      "game_transport_bytes_sum": 4827944,
+      "scene_transport_bytes_sum": 21668744,
+      "live_game_value_fields_and_active_scene_equal_before_after": true,
+      "live_element_padding_mismatches_ignored": 1017,
+      "pointer_tails_zero_restored": true,
+      "inactive_payload_equality": false,
+      "full_SAP_bytes_preserved": true,
+      "fallback_calls": 0
+    },
+    "compact-game-97150": {
+      "pass": true,
+      "performance_claim": false,
+      "prefix_backend": "typed-host-checked",
+      "prefix": 97150,
+      "snapshots": 69,
+      "actual_native_frame_checks": 69,
+      "virgin": false,
+      "virgin_scope": "none; Game and SceneScratch poisoned each snapshot",
+      "all_persistent_storage_initialized_once": true,
+      "warm_point_witnesses": 2702,
+      "pending_delete_snapshots": 7,
+      "sleeping_body_witnesses": 381,
+      "frozen_body_witnesses": 414,
+      "game_transport_bytes_sum": 2169376,
+      "scene_transport_bytes_sum": 8470372,
+      "live_game_value_fields_and_active_scene_equal_before_after": true,
+      "live_element_padding_mismatches_ignored": 587,
+      "pointer_tails_zero_restored": true,
+      "inactive_payload_equality": false,
+      "full_SAP_bytes_preserved": true,
+      "fallback_calls": 0
+    },
+    "gpu-shared-memcheck": {
+      "path": "artifacts/gpu-efficiency3-20261104/gates/gpu-shared-memcheck.stdout",
+      "sha256": "348aab122f17b873983c35443627492d795e5d601518f8046162ef77a4366e5c"
+    },
+    "gpu-shared-initcheck": {
+      "path": "artifacts/gpu-efficiency3-20261104/gates/gpu-shared-initcheck.stdout",
+      "sha256": "348aab122f17b873983c35443627492d795e5d601518f8046162ef77a4366e5c"
+    },
+    "host-shared-memcheck": {
+      "path": "artifacts/gpu-efficiency3-20261104/gates/host-shared-memcheck.stdout",
+      "sha256": "348aab122f17b873983c35443627492d795e5d601518f8046162ef77a4366e5c"
+    },
+    "host-shared-initcheck": {
+      "path": "artifacts/gpu-efficiency3-20261104/gates/host-shared-initcheck.stdout",
+      "sha256": "348aab122f17b873983c35443627492d795e5d601518f8046162ef77a4366e5c"
+    },
+    "compact-scene-initcheck": {
+      "pass": true,
+      "snapshot_profile": "active-World-and-full-SAP",
+      "performance_claim": false,
+      "virgin_scratch": true,
+      "virgin_scope": "SceneScratch only; persistent pool storage initialized once",
+      "persistent_prefix_initialized_once": true,
+      "native_cases": 16,
+      "ticks_each": 192,
+      "lanes": 64,
+      "snapshots": 12288,
+      "native_frame_checks": 9216,
+      "zero_iteration_steps": 3072,
+      "warm_zero_iteration_steps": 1796,
+      "pending_destroy_witnesses": 64,
+      "origin_calls": 80,
+      "sleeping_body_witnesses": 4848,
+      "frozen_body_witnesses": 10328,
+      "scene_bytes": 507032,
+      "full_physical_prefix_bytes": 388240,
+      "scratch_bytes": 118788,
+      "all_active_bytes_and_metadata_equal_before_and_after": true,
+      "inactive_payload_equality": false,
+      "actor_mapping_bytes_equal": true,
+      "pool_scan_and_reachable_list_clear": true,
+      "summed_scene_transport_bytes": 1203649088,
+      "fallback_calls": 0
+    },
+    "compact-game-initcheck": {
+      "pass": true,
+      "performance_claim": false,
+      "prefix_backend": "typed-host-checked",
+      "prefix": 100,
+      "snapshots": 192,
+      "actual_native_frame_checks": 192,
+      "virgin": true,
+      "virgin_scope": "SceneScratch only; all persistent Game/Scene storage initialized once",
+      "all_persistent_storage_initialized_once": true,
+      "warm_point_witnesses": 3726,
+      "pending_delete_snapshots": 10,
+      "sleeping_body_witnesses": 533,
+      "frozen_body_witnesses": 0,
+      "game_transport_bytes_sum": 2223768,
+      "scene_transport_bytes_sum": 20302956,
+      "live_game_value_fields_and_active_scene_equal_before_after": true,
+      "live_element_padding_mismatches_ignored": 0,
+      "pointer_tails_zero_restored": true,
+      "inactive_payload_equality": false,
+      "full_SAP_bytes_preserved": true,
+      "fallback_calls": 0
+    },
+    "spread-gpu-shared-search": {
+      "path": "artifacts/gpu-efficiency3-20261104/gates/spread-gpu-shared-search.stdout",
+      "sha256": "ed17ad7ae9ccc3e2032b3f490458490b8658a44fc07e805caa9fd9ca52d7a96a"
+    },
+    "spread-host-shared-search": {
+      "path": "artifacts/gpu-efficiency3-20261104/gates/spread-host-shared-search.stdout",
+      "sha256": "ac15a9368ebc21833852ca6d418f041ea1c003e78277d6e944bb5eccbfdef2d4"
+    },
+    "spread-gpu-shared-memcheck": {
+      "path": "artifacts/gpu-efficiency3-20261104/gates/spread-gpu-shared-memcheck.stdout",
+      "sha256": "fe70dba4f38b3ea5bdf56d3cfb7a294733272be8b2f4a17d88d88fef78f1472b"
+    },
+    "spread-gpu-shared-initcheck": {
+      "path": "artifacts/gpu-efficiency3-20261104/gates/spread-gpu-shared-initcheck.stdout",
+      "sha256": "fe70dba4f38b3ea5bdf56d3cfb7a294733272be8b2f4a17d88d88fef78f1472b"
+    },
+    "spread-host-shared-memcheck": {
+      "path": "artifacts/gpu-efficiency3-20261104/gates/spread-host-shared-memcheck.stdout",
+      "sha256": "fe70dba4f38b3ea5bdf56d3cfb7a294733272be8b2f4a17d88d88fef78f1472b"
+    },
+    "spread-host-shared-initcheck": {
+      "path": "artifacts/gpu-efficiency3-20261104/gates/spread-host-shared-initcheck.stdout",
+      "sha256": "fe70dba4f38b3ea5bdf56d3cfb7a294733272be8b2f4a17d88d88fef78f1472b"
+    }
+  },
+  "memory_checks": {
+    "gpu-shared-memcheck.sanitizer": {
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/gates/gpu-shared-memcheck.sanitizer",
+        "sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425"
+      },
+      "errors": 0
+    },
+    "gpu-shared-initcheck.sanitizer": {
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/gates/gpu-shared-initcheck.sanitizer",
+        "sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425"
+      },
+      "errors": 0
+    },
+    "host-shared-memcheck.sanitizer": {
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/gates/host-shared-memcheck.sanitizer",
+        "sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425"
+      },
+      "errors": 0
+    },
+    "host-shared-initcheck.sanitizer": {
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/gates/host-shared-initcheck.sanitizer",
+        "sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425"
+      },
+      "errors": 0
+    },
+    "compact-scene-initcheck.sanitizer": {
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/gates/compact-scene-initcheck.sanitizer",
+        "sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425"
+      },
+      "errors": 0
+    },
+    "compact-game-initcheck.sanitizer": {
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/gates/compact-game-initcheck.sanitizer",
+        "sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425"
+      },
+      "errors": 0
+    },
+    "spread-gpu-shared-memcheck.sanitizer": {
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/gates/spread-gpu-shared-memcheck.sanitizer",
+        "sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425"
+      },
+      "errors": 0
+    },
+    "spread-gpu-shared-initcheck.sanitizer": {
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/gates/spread-gpu-shared-initcheck.sanitizer",
+        "sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425"
+      },
+      "errors": 0
+    },
+    "spread-host-shared-memcheck.sanitizer": {
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/gates/spread-host-shared-memcheck.sanitizer",
+        "sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425"
+      },
+      "errors": 0
+    },
+    "spread-host-shared-initcheck.sanitizer": {
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/gates/spread-host-shared-initcheck.sanitizer",
+        "sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425"
+      },
+      "errors": 0
+    }
+  },
+  "gate_commands": {
+    "status": "passed",
+    "steps": [
+      {
+        "name": "velocity-cached",
+        "command": [
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-native-cached-velocity-validate",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-native-20261103/bounded-solver/cases.bin",
+          "--gpu"
+        ],
+        "returncode": 0,
+        "seconds": 0.16357323099509813
+      },
+      {
+        "name": "velocity-cached-local",
+        "command": [
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-native-cached-velocity-validate",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-native-20261103/bounded-solver/cases.bin",
+          "--gpu",
+          "--local"
+        ],
+        "returncode": 0,
+        "seconds": 0.11357394300284795
+      },
+      {
+        "name": "velocity-local",
+        "command": [
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-native-cached-velocity-validate",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-native-20261103/bounded-solver/cases.bin",
+          "--gpu",
+          "--local",
+          "--no-cache"
+        ],
+        "returncode": 0,
+        "seconds": 0.11348177799663972
+      },
+      {
+        "name": "velocity-contact",
+        "command": [
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-native-cached-velocity-validate",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-native-20261103/bounded-solver/cases.bin",
+          "--gpu",
+          "--contact"
+        ],
+        "returncode": 0,
+        "seconds": 0.11353556999529246
+      },
+      {
+        "name": "velocity-contact-local",
+        "command": [
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-native-cached-velocity-validate",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-native-20261103/bounded-solver/cases.bin",
+          "--gpu",
+          "--contact",
+          "--local"
+        ],
+        "returncode": 0,
+        "seconds": 0.11355660999834072
+      },
+      {
+        "name": "position-raw",
+        "command": [
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-native-local-position-validate",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-native-20261103/bounded-solver/cases.bin",
+          "--gpu"
+        ],
+        "returncode": 0,
+        "seconds": 0.113525941997068
+      },
+      {
+        "name": "position-canonical",
+        "command": [
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-native-local-position-validate",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-native-20261103/bounded-solver/cases.bin",
+          "--gpu",
+          "--canonical"
+        ],
+        "returncode": 0,
+        "seconds": 0.1135490159940673
+      },
+      {
+        "name": "full-record",
+        "command": [
+          "/usr/bin/python",
+          "tools/cuda-native/qualify_game.py",
+          "--native-oracle",
+          "/home/gabe/Documents/ChatGPT/irisu/build-project-exact/irisu-game-oracle",
+          "--runner",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-native-game-runner",
+          "--library",
+          "/home/gabe/Documents/ChatGPT/irisu/.local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+          "--replay",
+          "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+          "--steps",
+          "97219",
+          "--gpu",
+          "--output",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/full-record.json"
+        ],
+        "returncode": 0,
+        "seconds": 101.62473992801097
+      },
+      {
+        "name": "dynamic",
+        "command": [
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-native-dynamic-scene-runner",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/cuda-native-20261103/dynamic-scene/packets.bin"
+        ],
+        "returncode": 0,
+        "seconds": 0.5637829519982915
+      },
+      {
+        "name": "compact-scene",
+        "command": [
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-native-compact-snapshot-validate",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/cuda-native-20261103/dynamic-scene/packets.bin"
+        ],
+        "returncode": 0,
+        "seconds": 3.51580097299302
+      },
+      {
+        "name": "compact-game-100",
+        "command": [
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-native-compact-game-validate",
+          "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/full-record.native.frames.bin",
+          "100",
+          "192"
+        ],
+        "returncode": 0,
+        "seconds": 4.6164365820004605
+      },
+      {
+        "name": "compact-game-96000",
+        "command": [
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-native-compact-game-validate",
+          "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/full-record.native.frames.bin",
+          "96000",
+          "192"
+        ],
+        "returncode": 0,
+        "seconds": 15.172580004989868
+      },
+      {
+        "name": "compact-game-97150",
+        "command": [
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-native-compact-game-validate",
+          "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/full-record.native.frames.bin",
+          "97150",
+          "69"
+        ],
+        "returncode": 0,
+        "seconds": 12.62095619700267
+      },
+      {
+        "name": "gpu-shared-search",
+        "command": [
+          "/usr/bin/python",
+          "tools/cuda-native/qualify_search_efficiency.py",
+          "--native",
+          "/home/gabe/Documents/ChatGPT/irisu/build-project-exact/irisu-search-oracle",
+          "--runner",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-native-search-runner",
+          "--library",
+          "/home/gabe/Documents/ChatGPT/irisu/.local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+          "--replay",
+          "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+          "--all-small-selected",
+          "--late-prefixes",
+          "--runner-flag=--adaptive-shared-prefixes",
+          "--output",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/gpu-shared-search/qualification.json"
+        ],
+        "returncode": 0,
+        "seconds": 47.64169799099909
+      },
+      {
+        "name": "host-shared-search",
+        "command": [
+          "/usr/bin/python",
+          "tools/cuda-native/qualify_search_efficiency.py",
+          "--native",
+          "/home/gabe/Documents/ChatGPT/irisu/build-project-exact/irisu-search-oracle",
+          "--runner",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-native-search-runner",
+          "--library",
+          "/home/gabe/Documents/ChatGPT/irisu/.local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+          "--replay",
+          "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+          "--all-small-selected",
+          "--late-prefixes",
+          "--runner-flag=--adaptive-shared-prefixes",
+          "--force-host-prefix",
+          "--runner-flag=--host-shared-checkpoints",
+          "--output",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/host-shared-search/qualification.json"
+        ],
+        "returncode": 0,
+        "seconds": 46.29209706699476
+      },
+      {
+        "name": "gpu-shared-memcheck",
+        "command": [
+          "/opt/cuda/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "memcheck",
+          "--error-exitcode",
+          "77",
+          "--log-file",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/gpu-shared-memcheck.sanitizer",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-native-search-runner",
+          "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/gpu-shared-search/specs-8-100.bin",
+          "100",
+          "4",
+          "--host-prefix",
+          "--compact-clone",
+          "--merge-rank",
+          "--tiled-selection",
+          "--parallel-prefix-guard",
+          "--copy-u64",
+          "--reuse-prefix",
+          "--physical-snapshot",
+          "--warmups",
+          "0",
+          "--repeats",
+          "3",
+          "--keep",
+          "8",
+          "--final-only",
+          "--adaptive-shared-prefixes"
+        ],
+        "returncode": 0,
+        "seconds": 5.067301927992958
+      },
+      {
+        "name": "gpu-shared-initcheck",
+        "command": [
+          "/opt/cuda/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "initcheck",
+          "--error-exitcode",
+          "77",
+          "--log-file",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/gpu-shared-initcheck.sanitizer",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-native-search-runner",
+          "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/gpu-shared-search/specs-8-100.bin",
+          "100",
+          "4",
+          "--host-prefix",
+          "--compact-clone",
+          "--merge-rank",
+          "--tiled-selection",
+          "--parallel-prefix-guard",
+          "--copy-u64",
+          "--reuse-prefix",
+          "--physical-snapshot",
+          "--warmups",
+          "0",
+          "--repeats",
+          "3",
+          "--keep",
+          "8",
+          "--final-only",
+          "--adaptive-shared-prefixes"
+        ],
+        "returncode": 0,
+        "seconds": 3.565634205006063
+      },
+      {
+        "name": "host-shared-memcheck",
+        "command": [
+          "/opt/cuda/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "memcheck",
+          "--error-exitcode",
+          "77",
+          "--log-file",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/host-shared-memcheck.sanitizer",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-native-search-runner",
+          "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/gpu-shared-search/specs-8-100.bin",
+          "100",
+          "4",
+          "--host-prefix",
+          "--compact-clone",
+          "--merge-rank",
+          "--tiled-selection",
+          "--parallel-prefix-guard",
+          "--copy-u64",
+          "--reuse-prefix",
+          "--physical-snapshot",
+          "--warmups",
+          "0",
+          "--repeats",
+          "3",
+          "--keep",
+          "8",
+          "--final-only",
+          "--adaptive-shared-prefixes",
+          "--host-shared-checkpoints"
+        ],
+        "returncode": 0,
+        "seconds": 5.0665509780083084
+      },
+      {
+        "name": "host-shared-initcheck",
+        "command": [
+          "/opt/cuda/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "initcheck",
+          "--error-exitcode",
+          "77",
+          "--log-file",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/host-shared-initcheck.sanitizer",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-native-search-runner",
+          "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/gpu-shared-search/specs-8-100.bin",
+          "100",
+          "4",
+          "--host-prefix",
+          "--compact-clone",
+          "--merge-rank",
+          "--tiled-selection",
+          "--parallel-prefix-guard",
+          "--copy-u64",
+          "--reuse-prefix",
+          "--physical-snapshot",
+          "--warmups",
+          "0",
+          "--repeats",
+          "3",
+          "--keep",
+          "8",
+          "--final-only",
+          "--adaptive-shared-prefixes",
+          "--host-shared-checkpoints"
+        ],
+        "returncode": 0,
+        "seconds": 3.5657744909985922
+      },
+      {
+        "name": "compact-scene-initcheck",
+        "command": [
+          "/opt/cuda/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "initcheck",
+          "--error-exitcode",
+          "77",
+          "--log-file",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/compact-scene-initcheck.sanitizer",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-native-compact-snapshot-validate",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/cuda-native-20261103/dynamic-scene/packets.bin",
+          "--virgin-scratch"
+        ],
+        "returncode": 0,
+        "seconds": 185.67674626299413
+      },
+      {
+        "name": "compact-game-initcheck",
+        "command": [
+          "/opt/cuda/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "initcheck",
+          "--error-exitcode",
+          "77",
+          "--log-file",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/compact-game-initcheck.sanitizer",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-native-compact-game-validate",
+          "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/full-record.native.frames.bin",
+          "100",
+          "192",
+          "--virgin"
+        ],
+        "returncode": 0,
+        "seconds": 229.65422299299098
+      }
+    ]
+  },
+  "shared_coverage_gate_commands": {
+    "status": "passed",
+    "steps": [
+      {
+        "name": "spread-gpu-shared-search",
+        "command": [
+          "/usr/bin/python",
+          "tools/cuda-native/qualify_search_efficiency.py",
+          "--native",
+          "/home/gabe/Documents/ChatGPT/irisu/build-project-exact/irisu-search-oracle",
+          "--runner",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-native-search-runner",
+          "--library",
+          "/home/gabe/Documents/ChatGPT/irisu/.local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+          "--replay",
+          "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+          "--all-small-selected",
+          "--late-prefixes",
+          "--spread-small-candidates",
+          "--runner-flag=--adaptive-shared-prefixes",
+          "--output",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/spread-gpu-shared-search/qualification.json"
+        ],
+        "returncode": 0,
+        "seconds": 54.55110997399606
+      },
+      {
+        "name": "spread-host-shared-search",
+        "command": [
+          "/usr/bin/python",
+          "tools/cuda-native/qualify_search_efficiency.py",
+          "--native",
+          "/home/gabe/Documents/ChatGPT/irisu/build-project-exact/irisu-search-oracle",
+          "--runner",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-native-search-runner",
+          "--library",
+          "/home/gabe/Documents/ChatGPT/irisu/.local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+          "--replay",
+          "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+          "--all-small-selected",
+          "--late-prefixes",
+          "--spread-small-candidates",
+          "--runner-flag=--adaptive-shared-prefixes",
+          "--force-host-prefix",
+          "--runner-flag=--host-shared-checkpoints",
+          "--output",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/spread-host-shared-search/qualification.json"
+        ],
+        "returncode": 0,
+        "seconds": 50.19487295100407
+      },
+      {
+        "name": "spread-gpu-shared-memcheck",
+        "command": [
+          "/opt/cuda/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "memcheck",
+          "--error-exitcode",
+          "77",
+          "--log-file",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/spread-gpu-shared-memcheck.sanitizer",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-native-search-runner",
+          "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/spread-gpu-shared-search/specs-8-100.bin",
+          "100",
+          "4",
+          "--host-prefix",
+          "--compact-clone",
+          "--merge-rank",
+          "--tiled-selection",
+          "--parallel-prefix-guard",
+          "--copy-u64",
+          "--reuse-prefix",
+          "--physical-snapshot",
+          "--warmups",
+          "0",
+          "--repeats",
+          "3",
+          "--keep",
+          "8",
+          "--final-only",
+          "--adaptive-shared-prefixes"
+        ],
+        "returncode": 0,
+        "seconds": 11.470809855003608
+      },
+      {
+        "name": "spread-gpu-shared-initcheck",
+        "command": [
+          "/opt/cuda/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "initcheck",
+          "--error-exitcode",
+          "77",
+          "--log-file",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/spread-gpu-shared-initcheck.sanitizer",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-native-search-runner",
+          "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/spread-gpu-shared-search/specs-8-100.bin",
+          "100",
+          "4",
+          "--host-prefix",
+          "--compact-clone",
+          "--merge-rank",
+          "--tiled-selection",
+          "--parallel-prefix-guard",
+          "--copy-u64",
+          "--reuse-prefix",
+          "--physical-snapshot",
+          "--warmups",
+          "0",
+          "--repeats",
+          "3",
+          "--keep",
+          "8",
+          "--final-only",
+          "--adaptive-shared-prefixes"
+        ],
+        "returncode": 0,
+        "seconds": 8.217889480991289
+      },
+      {
+        "name": "spread-host-shared-memcheck",
+        "command": [
+          "/opt/cuda/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "memcheck",
+          "--error-exitcode",
+          "77",
+          "--log-file",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/spread-host-shared-memcheck.sanitizer",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-native-search-runner",
+          "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/spread-gpu-shared-search/specs-8-100.bin",
+          "100",
+          "4",
+          "--host-prefix",
+          "--compact-clone",
+          "--merge-rank",
+          "--tiled-selection",
+          "--parallel-prefix-guard",
+          "--copy-u64",
+          "--reuse-prefix",
+          "--physical-snapshot",
+          "--warmups",
+          "0",
+          "--repeats",
+          "3",
+          "--keep",
+          "8",
+          "--final-only",
+          "--adaptive-shared-prefixes",
+          "--host-shared-checkpoints"
+        ],
+        "returncode": 0,
+        "seconds": 10.219908849001513
+      },
+      {
+        "name": "spread-host-shared-initcheck",
+        "command": [
+          "/opt/cuda/compute-sanitizer/compute-sanitizer",
+          "--tool",
+          "initcheck",
+          "--error-exitcode",
+          "77",
+          "--log-file",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/spread-host-shared-initcheck.sanitizer",
+          "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-native-search-runner",
+          "/home/gabe/Documents/ChatGPT/irisu/irisu-high-score-4393101.rpy",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/gates/spread-gpu-shared-search/specs-8-100.bin",
+          "100",
+          "4",
+          "--host-prefix",
+          "--compact-clone",
+          "--merge-rank",
+          "--tiled-selection",
+          "--parallel-prefix-guard",
+          "--copy-u64",
+          "--reuse-prefix",
+          "--physical-snapshot",
+          "--warmups",
+          "0",
+          "--repeats",
+          "3",
+          "--keep",
+          "8",
+          "--final-only",
+          "--adaptive-shared-prefixes",
+          "--host-shared-checkpoints"
+        ],
+        "returncode": 0,
+        "seconds": 7.467921265008044
+      }
+    ]
+  },
+  "original_cpu_regression": {
+    "raw": {
+      "path": "artifacts/gpu-efficiency3-20261104/original-cpu-regression.log",
+      "sha256": "6a412185c33479cbfa9383d004e29a81a4e0796d8a03998143aecc88732cb7a1"
+    },
+    "passed": 12,
+    "failed": 0
+  },
+  "host_planner_and_segment": {
+    "planner": {
+      "path": "artifacts/gpu-efficiency3-20261104/final-plan-validator.log",
+      "sha256": "026f2edc3315e30f08abf3e7915bf579a8aaef991988c12ca00b66f3a43f2695"
+    },
+    "segment": {
+      "path": "artifacts/gpu-efficiency3-20261104/final-segment-validator.log",
+      "sha256": "7a1a826526aaf0a6735353b060537b72c37814287c8089f1ef1c93f5acaae7f4"
+    },
+    "independent_review": {
+      "path": "artifacts/gpu-efficiency3-20261104/profile-analysis/review-criteria.json",
+      "sha256": "da86b19580c87b7909bc7135898cfa951befe1b6d6545878eb7114d8e65a77f3"
+    },
+    "additional_review_scope": {
+      "schema": "irisu-gpu-efficiency3-independent-review-criteria-v1",
+      "scope": "Acceptance criteria and independent review evidence; no GPU performance admission",
+      "reviewed_revision": "v8 adaptive host-prepared persistent shared checkpoints, raw immutable cache guards, independent selected validation",
+      "resolved_findings": [
+        {
+          "issue": "CLI split value narrowed from ulong to unsigned before validation",
+          "fix": "stoull and nonzero<=horizon validation precede unsigned cast",
+          "verified_in_source": true
+        },
+        {
+          "issue": "failed shared compact source plan could leave unrestored lanes for suffix/continuation",
+          "fix": "read plan errors and throw before destination clones/suffix",
+          "verified_in_source": true
+        }
+      ],
+      "completed_host_proofs": [
+        {
+          "artifact": "shared-plan-fuzz.json",
+          "scope": "2500 random workloads times4 modes (auto,split1,fullhorizon,adaptive); dense effective-input reference checked exact shared membership and automatic fixedsplit minimum; adaptive per-slot depths/cost/cachebounds verified",
+          "result": {
+            "tests": 2500,
+            "requests_each": 4,
+            "prefix_membership_checks": 406831,
+            "status": "passed"
+          }
+        },
+        {
+          "artifact": "shared-segment-validate.json",
+          "scope": "future versus partialshared segment, fullcheckpoint clone, suffix; same checked typed host physics on both sides, not an independent native hidden-state oracle",
+          "result": {
+            "status": "passed",
+            "cases": 126,
+            "terminal_cases": 36,
+            "failed_prefix_cases": 18,
+            "comparison": "complete Result, address-normalized full Game+Scene bytes, independent one-tick continuation"
+          }
+        }
+      ],
+      "planner_acceptance": [
+        "Only exactly equal raw effective replay words share a checkpoint; no heuristic state or hash equivalence",
+        "All candidates and mutation metadata pass existing wire validation before planner reads; u32 prefix+offset is bounded",
+        "Every map/representative index is in range and selection recovers original candidate ID/tie-break order",
+        "Root slot0 has original prefix Result, zero last StepResult and zero executed-prefix ticks; singleton leaves start offset0",
+        "Reused prefix offsets and per-leaf start offsets match the actual checkpoint tick; adaptive depths must not reuse a scalar global split incorrectly",
+        "Automatic plan does not increase independent simulated work and chooses sensible cache count; no cache means no extra allocations",
+        "Actual executed ticks distinguish reused computations from logical candidate-equivalent ticks; repeats/warmups counted separately"
+      ],
+      "scheduler_memory_acceptance": [
+        "Cache source objects remain immutable during child cloning/suffix execution; pointer rebinding touches destination only",
+        "Compact plan represents each source occupancy and complete SAP history at that checkpoint, and is rebuilt if source changes",
+        "All destination occupied flags, vector headers and live pointer storage initialized before access; pointer tails zeroed/rebound using actual source body base",
+        "Source plan failure aborts before downstream access, including numeric/capacity failures during a shared prefix",
+        "Clear/rebind failure also prevents downstream unsafe access or fails deterministically before output acceptance",
+        "Independent validation clones do not overlap source, active futures or selected continuation buffers",
+        "Extra metadata descriptor unused tails are not read/copied by diagnostics without initialization",
+        "CUDA memcheck and initcheck pass active shared path over at least2 repeats, including selected continuations and poisoned scratch"
+      ],
+      "semantic_acceptance": [
+        "Complete Result/rank packet equals independently recomputed unchanged native oracle for all benchmark candidates",
+        "Trace-every-tick and final-only fold behavior matches uninterrupted future, including final fold exactly once",
+        "Last StepResult carries event digest and first terminal metadata through checkpoints",
+        "Termination/truncation before split, atsplit, in suffix and already-terminal original prefix behave identically",
+        "Duplicate candidates with split==horizon clone complete final states and finish metadata without an extra step",
+        "Independent replay state is compared with shared-derived persistent Game/World/SAP at checkpoints or leaves, not merely leaf clones of themselves",
+        "Independent continuation uses identical subsequent actions and compares full persistent state after each continuation; omitted inactive padding is explicitly scoped",
+        "Prefixes0/100/2000/96000/97150/97218/97219 exercise initialization, active worlds, warm state, deletion and natural ending",
+        "At least one valid input beyond replay end uses zero incumbent words; malformedsplit/candidate inputs fail cleanly"
+      ],
+      "benchmark_acceptance": [
+        "Preserve exact baseline executable, input and expected native packet hashes",
+        "Alternate baseline/candidate order for at least3 pairs with no competing GPU workload",
+        "Full-process wall includes planning, allocation, CPU prefix ifenabled, all measured batches, output and teardown",
+        "Report execution redesign speedup separately from avoided search ticks; do not present fewer ticks as faster physics for identical work",
+        "Guard/qualification time excluded from timing only when separately passing; retain prefix guards on both measured paths",
+        "No universal speedup claim from the cached12,288x4campaign; broader prefixes/horizons provide explicit support"
+      ],
+      "pending": "Coordinator owns GPU native output, independentcontinuation/memcheck/initcheck and benchmark acceptance. No GPU executed by this reviewer.",
+      "source_review": {
+        "adaptive_planner": "No blocker found. Exact raw-key memberships, per-slot depths, preparationcost, remapping and unusedslot pruning consistent. Bounded64depths/4096choices/128slots.",
+        "independent_selected_validation": "No blocker found. Independent future starts original prefix, fullResult compared, liveGamevalues/activeWorld/fullSAP compared after pointer normalization and after poisoned-scratch continuation. Distinct rankedcandidate IDs guarantee disjoint mutation.",
+        "metadata_clarification_requested": "Resolved for sharing validation: live-Game-values-active-World-and-full-SAP scope and independentreplays_per_batch emitted.",
+        "source_pins_at_review": {
+          "tools/cuda-native/shared_future_plan.hpp": "a26913d70efb06920493bac242a10e88887431e0d970be4b7cb7b483d35095e9",
+          "tools/cuda-native/search_runner.cu": "65500d41ba71159b2cb11589ead49158d4e534a382e36bc893d63a466650f3cd",
+          "tools/cuda-native/prefix_guard.cuh": "1e156c77aac9b83c14b72e62e5488c8a8cdccb6f7ac13ec3f8006d1a4e13b4c4",
+          "tools/cuda-native/benchmark_gpu_efficiency.py": "24a2ff9058c2c79df7252da9e7ba57a7eb0aead85995de3b1e6f65b4fd00ecef"
+        },
+        "host_shared_cache": "No blocker. Checked hostprefix cloning uploads complete initializedWorld/Scene and scalarSharedState, oldbases retained untilGPUrebind; savedcache snapshots are stream-ordered afterrebind; sourceplans built eachnewprefix and reused onlywhilepersistentcache guarded.",
+        "host_shared_raw_guard": "Validation errorrecord reset beforeeachbatch; compares everybyteofWorld/Scene/SharedState foreachcachedslot afterfanout/continuation; defaultstream finalevent precedesguardreadback; abortsonchange. Allwarmup/measured/reloadedbatches guarded. No driver/clock/settings changes.",
+        "host_gpu_tick_accounting": "CPUcachedprepticks accumulatedoncepereachprefixload, plannedGPUticks subtractsumdepths, actualGPUcounter resets beforeeverybatch; logicalcandidateticks distinct. Mainmatched fixturewarmups0/reuseprefix includesoneCPUpreparation in fullprocesswall. Earlyterminalactualticks canbe belowplanned; benchmarkarithmetic scoped to nonterminalfixture.",
+        "selected_solver_combination": {
+          "flags": [
+            "CONTACT_ANCHORS",
+            "LOCAL_VELOCITY",
+            "LOCAL_POSITION"
+          ],
+          "concrete_findings": [],
+          "reviewed_properties": [
+            "Body-index distinctness and point-count guards precede local bindings.",
+            "Per-contact RAII commits preserve complete partial velocity/position/rotation/matrix writes on every early numeric/trig return.",
+            "Normal and tangent contact anchor reuse consumes unchanged bodyR/localanchor bits, only after successful normal pass.",
+            "Contact/island/iteration order, zero-iteration behavior and position-convergence stop are unchanged.",
+            "Original solver.hpp SHA matches generated headers source pins; no original arithmetic/check/store graph rewritten."
+          ],
+          "source_pins": {
+            "clone/cuda_native/solver.hpp": "b18dbf0356d32fe798be74ab9e62bb34747064554ee9bbe983e6f3ce0ce05e60",
+            "clone/cuda_native/solver_velocity_contact.hpp": "13d162db1208d96baf873bd6e080374e291586ac1713207eb2b5f799011c7247",
+            "clone/cuda_native/solver_velocity_local.hpp": "7cefb0fb29224a8f3467a15e4ae1e909d75fb2fe683332d457d779805b41d48e",
+            "clone/cuda_native/solver_position_local.hpp": "38b326048b682b3552f9c50bdd5e45edcd947f375148df8bffd47e460a57e545",
+            "clone/cuda_native/world_pipeline.hpp": "81fdd8abbd79687f0bea16cc451da70c5c1dd02338d23b92ca473dc8fa1b2b5c"
+          },
+          "no_edits_or_regeneration_performed": true
+        }
+      }
+    }
+  },
+  "trials": [
+    {
+      "name": "adaptive-contact-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/adaptive-contact-paired.json",
+        "sha256": "7685b016ebb3c7cde0e48b973a8d38d5bf02c1fa09fcf86179239f2452fc2f1a"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.83152602899645,
+          "candidate": 1.5202869519998785
+        },
+        "speedup": 1.2047239020154377
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "adaptive-local-confirm-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/adaptive-local-confirm-paired.json",
+        "sha256": "ff93e29a019344a7629cc00ec5c1b692bbcbbcd41b0512f180573453aaef991e"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8333293850009795,
+          "candidate": 1.5518276719958521
+        },
+        "speedup": 1.1814001116780446
+      },
+      "rounds": 3,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "adaptive-local-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/adaptive-local-paired.json",
+        "sha256": "15f36c2498c9b271cd13a46b44ddbcb3f84961dec9419b069b4713d66c173ad8"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8264014969900018,
+          "candidate": 1.5445698980038287
+        },
+        "speedup": 1.1824660699074911
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "cache-cg-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/cache-cg-paired.json",
+        "sha256": "7493600350786efa9373bc3f8b65647d1c008a9e8eb74f95b6e93a7e4f64ce40"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8399349329993129,
+          "candidate": 6.797748286000569
+        },
+        "speedup": 0.2706682942039079
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "cached-anchors-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/cached-anchors-paired.json",
+        "sha256": "113f4f1964dca3f55a25fda0255c3119d1bc07bfa723222699d9784bb1f8271b"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8388416480011074,
+          "candidate": 1.9175874070060672
+        },
+        "speedup": 0.9589349832413085
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "contact-anchors-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/contact-anchors-paired.json",
+        "sha256": "5b18631cd43d26cf54bfa91c617db3f2d67b66bfc7989dbf616c6b103e75f8e3"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8321342739945976,
+          "candidate": 1.8516157739941264
+        },
+        "speedup": 0.989478648716896
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "contact-local-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/contact-local-paired.json",
+        "sha256": "825b54669c45f41cf672cf23c880350660ef52fdf7effd264e4f9d5acd72113e"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8346270289912354,
+          "candidate": 1.8044326200033538
+        },
+        "speedup": 1.0167334643882826
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "final-gpu-shared-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/final-gpu-shared-paired.json",
+        "sha256": "bae13265938881b5db726ce9035571cd77eab2deeba1fc4430c8ab120f2c6c48"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8243022810056573,
+          "candidate": 1.503288772990345
+        },
+        "speedup": 1.2135408138362875
+      },
+      "rounds": 3,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "final-host-shared-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/final-host-shared-paired.json",
+        "sha256": "b129a2e7a28c496405063453ecd0e9508034eabecc91d9b8bc48181a6e624fec"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8301951020112028,
+          "candidate": 1.379781322000781
+        },
+        "speedup": 1.3264385253144968
+      },
+      "rounds": 3,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "final-same-work-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/final-same-work-paired.json",
+        "sha256": "5fb96eee7420d8ae9cf918af885637e7de5a93e4b34c2cac2e65ba3610c6eecf"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8299660269985907,
+          "candidate": 1.7688088309951127
+        },
+        "speedup": 1.0345753565517148
+      },
+      "rounds": 3,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "final-threads16-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/final-threads16-paired.json",
+        "sha256": "f4ee2556f142c8a1bb962336ddfdf1405eb381d152f8a9863985992cae9de1b9"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.829681992996484,
+          "candidate": 1.5555417589930585
+        },
+        "speedup": 1.1762345706365886
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "final-threads64-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/final-threads64-paired.json",
+        "sha256": "4387e32be407532310701f27c3deffe76c6d17be8055828cffba7e4d4d4f489e"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8353490299923578,
+          "candidate": 1.416944351993152
+        },
+        "speedup": 1.295286598524956
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "host-shared-contact-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/host-shared-contact-paired.json",
+        "sha256": "fcaa81339ab50035b97a52ab25b51f957551550a36d16181010ba654cc6e9613"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8241591910045827,
+          "candidate": 1.3941980249946937
+        },
+        "speedup": 1.308393182533396
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "host-shared-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/host-shared-paired.json",
+        "sha256": "5b8a068c40b522d03f2b0c1c67830320ef2f15ac3365f4eb6028f48221380412"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8326813640014734,
+          "candidate": 1.427143218999845
+        },
+        "speedup": 1.2841607903135561
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "local-both-confirm-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/local-both-confirm-paired.json",
+        "sha256": "57b9a13732078e5791eef30a7b2b638c2b7b5a4213f77c319abc34817a264f39"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.828415406998829,
+          "candidate": 1.8103233160072705
+        },
+        "speedup": 1.0099938452052097
+      },
+      "rounds": 3,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "local-both-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/local-both-paired.json",
+        "sha256": "16b55af7ad6cc84ea1b08221f13f7f893a7ad942406926d5a0ab7c00db6b2c94"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.833842755004298,
+          "candidate": 1.8191641840094235
+        },
+        "speedup": 1.008068854435405
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "local-cached-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/local-cached-paired.json",
+        "sha256": "5a1e722f00de591f5c7f4414a5dbef0061f4718e10d5a29433be51a9ea891820"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8306454379926436,
+          "candidate": 1.877990499997395
+        },
+        "speedup": 0.974789509316039
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "local-position-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/local-position-paired.json",
+        "sha256": "0105751e8de2eca3a6eb9e5d1380034508b34bcbae8aceb63ed91e2cd41943ce"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8338442309905076,
+          "candidate": 1.83368540200172
+        },
+        "speedup": 1.0000866173601068
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "local-velocity-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/local-velocity-paired.json",
+        "sha256": "521f52fdb18f89b39035810ef88a0c9873bc1354120a24c225591fa305ef7720"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8262624350027181,
+          "candidate": 1.8183941150055034
+        },
+        "speedup": 1.0043270707556107
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "prefer-l1-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/prefer-l1-paired.json",
+        "sha256": "7123a81c252944d5a8f6146895865091107406f117d0f98a0194fd5b58b413ea"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8217505479988176,
+          "candidate": 1.8514328820019728
+        },
+        "speedup": 0.9839679124791932
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "reg128-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/reg128-paired.json",
+        "sha256": "9fc8d882bc6f526787205b8d4ba205f7ac9854a92587c45d69ef1615493b117c"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8290904479945311,
+          "candidate": 1.8591350649949163
+        },
+        "speedup": 0.9838394651544764
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "reg160-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/reg160-paired.json",
+        "sha256": "f49315d37da0bc2da881643ca8c61e22c5e4974ab3667bab9e8b3240de1c28fa"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8311657680023927,
+          "candidate": 1.845430938003119
+        },
+        "speedup": 0.9922700060419697
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "reg192-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/reg192-paired.json",
+        "sha256": "91277f371ea7d727f1ed25b1d3705928ce2a35b8be7d631805f52973286c12ea"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8248187599965604,
+          "candidate": 1.8455129840003792
+        },
+        "speedup": 0.9887867361632094
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "reg224-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/reg224-paired.json",
+        "sha256": "ca87d0791e16665723c82092ad35f4e4d8cfdc7ff92426e66e36633e6b879ac6"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8449512000079267,
+          "candidate": 1.845617951999884
+        },
+        "speedup": 0.9996387378052782
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "regusage2-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/regusage2-paired.json",
+        "sha256": "3e55c57ddcb73388632706cf9e7d414c1db439f194a2ef0734e29ea0cfa9e20e"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8315885649935808,
+          "candidate": 1.8463297190028243
+        },
+        "speedup": 0.9920159688394091
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "selective-split1-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/selective-split1-paired.json",
+        "sha256": "73ab674cb6c1ed436a68e5dfe01099dbbc375b98fa61606536561fb284820731"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8231288149981992,
+          "candidate": 1.6943134469911456
+        },
+        "speedup": 1.076028062124993
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "selective-split3-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/selective-split3-paired.json",
+        "sha256": "38a362d492c42582f6f59ff8fcc8b5f583e520b986ff2cfebfd0824968e023a5"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8374816349969478,
+          "candidate": 1.7570323919935618
+        },
+        "speedup": 1.045787000495823
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "shared-adaptive-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/shared-adaptive-paired.json",
+        "sha256": "3b868bd8cefcb0814a15c3b2b43f4da7e76713b8082c449022f91903ebaa3ecb"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.837562116998015,
+          "candidate": 1.6218012549943523
+        },
+        "speedup": 1.1330377944518324
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "shared-auto-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/shared-auto-paired.json",
+        "sha256": "763f45f37530d8c53860c1ce58eedd455615b574744b1ab4e4172e03445f45d4"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.834809972991934,
+          "candidate": 1.7166293329937616
+        },
+        "speedup": 1.0688445884773903
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "shared-control-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/shared-control-paired.json",
+        "sha256": "7b4d8537804bd05741d29523597d0f1bb48d9b159adf745b20b17df98217b331"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8274712550046388,
+          "candidate": 1.8465549660031684
+        },
+        "speedup": 0.9896652353437191
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "shared-selective-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/shared-selective-paired.json",
+        "sha256": "05c0f8dc4c75751297d5999c61e49b6d61a6dcef45ffda16f2731cfed80c49aa"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8340848420048133,
+          "candidate": 1.6719356870016782
+        },
+        "speedup": 1.096982890109799
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "shared-split1-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/shared-split1-paired.json",
+        "sha256": "f0c48812746b9b8da1cc005b306e018516bade797f4e9dd65571bd6359b7ac6f"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8279321180016268,
+          "candidate": 1.7051090649911202
+        },
+        "speedup": 1.0720323734899304
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "shared-split3-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/shared-split3-paired.json",
+        "sha256": "1731b004ad82527a85dfa6de59fb1d59824231bc6069a263a59d546ecfc18330"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8352561330102617,
+          "candidate": 1.882401826995192
+        },
+        "speedup": 0.9749545005169341
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "split-construct-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/split-construct-paired.json",
+        "sha256": "52df9f5f517056f3f53f371ddc775b0d90d421a31791540917242bc4c0679efe"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8427985529997386,
+          "candidate": 1.8536320260027424
+        },
+        "speedup": 0.9941555428202405
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    },
+    {
+      "name": "vectorize-paired",
+      "raw": {
+        "path": "artifacts/gpu-efficiency3-20261104/vectorize-paired.json",
+        "sha256": "66f61671f2f935a1e246c443522cec01b4e87fbde9f3b0675ee4fb7c251f98ff"
+      },
+      "summary": {
+        "median_seconds": {
+          "baseline": 1.8380231039918726,
+          "candidate": 1.857140148000326
+        },
+        "speedup": 0.9897061920560828
+      },
+      "rounds": 1,
+      "all_native_packets_equal": true
+    }
+  ],
+  "full_frontend_experiment": {
+    "command": [
+      "/opt/cuda/bin/nvcc",
+      "-ccbin",
+      "/usr/bin/g++-14",
+      "-O3",
+      "-DNDEBUG",
+      "-std=c++20",
+      "-gencode=arch=compute_70,code=sm_70",
+      "--extended-lambda",
+      "--fmad=false",
+      "--ftz=false",
+      "--prec-div=true",
+      "--prec-sqrt=true",
+      "-Xcompiler=-ffp-contract=off,-fno-fast-math",
+      "-Xptxas=-v",
+      "--expt-relaxed-constexpr",
+      "--Ofast-compile=0",
+      "--split-compile=4",
+      "-DIRISU_CUDA_NATIVE_BOUNDED_MATH=1",
+      "-DIRISU_CUDA_NATIVE_BOUNDED_STORE=1",
+      "-DIRISU_CUDA_NATIVE_CACHED_ROTATION=1",
+      "-DIRISU_CUDA_NATIVE_DEVICE_TRIG=0",
+      "-DIRISU_CUDA_NATIVE_ENTRY_INDEX=0",
+      "-DIRISU_CUDA_NATIVE_F32_DIV_STORE=0",
+      "-DIRISU_CUDA_NATIVE_F32_STORE=0",
+      "-DIRISU_CUDA_NATIVE_INLINE_STEP=1",
+      "-DIRISU_CUDA_NATIVE_INTERLEAVED_SOLVER=0",
+      "-DIRISU_CUDA_NATIVE_LIGHT_SHAPE_SYNC=1",
+      "-DIRISU_CUDA_NATIVE_MAX_CONTACTS=512",
+      "-DIRISU_CUDA_NATIVE_SPARSE_RESET=0",
+      "-DIRISU_CUDA_NATIVE_WIDE_REBIND=1",
+      "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/source-baseline/tools/cuda-native/search_runner.cu",
+      "-o",
+      "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-efficiency3-20261104/full-opt/search"
+    ],
+    "started": 1793825759.4146702,
+    "source": "artifacts/gpu-efficiency3-20261104/source-baseline",
+    "timeout": 900,
+    "seconds": 900.0006465911865
+  },
+  "limitations": [
+    "Large fixed-prefix fanout; no universal/single-game speed or score claim.",
+    "Best mode uses six checked CPU future-prefix ticks once; GPU work counts exclude the original CPU100-tick prefix and separate qualification replays/continuations.",
+    "Contact capacity512 retains explicit rejection outside admitted workloads.",
+    "Selected semantic comparison ignores only existing-contract inactive payload and live ABI padding; raw persisted checkpoints are guarded byte-for-byte.",
+    "Hardware stall counters remain unavailable; static resources and controlled A/B results do not prove a stall cause.",
+    "The broad per-world memory layout remains unchanged; further large kernel gains need a separate structural redesign."
+  ],
+  "preservation": {
+    "protected_paths_unchanged": true,
+    "native_library": {
+      "path": ".local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+      "sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5"
+    },
+    "replay": {
+      "path": "irisu-high-score-4393101.rpy",
+      "sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79"
+    },
+    "no_hardware_clock_power_or_driver_setting_changes": true
+  },
+  "reproduction": "tools/cuda-native/efficiency3_README.md"
+}

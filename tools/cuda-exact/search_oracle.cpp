@@ -39,14 +39,21 @@ struct Children {
 }
 int main(int argc,char** argv) {
   try {
-    if(argc!=7&&argc!=8) throw std::runtime_error("usage: search-oracle replay.rpy specs.bin prefix horizon workers target-score [--final-only]");
+    if(argc<7) throw std::runtime_error("usage: search-oracle replay.rpy specs.bin prefix horizon workers target-score [--final-only] [--emit-lifecycle path]");
     auto in=load_inputs(argv[1],argv[2],argv[3],argv[4]);
     const auto workers=std::stoul(argv[5]);in.options.target_score=std::stoll(argv[6]);
-    if(argc==8){if(std::string(argv[7])!="--final-only")throw std::runtime_error("unknown native search flag");in.options.trace_every_tick=false;}
+    const char* lifecycle_path=nullptr;
+    for(int i=7;i<argc;++i){const std::string flag=argv[i];
+      if(flag=="--final-only")in.options.trace_every_tick=false;
+      else if(flag=="--emit-lifecycle"&&i+1<argc)lifecycle_path=argv[++i];
+      else throw std::runtime_error("unknown native search flag");}
     if(!workers||workers>64) throw std::runtime_error("workers must be 1..64");
     const auto count=in.candidates.size();
     auto* output=static_cast<Result*>(mmap(nullptr,count*sizeof(Result),PROT_READ|PROT_WRITE,MAP_SHARED|MAP_ANONYMOUS,-1,0));
     if(output==MAP_FAILED) throw std::runtime_error("mmap failed");
+    std::uint32_t* lifecycle=nullptr;
+    if(lifecycle_path){lifecycle=static_cast<std::uint32_t*>(mmap(nullptr,count*4,PROT_READ|PROT_WRITE,MAP_SHARED|MAP_ANONYMOUS,-1,0));
+      if(lifecycle==MAP_FAILED)throw std::runtime_error("lifecycle mmap failed");}
     const std::uint16_t cw=0x027f;__asm__ __volatile__("fldcw %0"::"m"(cw));
     const auto begin=Clock::now();
     irisu::Simulator sim;sim.reset(in.options.seed);irisu::StepResult step{};
@@ -80,12 +87,17 @@ int main(int argc,char** argv) {
           result.canonical_score=step.diagnostics.recorded_final_score;
           if(result.natural&&!step.diagnostics.terminal_metadata_recorded)throw std::runtime_error("native terminal lacks canonical metadata");
           rank_keys(result,std::uint64_t(in.options.prefix)+in.options.horizon,in.options.target_score);
+          if(lifecycle)lifecycle[i]=(step.terminated?1U:0U)|(step.truncated?2U:0U);
           output[i]=result;_exit(0);
         } catch(...) {_exit(1);}
       }
       children.running.push_back(child);
     }
     while(!children.running.empty())children.reap();
+    if(lifecycle){std::ofstream stream(lifecycle_path,std::ios::binary);
+      stream.write(reinterpret_cast<const char*>(lifecycle),count*4);stream.flush();
+      if(!stream)throw std::runtime_error("cannot write lifecycle sidecar");
+      munmap(lifecycle,count*4);}
     std::vector<Result> results(output,output+count);munmap(output,count*sizeof(Result));
     std::vector<std::uint32_t> ranks(count);std::iota(ranks.begin(),ranks.end(),0);
     std::sort(ranks.begin(),ranks.end(),[&](auto a,auto b){return better(results[a],a,results[b],b);});

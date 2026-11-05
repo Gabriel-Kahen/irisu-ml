@@ -1,0 +1,100 @@
+{
+  "schema": "irisu-native-rollout-header-optimization-v1",
+  "promotion_eligible": false,
+  "old_backend_edited": false,
+  "defaults": {
+    "IRISU_CUDA_NATIVE_LIGHT_SHAPE_SYNC": 0,
+    "IRISU_CUDA_NATIVE_CACHED_ROTATION": 0,
+    "IRISU_CUDA_NATIVE_F32_STORE": 0
+  },
+  "light_shape_sync": "ReplaceslocalShapeState/BodyStatecopieswithVec2/Mat22temporaries;sameoperation/store/trig/statusgraph. No persistentlayoutchange.",
+  "cached_rotation": "Scene/BroadPhasefactory-generatedcanonicalRdomainonly; exactanglebitcheck(signedzerodistinct),originalsincosrangecheck,unchanged-rotationRreuseandfinalredundantRrecomputationomission. Directstandalonehelpersdefaultcanonical_rotation=falseandretainarbitraryRbehavior. Contractandhostqualifiertracked.",
+  "f32_adjacent_store": "208balancedadjacentContextstore(binaryop(...))callsitechanges. Exactfloat,floatoverloadsdirectRN32onlyonfiniteoperands;allmixedtypesandnonfiniteinputsfallbackoriginalgraph.Unstoredintermediates/div/sqrt/triguntouched. ContractcoversacceptedresultbitsandALLstatuses;rejectedNaNpayloads/sticky-failedvaluesoutsidecontract.",
+  "proofs": {
+    "store-math-gpu.json": {
+      "sha256": "ccdcb388a1e582bac83216d422e834a0c0ef0fa6fa9fe8a3df87e73158902d69",
+      "result": {
+        "profile": "f32-adjacent-store-v1",
+        "backend": "cuda",
+        "random_pairs": 1000000,
+        "boundary_pairs": 1115136,
+        "pairs": 2115136,
+        "comparisons": 6394608,
+        "mismatches": 0,
+        "status_mismatches": 0,
+        "value_mismatches": 0,
+        "first": 18446744073709551615,
+        "a_bits": 0,
+        "b_bits": 0,
+        "operation": 0,
+        "expected_bits": 0,
+        "actual_bits": 0,
+        "expected_status": 0,
+        "actual_status": 0,
+        "nonfinite_inputs": "original-checked-graph-fallback",
+        "ftz_required": false
+      }
+    },
+    "store-math-host-qualified.json": {
+      "sha256": "79ce1926db5b5f8a4a51ce1399c66f77be2cd83dd049fb76b8e30ebf6adf4c72",
+      "result": {
+        "profile": "f32-adjacent-store-v1",
+        "backend": "host",
+        "random_pairs": 1000000,
+        "boundary_pairs": 1115136,
+        "pairs": 2115136,
+        "comparisons": 6394608,
+        "mismatches": 0,
+        "status_mismatches": 0,
+        "value_mismatches": 0,
+        "rejected_value_mismatches": 73,
+        "value_contract": "accepted-Context-results-only; all-statuses-checked",
+        "first": 18446744073709551615,
+        "a_bits": 0,
+        "b_bits": 0,
+        "operation": 0,
+        "expected_bits": 0,
+        "actual_bits": 0,
+        "expected_status": 0,
+        "actual_status": 0,
+        "nonfinite_inputs": "original-checked-graph-fallback",
+        "ftz_required": false
+      }
+    },
+    "cached-rotation-qualified.json": {
+      "sha256": "62a60bc29b2b83d594ca4c6c1b706ce274878f73356dc5d62d7ddc126e8b5ec0",
+      "result": {
+        "integration_cases": 20000,
+        "position_cases": 59990,
+        "rejected_numeric_cases": 8,
+        "standalone_default_cases": 1,
+        "mismatches": 0
+      }
+    }
+  },
+  "performance_scope": "Rootownsbuilds,GPUslots,combinedprofilesandfinalcampaigns. InitialrootreportcachedR~97to95msrollout;F32storedops~93to97msrolloutregression,soF32notselectedforfastprofile. Thesehelpersalonearenotclaimedtoachieve2xwholecampaign.",
+  "notes": [
+    "GPUstorequalifierusedstrictaccepted+rejectedbitsandreported0mismatches.Hostpolicy-correctedqualifierreported0accepted/statusmismatches,73rejectedvaluebitdifferences.",
+    "Numericalhelperandcacheunitgatesarecomplementarytorequirednativefull-scene/game/recordgates,notasubstitute.",
+    "Rootparallelcompactcopy/sort/guard/inliningworknotownedorclaimedbythisreceipt."
+  ],
+  "source_sha256": {
+    "clone/cuda_native/broadphase.hpp": "54425a7766309fdd22728cb1a4d3d83d031afaf684c67dfe941e0df4479374ef",
+    "clone/cuda_native/collision.hpp": "3a4ec1b345c32eb125a5ee40d3715ccb3dd3f48723a2c164332f762194ede83e",
+    "clone/cuda_native/factory.hpp": "c8b4dc7ba2bc6734a685caf193df82ec2ebf35795278627e446c57c354131f0f",
+    "clone/cuda_native/game_adapter.cuh": "e33590ddf22e3cddc8297fa07afc323c1e35f1d57ee28657fa95688749a17c84",
+    "clone/cuda_native/solver.hpp": "ee00e16b69741b59b28aebcba45594a2fa2cf522849e95ca5a35b6c01b845f12",
+    "clone/cuda_native/solver_math.hpp": "c5e3327965093c725e078e9567d32ce3fc6b646297d2b3897bece079b10ca343",
+    "clone/cuda_native/world.hpp": "ed04ffe27050e69db4b6f63498320db925f66ba49b543c299edf51402acc221d",
+    "clone/cuda_native/world_contacts.hpp": "9f12bd238c3ddc3008172dc676ab9517b707eb6f923949ae7eebcd421c709c7c",
+    "clone/cuda_native/world_pipeline.hpp": "88adc6f04b11d0814a22fbeab8243a17d0b3935402484d68660ca3214b34dffb",
+    "clone/cuda_native/world_scene.hpp": "9a84f9d03a644967bfbdfd451eaa8c9ec9cd6fb52e1353c9c269c39115c6226b",
+    "clone/cuda_native/world_shapes.hpp": "4de6657239442ad0c17123273a2447ee8be13825c344847601628907cd8374ee"
+  },
+  "tool_sha256": {
+    "tools/cuda-native/store_math_validate.cu": "ff186f606313adaf2c4ce754e17708285812f32590eca3b281ecf83c7ece5c74",
+    "tools/cuda-native/store_math_contract.md": "f606d898c892effddf43f04a38c7c5eb9d76af31c42e9c3cc380e738c4e1ba63",
+    "tools/cuda-native/cached_rotation_validate.cpp": "b3b6e279a3eb3673ac1a7b50da89ec469b9a4539cc41280ac6d2c38a76e8c401",
+    "tools/cuda-native/cached_rotation_contract.md": "78f2dcee292317bbe8119af69c738b8fa10cdefbd30526b3465a34341afaf824"
+  }
+}

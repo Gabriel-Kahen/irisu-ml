@@ -1,0 +1,331 @@
+{
+  "schema": "irisu-native-resident-session-qualification-v1",
+  "promotion_eligible": false,
+  "scope": "Correctness/failure qualification under concurrent CUDA compilation; timings are diagnostic and not final performance samples. All Session-v4 Results/ranks/selection/lifecycle bytes match saved qualified exact GPU captures.",
+  "native_binary_sha256": "f1b1d2a8574df141952abdf287927d624c163230d69753158bd8eebb34c75c94",
+  "source_sha256": "872b5e7f17be3475ef24afab2006a295ab36428afff88e276817c4a85c4e0b76",
+  "cases": [
+    {
+      "name": "forced-fulltrace",
+      "command": [
+        "build-project-exact/irisu-search-session-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/gpu-exact-20261103/search-v4/forced-fulltrace.specs.bin",
+        "10000",
+        "80",
+        "8",
+        "2",
+        "3",
+        "4393102"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.29945496700383956,
+      "metadata": {
+        "identity": "experimental-native-exact-resident-search-v1",
+        "workers": 8,
+        "depths": 3,
+        "beam": 2,
+        "fanout": 8,
+        "candidate_nodes": 40,
+        "actual_simulated_branches": 40,
+        "actual_simulated_ticks": 3200,
+        "prefix_ms": 272.321376,
+        "branch_rollout_ms": 20.943997,
+        "rank_selection_ms": 0.159583,
+        "total_ms": 293.444805,
+        "winner": 4
+      },
+      "byte_parity": true,
+      "result_sha256": "ee55a1983a49e8bf7d0f1f7a28400020106d0cd05427129be361ae7fa2e525b8",
+      "expected_sha256": "ee55a1983a49e8bf7d0f1f7a28400020106d0cd05427129be361ae7fa2e525b8"
+    },
+    {
+      "name": "greedy-control",
+      "command": [
+        "build-project-exact/irisu-search-session-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/gpu-exact-20261103/search-v4/greedy-control.specs.bin",
+        "10000",
+        "80",
+        "8",
+        "2",
+        "3",
+        "4393102",
+        "--greedy-beam"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.2985845299990615,
+      "metadata": {
+        "identity": "experimental-native-exact-resident-search-v1",
+        "workers": 8,
+        "depths": 3,
+        "beam": 2,
+        "fanout": 8,
+        "candidate_nodes": 40,
+        "actual_simulated_branches": 40,
+        "actual_simulated_ticks": 3200,
+        "prefix_ms": 272.104142,
+        "branch_rollout_ms": 21.466171,
+        "rank_selection_ms": 0.172077,
+        "total_ms": 293.763921,
+        "winner": 4
+      },
+      "byte_parity": true,
+      "result_sha256": "ee55a1983a49e8bf7d0f1f7a28400020106d0cd05427129be361ae7fa2e525b8",
+      "expected_sha256": "ee55a1983a49e8bf7d0f1f7a28400020106d0cd05427129be361ae7fa2e525b8"
+    },
+    {
+      "name": "beam1",
+      "command": [
+        "build-project-exact/irisu-search-session-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/gpu-exact-20261103/search-v4/beam1.specs.bin",
+        "10000",
+        "80",
+        "8",
+        "1",
+        "3",
+        "4393102"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.2900700050013256,
+      "metadata": {
+        "identity": "experimental-native-exact-resident-search-v1",
+        "workers": 8,
+        "depths": 3,
+        "beam": 1,
+        "fanout": 8,
+        "candidate_nodes": 24,
+        "actual_simulated_branches": 24,
+        "actual_simulated_ticks": 1920,
+        "prefix_ms": 270.768812,
+        "branch_rollout_ms": 15.14644,
+        "rank_selection_ms": 0.086395,
+        "total_ms": 286.02445,
+        "winner": 4
+      },
+      "byte_parity": true,
+      "result_sha256": "6e4ab4c15ccb65232a2dee3838c312acbb7ce67b9a0112bf5402f3ee65b8aa22",
+      "expected_sha256": "6e4ab4c15ccb65232a2dee3838c312acbb7ce67b9a0112bf5402f3ee65b8aa22"
+    },
+    {
+      "name": "mixed-lifecycle-fulltrace",
+      "command": [
+        "build-project-exact/irisu-search-session-oracle",
+        "/home/gabe/Documents/ChatGPT/irisu/artifacts/gpu-exact-20261103/search-v4/seed4000000151-source.rpy",
+        "artifacts/gpu-exact-20261103/search-v4/mixed-lifecycle-fulltrace.specs.bin",
+        "100",
+        "54",
+        "8",
+        "8",
+        "2",
+        "4393102"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.08779208999476396,
+      "metadata": {
+        "identity": "experimental-native-exact-resident-search-v1",
+        "workers": 8,
+        "depths": 2,
+        "beam": 8,
+        "fanout": 32,
+        "candidate_nodes": 288,
+        "actual_simulated_branches": 192,
+        "actual_simulated_ticks": 5261,
+        "prefix_ms": 6.828329,
+        "branch_rollout_ms": 75.116911,
+        "rank_selection_ms": 1.142994,
+        "total_ms": 83.103322,
+        "winner": 56
+      },
+      "byte_parity": true,
+      "result_sha256": "9a26081e49705242becd358c752252ef63575b21cf2b7484bd83c951d1cd7f93",
+      "expected_sha256": "9a26081e49705242becd358c752252ef63575b21cf2b7484bd83c951d1cd7f93"
+    },
+    {
+      "name": "archive-live-fulltrace",
+      "command": [
+        "build-project-exact/irisu-search-session-oracle",
+        "irisu-high-score-4393101.rpy",
+        "artifacts/gpu-exact-20261103/search-v4/archive-live-fulltrace.specs.bin",
+        "96000",
+        "80",
+        "8",
+        "8",
+        "3",
+        "4393102"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.3861967220000224,
+      "metadata": {
+        "identity": "experimental-native-exact-resident-search-v1",
+        "workers": 8,
+        "depths": 3,
+        "beam": 8,
+        "fanout": 32,
+        "candidate_nodes": 544,
+        "actual_simulated_branches": 544,
+        "actual_simulated_ticks": 43424,
+        "prefix_ms": 2786.508588,
+        "branch_rollout_ms": 588.453975,
+        "rank_selection_ms": 4.776836,
+        "total_ms": 3379.761481,
+        "winner": 213
+      },
+      "byte_parity": true,
+      "result_sha256": "06d0f2a9b32b7211278616ab404c9a2966d48dbfdd369c983266066a85510e59",
+      "expected_sha256": "06d0f2a9b32b7211278616ab404c9a2966d48dbfdd369c983266066a85510e59"
+    }
+  ],
+  "failure_cleanup": {
+    "cases": [
+      {
+        "mode": "kill-grandchild",
+        "command": [
+          "build-project-exact/irisu-search-session-oracle",
+          "irisu-high-score-4393101.rpy",
+          "artifacts/gpu-exact-20261103/search-v4/forced-fulltrace.specs.bin",
+          "96000",
+          "100000",
+          "8",
+          "8",
+          "16",
+          "4393102",
+          "--final-only"
+        ],
+        "returncode": 1,
+        "killed_pid": 781596,
+        "owned_group": 781332,
+        "completion_after_kill_seconds": 1.0235653700001421,
+        "remaining_owned_pids": [],
+        "stderr": "native-session-oracle: native resident worker reported failure\n"
+      },
+      {
+        "mode": "kill-launcher",
+        "command": [
+          "build-project-exact/irisu-search-session-oracle",
+          "irisu-high-score-4393101.rpy",
+          "artifacts/gpu-exact-20261103/search-v4/forced-fulltrace.specs.bin",
+          "96000",
+          "100000",
+          "8",
+          "8",
+          "16",
+          "4393102",
+          "--final-only"
+        ],
+        "returncode": -9,
+        "killed_pid": 781753,
+        "owned_group": 781754,
+        "completion_after_kill_seconds": 1.0229069289998733,
+        "remaining_owned_pids": [],
+        "stderr": ""
+      }
+    ]
+  },
+  "snapshot_contract": "Selected native fork/COW processes retain the original exact physics heap; forward exact physics snapshot reconstruction is unavailable and is not used.",
+  "onepass_final_only_parity": [
+    {
+      "workload": "512x4",
+      "command": [
+        "build-project-exact/irisu-search-session-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-v4-linked-512x4-2026-11-03.specs.bin",
+        "100",
+        "4",
+        "8",
+        "1",
+        "1",
+        "4393102",
+        "--final-only"
+      ],
+      "returncode": 0,
+      "metadata": {
+        "identity": "experimental-native-exact-resident-search-v1",
+        "workers": 8,
+        "depths": 1,
+        "beam": 1,
+        "fanout": 512,
+        "candidate_nodes": 512,
+        "actual_simulated_branches": 512,
+        "actual_simulated_ticks": 2048,
+        "prefix_ms": 8.873238,
+        "branch_rollout_ms": 63.503972,
+        "rank_selection_ms": 4.141548,
+        "total_ms": 76.547292,
+        "winner": 0
+      },
+      "onepass_payload_sha256": "f1c22a7da492f250ae1c3af02968d6091912d22859d12c6c5a978520cf32767f",
+      "expected_onepass_sha256": "f1c22a7da492f250ae1c3af02968d6091912d22859d12c6c5a978520cf32767f",
+      "byte_parity": true
+    },
+    {
+      "workload": "1024x16",
+      "command": [
+        "build-project-exact/irisu-search-session-oracle",
+        "irisu-high-score-4393101.rpy",
+        "benchmarks/results/cuda-search-warmed-v4-linked-1024x16-2026-11-03.specs.bin",
+        "100",
+        "16",
+        "8",
+        "1",
+        "1",
+        "4393102",
+        "--final-only"
+      ],
+      "returncode": 0,
+      "metadata": {
+        "identity": "experimental-native-exact-resident-search-v1",
+        "workers": 8,
+        "depths": 1,
+        "beam": 1,
+        "fanout": 1024,
+        "candidate_nodes": 1024,
+        "actual_simulated_branches": 1024,
+        "actual_simulated_ticks": 16384,
+        "prefix_ms": 9.089489,
+        "branch_rollout_ms": 231.107112,
+        "rank_selection_ms": 20.126923,
+        "total_ms": 260.356759,
+        "winner": 0
+      },
+      "onepass_payload_sha256": "7977d82101064667360f5c0a4ecdcce684c030101c6a63290a866d6b28977a76",
+      "expected_onepass_sha256": "7977d82101064667360f5c0a4ecdcce684c030101c6a63290a866d6b28977a76",
+      "byte_parity": true
+    }
+  ],
+  "resident_final_only_parity": {
+    "command": [
+      "build-project-exact/irisu-search-session-oracle",
+      "irisu-high-score-4393101.rpy",
+      "artifacts/gpu-exact-20261103/search-v4/resident-suffix-96000-live-beam-v4.specs.bin",
+      "96000",
+      "80",
+      "8",
+      "8",
+      "3",
+      "4393102",
+      "--final-only"
+    ],
+    "returncode": 0,
+    "byte_parity": true,
+    "metadata": {
+      "identity": "experimental-native-exact-resident-search-v1",
+      "workers": 8,
+      "depths": 3,
+      "beam": 8,
+      "fanout": 32,
+      "candidate_nodes": 544,
+      "actual_simulated_branches": 544,
+      "actual_simulated_ticks": 43424,
+      "prefix_ms": 2840.283211,
+      "branch_rollout_ms": 483.351884,
+      "rank_selection_ms": 8.547217,
+      "total_ms": 3332.208723,
+      "winner": 213
+    },
+    "result_sha256": "cbc5a70277b7f0d8d5debbd16e195ec1f830f16a9fc37378993c833a6cf9e4e1",
+    "expected_sha256": "cbc5a70277b7f0d8d5debbd16e195ec1f830f16a9fc37378993c833a6cf9e4e1",
+    "scope": "First three identical depths extracted from saved complete live-beam v4 final-only campaign; archive/live retention included."
+  }
+}

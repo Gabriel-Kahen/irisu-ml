@@ -1,0 +1,46 @@
+{
+  "schema": "irisu-native-SAP-boundary-oracles-v1",
+  "promotion_eligible": false,
+  "scope": "Native capture contracts only; corresponding typed host/GPU admission is separately reported by the SAP implementation owner. Normal nonzero callback policy and default64scope are preserved.",
+  "fixtures": [
+    {
+      "schema": "irisu-native-SAP-history-parity-v1",
+      "scope": "Exact native SAP stage, <=64live proxy fixture scope, calloc-backed explicit initial state, 95,292B snapshots with only first two native owner/callback pointer words zeroed; callback/query ordering retained. Timestamp force is an explicit private-state precondition to exercise wrap. No world/search admission.",
+      "operations": 39,
+      "native_command": [
+        "artifacts/cuda-native-20261103/oracle-broadphase",
+        ".local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+        "artifacts/cuda-native-20261103/broadphase-null-token-native.ops.bin"
+      ],
+      "native_metadata": "{\"schema\":\"irisu-native-broadphase-oracle-v1\",\"operations\":39,\"add_events\":79,\"remove_events\":79,\"active_proxies\":0,\"state_bytes\":95292,\"calloc_initial_condition\":true,\"scope_max_live_proxies\":64}\n",
+      "native_oracle_sha256": "a6fa5b5e052ce4bb01cab7a3d757bda225746f3e4fee1a9fdd03df96f41f9c2f",
+      "native_pin": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+      "input_sha256": "5e1c48270e5a9f2db2329fde96c9875416d2e7b265dfa7fb39af554be9d9aa32",
+      "native_output_sha256": "f0ba7298c9e0af9c8ba2f3ebf3a8888cc16087e903db2c8c03412f5dea37ab68",
+      "typed_parity": null
+    },
+    {
+      "schema": "irisu-native-SAP-history-parity-v1",
+      "scope": "Native SAP disjoint512-proxy capacity fixture with conservative pair/buffer guards, complete normalized95,292B snapshots, query order and proxy reuse; not arbitrary dense capacity or world/search admission.",
+      "operations": 1542,
+      "native_command": [
+        "artifacts/cuda-native-20261103/oracle-broadphase",
+        ".local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+        "artifacts/cuda-native-20261103/broadphase-capacity512-native.ops.bin",
+        "--capacity-512"
+      ],
+      "native_metadata": "{\"schema\":\"irisu-native-broadphase-oracle-v1\",\"operations\":1542,\"add_events\":0,\"remove_events\":0,\"active_proxies\":0,\"state_bytes\":95292,\"calloc_initial_condition\":true,\"scope_max_live_proxies\":512,\"conservative_pair_capacity_guard\":true}\n",
+      "native_oracle_sha256": "15af05e130e2bf819eb17c9b2dfaef651581815c98205b5c8adcd61cca56518a",
+      "native_pin": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+      "input_sha256": "530808f5841cb3294d4c16cfbaa0f0ecedc069536d041b9688aa73108affb849",
+      "native_output_sha256": "29f927306edc7a94dbcdccf6086c651088c627b1104fbf8f11d0fe2f7de20b60",
+      "typed_parity": null
+    }
+  ],
+  "callback_policy": "If either proxy userID is0, PairAdded returns/logs0 without consuming apositive token. PairRemoved must still be called and receive0 for final null-data pairs.",
+  "capacity_policy": "Only opt-in512live proxies; preflight pairCount+active<=4096 and bufferCount+2*active<=4096 before native create/move/destroy. Native513th allocation is never attempted.",
+  "source_sha256": {
+    "tools/cuda-native/oracle_broadphase.cpp": "9dd1dfecb65b6c9f3e5cc7480b5595e99bc9ac1eb58fe3e66e4500cab4d707e6",
+    "tools/cuda-native/oracle_broadphase.py": "6627dd4d502a6c597874c2c1951fc4c7595b7b243162c52e2fb6ad0a9e9897fe"
+  }
+}

@@ -96,7 +96,7 @@ struct World {
     HASH(fault_pc);HASH(fault_value);HASH(heap);HASH(heap_limit);HASH(capacity);
     HASH(free_head);HASH(allocation_reuses);HASH(instructions);
 #undef HASH
-    if(include_arena)for(std::uint32_t i=0;i<guest.capacity;++i)hash=fnv_byte(hash,guest.memory[i]);
+    if(include_arena)for(std::uint32_t i=0;i<guest.capacity;++i)hash=fnv_byte(hash,guest.byte_at(i));
     return hash;
   }
 

@@ -92,6 +92,7 @@ struct Options {
   bool isolated_warps{false};
   bool trace_every_tick{true}, cache_guest{true};
   std::uint32_t block_threads{4}, stack_bytes{16U<<10};
+  std::uint32_t arena_word_stride{1};
 };
 struct Timings {
   double host_prefix_ms{}, prefix_ms{}, branch_ms{}, rollout_ms{}, rank_compact_ms{}, validation_ms{}, total_ms{};

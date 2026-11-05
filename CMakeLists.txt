@@ -9,6 +9,7 @@ option(IRISU_BUILD_SHARED "Build the C ABI shared library" ON)
 option(IRISU_BUILD_BENCHMARKS "Build bounded native benchmark tools" ON)
 option(IRISU_BUILD_WEB "Build the single-threaded Emscripten module" OFF)
 option(IRISU_BUILD_CUDA_EXPERIMENTS "Build optional, non-promoting CUDA exact-host experiments" OFF)
+option(IRISU_BUILD_CUDA_NATIVE_EXPERIMENTS "Build separate typed GPU physics experiments" OFF)
 set(IRISU_PHYSICS_BACKEND "portable" CACHE STRING
     "Physics backend: portable or exact-msvc")
 set_property(CACHE IRISU_PHYSICS_BACKEND PROPERTY STRINGS portable exact-msvc)
@@ -669,6 +670,12 @@ if(IRISU_BUILD_TESTS)
 
   endif()
 
+  # Planning is CPU-only, including in builds without a CUDA toolkit.
+  add_executable(irisu-gpu-search-plan-tests
+    tools/cuda-native/gpu_search_plan_validate.cpp)
+  add_test(NAME irisu-gpu-search-plan-tests COMMAND irisu-gpu-search-plan-tests)
+  list(APPEND irisu_native_test_targets irisu-gpu-search-plan-tests)
+
   # These executables use assert() as their test primitive. Keep assertions
   # active even when the product is compiled with an optimized configuration.
   foreach(irisu_test_target IN LISTS irisu_native_test_targets)
@@ -681,12 +688,17 @@ endif()
 
 # CUDA binaries are 64-bit experiments. Keep the production 32-bit exact
 # worker in a separate build tree and compare it through explicit fixtures.
-if(IRISU_BUILD_CUDA_EXPERIMENTS)
+if(IRISU_BUILD_CUDA_EXPERIMENTS OR IRISU_BUILD_CUDA_NATIVE_EXPERIMENTS)
   if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
     message(FATAL_ERROR "CUDA experiments require a separate 64-bit build tree")
   endif()
   enable_language(CUDA)
+endif()
+if(IRISU_BUILD_CUDA_EXPERIMENTS)
   add_subdirectory(clone/cuda)
+endif()
+if(IRISU_BUILD_CUDA_NATIVE_EXPERIMENTS)
+  add_subdirectory(clone/cuda_native)
 endif()
 
 if(IRISU_BUILD_BENCHMARKS AND IRISU_PHYSICS_BACKEND STREQUAL "exact-msvc")
@@ -694,6 +706,31 @@ if(IRISU_BUILD_BENCHMARKS AND IRISU_PHYSICS_BACKEND STREQUAL "exact-msvc")
   target_link_libraries(irisu-game-oracle PRIVATE irisu_core)
   add_executable(irisu-search-oracle tools/cuda-exact/search_oracle.cpp)
   target_link_libraries(irisu-search-oracle PRIVATE irisu_core Threads::Threads)
+  add_executable(irisu-native-search-campaign tools/cuda-native/native_search_campaign.cpp)
+  target_link_libraries(irisu-native-search-campaign PRIVATE irisu_core Threads::Threads)
+  add_executable(irisu-search-session-oracle tools/cuda-exact/search_session_oracle.cpp)
+  target_link_libraries(irisu-search-session-oracle PRIVATE irisu_core Threads::Threads)
+endif()
+
+# Persistent high-score search service; Linux fork/COW is the native transport.
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  add_executable(irisu-search-engine tools/orchestrator/native_engine.cpp)
+  target_link_libraries(irisu-search-engine PRIVATE irisu_core Threads::Threads)
+  target_compile_definitions(irisu-search-engine PRIVATE
+    IRISU_ORCHESTRATOR_BACKEND="${irisu_physics_backend_label}")
+endif()
+
+# Exact genealogy/score attribution; this target does not change engine binaries.
+if(IRISU_PHYSICS_BACKEND STREQUAL "exact-msvc")
+  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+    "${PROJECT_SOURCE_DIR}/tools/orchestrator/trace_record.cpp")
+  file(SHA256 "${PROJECT_SOURCE_DIR}/tools/orchestrator/trace_record.cpp" irisu_search_trace_source_sha256)
+  add_executable(irisu-search-trace tools/orchestrator/trace_record.cpp)
+  target_link_libraries(irisu-search-trace PRIVATE irisu_core)
+  target_compile_definitions(irisu-search-trace PRIVATE
+    IRISU_ORCHESTRATOR_BACKEND="${irisu_physics_backend_label}"
+    IRISU_TRACE_SOURCE_SHA256="${irisu_search_trace_source_sha256}"
+    IRISU_TRACE_EXACT_LIBRARY_SHA256="${irisu_exact_box2d_sha256}")
 endif()
 
 # Optional independent gameplay target; the normal build stays the default.
