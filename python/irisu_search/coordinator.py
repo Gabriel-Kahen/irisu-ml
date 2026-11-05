@@ -330,7 +330,7 @@ class Coordinator:
             survivor_handles = {r["handle"] for r in survivors}
             rows = {}
             retained = []
-            terminal_ids = []
+            terminal_scores = {}
             for candidate, row in paired:
                 self.store.add_example(self._example(parent["summary"], row["summary"], candidate,
                                                      elapsed / max(1, len(results)), row.get("group_deltas", ()), row.get("metrics")))
@@ -341,11 +341,11 @@ class Coordinator:
                     if row["handle"] in survivor_handles:
                         retained.append((key, row["handle"]))
                     if row["summary"].get("terminated"):
-                        terminal_ids.append(key)
+                        terminal_scores[key] = row["summary"]["canonical_score"]
                 if row["handle"] not in survivor_handles:
                     self.engine.release([row["handle"]])
-            if terminal_ids:
-                best = max(terminal_ids, key=lambda key: self.store.get_checkpoint(key)["summary"]["canonical_score"])
+            if terminal_scores:
+                best = max(terminal_scores, key=terminal_scores.__getitem__)
                 self._verify(best)
                 observed_terminal = True
                 attempt_observed_terminal = True
@@ -358,7 +358,7 @@ class Coordinator:
                 self._remember(key, resident)
             batches += 1
             if not live:
-                self.store.set_meta(f"progress:{job['id']}", {"checkpoint_id": best if terminal_ids else parent["id"],
+                self.store.set_meta(f"progress:{job['id']}", {"checkpoint_id": best if terminal_scores else parent["id"],
                     "batches": batches, "simulated_ticks": total_ticks, "published": published,
                     "completed": True, "observed_terminal": observed_terminal})
                 break

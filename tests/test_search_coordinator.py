@@ -142,7 +142,7 @@ def test_mixed_rejections_keep_candidate_lineage_and_do_not_train_on_failed_stat
         coordinator.run(seconds=1, max_jobs=1)
         assert store.jobs()[0]["status"] == "done"
         assert store.report()["simulated_ticks"] == 8
-        descendants = [store.get_checkpoint(row["id"]) for row in store.checkpoints() if row["summary"]["tick"]]
+        descendants = [store.get_checkpoint(row["id"]) for row in store.checkpoints(active=None) if row["summary"]["tick"]]
         assert {tuple(row["words"]) for row in descendants} == {(1, 0), (2, 0), (3, 0)}
         assert all(row["operator"] == candidates[row["words"][0]]["operator"] for row in descendants)
         proposal_examples = [row for row in store.examples() if row["role"] == "proposal"]
@@ -622,3 +622,34 @@ def test_prior_attempt_terminal_does_not_uncensor_resumed_partial_allocation(tmp
         assert allocation[0]["censored"] is True
         assert allocation[0]["targets"]["compute_gain"] == 0
         resumed.close()
+
+
+@pytest.mark.parametrize("candidate_count", [4, 32])
+def test_terminal_ranking_decodes_only_the_verified_recipe(tmp_path, monkeypatch, candidate_count):
+    import irisu_search.coordinator as module
+    candidates = [{"mode": 0, "words": [i], "search_seed": i, "horizon": 2,
+                   "operator": "payout"} for i in range(1, candidate_count + 1)]
+    monkeypatch.setattr(module, "generate", lambda *_: deepcopy(candidates))
+    with Store(tmp_path) as store:
+        engine = FakeEngine(terminal_tick=2)
+        verifier = FakeVerifier(engine)
+        coordinator = Coordinator(store, engine, config(candidates=candidate_count), verifier)
+        store.enqueue("bootstrap", 7, payload={"search_seed": 5, "horizon": 2})
+        reads = []
+        original_get = store.get_checkpoint
+
+        def get_checkpoint(key):
+            reads.append(key)
+            return original_get(key)
+
+        monkeypatch.setattr(store, "get_checkpoint", get_checkpoint)
+        coordinator.run(seconds=1, max_jobs=1)
+        terminals = [row for row in store.checkpoints(active=None) if row["summary"]["terminated"]]
+        assert len(terminals) == candidate_count
+        best = max(terminals, key=lambda row: row["summary"]["canonical_score"])
+        assert verifier.verified == [best["id"]]
+        assert store.champion()["checkpoint_id"] == best["id"]
+        # One reset parent load, then the winner for verification and promotion.
+        assert len(reads) == 3
+        assert reads.count(best["id"]) == 2
+        coordinator.close()

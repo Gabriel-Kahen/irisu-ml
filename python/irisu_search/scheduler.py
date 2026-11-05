@@ -79,7 +79,11 @@ def next_job(store, config, guide=None):
         seed = rng.choice(ranked)
     else:
         under = [s for s in ranked if s.get("search_seconds", 0) < config.minimum_seed_seconds]
-        pool = under or [s for s in ranked if s.get("status") in ("promoted", "finalist") or s.get("control")]
+        # Discovery continues while bootstrap attempts are outstanding. Those
+        # seeds still need live development; otherwise an imported control is
+        # the only eligible seed after everybody's minimum wall-time budget.
+        pool = under or [s for s in ranked if s.get("status") in ("discovery", "promoted", "finalist")
+                         or s.get("control")]
         if not pool:
             pool = ranked[:config.promoted_seeds]
         if under:

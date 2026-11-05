@@ -143,6 +143,43 @@ def test_examples_content_addressed_and_nonfinite_rejected(tmp_path):
             store.enqueue("test", 7, priority=float("inf"))
 
 
+def test_archive_reserves_imported_replay_regions_under_descendant_pressure(tmp_path):
+    with initialized(tmp_path) as store:
+        roots = [store.add_checkpoint(7, [0] * tick,
+                                      summary(tick=tick, chain=1, score=tick), operator="import")
+                 for tick in (0, 2, 4, 6, 8)]
+        descendants = [store.add_checkpoint(7, [n, 0], summary(chain=100, score=1000+n))
+                       for n in range(1, 10)]
+        result = store.prune_archive(per_cell=1, max_checkpoints=7)
+        assert all(store.get_checkpoint(key)["active"] for key in roots)
+        assert result["active"] <= 7 and not result["protected_over_budget"]
+        assert any(not store.get_checkpoint(key)["active"] for key in descendants)
+
+
+def test_archive_spreads_tight_import_quota_and_restores_roots_when_space_returns(tmp_path):
+    with initialized(tmp_path) as store:
+        roots = [store.add_checkpoint(7, [0] * tick, summary(tick=tick, chain=1), operator="import")
+                 for tick in range(7)]
+        result = store.prune_archive(per_cell=1, max_checkpoints=3)
+        active = {store.get_checkpoint(key)["summary"]["tick"] for key in roots
+                  if store.get_checkpoint(key)["active"]}
+        assert active == {0, 3, 6}
+        assert result["active"] == 3 and not result["protected_over_budget"]
+        store.prune_archive(per_cell=1, max_checkpoints=7)
+        assert all(store.get_checkpoint(key)["active"] for key in roots)
+
+
+def test_terminal_evidence_stays_cold_without_displacing_live_search(tmp_path):
+    with initialized(tmp_path) as store:
+        live = store.add_checkpoint(7, [0], summary(tick=1, chain=1))
+        terminals = [store.add_checkpoint(7, [n, 0], summary(terminal=True, score=n, chain=n))
+                     for n in range(1, 8)]
+        store.prune_archive(per_cell=1, max_checkpoints=2)
+        assert {row["id"] for row in store.checkpoints()} == {live, terminals[-1]}
+        assert len(store.checkpoints(active=None)) == 8
+        assert all(store.get_checkpoint(key)["words"] for key in terminals)
+
+
 def test_seed_and_trace_boundaries(tmp_path):
     with initialized(tmp_path) as store:
         store.ensure_seed(0)

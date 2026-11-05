@@ -123,8 +123,10 @@ independent bootstrap attempts each. Retries of an interrupted attempt do not
 count as additional attempts. New seeds continue to enter by default. Seed
 shortlists combine live-group potential with verified results after a minimum
 wall-time investment. Promoted seeds receive deeper work; finalists must first
-receive the configured second-stage investment. Dormant seeds remain eligible
-through the wildcard lane. Early score alone is not an elimination rule.
+receive the configured second-stage investment. Discovery seeds remain eligible for live development while their remaining
+bootstrap attempts are scheduled; they need not wait for promotion to receive
+deeper work. Dormant seeds remain eligible through the wildcard lane. Early
+score alone is not an elimination rule.
 
 Carrier-specific proposals have reserved catalog capacity, so a dense set of
 generic pair candidates cannot crowd out the requested intervention.
@@ -141,7 +143,10 @@ SQLite WAL stores seed statistics, fenced job leases, settled costs, examples,
 checkpoint lineage and verification receipts. Input recipes are immutable,
 SHA-256-addressed little-endian words. Archive cells organize similar progress,
 group counters and carrier geometry; they never assert identical physical state.
-Several distinct recipes survive per cell. Resident handles are only caches;
+Several distinct recipes survive per cell. Imported replay roots reserve
+coverage across replay progress within the active quotas, and can return from
+cold storage when space becomes available. Each seed's best terminal stays active;
+other terminal recipes remain cold evidence. Resident handles are only caches;
 cold restart replays the recipe and checks the reconstructed summary.
 
 The archive byte and checkpoint limits bound the **active archive**. Cold
