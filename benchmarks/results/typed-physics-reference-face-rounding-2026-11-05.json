@@ -1,7 +1,7 @@
 {
   "schema": "irisu-typed-reference-face-rounding-v1",
   "date": "2026-11-05",
-  "status": "cpu-gates-passed-gpu-gates-pending",
+  "status": "cpu-and-gpu-gates-passed",
   "base_commit": "5016bf36e87b6123c51bc2054315afe0df02ae38",
   "case": {
     "seed": 270515404,
@@ -82,8 +82,213 @@
         "native_result_sha256": "af11080b3030c24ccae20184f98502d484b2d74f5856bd734743a91a856267ad"
       }
     ],
-    "gpu_executed": false,
-    "campaign_modified": false
+    "gpu_executed": true,
+    "campaign_modified": false,
+    "gpu": {
+      "passed": true,
+      "source_commit": "f1aa1bd76cc073626d92caf045087b1cfb424a70",
+      "command": [
+        "python",
+        "-u",
+        "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/artifacts/parity-diagnostic/qualify_gpu.py"
+      ],
+      "qualification_script_sha256": "bdd27e68c6a9c6efec5ea6724a7bd5e82b393b165353aef2bdbdaeb558464c38",
+      "rows": [
+        {
+          "name": "gpu-failing4053-digest",
+          "command": [
+            "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/build-parity-fixed/clone/cuda_native/irisu-cuda-native-game-runner",
+            "/home/gabe/Documents/ChatGPT/irisu/artifacts/verification-diagnostic-20261105/failed-candidate.rpy",
+            "4053",
+            "--gpu"
+          ],
+          "wall_seconds": 69.45981987300911,
+          "output_bytes": 389184,
+          "output_sha256": "2c20a7c96da1dd99498c5ba687a75edb0ea28aabc8d21b4e58169ef29e50b1f4",
+          "byte_equal": true,
+          "stderr": "{\"backend\":\"cuda-native-full-game\",\"steps\":4053,\"tick\":4053,\"failed\":false,\"physics_status\":0,\"live_score\":504,\"recorded_final_score\":0,\"level\":3,\"chain\":3,\"clone_verified\":false,\"kernel_ms_including_frame_hashes\":69309.757812,\"elapsed_seconds\":69.410465029,\"world_bytes\":582480,\"scene_bytes\":1682584,\"guest_calls\":0,\"fallback_calls\":0}\n"
+        },
+        {
+          "name": "resident-gpu-failing4053-from-reset",
+          "identity": {
+            "protocol": 1,
+            "backend": "cuda-native-resident",
+            "checkpoint_mode": "resident-device-compact",
+            "promotion_eligible": false,
+            "max_checkpoints": 3,
+            "launch_threads": 0,
+            "partial_batches": true,
+            "max_contacts": 4096,
+            "max_bodies": 512,
+            "adaptive_launch_threads": true,
+            "multiprocessors": 80,
+            "host_prefix": false,
+            "max_horizon": 100000,
+            "checkpoint_bytes": 2265064,
+            "numeric_profile": "bounded",
+            "executable": "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/build-parity-fixed/clone/cuda_native/irisu-cuda-search-engine",
+            "binary_sha256": "08d18e763acac9c06bc180f994d7bea75a61b1bf5b7341ba35330144e3f37f1a",
+            "command": [
+              "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/build-parity-fixed/clone/cuda_native/irisu-cuda-search-engine",
+              "--max-checkpoints",
+              "3"
+            ]
+          },
+          "summary": {
+            "seed": 270515404,
+            "tick": 4053,
+            "score": 504,
+            "gauge": 3887,
+            "level": 3,
+            "qualifying": 22,
+            "highest_chain": 3,
+            "terminated": false,
+            "truncated": false,
+            "canonical_score": 0,
+            "canonical_level": 0,
+            "canonical_chain": 0,
+            "config_hash": "17009678407634462320"
+          },
+          "full_summary_trace_native_equal": true,
+          "host_prefix": false
+        },
+        {
+          "name": "gpu-collision-poly-poly-with-regression",
+          "command": [
+            "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/build-parity-fixed/clone/cuda_native/irisu-native-collision",
+            "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/artifacts/parity-diagnostic/poly-poly-with-regression.cases.bin",
+            "--gpu",
+            "--warmups",
+            "0",
+            "--repeats",
+            "1"
+          ],
+          "wall_seconds": 0.1206794049940072,
+          "output_bytes": 247680,
+          "output_sha256": "6789af82e6bb051d0db9a19325025ada9820ff2846da83e37396610e172d2be5",
+          "byte_equal": true,
+          "stderr": "{\"schema\":\"irisu-native-collision-stage-v1\",\"backend\":\"cuda\",\"scope\":\"collision stage only\",\"cases\":4128,\"contacts\":2318,\"rejected\":0,\"warmups\":0,\"repeats\":1,\"median_stage_ms\":0.052735999,\"elapsed_before_stdout_ms\":75.989610000,\"registers\":80,\"local_bytes\":744,\"promotion_eligible\":false,\"samples_ms\":[0.052735999]}\n"
+        },
+        {
+          "name": "gpu-collision-poly-circle",
+          "command": [
+            "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/build-parity-fixed/clone/cuda_native/irisu-native-collision",
+            "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/artifacts/parity-diagnostic/poly-circle.cases.bin",
+            "--gpu",
+            "--warmups",
+            "0",
+            "--repeats",
+            "1"
+          ],
+          "wall_seconds": 0.09914448799099773,
+          "output_bytes": 251040,
+          "output_sha256": "af11080b3030c24ccae20184f98502d484b2d74f5856bd734743a91a856267ad",
+          "byte_equal": true,
+          "stderr": "{\"schema\":\"irisu-native-collision-stage-v1\",\"backend\":\"cuda\",\"scope\":\"collision stage only\",\"cases\":4184,\"contacts\":1430,\"rejected\":0,\"warmups\":0,\"repeats\":1,\"median_stage_ms\":0.034400001,\"elapsed_before_stdout_ms\":71.831022000,\"registers\":80,\"local_bytes\":744,\"promotion_eligible\":false,\"samples_ms\":[0.034400001]}\n"
+        },
+        {
+          "name": "record-native",
+          "command": [
+            "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-fixed-20261104-192923/runtime/bin/irisu-game-oracle",
+            "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/irisu-high-score-4393101.rpy"
+          ],
+          "wall_seconds": 3.5888378309900872,
+          "output_bytes": 9333120,
+          "output_sha256": "9d972bbf361cfa58de555891ebcf96d2cd7b109839bc00868079d60aa03577ed",
+          "byte_equal": false,
+          "stderr": "{\"backend\":\"native-msvc-cpu-oracle\",\"format\":\"game-digest-v1\",\"rows\":97220,\"steps\":97219,\"events\":308512,\"tick\":97219,\"live_score\":4393699,\"canonical_score\":4393101,\"latest_final_score\":4393101,\"level\":100,\"highest_chain\":70,\"config_hash\":17009678407634462320,\"elapsed_seconds\":3.582398306}\n"
+        },
+        {
+          "name": "record-fixed-host",
+          "command": [
+            "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/build-parity-fixed/clone/cuda_native/irisu-cuda-native-game-runner",
+            "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/irisu-high-score-4393101.rpy"
+          ],
+          "wall_seconds": 10.369110805011587,
+          "output_bytes": 9333120,
+          "output_sha256": "9d972bbf361cfa58de555891ebcf96d2cd7b109839bc00868079d60aa03577ed",
+          "byte_equal": true,
+          "stderr": "{\"backend\":\"typed-host-full-game\",\"steps\":97219,\"tick\":97219,\"failed\":false,\"physics_status\":0,\"live_score\":4393699,\"recorded_final_score\":4393101,\"level\":100,\"chain\":70,\"clone_verified\":false,\"kernel_ms_including_frame_hashes\":0.000000,\"elapsed_seconds\":10.352780283,\"world_bytes\":582480,\"scene_bytes\":1682584,\"guest_calls\":0,\"fallback_calls\":0}\n"
+        },
+        {
+          "name": "record-fixed-gpu",
+          "command": [
+            "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/build-parity-fixed/clone/cuda_native/irisu-cuda-native-game-runner",
+            "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/irisu-high-score-4393101.rpy",
+            "--gpu"
+          ],
+          "wall_seconds": 98.42919162198086,
+          "output_bytes": 9333120,
+          "output_sha256": "9d972bbf361cfa58de555891ebcf96d2cd7b109839bc00868079d60aa03577ed",
+          "byte_equal": true,
+          "stderr": "{\"backend\":\"cuda-native-full-game\",\"steps\":97219,\"tick\":97219,\"failed\":false,\"physics_status\":0,\"live_score\":4393699,\"recorded_final_score\":4393101,\"level\":100,\"chain\":70,\"clone_verified\":false,\"kernel_ms_including_frame_hashes\":98283.523438,\"elapsed_seconds\":98.371771430,\"world_bytes\":582480,\"scene_bytes\":1682584,\"guest_calls\":0,\"fallback_calls\":0}\n"
+        },
+        {
+          "name": "original-batch-0",
+          "native_summary_trace_metrics_deltas_equal": true,
+          "accepted": 128,
+          "rejected": 0,
+          "ticks": 125381,
+          "host_prefix": false,
+          "wall_seconds": 47.816037916985806
+        },
+        {
+          "name": "original-batch-1",
+          "native_summary_trace_metrics_deltas_equal": true,
+          "accepted": 128,
+          "rejected": 0,
+          "ticks": 156739,
+          "host_prefix": false,
+          "wall_seconds": 67.20085556199774
+        }
+      ],
+      "partial_result_slot_reuse": {
+        "command": "env -u CUDA_VISIBLE_DEVICES PYTHONPATH=python IRISU_SEARCH_CUDA_LIMITED_ENGINE=build-parity-limited/clone/cuda_native/irisu-cuda-search-engine IRISU_SEARCH_CUDA_ENGINE=build-parity-fixed/clone/cuda_native/irisu-cuda-search-engine uv run --no-project --with pytest python -m pytest -q tests/test_search_cuda_rejections.py",
+        "summary": "2 passed in 11.10s",
+        "log_sha256": "cba0002de62efba8fb409b1db0a71277dd749719bcea0a615471e4a7ff661ba1"
+      },
+      "binary_pins": [
+        {
+          "path": "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/build-parity-fixed/clone/cuda_native/irisu-cuda-search-engine",
+          "sha256": "08d18e763acac9c06bc180f994d7bea75a61b1bf5b7341ba35330144e3f37f1a"
+        },
+        {
+          "path": "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/build-parity-fixed/clone/cuda_native/irisu-cuda-native-game-runner",
+          "sha256": "07d3f93dda63e80afe1a8b901bda103c0f964dd2ad48c19af6c8b69b1ae3846e"
+        },
+        {
+          "path": "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/build-parity-fixed/clone/cuda_native/irisu-native-collision",
+          "sha256": "bcd23bae379d2afb763cfce6efcf5cc5ac3bb32644689891b9aa3f748c1380fa"
+        },
+        {
+          "path": "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/build-parity-limited/clone/cuda_native/irisu-cuda-search-engine",
+          "sha256": "b515c0f1baac9ffe8fbe929aaf89b8371df861e1a45bd3dee1f5d6986958346f"
+        }
+      ],
+      "build_logs": [
+        {
+          "path": "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/artifacts/parity-diagnostic/gpu-configure.log",
+          "sha256": "bb15c16d69f13b9461f48c67669438fc17259a7d3f109abf4b715b6bb8545551"
+        },
+        {
+          "path": "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/artifacts/parity-diagnostic/gpu-build.log",
+          "sha256": "2c4821357eaaf41b43404f2e6e810bd79b645b9aade8a56ebc00b1fc726ac72d"
+        },
+        {
+          "path": "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/artifacts/parity-diagnostic/limited-configure.log",
+          "sha256": "c1c4a0213deb007bf1a6140ecf414c8d60ad27cb5367d22ffd0aab6aaaae8100"
+        },
+        {
+          "path": "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/artifacts/parity-diagnostic/limited-build.log",
+          "sha256": "584649cc001ba1c70045ff4e774727df1f292c35661337d68971430ab0fc9f8e"
+        }
+      ],
+      "profile": "Original strict efficiency3 flags, bounded arithmetic/device trig0, no optional mirror/cooperative/cache stages;4096contacts for resident/full-game and separate512contact rejection profile.",
+      "continuous_record_scope": "GPU reset plus all97219 updates; complete97220 native game-digest rows equal. No host-prefix reconstruction used in this gate.",
+      "failed_trajectory_scope": "GPU reset plus all4053 updates; complete4054 native game-digest rows equal, plus independent resident GPU branch/native full summary and trace equality. Native result remains alive; original candidate header was intentionally not accepted as a terminal record.",
+      "power_limit_watts": 175,
+      "gpu_free_at_completion": true
+    }
   },
   "diagnostics": {
     "directory": "/home/gabe/.codex/worktrees/irisu-typed-physics-parity/irisu/artifacts/parity-diagnostic",
@@ -98,8 +303,8 @@
     "tools/cuda-native/oracle_collision_v2.py": "00816bba170bb32287e9b20f52decb92c1b0ce0af1f54678ee9c191431f89528"
   },
   "limitations": [
-    "No GPU compilation/execution was performed in this task.",
-    "Do not restart or repin frozen campaigns before GPU/native and provenance gates.",
-    "This correction establishes the captured regression and bounded CPU corpus, not universal typed-physics parity."
+    "This correction establishes the captured regression,8312-case native/device collision corpus,256 original closed-loop candidate continuations,4053-input failure trajectory, and published4393101 record; it does not prove universal typed-physics parity.",
+    "Frozen campaigns and their verifier remain unchanged; use a new frozen successor identity for this binary/source revision.",
+    "No new high score is claimed."
   ]
 }
