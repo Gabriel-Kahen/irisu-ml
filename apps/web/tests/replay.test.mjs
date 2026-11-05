@@ -2,15 +2,13 @@ import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
 import {readFileSync} from "node:fs";
 import test from "node:test";
-import {fileURLToPath} from "node:url";
 
 import {
   ReplayObservationCache, clampReplayScrubFrame, decodeReplayWord,
   encodeReplayWord, parseReplay, quantizeReplayPoint, serializeReplay,
 } from "../static/replay.mjs";
 
-const root = fileURLToPath(new URL("../../..", import.meta.url));
-const scoreProbe = `${root}/reference/captures/seed41-score-parity-20260720-001/input.rpy`;
+const scoreProbe = new URL("../../../tests/fixtures/replays/seed41-score-probe.rpy", import.meta.url);
 
 test("parses and byte-identically reserializes the original-observed v2.03 score probe", () => {
   const original = new Uint8Array(readFileSync(scoreProbe));
