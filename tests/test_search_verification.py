@@ -20,7 +20,7 @@ def checkpoint():
 def oracle(tmp_path, mode="valid"):
     script = tmp_path / ("oracle_" + mode)
     script.write_text(f'''#!{sys.executable}
-import json, struct, sys
+import json, os, signal, struct, sys
 data = open(sys.argv[1], 'rb').read()
 seed, level, score, chain, mode = struct.unpack_from('<I4i', data)
 ticks = (len(data) - 52) // 4
@@ -28,6 +28,8 @@ behavior = {mode!r}
 if behavior == 'exit':
     print('explicit failed replay', file=sys.stderr)
     sys.exit(2)
+if behavior == 'signal':
+    os.kill(os.getpid(), signal.SIGTERM)
 rows = ticks + 1 - int(behavior == 'short')
 for tick in range(rows):
     sys.stdout.buffer.write(struct.pack('<12Q', tick,0,0,0,0,0,0,score,0,level,chain,score))
@@ -84,6 +86,15 @@ def test_live_final_update_metadata_can_differ_from_recorded_snapshot(tmp_path):
 @pytest.mark.parametrize("mode", ["short", "missing", "mismatch", "wrongbackend", "exit"])
 def test_invalid_or_incomplete_oracle_results_reject(tmp_path, mode):
     with pytest.raises(RuntimeError):
+        NativeVerifier(oracle(tmp_path, mode)).verify(checkpoint())
+
+
+@pytest.mark.parametrize("mode, message", [
+    ("exit", "exit status 2: explicit failed replay"),
+    ("signal", r"SIGTERM \(returncode -15\) \(empty stderr\)"),
+])
+def test_failed_oracle_reports_exit_status_or_signal(tmp_path, mode, message):
+    with pytest.raises(RuntimeError, match=message):
         NativeVerifier(oracle(tmp_path, mode)).verify(checkpoint())
 
 

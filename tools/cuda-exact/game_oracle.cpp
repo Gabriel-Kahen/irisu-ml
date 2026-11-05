@@ -5,6 +5,7 @@
 #include "game_digest.hpp"
 
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
@@ -15,7 +16,8 @@
 #include <vector>
 
 namespace {
-std::uint32_t word(const std::vector<unsigned char>& data, std::size_t at) {
+template<class Bytes>
+std::uint32_t word(const Bytes& data, std::size_t at) {
   return std::uint32_t(data[at]) | (std::uint32_t(data[at+1]) << 8) |
          (std::uint32_t(data[at+2]) << 16) | (std::uint32_t(data[at+3]) << 24);
 }
@@ -40,17 +42,24 @@ int main(int argc, char** argv) {
       throw std::invalid_argument("usage: game-oracle padded-replay.rpy [maximum-steps]");
     std::ifstream stream(argv[1], std::ios::binary);
     if (!stream) throw std::runtime_error("cannot open replay");
-    const std::vector<unsigned char> data((std::istreambuf_iterator<char>(stream)), {});
-    if (data.size() <= 52 || (data.size()-52) % 4 || word(data, 16) != 0)
+    std::array<unsigned char,52> header{};
+    stream.read(reinterpret_cast<char*>(header.data()),header.size());
+    if (stream.gcount()!=static_cast<std::streamsize>(header.size()) || word(header,16)!=0)
       throw std::invalid_argument("expected nonempty padded v2.03 normal-mode replay");
-    const std::size_t available = (data.size()-52)/4;
-    const std::size_t steps = argc == 3 ? static_cast<std::size_t>(
-        std::min<unsigned long long>(available, std::stoull(argv[2]))) : available;
     const std::uint16_t cw = 0x027f;
     __asm__ __volatile__("fldcw %0" : : "m"(cw));
     const auto begin = std::chrono::steady_clock::now();
+    // The pinned legacy constructor has an indeterminate broad-phase counter.
+    // Match the native worker's pristine-root ordering: initialize from the
+    // fixed header before variable replay buffers can dirty its allocator.
     irisu::Simulator simulator;
-    auto observation = simulator.reset(word(data, 0));
+    auto observation = simulator.reset(word(header, 0));
+    const std::vector<unsigned char> data((std::istreambuf_iterator<char>(stream)), {});
+    if (data.empty() || data.size() % 4)
+      throw std::invalid_argument("expected nonempty padded v2.03 normal-mode replay");
+    const std::size_t available = data.size()/4;
+    const std::size_t steps = argc == 3 ? static_cast<std::size_t>(
+        std::min<unsigned long long>(available, std::stoull(argv[2]))) : available;
     irisu::StepResult result{};
     auto* dump=std::getenv("IRISU_GAME_BODY_DUMP_FILE");
     auto* dump_file=dump?std::fopen(dump,"w"):nullptr;
@@ -60,7 +69,7 @@ int main(int argc, char** argv) {
                                       irisu::game_digest::basis, 0, result));
     std::uint64_t events = 0;
     for (std::size_t i=0; i<steps; ++i) {
-      const auto input = word(data, 52+4*i);
+      const auto input = word(data, 4*i);
       result = simulator.step({static_cast<irisu::ActionKind>(input & 3U),
                                static_cast<double>((input >> 2U) & 0x3ffU),
                                static_cast<double>((input >> 12U) & 0x1ffU), 1, i<2});
@@ -72,9 +81,9 @@ int main(int argc, char** argv) {
     }
     if (steps == available &&
         (!result.terminated || result.truncated || !result.diagnostics.terminal_metadata_recorded ||
-         result.diagnostics.recorded_final_score != word(data, 8) ||
-         result.diagnostics.recorded_final_level != word(data, 4) ||
-         result.diagnostics.recorded_final_highest_chain != word(data, 12)))
+         result.diagnostics.recorded_final_score != word(header, 8) ||
+         result.diagnostics.recorded_final_level != word(header, 4) ||
+         result.diagnostics.recorded_final_highest_chain != word(header, 12)))
       throw std::runtime_error("full replay canonical terminal disagrees with header");
     std::fprintf(stderr,
       "{\"backend\":\"native-msvc-cpu-oracle\",\"format\":\"game-digest-v1\",\"rows\":%llu,\"steps\":%llu,\"events\":%llu,\"tick\":%llu,\"live_score\":%lld,\"canonical_score\":%lld,\"latest_final_score\":%lld,\"level\":%u,\"highest_chain\":%u,\"config_hash\":%llu,\"elapsed_seconds\":%.9f}\n",
