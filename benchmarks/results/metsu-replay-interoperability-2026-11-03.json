@@ -1,0 +1,125 @@
+{
+  "schema": "irisu-metsu-replay-interoperability-v1",
+  "status": "passed-for-recorded-coverage",
+  "date_local": "2026-11-03",
+  "config_hash": "1958987580749614460",
+  "original_execution": "Pinned complete v2.03 executable with authentic shipped physics DLL under Wine 11.21 on private Xvfb; transparent state/finish observer; controlled mode and scene selection uses original initializer and loader.",
+  "fix": "Use actual original PC64 level-parameter stores, correcting level-1 EX spawn interval from 176 to 175. Physics and normal gameplay remain unchanged.",
+  "cases": [
+    {
+      "direction": "browser-to-original",
+      "fixture": "tests/fixtures/metsu/browser-export.rpy",
+      "replay_sha256": "18d630363610072e123182421353db9ef79a2df2fee4f9473c72d4499a545e9e",
+      "comparison_report": "benchmarks/results/metsu-browser-export-original-2026-11-03.json",
+      "comparison_report_sha256": "297eff8cc0d4fb05f10b3b709de87600a28677686e9d51a4b5acdc565c79a44e",
+      "original_receipt": "reference/captures/metsu-browser-corrected-original-20261103-001/receipt.json",
+      "original_receipt_sha256": "b43f338edb78ce1ec68d0a0503b9a7ca6f222cbf9bcdd5216bf794ceeb24f9f5",
+      "browser_action_receipt": "reference/captures/metsu-browser-export-corrected-20261103-001/source-metadata.json",
+      "browser_action_receipt_sha256": "d00f388f279aa30a7268a4eb48d25a3cf407ce39f5235edf9c2baef8f119f4ce",
+      "inputs": 3942,
+      "compared_frames": 3943,
+      "compared_actor_states": 57778,
+      "compared_group_partitions": 3943,
+      "canonical_result": {
+        "score": 40,
+        "level": 1,
+        "chain": 2
+      },
+      "passed": true
+    },
+    {
+      "direction": "original-to-browser",
+      "fixture": "tests/fixtures/metsu/original-generated.rpy",
+      "replay_sha256": "c445ae72494ac25599b2aea5629772548b0a6daba8c357ccddf69f75c2ac38cc",
+      "comparison_report": "benchmarks/results/metsu-original-writer-playback-native-2026-11-03.json",
+      "comparison_report_sha256": "cbddd6ec6385d6143aff5420dd66720882423066e1e70aa7c5b04a2e5133fa8d",
+      "original_receipt": "reference/captures/metsu-original-generated-playback-20261103-001/receipt.json",
+      "original_receipt_sha256": "fda1d3472292a955622f13f9629119e1a02496e39b28fd6cfc82817ab37533d4",
+      "browser_action_receipt": "reference/captures/metsu-original-record-20261103-001/browser-import.json",
+      "browser_action_receipt_sha256": "cfa1a649e6af6ec6a7b1a56ad27b5f32ef876666a2fc62021f567ccd5891eab8",
+      "inputs": 2994,
+      "compared_frames": 2995,
+      "compared_actor_states": 41999,
+      "compared_group_partitions": 2995,
+      "canonical_result": {
+        "score": 0,
+        "level": 1,
+        "chain": 0
+      },
+      "passed": true
+    },
+    {
+      "direction": "controlled-active-play",
+      "fixture": "tests/fixtures/metsu/controlled-level4.rpy",
+      "replay_sha256": "c76a26c0f1b5a8526efaf53f41d704e5275c608077d07cb1d6ca4d782d632fa8",
+      "comparison_report": "benchmarks/results/metsu-controlled-original-native-2026-11-03.json",
+      "comparison_report_sha256": "a05142d6a71ace84762ba40f31c3dcc068ccf69579d770961678fe827a569443",
+      "original_receipt": "reference/captures/metsu-controlled-original-20261103-001/receipt.json",
+      "original_receipt_sha256": "c1cf55509ab710cb8219980159fa632f8344fac3975e2cab3e0be1ef2ebf775b",
+      "browser_action_receipt": "reference/captures/metsu-controlled-policy-20261103-001/browser-import.json",
+      "browser_action_receipt_sha256": "509dab0020669515c52c68657bd77a7511577d3e7e836bef8f0f0b80bf345445",
+      "inputs": 4652,
+      "compared_frames": 4653,
+      "compared_actor_states": 271122,
+      "compared_group_partitions": 4653,
+      "canonical_result": {
+        "score": 426,
+        "level": 4,
+        "chain": 3
+      },
+      "passed": true
+    }
+  ],
+  "coverage": {
+    "unique_replays": 3,
+    "input_updates": 11588,
+    "frame_rows_including_resets": 11591,
+    "actor_states": 370899,
+    "group_partitions": 11591,
+    "scalar_fields": 8,
+    "actor_fields": 28,
+    "finish_latch_fields": 6,
+    "float_comparison": "raw float32 bits, zero tolerance",
+    "active_input_scope": "193 alternating weak/strong edges held three updates, EX chains, 18 qualifying clears, levels 1 through 4"
+  },
+  "browser_native_gate": {
+    "report": "benchmarks/results/metsu-replay-browser-native-v86-2026-11-03.json",
+    "report_sha256": "65f97330b209a151d211c53c47804c7bd6232b395e8aea0b5e849bd861ea3d68",
+    "source_worker_sha256": "b603cae7f0714709b1de14162ff897940fc503224d4bf5c98beb12f0ff51fd02",
+    "runtime_version": "608859a84641ef03f3e7155e",
+    "responses": 5834,
+    "payload_bytes": 223000797,
+    "mismatches": 0,
+    "scope": "Separate three-seed native/v86 response-byte gate; actual browser Save and file-chooser imports are attested separately above."
+  },
+  "normal_regression": {
+    "report": "benchmarks/results/metsu-final-normal-regression-2026-11-03.json",
+    "report_sha256": "d3aea3319bc7756efb22d5968570bf61a0183d97e8121a33aece46536a4b7274",
+    "ticks": 97219,
+    "response_bytes": 188356329,
+    "mismatches": 0,
+    "normal_worker_and_frontend_unchanged": true,
+    "protected_source_report": "benchmarks/results/metsu-protected-normal-source-2026-11-03.json"
+  },
+  "tests": {
+    "portable_ctest": 12,
+    "exact_ctest": 15,
+    "web_tests": 81,
+    "state_comparator_cases": 19,
+    "original_capture_cases": 8,
+    "failures": 0
+  },
+  "negative_control": {
+    "report": "benchmarks/results/metsu-premature-browser-replay-rejected-2026-11-03.json",
+    "result": "Old browser export is rejected: corrected state parity at EOF cannot qualify a replay while the original is still active."
+  },
+  "limitations": [
+    "Finite replay coverage, not proof of universal 1:1 behavior.",
+    "The completed active replay reaches level 4; special-orb scheduling and all later-level full-process trajectories are not covered by these runs.",
+    "Dynamic actor states, group sharing, RNG calls, stale pool colors, globals and finish metadata are compared; internal solver caches and static actor rows are excluded.",
+    "Original full-process qualification used Wine 11.21, not a native Windows release run.",
+    "This is gameplay/replay qualification, not a claim of pixel-identical rendering."
+  ],
+  "preview": "http://127.0.0.1:8768/metsu/",
+  "workflow": "tools/metsu/REPLAY_INTERCHANGE.md"
+}

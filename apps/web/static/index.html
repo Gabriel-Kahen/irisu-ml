@@ -8,14 +8,20 @@
   <title>irisu</title>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DCS6EVRYKH"></script>
   <script src="./analytics.js"></script>
-  <link rel="stylesheet" href="./styles.css?v=20261006f">
+  <link rel="stylesheet" href="./styles.css?v=20261104a">
   <link rel="preload" href="./exact-runtime/v86.wasm?v=20260824k" as="fetch" type="application/wasm" crossorigin>
   <link rel="preload" href="./exact-runtime/buildroot-bzimage68.bin?v=20260824k" as="fetch" crossorigin>
 </head>
 <body>
   <main class="app">
     <header>
-      <div class="brand">irisu</div>
+      <div class="brand-group">
+        <div class="brand">irisu</div>
+        <nav class="mode-switch" aria-label="Game mode">
+          <a href="./normal/" aria-current="page">normal</a>
+          <a href="./metsu/">metsu</a>
+        </nav>
+      </div>
       <div class="header-actions">
         <button id="openReplayButton" type="button" disabled>play replay</button>
         <input id="replayFileInput" type="file" accept=".rpy,application/octet-stream" hidden>

@@ -1,0 +1,163 @@
+{
+  "schema": "irisu-metsu-original-state-digests-v1",
+  "config_hash": "1958987580749614460",
+  "projection": {
+    "schema": "irisu-metsu-observed-frame-v1",
+    "scalar_fields": [
+      "tick",
+      "score",
+      "gauge",
+      "level",
+      "qualifying_clears",
+      "highest_chain",
+      "rng_calls",
+      "pool_colors"
+    ],
+    "actor_fields": [
+      "role",
+      "ex",
+      "ex_timer",
+      "color",
+      "size_slot",
+      "size_bits",
+      "x_bits",
+      "y_bits",
+      "angle_bits",
+      "vx_bits",
+      "vy_bits",
+      "physics_updates",
+      "age",
+      "remaining_lifetime",
+      "freshness",
+      "grouped",
+      "physics_owned",
+      "special",
+      "rot_timer",
+      "projectile_hits",
+      "clear_pending",
+      "delete_marked",
+      "non_wall_contacts",
+      "gate_seen",
+      "gate_enabled",
+      "group_chain",
+      "group_shadow",
+      "group_num"
+    ],
+    "finish_fields": [
+      "finish_call_count",
+      "terminal_metadata_recorded",
+      "recorded_final_score",
+      "recorded_final_level",
+      "recorded_final_chain",
+      "recorded_final_clears"
+    ],
+    "actor_identity": "ascending original actor-pool slot",
+    "group_identity": "partition of all live non-null group links, including pending EX",
+    "encoding": "SHA256 over uint32-le byte length then UTF-8 compact sorted-key JSON for each frame"
+  },
+  "derivation": "Normalized complete actual original-process state traces; native states were not used to generate golden digests.",
+  "original_executable_sha256": "0636d3e44439d88807d0c00aeb1bb072316c69fc13a21f79d67e53affad28255",
+  "qualification_report": "benchmarks/results/metsu-replay-interoperability-2026-11-03.json",
+  "qualification_report_sha256": "57a2942a7861b5f482ad42eac6bd4217f8f4ad7b93e507e65c04f745300a43ee",
+  "fixtures": [
+    {
+      "name": "browser-export",
+      "path": "browser-export.rpy",
+      "replay": {
+        "seed": 1274909209,
+        "level": 1,
+        "score": 40,
+        "chain": 2,
+        "mode": 1,
+        "inputs": 3942,
+        "size_bytes": 15820,
+        "sha256": "18d630363610072e123182421353db9ef79a2df2fee4f9473c72d4499a545e9e"
+      },
+      "original_states": {
+        "normalized_state_sha256": "a8965b6b5f64eeaa6e22e4060563f1e21df865eb5c1d5c1e947475b6f269ae21",
+        "frames": 3943,
+        "actor_states": 57778,
+        "group_partitions": 3943,
+        "canonical_first_finish": {
+          "score": 40,
+          "level": 1,
+          "chain": 2
+        }
+      },
+      "evidence": {
+        "original_trace": "reference/runs/metsu-browser-corrected-original-20261103-001/data/dll/metsu-state.jsonl",
+        "original_trace_sha256": "299d8dac45aef66af0872a32b919c1814691e9ff7cfeec50c8cb86231707acfa",
+        "original_receipt": "reference/captures/metsu-browser-corrected-original-20261103-001/receipt.json",
+        "original_receipt_sha256": "b43f338edb78ce1ec68d0a0503b9a7ca6f222cbf9bcdd5216bf794ceeb24f9f5",
+        "comparison_report": "benchmarks/results/metsu-browser-export-original-2026-11-03.json",
+        "comparison_report_sha256": "297eff8cc0d4fb05f10b3b709de87600a28677686e9d51a4b5acdc565c79a44e"
+      }
+    },
+    {
+      "name": "original-generated",
+      "path": "original-generated.rpy",
+      "replay": {
+        "seed": 45541046,
+        "level": 1,
+        "score": 0,
+        "chain": 0,
+        "mode": 1,
+        "inputs": 2994,
+        "size_bytes": 12028,
+        "sha256": "c445ae72494ac25599b2aea5629772548b0a6daba8c357ccddf69f75c2ac38cc"
+      },
+      "original_states": {
+        "normalized_state_sha256": "701de78298eb726dc1a5c37e55c8f3ac9ac3a882482316a6cd619ab89008010a",
+        "frames": 2995,
+        "actor_states": 41999,
+        "group_partitions": 2995,
+        "canonical_first_finish": {
+          "score": 0,
+          "level": 1,
+          "chain": 0
+        }
+      },
+      "evidence": {
+        "original_trace": "reference/runs/metsu-original-generated-playback-20261103-001/data/dll/metsu-state.jsonl",
+        "original_trace_sha256": "c3c6e6e15b52bbc3c388cf750c291b5d3d12690c101ca6a6029f9631e9be8d59",
+        "original_receipt": "reference/captures/metsu-original-generated-playback-20261103-001/receipt.json",
+        "original_receipt_sha256": "fda1d3472292a955622f13f9629119e1a02496e39b28fd6cfc82817ab37533d4",
+        "comparison_report": "benchmarks/results/metsu-original-writer-playback-native-2026-11-03.json",
+        "comparison_report_sha256": "cbddd6ec6385d6143aff5420dd66720882423066e1e70aa7c5b04a2e5133fa8d"
+      }
+    },
+    {
+      "name": "controlled-level4",
+      "path": "controlled-level4.rpy",
+      "replay": {
+        "seed": 1,
+        "level": 4,
+        "score": 426,
+        "chain": 3,
+        "mode": 1,
+        "inputs": 4652,
+        "size_bytes": 18660,
+        "sha256": "c76a26c0f1b5a8526efaf53f41d704e5275c608077d07cb1d6ca4d782d632fa8"
+      },
+      "original_states": {
+        "normalized_state_sha256": "0b13c7ec4f31d4876ca34a6de70be180eff05d804315e9f6e8bb4441c299c651",
+        "frames": 4653,
+        "actor_states": 271122,
+        "group_partitions": 4653,
+        "canonical_first_finish": {
+          "score": 426,
+          "level": 4,
+          "chain": 3
+        }
+      },
+      "evidence": {
+        "original_trace": "reference/runs/metsu-controlled-original-20261103-001/data/dll/metsu-state.jsonl",
+        "original_trace_sha256": "fac515be608b75687c0157c40e40488ce6e0f751dddf4ce73dbe7eecfdf3fbbe",
+        "original_receipt": "reference/captures/metsu-controlled-original-20261103-001/receipt.json",
+        "original_receipt_sha256": "c1cf55509ab710cb8219980159fa632f8344fac3975e2cab3e0be1ef2ebf775b",
+        "comparison_report": "benchmarks/results/metsu-controlled-original-native-2026-11-03.json",
+        "comparison_report_sha256": "a05142d6a71ace84762ba40f31c3dcc068ccf69579d770961678fe827a569443"
+      }
+    }
+  ]
+}

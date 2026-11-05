@@ -1,0 +1,17 @@
+{
+  "version": "cpu-worker-byte-differential-v1",
+  "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+  "left_worker_sha256": "8ef81521e81a5b2a764c305ac48dad997b28476bcd2fccbd1c9aed9603322854",
+  "right_worker_sha256": "15182ac9fdfda616ac60b5d921a552cc1a53bb357dcbaa8691428948a796fcf4",
+  "exact_library_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+  "steps": 97219,
+  "compared_payload_bytes": 188356329,
+  "length_prefixed_transcript_sha256": "1c0ec5f7b679fe23847ffdb38b8564ee9984d9311017d90e1a22a69e02fa53b7",
+  "mismatches": 0,
+  "canonical_score": 4393101,
+  "level": 100,
+  "highest_chain": 70,
+  "elapsed_seconds": 6.481843273999402,
+  "guard": "pinned-normal-mode-regression-v1",
+  "normal_config_hash": "17009678407634462320"
+}

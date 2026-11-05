@@ -732,3 +732,6 @@ if(IRISU_PHYSICS_BACKEND STREQUAL "exact-msvc")
     IRISU_TRACE_SOURCE_SHA256="${irisu_search_trace_source_sha256}"
     IRISU_TRACE_EXACT_LIBRARY_SHA256="${irisu_exact_box2d_sha256}")
 endif()
+
+# Optional independent gameplay target; the normal build stays the default.
+include(cmake/Metsu.cmake)

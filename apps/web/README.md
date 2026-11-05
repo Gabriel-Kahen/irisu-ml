@@ -3,6 +3,41 @@
 This asset-free browser client renders the real headless simulator at 50 Hz.
 Its open-bottom U-shaped well follows the measured v2.03 mode-0 geometry.
 
+## Modes and site routes
+
+The header's Normal / Metsu links switch between independent game clients:
+
+- `/` always opens normal mode.
+- `/normal` opens normal mode directly (static hosts add the trailing slash).
+- `/metsu` opens Metsu directly (static hosts add the trailing slash).
+
+The normal alias shares the root's scripts, exact runtime, soundtrack and cache;
+Metsu keeps its own scripts, runtime and cache under `/metsu/`. Mode selection
+does not change the default landing page or either game's HUD.
+
+Build the complete site from the prepared runtimes:
+
+```sh
+IRISU_EXACT_RUNTIME_DIR=/path/to/prepared-normal-runtime \
+IRISU_METSU_RUNTIME_DIR=/path/to/verified-metsu-runtime \
+  apps/web/build-site.sh build-metsu-web/combined-site
+python3 -m http.server 8768 --bind 127.0.0.1 \
+  --directory build-metsu-web/combined-site
+```
+
+See [the Metsu guide](METSU.md) to prepare its runtime. The combined build
+stages both clients before replacing an existing generated site, so a failed
+Metsu build preserves the previous normal site.
+
+GitHub Pages uses this combined build. It downloads the unchanged pinned
+normal release and separately builds Metsu on Ubuntu 24.04, checks its recorded
+states against original-game golden digests, then verifies native/v86 parity.
+The verified Metsu runtime is cached by engine, fixture, packaging and workflow
+inputs. Only `main`, `codex/github-pages`, or an explicit workflow dispatch
+deploys; building a local branch does not publish it.
+
+## Controls
+
 - Left click or `W`: weak shot
 - Right click or `S`: strong shot
 - Shift + click: both shots
@@ -38,7 +73,7 @@ See [music research](../../reference/music-rules.md) for the original game's
 rules and track mappings. This site's automatic three-song rotation is an
 intentional convenience; the original game uses a manually selected song.
 
-## Build the static exact app
+## Build the standalone normal app
 
 Build the existing 32-bit exact worker and provide its MSVC9 r58 host, then run:
 
@@ -53,7 +88,7 @@ worker object and `libirisu_core.a` against the guest toolchain. If those files
 do not share the worker's standard CMake build directory, set
 `IRISU_EXACT_WORKER_OBJECT` and `IRISU_EXACT_CORE_ARCHIVE` explicitly.
 
-This writes the GitHub Pages artifact to `apps/web/dist`. The static site boots
+This writes the standalone normal artifact to `apps/web/dist`. The static site boots
 the exact i386 worker under v86 inside a Web Worker and requires no application
 server or cross-origin isolation. Dependencies are pinned and cached in
 `build-web/downloads`; generated guest binaries remain outside source control.

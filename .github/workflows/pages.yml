@@ -16,15 +16,54 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - name: Download pinned exact runtime
         run: apps/web/fetch-exact-runtime.sh "$RUNNER_TEMP/irisu-exact-runtime"
+      - name: Restore verified Metsu runtime
+        id: metsu-runtime
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/irisu-metsu-runtime
+          key: ${{ runner.os }}-metsu-runtime-v1-${{ hashFiles('clone/**', 'cmake/**', 'CMakeLists.txt', 'tools/exact-physics-prototype/**', 'tools/metsu/**', 'tools/verify-elf-runpath.cmake', 'tests/fixtures/metsu/**', 'apps/web/prepare-metsu-runtime.*', 'apps/web/verify-metsu-v86.mjs', '.github/workflows/pages.yml') }}
+      - name: Install Metsu build dependencies
+        if: steps.metsu-runtime.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++-multilib cmake binutils
+      - name: Build separate Metsu worker and tracer
+        if: steps.metsu-runtime.outputs.cache-hit != 'true'
+        run: |
+          cmake -S . -B "$RUNNER_TEMP/irisu-metsu-build" \
+            -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-m32 \
+            -DIRISU_PHYSICS_BACKEND=exact-msvc -DIRISU_BUILD_METSU=ON \
+            -DIRISU_BUILD_TESTS=OFF -DIRISU_BUILD_SHARED=OFF -DIRISU_BUILD_BENCHMARKS=OFF \
+            -DIRISU_EXACT_BOX2D_LIBRARY="$RUNNER_TEMP/irisu-exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so"
+          cmake --build "$RUNNER_TEMP/irisu-metsu-build" --parallel 2 \
+            --target irisu-metsu-exact-worker irisu-metsu-trace
+      - name: Check Metsu against original-game replay states
+        if: steps.metsu-runtime.outputs.cache-hit != 'true'
+        run: python3 tools/metsu/check_replay_fixtures.py --tracer "$RUNNER_TEMP/irisu-metsu-build/irisu-metsu-trace"
+      - name: Prepare and verify separate Metsu browser runtime
+        if: steps.metsu-runtime.outputs.cache-hit != 'true'
+        run: |
+          apps/web/prepare-metsu-runtime.sh "$RUNNER_TEMP/irisu-metsu-runtime" \
+            --baseline "$RUNNER_TEMP/irisu-exact-runtime" \
+            --worker "$RUNNER_TEMP/irisu-metsu-build/irisu-metsu-exact-worker" \
+            --steps 6000 --seeds 0,41,123
+      - name: Check browser clients and routes
+        run: |
+          node --test apps/web/tests/*.test.mjs apps/web/tests/metsu/*.test.mjs
+          python3 tests/test_metsu_replay_fixtures.py
       - name: Build static site
         env:
           IRISU_EXACT_RUNTIME_DIR: ${{ runner.temp }}/irisu-exact-runtime
-        run: apps/web/build-static.sh
+          IRISU_METSU_RUNTIME_DIR: ${{ runner.temp }}/irisu-metsu-runtime
+        run: apps/web/build-site.sh
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:

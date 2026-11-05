@@ -1,0 +1,112 @@
+{
+  "schema": "irisu-metsu-native-v86-parity-v1",
+  "mode": 1,
+  "worker_sha256": "ab51c39632fc3e8fda597735f5ad4210ec071713971663da07ab3ae7b512aeb0",
+  "runtime_version": "5899eaaf98fd37ec7c4dd01b",
+  "seed_results": [
+    {
+      "seed": 0,
+      "requested_steps": 3500,
+      "steps": 2016,
+      "policy": "scripted",
+      "final_state": {
+        "tick": 2013,
+        "score": 0,
+        "gauge": 1,
+        "level": 1,
+        "terminated": true,
+        "truncated": false,
+        "terminal_metadata_recorded": true,
+        "recorded_final_score": 0,
+        "recorded_final_level": 1
+      },
+      "compared_payload_bytes": 78577853,
+      "event_count": 641680,
+      "ex_body_observations": 4800,
+      "ex_event_details": [
+        "Metsu EX spawn"
+      ],
+      "ex_event_counts": {
+        "activated": 2
+      },
+      "transcript_sha256": "f3970079900c68c49563c67a264f07891a933e9ff02a30ecec1e9583867eceaa",
+      "mismatches": 0
+    },
+    {
+      "seed": 41,
+      "requested_steps": 3500,
+      "steps": 2009,
+      "policy": "scripted",
+      "final_state": {
+        "tick": 2006,
+        "score": 24,
+        "gauge": 1,
+        "level": 1,
+        "terminated": true,
+        "truncated": false,
+        "terminal_metadata_recorded": true,
+        "recorded_final_score": 24,
+        "recorded_final_level": 1
+      },
+      "compared_payload_bytes": 78661084,
+      "event_count": 644900,
+      "ex_body_observations": 4692,
+      "ex_event_details": [
+        "Metsu EX spawn"
+      ],
+      "ex_event_counts": {
+        "activated": 2
+      },
+      "transcript_sha256": "b8ab30f708d3cb8dcf9207c3c3085e5587dadf257425b3eb78190135acc12297",
+      "mismatches": 0
+    },
+    {
+      "seed": 123,
+      "requested_steps": 3500,
+      "steps": 1638,
+      "policy": "scripted",
+      "final_state": {
+        "tick": 1635,
+        "score": 0,
+        "gauge": 1,
+        "level": 1,
+        "terminated": true,
+        "truncated": false,
+        "terminal_metadata_recorded": true,
+        "recorded_final_score": 0,
+        "recorded_final_level": 1
+      },
+      "compared_payload_bytes": 57515536,
+      "event_count": 471711,
+      "ex_body_observations": 4318,
+      "ex_event_details": [
+        "Metsu EX spawn"
+      ],
+      "ex_event_counts": {
+        "activated": 2
+      },
+      "transcript_sha256": "960fa6c260bbbd64197676a5090736223145a7af91664daa9667c6f861c62fcf",
+      "mismatches": 0
+    }
+  ],
+  "elapsed_seconds": 509.57,
+  "mismatches": 0,
+  "guest_file_sha256": {
+    "irisu-exact-worker": "c5b989b5a21282eac3fddee0b12add1edc34b4d420825773c34047739fe5e9de",
+    "irisu-metsu-worker.bin": "873740548747bd48e13f87d3052818127aad620ec758baba313f4ff5851112d9",
+    "libirisu_box2d_msvc_exact_multiworld.so": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+    "libstdc++.so.6": "90abf0c6a98625b812132ea9af960ee8b036e3f519e368de1084fb50532ba021",
+    "ld-linux.so.2": "a2debc5ecacc21a8cd4635b1d7ddef5a2fdf9413d139bffe10243ca431678c8b",
+    "libc.so.6": "2117603fe8441c288254aa5ee60e42ebe6799ebe96a4cd4a7af957f3e3583648",
+    "libm.so.6": "8ef13835a72a367e5e533cb9f2876aa47e6ab6fedeeb171e7b5400b4f202b5a9",
+    "libgcc_s.so.1": "a53ae62e992b9cae7cc2b7983671aac97430980f5ef699d06defb8b852fbf405"
+  },
+  "runtime_asset_sha256": {
+    "libv86.js": "730d3e4e4bd1d9c7ede4a4995f23da87261a723b3524da9a75c90e6e0610f46b",
+    "v86.wasm": "73d1023eba1729d6aa6a9a3d3d52122c88e8f05b775caaa0557e042f68c34403",
+    "buildroot-bzimage68.bin": "c745fcde490cb8e4db59e5b4e1ce5e00bfdae3bcb6bf34048d16dcb15e3dfe30",
+    "seabios.bin": "73e3f359102e3a9982c35fce98eb7cd08f18303ac7f1ba6ebfbe6cdc1c244d98",
+    "vgabios.bin": "a4bc0d80cc3ca028c73dafa8fee396b8d054ce87ebd8abfbd31b06b437607880"
+  },
+  "identity_metadata_refreshed_without_asset_changes": true
+}

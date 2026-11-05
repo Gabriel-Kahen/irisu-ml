@@ -1,0 +1,35 @@
+{
+  "source_base": "13023da56a399cdfeef26f4f4307e38ab95cb31c",
+  "checked_paths": [
+    "clone/core/config.cpp",
+    "clone/core/config_io.cpp",
+    "clone/core/simulator.cpp",
+    "clone/core/normal_rules.cpp",
+    "clone/core/physics.cpp",
+    "clone/include/irisu/config.hpp",
+    "clone/include/irisu/types.hpp",
+    "clone/include/irisu/simulator.hpp",
+    "apps/web/static/app.js",
+    "apps/web/static/exact-codec.mjs",
+    "apps/web/static/exact-runtime.js",
+    "apps/web/static/replay.mjs"
+  ],
+  "changed": {},
+  "schema": "metsu-protected-normal-source-v1",
+  "date": "2026-11-03",
+  "git_diff_paths": [
+    "apps/web/static",
+    "apps/web/build-static.sh",
+    "apps/web/prepare-exact-runtime.sh",
+    "apps/web/fetch-exact-runtime.sh",
+    "apps/web/relink-exact-worker.sh",
+    "clone/core",
+    "clone/include/irisu/simulator.hpp",
+    "clone/include/irisu/config.hpp",
+    "clone/include/irisu/types.hpp"
+  ],
+  "git_diff_empty": true,
+  "git_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "normal_worker_sha256": "15182ac9fdfda616ac60b5d921a552cc1a53bb357dcbaa8691428948a796fcf4",
+  "matches_pristine_pre_metsu_worker": true
+}

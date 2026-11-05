@@ -1,0 +1,57 @@
+{
+  "schema": "metsu-normal-baseline-v1",
+  "date": "2026-11-03",
+  "status": "baseline_only_no_metsu_implementation",
+  "source_commit": "13023da56a399cdfeef26f4f4307e38ab95cb31c",
+  "normal_config_hash": "17009678407634462320",
+  "portable_ctest": {
+    "passed": 8,
+    "failed": 0
+  },
+  "exact_ctest": {
+    "passed": 12,
+    "failed": 0
+  },
+  "browser_tests": {
+    "passed": 70,
+    "failed": 0
+  },
+  "browser_seed41_fixture_sha256": "1ce501febe8f3f6291e4b82736542179bd9808e412d38e0e1fb1c92d05797657",
+  "normal_replay_differential": {
+    "version": "cpu-worker-byte-differential-v1",
+    "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+    "left_worker_sha256": "8ef81521e81a5b2a764c305ac48dad997b28476bcd2fccbd1c9aed9603322854",
+    "right_worker_sha256": "15182ac9fdfda616ac60b5d921a552cc1a53bb357dcbaa8691428948a796fcf4",
+    "exact_library_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+    "steps": 97219,
+    "compared_payload_bytes": 188356329,
+    "length_prefixed_transcript_sha256": "1c0ec5f7b679fe23847ffdb38b8564ee9984d9311017d90e1a22a69e02fa53b7",
+    "mismatches": 0,
+    "canonical_score": 4393101,
+    "level": 100,
+    "highest_chain": 70,
+    "elapsed_seconds": 5.81485679600155
+  },
+  "source_sha256": {
+    "CMakeLists.txt": "cf517b498faf1202855faf27695fd420fb0f10c1ac2837915d3378d61b74e42d",
+    "clone/core/config.cpp": "2dae49b87434456ee40c3ad9c338b0f114abc7907829b63b4b5a2035222cc0e3",
+    "clone/core/config_io.cpp": "a5935b878709b662fc985e0c4800691ffa3b34220eb0a011fe76c3f694689424",
+    "clone/core/simulator.cpp": "7849ac8dc07cbc8fb15b8994dd233555882008581e89c4443926c7752441e61f",
+    "clone/core/normal_rules.cpp": "96859737fb2eefa82de75e3dc769264f712bb85dc9b6b29d2d4cc58d8e4516ae",
+    "clone/core/physics.cpp": "668a468c5dc3a0216bfefe89d5a5885eb6bd7da5494f10f3962b827a966a74d2",
+    "clone/include/irisu/config.hpp": "0ba54ee5bb5205b2b34b48f47493cb6f6f4fea3a34805d48a9dc878d8665dcd3",
+    "clone/include/irisu/types.hpp": "37f315c90f0ab7ced3a08b91a3a77bd94feccab97dcff9f5a06cd3fc37522ab8",
+    "clone/include/irisu/simulator.hpp": "f3a135406e01a884abc0d5b2dddec561316d9943c4bf206c19514992e084e29f",
+    "tools/exact-physics-prototype/ipc_worker.cpp": "d451337b80791837b0bbc979afe39dc6d88229144fb1a74fe8266f84fa355c03",
+    "tools/exact-physics-prototype/physics_wrapper_forward.cpp": "70cc4b3285d53b24dfc6216fbdec2f41bb6dc70ab931a477359ecf507b632342",
+    "python/irisu_env/exact_ipc.py": "d54fbdc211fb28cc47b11db0cfe3a5ecd4c3f8cfaa2a5e066fdfb8029049c91e",
+    "apps/web/static/app.js": "7c8d71fab578a466f2601781e1f551b25a0f1d8d0e75ba23eebca954d20a3209",
+    "apps/web/static/exact-codec.mjs": "e77f0a9b9e76db22375fd431293ce3798955b6ac35b98b056de67fb5bb4f9eea",
+    "apps/web/static/exact-runtime.js": "4814f35bc312393839e73a4f5f0f814ba4dc48ef71784107e533e29486d99a83",
+    "apps/web/static/replay.mjs": "7bc873b60f683bb2295e946859d3011f1fc6608d3c1408d29be9a0dc33e7ff1f"
+  },
+  "limitations": [
+    "Original four-replay trace bundles absent; optional corpus CTests skipped at configuration.",
+    "Bounded normal-mode baseline; no Metsu runtime or fidelity claim."
+  ]
+}

@@ -1043,6 +1043,8 @@ def clear_exact_worker_lease(descriptor: int) -> None:
 class ExactWorkerClient:
     """Own one persistent 32-bit exact worker and its single physics world."""
 
+    expected_backend = _EXACT_BACKEND
+
     def __init__(
         self,
         worker: str | os.PathLike[str],
@@ -1149,10 +1151,10 @@ class ExactWorkerClient:
                 raise ExactProtocolError(
                     "exact worker does not expose the canonical x87 control word"
                 )
-            if self.info.backend != _EXACT_BACKEND:
+            if self.info.backend != self.expected_backend:
                 raise ExactProtocolError(
                     "exact worker is not the required exact multiworld backend "
-                    f"(expected {_EXACT_BACKEND!r}, got {self.info.backend!r})"
+                    f"(expected {self.expected_backend!r}, got {self.info.backend!r})"
                 )
             normalized_library_sha256 = normalize_exact_library_sha256(
                 self.info.exact_library_sha256
@@ -1654,6 +1656,7 @@ class ExactFastCheckpoint:
     ) -> None:
         self._lock = threading.RLock()
         self._client = source._require_open()
+        self._simulator_type = type(source)
         self._token = token
         self._keeper_pid = keeper_pid
         self._closed = False
@@ -1707,7 +1710,7 @@ class ExactFastCheckpoint:
                 self._token, self._keeper_pid
             )
             try:
-                simulator = ExactSimulator._from_fast_checkpoint(self, client)
+                simulator = self._simulator_type._from_fast_checkpoint(self, client)
             except BaseException:
                 client.close()
                 raise
@@ -1760,6 +1763,8 @@ class ExactSimulator:
     solver state without pretending it can be serialized directly.
     """
 
+    _client_type = ExactWorkerClient
+
     def __init__(
         self,
         worker_path: str | os.PathLike[str] | None = None,
@@ -1771,7 +1776,7 @@ class ExactSimulator:
         self._overrides = dict(flattened)
         self._lock = threading.RLock()
         self._path = find_exact_worker(worker_path)
-        self._client: ExactWorkerClient | None = ExactWorkerClient(
+        self._client: ExactWorkerClient | None = self._client_type(
             self._path,
             config=self._overrides if self._overrides else None,
         )
@@ -1865,7 +1870,7 @@ class ExactSimulator:
             )
 
     def _spawn_matching_client(self) -> ExactWorkerClient:
-        candidate = ExactWorkerClient(
+        candidate = self._client_type(
             self._path,
             config=self._overrides if self._overrides else None,
         )

@@ -1,0 +1,23 @@
+{
+  "schema": "metsu-original-setter-component-oracle-v1",
+  "original_executable_sha256": "0636d3e44439d88807d0c00aeb1bb072316c69fc13a21f79d67e53affad28255",
+  "harness_source_sha256": "147bfc8af09b8f10d284afedb381086b0ddb40d040f11ff72f86729b1b907d3b",
+  "x87_control_word": "0x027f",
+  "normal_reference_scale_rows_matched": 99,
+  "normal_reference_descent_rows_matched": 99,
+  "metsu_level_rows": 99,
+  "table_sha256": "d1786c82eec4583f71cb23be664b879038b2929be262bb2726430025c3f73d1a",
+  "original_routines": {
+    "normal_setter": "0x415624",
+    "metsu_setter": "0x415800",
+    "power_wrapper": "0x41a5e0",
+    "power": "0x427110",
+    "absolute": "0x41a578"
+  },
+  "stubs": {
+    "0x416268": "config lookup: shipped float -0.05 and int120 only",
+    "0x418964": "debug logging: return",
+    "0x40ffc4": "normal shape RNG: zero (not used by Metsu setter)"
+  },
+  "scope": "Original pure parameter component execution; no game entrypoint, scene, physics or replay parity claim."
+}
