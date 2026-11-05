@@ -22,11 +22,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Check browser clients and routes
+        run: |
+          node --test apps/web/tests/*.test.mjs apps/web/tests/metsu/*.test.mjs
+          python3 tests/test_metsu_replay_fixtures.py
       - name: Download pinned exact runtime
         run: apps/web/fetch-exact-runtime.sh "$RUNNER_TEMP/irisu-exact-runtime"
       - name: Restore verified Metsu runtime
         id: metsu-runtime
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: ${{ runner.temp }}/irisu-metsu-runtime
           key: ${{ runner.os }}-metsu-runtime-v1-${{ hashFiles('clone/**', 'cmake/**', 'CMakeLists.txt', 'tools/exact-physics-prototype/**', 'tools/metsu/**', 'tools/verify-elf-runpath.cmake', 'tests/fixtures/metsu/**', 'apps/web/prepare-metsu-runtime.*', 'apps/web/verify-metsu-v86.mjs', '.github/workflows/pages.yml') }}
@@ -55,10 +59,12 @@ jobs:
             --baseline "$RUNNER_TEMP/irisu-exact-runtime" \
             --worker "$RUNNER_TEMP/irisu-metsu-build/irisu-metsu-exact-worker" \
             --steps 6000 --seeds 0,41,123
-      - name: Check browser clients and routes
-        run: |
-          node --test apps/web/tests/*.test.mjs apps/web/tests/metsu/*.test.mjs
-          python3 tests/test_metsu_replay_fixtures.py
+      - name: Save verified Metsu runtime
+        if: steps.metsu-runtime.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/irisu-metsu-runtime
+          key: ${{ steps.metsu-runtime.outputs.cache-primary-key }}
       - name: Build static site
         env:
           IRISU_EXACT_RUNTIME_DIR: ${{ runner.temp }}/irisu-exact-runtime
