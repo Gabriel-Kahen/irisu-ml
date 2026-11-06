@@ -482,20 +482,22 @@ def test_permanent_failure_after_retry_accounts_cumulative_progress_once(tmp_pat
             if len(self.batches) == 1:
                 raise self.interruption("second batch failed")
             return super().batch(handle, horizon, candidates)
-    cfg = config(maximum_ticks=6, job_seconds=.2)
+    # The injected second-batch failure bounds this test; filesystem latency
+    # must not exhaust the job before that failure is exercised.
+    cfg = config(maximum_ticks=6, job_seconds=30)
     with Store(tmp_path) as store:
         first_engine = FailedEngine(terminal_tick=6)
         first = Coordinator(store, first_engine, cfg, FakeVerifier(first_engine))
         key = store.enqueue("bootstrap", 7, payload={"search_seed": 5, "horizon": 2})
         with pytest.raises(KeyboardInterrupt):
-            first.run(seconds=1, max_jobs=1)
+            first.run(seconds=30, max_jobs=1)
         assert store.report()["simulated_ticks"] == 0
         first.close()
         resumed_engine = FailedEngine(terminal_tick=6)
         resumed_engine.interruption = RuntimeError
         resumed = Coordinator(store, resumed_engine, cfg, FakeVerifier(resumed_engine))
         with pytest.raises(RuntimeError, match="second batch"):
-            resumed.run(seconds=1, max_jobs=1)
+            resumed.run(seconds=30, max_jobs=1)
         assert first_engine.batch_starts == [0]
         assert resumed_engine.batch_starts == [2]
         assert store.get_meta(f"progress:{key}")["simulated_ticks"] == 16
