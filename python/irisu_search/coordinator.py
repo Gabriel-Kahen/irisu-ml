@@ -101,6 +101,15 @@ class Coordinator:
         if bound_model:
             store.set_meta("active_model", bound_model)
         self.seed_manifest()
+        pending = self.store.get_meta("combo_roots_pending")
+        if self.config.combo_search and pending:
+            with campaign_lock(self.store.root):
+                pending = self.store.get_meta("combo_roots_pending")
+                champion = self.store.champion()
+                if pending and champion and champion["checkpoint_id"] == pending:
+                    self._refresh_combo_roots(self.store.get_checkpoint(pending))
+                elif pending:
+                    self.store.set_meta("combo_roots_pending", None)
 
     def seed_manifest(self):
         if self.store.get_meta("seed_manifest") is not None:
@@ -168,6 +177,70 @@ class Coordinator:
         return self.store.add_checkpoint(parent["seed"], words, summary, parent["id"],
                                          operator=operator, cost_seconds=cost, search_seed=search_seed)
 
+    def _refresh_combo_roots(self, checkpoint):
+        """Rebuild the next neighborhood on the winning recipe, not its ancestry."""
+        seed, words = checkpoint["seed"], checkpoint["words"]
+        limit = min(self.config.combo_root_limit, len(words))
+        if not limit:
+            return
+        old = self.store.checkpoint_summaries(self.store.get_meta(f"combo_roots:{seed}", []))
+        ticks = sorted({row["summary"]["tick"] for row in old
+                        if row["seed"] == seed and 0 <= row["summary"]["tick"] < len(words)})
+
+        def spread(values, count):
+            if count == 1:
+                return values[:1]
+            return [values[index * (len(values) - 1) // (count - 1)] for index in range(count)]
+
+        if ticks:
+            if len(ticks) > limit:
+                ticks = spread(ticks, limit)
+        else:
+            # A new seed may have no imported event bank. Preserve exact
+            # ancestor times and cover its remaining trajectory with a grid.
+            ancestors, visited = set(), set()
+            current = checkpoint.get("parent_id")
+            while current:
+                if current in visited:
+                    raise RuntimeError("cyclic checkpoint ancestry")
+                visited.add(current)
+                rows = self.store.checkpoint_summaries([current])
+                if not rows:
+                    raise RuntimeError("missing checkpoint ancestor")
+                row = rows[0]
+                if row["seed"] != seed:
+                    raise RuntimeError("checkpoint ancestor belongs to another seed")
+                if 0 <= row["summary"]["tick"] < len(words):
+                    ancestors.add(row["summary"]["tick"])
+                current = row.get("parent_id")
+            priority = sorted(ancestors | {0, len(words) - 1})
+            ticks = spread(priority, limit) if len(priority) > limit else priority
+            grid = spread(range(len(words)), limit)
+            while len(ticks) < limit:
+                available = [tick for tick in grid if tick not in ticks]
+                if not available:
+                    break
+                ticks.append(max(available, key=lambda tick: (
+                    min(abs(tick - selected) for selected in ticks), -tick)))
+            ticks.sort()
+
+        roots, parent = [], None
+        for tick in ticks:
+            self._trim(self.config.candidates + 2)
+            row = self.engine.load(seed, words[:tick])
+            summary = row["summary"]
+            if (summary["tick"] != tick or summary.get("terminated") or summary.get("truncated")):
+                self.engine.release([row["handle"]])
+                raise RuntimeError("winning replay prefix did not reconstruct a live combo root")
+            key = self.store.add_checkpoint(seed, words[:tick], summary, parent, operator="combo-root")
+            self._remember(key, row["handle"])
+            roots.append(key)
+            parent = key
+        self.store.set_meta(f"combo_roots:{seed}", roots)
+        self.store.event("combo_roots_refreshed", {"seed": seed, "checkpoint_id": checkpoint["id"],
+                          "roots": roots, "ticks": ticks})
+        self.store.set_meta("combo_roots_pending", None)
+
     def _verify(self, checkpoint_id, force=False):
         checkpoint = self.store.get_checkpoint(checkpoint_id)
         s = checkpoint["summary"]
@@ -187,18 +260,9 @@ class Coordinator:
         if self.config.combo_search and (s["canonical_score"] > seed_best
                                         or not self.store.get_meta(f"baseline:{checkpoint['seed']}")):
             self.store.set_meta(f"baseline:{checkpoint['seed']}", checkpoint_id)
-            if promoted:
-                # Parent recipes are exact prefixes, including after deduplicated imports.
-                roots, current = [], checkpoint.get("parent_id")
-                while current:
-                    row = self.store.checkpoint_summaries([current])[0]
-                    if not row["summary"].get("terminated") and not row["summary"].get("truncated"):
-                        roots.append(row)
-                    current = row.get("parent_id")
-                if roots:
-                    roots.sort(key=lambda row: combo_key(row["summary"]), reverse=True)
-                    self.store.set_meta(f"combo_roots:{checkpoint['seed']}",
-                                        [row["id"] for row in roots[:self.config.combo_root_limit]])
+            if promoted and checkpoint["operator"] != "import":
+                self.store.set_meta("combo_roots_pending", checkpoint_id)
+                self._refresh_combo_roots(checkpoint)
         if promoted:
             data = replay_bytes(checkpoint["seed"], checkpoint["words"], s)
             blob = self.store.put_blob(data)

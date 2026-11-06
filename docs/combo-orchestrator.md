@@ -31,7 +31,9 @@ justify claiming this implementation is a full MCTS/NRPA algorithm.
 retain their prior scheduling semantics. All-in wall-time lane targets are 60%
 record-combo development, 20% shortlisted challenger-combo development, 15%
 cohort seed discovery and 5% wildcard exploration. The record seed follows the
-verified champion rather than a hardcoded seed. Cohorts finish their configured
+verified champion rather than a hardcoded seed. A new global winner reconstructs later roots on
+its changed recipe, and interrupted reconstruction resumes under the campaign
+lock; old input recipes remain immutable. Cohorts finish their configured
 attempts before a new cohort receives discovery work.
 
 A replay-bound native genealogy selects up to 64 roots before recruitment,
