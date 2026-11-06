@@ -1,0 +1,291 @@
+{
+  "schema": "irisu-combo-repair-fixtures-v1",
+  "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+  "generation_seconds": 23.456846077984665,
+  "selection": "First score-lowering terminal damage of each requested class; no search-policy outcomes used for selection.",
+  "discovery_trials": [
+    {
+      "tick": 95216,
+      "mutation": "x",
+      "eligible": true,
+      "clean_terminal": true,
+      "damaged_terminal": true,
+      "clean_score": 4393101,
+      "damaged_score": 2980646
+    },
+    {
+      "tick": 95264,
+      "mutation": "y",
+      "eligible": true,
+      "clean_terminal": true,
+      "damaged_terminal": true,
+      "clean_score": 4393101,
+      "damaged_score": 2690394
+    },
+    {
+      "tick": 95312,
+      "mutation": "timing",
+      "eligible": true,
+      "clean_terminal": true,
+      "damaged_terminal": true,
+      "clean_score": 4393101,
+      "damaged_score": 2689598
+    }
+  ],
+  "cases": [
+    {
+      "id": "shot-x-95216",
+      "mutation": "x",
+      "seed": 1298144938,
+      "prefix_tick": 95216,
+      "prefix_sha256": "611c9d6c7fd5c43c6e1153dd5c1f16ca6a36a8531baeccd85d33bea19869cffa",
+      "horizon": 3027,
+      "damage": [
+        {
+          "tick": 95216,
+          "original_word": 742246,
+          "damaged_word": 742254
+        }
+      ],
+      "damaged_suffix_sha256": "7750f72ffad04bdeac9ece3dbfdeccb8191ae95841412b9dad337eced3579d49",
+      "damaged_score": 2980646,
+      "reachable_score": 4393101,
+      "damaged_verification": {
+        "verified": true,
+        "seed": 1298144938,
+        "tick": 96228,
+        "canonical_score": 2980646,
+        "level": 99,
+        "highest_chain": 58,
+        "steps": 96228,
+        "canonical_level": 99,
+        "canonical_chain": 58,
+        "replay_sha256": "01bdfa1387ec24fa3616daa54ec091ab52c3f2cc6461b6e96ca01ecfed708597",
+        "runtime": {
+          "oracle": "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-oracle-fixed-20261105-154522/runtime/bin/irisu-game-oracle",
+          "sha256": "abfcfbff7cb9b1d2b59641b340a547a68b1538abab2c57962dae878f9c538a38",
+          "library_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5"
+        },
+        "oracle_report": {
+          "backend": "native-msvc-cpu-oracle",
+          "format": "game-digest-v1",
+          "rows": 96229,
+          "steps": 96228,
+          "events": 306370,
+          "tick": 96228,
+          "live_score": 2980646,
+          "canonical_score": 2980646,
+          "latest_final_score": 2980646,
+          "level": 99,
+          "highest_chain": 58,
+          "config_hash": 17009678407634462320,
+          "elapsed_seconds": 3.551628593
+        }
+      },
+      "hidden_witness_verification": {
+        "verified": true,
+        "seed": 1298144938,
+        "tick": 97219,
+        "canonical_score": 4393101,
+        "level": 100,
+        "highest_chain": 70,
+        "steps": 97219,
+        "canonical_level": 100,
+        "canonical_chain": 70,
+        "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+        "runtime": {
+          "oracle": "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-oracle-fixed-20261105-154522/runtime/bin/irisu-game-oracle",
+          "sha256": "abfcfbff7cb9b1d2b59641b340a547a68b1538abab2c57962dae878f9c538a38",
+          "library_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5"
+        },
+        "oracle_report": {
+          "backend": "native-msvc-cpu-oracle",
+          "format": "game-digest-v1",
+          "rows": 97220,
+          "steps": 97219,
+          "events": 308512,
+          "tick": 97219,
+          "live_score": 4393699,
+          "canonical_score": 4393101,
+          "latest_final_score": 4393101,
+          "level": 100,
+          "highest_chain": 70,
+          "config_hash": 17009678407634462320,
+          "elapsed_seconds": 3.641998035
+        }
+      },
+      "contract": "Common prefix precedes damage; planner receives only the damaged suffix. Clean original is a hidden reachable witness."
+    },
+    {
+      "id": "shot-y-95264",
+      "mutation": "y",
+      "seed": 1298144938,
+      "prefix_tick": 95264,
+      "prefix_sha256": "1ca30e002920e462141fefd7db89fa953a8e953d2c58f24f160ecf19f69206b7",
+      "horizon": 2979,
+      "damage": [
+        {
+          "tick": 95264,
+          "original_word": 1356910,
+          "damaged_word": 1365102
+        }
+      ],
+      "damaged_suffix_sha256": "5392fafee9abad12c55cac363f1bf0cf1ab548d178447aafc0df265cd25d821a",
+      "damaged_score": 2690394,
+      "reachable_score": 4393101,
+      "damaged_verification": {
+        "verified": true,
+        "seed": 1298144938,
+        "tick": 96391,
+        "canonical_score": 2690394,
+        "level": 99,
+        "highest_chain": 56,
+        "steps": 96391,
+        "canonical_level": 99,
+        "canonical_chain": 56,
+        "replay_sha256": "98cb9ae4137b7e9a3cc3b3810df05d45ee02fb5eefad8c36e80949373925406b",
+        "runtime": {
+          "oracle": "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-oracle-fixed-20261105-154522/runtime/bin/irisu-game-oracle",
+          "sha256": "abfcfbff7cb9b1d2b59641b340a547a68b1538abab2c57962dae878f9c538a38",
+          "library_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5"
+        },
+        "oracle_report": {
+          "backend": "native-msvc-cpu-oracle",
+          "format": "game-digest-v1",
+          "rows": 96392,
+          "steps": 96391,
+          "events": 307435,
+          "tick": 96391,
+          "live_score": 2690394,
+          "canonical_score": 2690394,
+          "latest_final_score": 2690394,
+          "level": 99,
+          "highest_chain": 56,
+          "config_hash": 17009678407634462320,
+          "elapsed_seconds": 3.558753973
+        }
+      },
+      "hidden_witness_verification": {
+        "verified": true,
+        "seed": 1298144938,
+        "tick": 97219,
+        "canonical_score": 4393101,
+        "level": 100,
+        "highest_chain": 70,
+        "steps": 97219,
+        "canonical_level": 100,
+        "canonical_chain": 70,
+        "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+        "runtime": {
+          "oracle": "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-oracle-fixed-20261105-154522/runtime/bin/irisu-game-oracle",
+          "sha256": "abfcfbff7cb9b1d2b59641b340a547a68b1538abab2c57962dae878f9c538a38",
+          "library_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5"
+        },
+        "oracle_report": {
+          "backend": "native-msvc-cpu-oracle",
+          "format": "game-digest-v1",
+          "rows": 97220,
+          "steps": 97219,
+          "events": 308512,
+          "tick": 97219,
+          "live_score": 4393699,
+          "canonical_score": 4393101,
+          "latest_final_score": 4393101,
+          "level": 100,
+          "highest_chain": 70,
+          "config_hash": 17009678407634462320,
+          "elapsed_seconds": 3.641998035
+        }
+      },
+      "contract": "Common prefix precedes damage; planner receives only the damaged suffix. Clean original is a hidden reachable witness."
+    },
+    {
+      "id": "shot-timing-95312",
+      "mutation": "timing",
+      "seed": 1298144938,
+      "prefix_tick": 95312,
+      "prefix_sha256": "233194ae6582214b2e77ed5418ced1a64abb9ffdf35f68a7de36f04710237163",
+      "horizon": 2931,
+      "damage": [
+        {
+          "tick": 95312,
+          "original_word": 1410150,
+          "damaged_word": 0
+        },
+        {
+          "tick": 95314,
+          "original_word": 0,
+          "damaged_word": 1410150
+        }
+      ],
+      "damaged_suffix_sha256": "08237f43127b2c81fb504b597f20009db363273ff29c27372bb6619322ec4ef4",
+      "damaged_score": 2689598,
+      "reachable_score": 4393101,
+      "damaged_verification": {
+        "verified": true,
+        "seed": 1298144938,
+        "tick": 96359,
+        "canonical_score": 2689598,
+        "level": 99,
+        "highest_chain": 56,
+        "steps": 96359,
+        "canonical_level": 99,
+        "canonical_chain": 56,
+        "replay_sha256": "bd63cbec0171eddaafeffa7722f6cd883087bc58381d7221f86bc7c35cc308c7",
+        "runtime": {
+          "oracle": "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-oracle-fixed-20261105-154522/runtime/bin/irisu-game-oracle",
+          "sha256": "abfcfbff7cb9b1d2b59641b340a547a68b1538abab2c57962dae878f9c538a38",
+          "library_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5"
+        },
+        "oracle_report": {
+          "backend": "native-msvc-cpu-oracle",
+          "format": "game-digest-v1",
+          "rows": 96360,
+          "steps": 96359,
+          "events": 307518,
+          "tick": 96359,
+          "live_score": 2689598,
+          "canonical_score": 2689598,
+          "latest_final_score": 2689598,
+          "level": 99,
+          "highest_chain": 56,
+          "config_hash": 17009678407634462320,
+          "elapsed_seconds": 3.588301611
+        }
+      },
+      "hidden_witness_verification": {
+        "verified": true,
+        "seed": 1298144938,
+        "tick": 97219,
+        "canonical_score": 4393101,
+        "level": 100,
+        "highest_chain": 70,
+        "steps": 97219,
+        "canonical_level": 100,
+        "canonical_chain": 70,
+        "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+        "runtime": {
+          "oracle": "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-oracle-fixed-20261105-154522/runtime/bin/irisu-game-oracle",
+          "sha256": "abfcfbff7cb9b1d2b59641b340a547a68b1538abab2c57962dae878f9c538a38",
+          "library_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5"
+        },
+        "oracle_report": {
+          "backend": "native-msvc-cpu-oracle",
+          "format": "game-digest-v1",
+          "rows": 97220,
+          "steps": 97219,
+          "events": 308512,
+          "tick": 97219,
+          "live_score": 4393699,
+          "canonical_score": 4393101,
+          "latest_final_score": 4393101,
+          "level": 100,
+          "highest_chain": 70,
+          "config_hash": 17009678407634462320,
+          "elapsed_seconds": 3.641998035
+        }
+      },
+      "contract": "Common prefix precedes damage; planner receives only the damaged suffix. Clean original is a hidden reachable witness."
+    }
+  ]
+}

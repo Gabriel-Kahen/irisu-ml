@@ -14,6 +14,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from . import PLANNER_VERSION
+from .combos import combo_key, event_ticks, outcome, select_frontier, terminal_candidates
 from .neural import NeuralGuide, features, train_guide, validate_guide
 from .proposals import (
     generate,
@@ -55,7 +56,7 @@ def run_accounting(store):
 
 def planner_identity(engine_identity, verifier_identity):
     source = Path(__file__).parent
-    modules = ("__init__", "config", "coordinator", "engine", "neural", "proposals", "scheduler", "store", "verification")
+    modules = ("__init__", "config", "coordinator", "engine", "neural", "proposals", "scheduler", "store", "verification", "combos", "diagnostics")
     return {"planner": PLANNER_VERSION, "engine": engine_identity, "verifier": verifier_identity,
             "planner_sources": {name: sha256_file(source / f"{name}.py") for name in modules}}
 
@@ -100,6 +101,15 @@ class Coordinator:
         if bound_model:
             store.set_meta("active_model", bound_model)
         self.seed_manifest()
+        pending = self.store.get_meta("combo_roots_pending")
+        if self.config.combo_search and pending:
+            with campaign_lock(self.store.root):
+                pending = self.store.get_meta("combo_roots_pending")
+                champion = self.store.champion()
+                if pending and champion and champion["checkpoint_id"] == pending:
+                    self._refresh_combo_roots(self.store.get_checkpoint(pending))
+                elif pending:
+                    self.store.set_meta("combo_roots_pending", None)
 
     def seed_manifest(self):
         if self.store.get_meta("seed_manifest") is not None:
@@ -144,8 +154,8 @@ class Coordinator:
         self._remember(key, row["handle"])
         return row["handle"]
 
-    def _replay_inputs(self, parent, horizon):
-        baseline_id = self.store.get_meta(f"baseline:{parent['seed']}")
+    def _replay_inputs(self, parent, horizon, reference_id=None):
+        baseline_id = reference_id or self.store.get_meta(f"baseline:{parent['seed']}")
         if not baseline_id:
             return [], []
         cached = self.replay_references.get(parent["seed"])
@@ -167,6 +177,70 @@ class Coordinator:
         return self.store.add_checkpoint(parent["seed"], words, summary, parent["id"],
                                          operator=operator, cost_seconds=cost, search_seed=search_seed)
 
+    def _refresh_combo_roots(self, checkpoint):
+        """Rebuild the next neighborhood on the winning recipe, not its ancestry."""
+        seed, words = checkpoint["seed"], checkpoint["words"]
+        limit = min(self.config.combo_root_limit, len(words))
+        if not limit:
+            return
+        old = self.store.checkpoint_summaries(self.store.get_meta(f"combo_roots:{seed}", []))
+        ticks = sorted({row["summary"]["tick"] for row in old
+                        if row["seed"] == seed and 0 <= row["summary"]["tick"] < len(words)})
+
+        def spread(values, count):
+            if count == 1:
+                return values[:1]
+            return [values[index * (len(values) - 1) // (count - 1)] for index in range(count)]
+
+        if ticks:
+            if len(ticks) > limit:
+                ticks = spread(ticks, limit)
+        else:
+            # A new seed may have no imported event bank. Preserve exact
+            # ancestor times and cover its remaining trajectory with a grid.
+            ancestors, visited = set(), set()
+            current = checkpoint.get("parent_id")
+            while current:
+                if current in visited:
+                    raise RuntimeError("cyclic checkpoint ancestry")
+                visited.add(current)
+                rows = self.store.checkpoint_summaries([current])
+                if not rows:
+                    raise RuntimeError("missing checkpoint ancestor")
+                row = rows[0]
+                if row["seed"] != seed:
+                    raise RuntimeError("checkpoint ancestor belongs to another seed")
+                if 0 <= row["summary"]["tick"] < len(words):
+                    ancestors.add(row["summary"]["tick"])
+                current = row.get("parent_id")
+            priority = sorted(ancestors | {0, len(words) - 1})
+            ticks = spread(priority, limit) if len(priority) > limit else priority
+            grid = spread(range(len(words)), limit)
+            while len(ticks) < limit:
+                available = [tick for tick in grid if tick not in ticks]
+                if not available:
+                    break
+                ticks.append(max(available, key=lambda tick: (
+                    min(abs(tick - selected) for selected in ticks), -tick)))
+            ticks.sort()
+
+        roots, parent = [], None
+        for tick in ticks:
+            self._trim(self.config.candidates + 2)
+            row = self.engine.load(seed, words[:tick])
+            summary = row["summary"]
+            if (summary["tick"] != tick or summary.get("terminated") or summary.get("truncated")):
+                self.engine.release([row["handle"]])
+                raise RuntimeError("winning replay prefix did not reconstruct a live combo root")
+            key = self.store.add_checkpoint(seed, words[:tick], summary, parent, operator="combo-root")
+            self._remember(key, row["handle"])
+            roots.append(key)
+            parent = key
+        self.store.set_meta(f"combo_roots:{seed}", roots)
+        self.store.event("combo_roots_refreshed", {"seed": seed, "checkpoint_id": checkpoint["id"],
+                          "roots": roots, "ticks": ticks})
+        self.store.set_meta("combo_roots_pending", None)
+
     def _verify(self, checkpoint_id, force=False):
         checkpoint = self.store.get_checkpoint(checkpoint_id)
         s = checkpoint["summary"]
@@ -183,20 +257,29 @@ class Coordinator:
             self.store.event("verification_failed", {"checkpoint_id": checkpoint_id, "error": str(error)})
             raise
         promoted = self.store.promote(checkpoint_id, receipt)
+        if self.config.combo_search and (s["canonical_score"] > seed_best
+                                        or not self.store.get_meta(f"baseline:{checkpoint['seed']}")):
+            self.store.set_meta(f"baseline:{checkpoint['seed']}", checkpoint_id)
+            if promoted and checkpoint["operator"] != "import":
+                self.store.set_meta("combo_roots_pending", checkpoint_id)
+                self._refresh_combo_roots(checkpoint)
         if promoted:
             data = replay_bytes(checkpoint["seed"], checkpoint["words"], s)
             blob = self.store.put_blob(data)
             self.store.set_meta("champion_replay", blob)
         return promoted
 
-    def import_replay(self, path, stride=4096):
+    def import_replay(self, path, stride=4096, events_path=None):
         if stride < 1:
             raise ValueError("stride must be positive")
         seed, words, header = read_replay(path)
         self.store.ensure_seed(seed, control=seed == self.config.control_seed)
         parent = None
         imported = []
-        for stop in sorted({0, *range(stride, len(words), stride), len(words)}):
+        roots = (event_ticks(events_path, sha256_file(path), seed, header["canonical_score"],
+                             self.config.combo_root_limit, self.config.combo_root_lead,
+                             self.config.combo_min_chain) if events_path and self.config.combo_search else [])
+        for stop in sorted({0, *range(stride, len(words), stride), len(words), *roots}):
             self._trim(self.config.candidates + 2)
             row = self.engine.load(seed, words[:stop])
             if row["summary"]["tick"] != stop:
@@ -213,6 +296,14 @@ class Coordinator:
         self._verify(imported[-1], force=True)
         # The original suffix is an explicit baseline option at imported roots.
         self.store.set_meta(f"baseline:{seed}", final["id"])
+        if self.config.combo_search:
+            candidates = [self.store.get_checkpoint(key) for key in imported[:-1]]
+            preferred = [cp for cp in candidates if cp["summary"]["tick"] in roots]
+            if not preferred:
+                preferred = sorted(candidates, key=lambda cp: combo_key(cp["summary"]), reverse=True)
+            self.store.set_meta(f"combo_roots:{seed}", [cp["id"] for cp in preferred[:self.config.combo_root_limit]])
+            self.store.event("combo_roots_imported", {"seed": seed, "roots": len(preferred),
+                              "event_receipt": str(events_path) if events_path else None})
         self.store.event("import", {"path": str(Path(path).resolve()), "seed": seed,
                                     "checkpoints": imported})
         self._prune()
@@ -282,18 +373,44 @@ class Coordinator:
         attempt_observed_terminal = False
         initial_batches = batches
         job_horizon = payload.get("horizon", self.config.horizon)
+        terminal_job = self.config.combo_search and job["kind"] == "combo_terminal"
+        origin_id = (progress.get("origin_id") if progress else None) or payload.get("origin_id") or job["checkpoint_id"] or parent["id"]
         while time.monotonic() - start < budget_seconds and not (progress and progress.get("completed")):
             self.store.renew(job["id"], job["token"], self.config.engine_timeout * 3 + self.config.job_seconds)
             horizon = min(job_horizon, self.engine.identity.get("max_horizon", 100000),
                           self.config.maximum_ticks - parent["summary"]["tick"])
             if horizon < 1 or parent["summary"].get("terminated") or parent["summary"].get("truncated"):
                 break
-            baseline, reference = self._replay_inputs(parent, horizon)
+            baseline, reference = self._replay_inputs(parent, horizon, payload.get("reference_id"))
+            if terminal_job and payload.get("plan_blob"):
+                data = self.store.get_blob(payload["plan_blob"])
+                reference = [word[0] for word in struct.iter_unpack("<I", data)][:horizon]
+                baseline = []  # An exploration plan is not the verified incumbent.
             held = parent["words"][-1] & 3 if parent["words"] else 0
             search_seed = (payload["search_seed"] + batches) & 0xffffffff
-            candidates = generate(parent["summary"], self.config.candidates * 2, search_seed,
-                                  payload.get("operator", "recruit"), baseline, horizon,
-                                  reference, held)
+            if terminal_job:
+                candidates = []
+                signatures = set()
+                for refill in range(4):
+                    catalog = terminal_candidates(parent["summary"], self.config.candidates,
+                                                  (search_seed + refill * 104729) & 0xffffffff,
+                                                  reference, horizon, payload.get("operator", "combo"), held)
+                    for index, candidate in enumerate(catalog):
+                        signature = (candidate["mode"], candidate["search_seed"] if candidate["mode"] else 0,
+                                     tuple(candidate["words"]))
+                        if signature in signatures:
+                            continue
+                        if candidates and (index == 0 or self.store.combo_candidate_seen(parent["id"], candidate, horizon)):
+                            continue
+                        signatures.add(signature)
+                        candidates.append(candidate)
+                        if len(candidates) >= self.config.candidates:
+                            break
+                    if len(candidates) >= self.config.candidates:
+                        break
+            else:
+                candidates = generate(parent["summary"], self.config.candidates * 2, search_seed,
+                                      payload.get("operator", "recruit"), baseline, horizon, reference, held)
             for c in candidates:
                 if c["mode"] and c["words"] and held & c["words"][0] & 3:
                     c["words"] = [0, *c["words"]][:horizon]
@@ -330,14 +447,24 @@ class Coordinator:
                     "candidate_index": index, "candidate": candidates[index],
                     "executed_words_blob": blob, "executed_word_count": len(trace),
                     "diagnostic": failure["diagnostic"]})
+            # A returned, validated batch is charged even if publication or verification is interrupted.
+            self.store.set_meta(f"progress:{job['id']}", {"checkpoint_id": parent["id"],
+                "batches": batches, "simulated_ticks": total_ticks, "published": published,
+                "origin_id": origin_id, "observed_terminal": observed_terminal})
+            if terminal_job:
+                self.store.record_combo_candidates(parent["id"], candidates, horizon)
             if not results:
                 self.store.set_meta(f"progress:{job['id']}", {"checkpoint_id": parent["id"],
                     "batches": batches + 1, "simulated_ticks": total_ticks, "published": published,
                     "rollout_rejected": True, "observed_terminal": observed_terminal})
                 self._prune()
                 raise RolloutBatchRejected("all candidate rollouts were rejected; diagnostics preserved")
-            survivors = select_survivors(results, self.config.survivors, self.guide,
-                                         horizon=horizon, budget_seconds=budget_seconds)
+            if self.config.combo_search:
+                survivors = select_frontier(results, self.config.combo_frontier_width)
+                # Terminal publication and verification are independent of the live frontier.
+            else:
+                survivors = select_survivors(results, self.config.survivors, self.guide,
+                                             horizon=horizon, budget_seconds=budget_seconds)
             survivor_handles = {r["handle"] for r in survivors}
             rows = {}
             retained = []
@@ -355,6 +482,10 @@ class Coordinator:
                         terminal_scores[key] = row["summary"]["canonical_score"]
                 if row["handle"] not in survivor_handles:
                     self.engine.release([row["handle"]])
+            # Settle completed simulation work even if independent verification fails.
+            self.store.set_meta(f"progress:{job['id']}", {"checkpoint_id": parent["id"],
+                "batches": batches, "simulated_ticks": total_ticks, "published": published, "origin_id": origin_id,
+                "observed_terminal": observed_terminal})
             if terminal_scores:
                 best = max(terminal_scores, key=terminal_scores.__getitem__)
                 self._verify(best)
@@ -362,20 +493,93 @@ class Coordinator:
                 attempt_observed_terminal = True
             live = [row for row in survivors if not row["summary"].get("terminated")
                     and not row["summary"].get("truncated")]
+            if self.config.combo_search:
+                observation = f"{job['id']}:{job['token']}:{batches}:{self.model_identity or 'unlearned'}"
+                self.store.mark_combo_expanded(parent["id"], observation_key=observation)
+                if terminal_job and payload.get("plan_blob"):
+                    self.store.mark_combo_plan_expanded(parent["id"], payload["plan_blob"], observation_key=observation)
+                self.store.update_combo_frontier(job["seed"], [key for key, _ in retained], origin_id,
+                                                  self.config.combo_frontier_width, observation_key=observation)
+                if terminal_job:
+                    reference_row = next((row for candidate, row in paired
+                                          if candidate is candidates[0]), None)
+                    reference_score = (reference_row["summary"].get("canonical_score")
+                                       if reference_row and reference_row["summary"].get("terminated")
+                                       and not reference_row["summary"].get("truncated") else None)
+                    if reference_score is not None:
+                        reference_key = rows[reference_row["handle"]]
+                        if not self.store.db.execute("SELECT 1 FROM verifications WHERE checkpoint_id=? AND verified=1", (reference_key,)).fetchone():
+                            self._verify(reference_key, force=True)
+                    novel = []
+                    baseline_replays = 0
+                    for candidate, row in paired:
+                        if candidate is candidates[0]:
+                            continue
+                        executed_reference = list(reference[:len(row["words"])])
+                        executed_reference.extend([0] * (len(row["words"]) - len(executed_reference)))
+                        if row["words"] == executed_reference:
+                            baseline_replays += 1
+                        elif row["summary"].get("terminated") and not row["summary"].get("truncated"):
+                            novel.append(row)
+                    # Preserve full intended futures, including inputs after an early death.
+                    # A second edit can then repair a losing first edit without losing its tail.
+                    plans = []
+                    novel_handles = {row["handle"] for row in novel}
+                    for candidate, row in paired:
+                        if candidate is candidates[0] or candidate["mode"] != 0 or row["handle"] not in novel_handles:
+                            continue
+                        data = struct.pack(f"<{len(candidate['words'])}I", *candidate["words"])
+                        plans.append({"plan_blob": self.store.put_blob(data),
+                                      "score": row["summary"]["canonical_score"]})
+                    self.store.record_combo_plans(parent["id"], plans, self.config.combo_frontier_width,
+                                                 observation_key=observation)
+                    best_novel = max(novel, key=lambda row: row["summary"]["canonical_score"], default=None)
+                    if best_novel:
+                        novel_id = rows[best_novel["handle"]]
+                        verified = self.store.db.execute("SELECT 1 FROM verifications WHERE checkpoint_id=? AND verified=1", (novel_id,)).fetchone()
+                        if not verified:
+                            self._verify(novel_id, force=True)
+                    marker = f"combo-observation:{observation}"
+                    if not self.store.get_meta(marker):
+                        value = best_novel["summary"]["canonical_score"] if best_novel else None
+                        self.store.event("combo_terminal_evaluated", {
+                            "job_id": job["id"], "batch": batches, "origin_id": origin_id,
+                            "root_id": parent["id"], "reference_id": payload.get("reference_id"),
+                            "plan_blob": payload.get("plan_blob"),
+                            "reference_score": reference_score, "terminals": len(terminal_scores),
+                            "novel_terminals": len(novel), "best_novel_score": value,
+                            "gain": value - reference_score if value is not None and reference_score is not None else None,
+                            "censored": sum(not row["summary"].get("terminated") or row["summary"].get("truncated") for _, row in paired),
+                            "baseline_ties": baseline_replays,
+                            "novel_score_ties": sum(row["summary"].get("canonical_score") == reference_score for row in novel) if reference_score is not None else 0,
+                            "simulated_ticks": output["simulated_ticks"],
+                            "combo_outcome": outcome(parent["summary"], best_novel["summary"],
+                                                     best_novel.get("group_deltas", ())) if best_novel else None})
+                        self.store.set_meta(marker, True)
             # Cache the chosen live continuation last. This preserves it even
             # when the worker has room for only parent + one candidate batch.
             preferred = live[0]["handle"] if live else None
             for key, resident in sorted(retained, key=lambda pair: pair[1] == preferred):
                 self._remember(key, resident)
             batches += 1
-            if not live:
+            pending_frontier = ([row for row in self.store.combo_frontier(job["seed"])
+                                 if row["summary"]["tick"] < self.config.maximum_ticks]
+                                if self.config.combo_search and not terminal_job else [])
+            if (not live and not pending_frontier) or terminal_job:
                 self.store.set_meta(f"progress:{job['id']}", {"checkpoint_id": best if terminal_scores else parent["id"],
-                    "batches": batches, "simulated_ticks": total_ticks, "published": published,
+                    "batches": batches, "simulated_ticks": total_ticks, "published": published, "origin_id": origin_id,
                     "completed": True, "observed_terminal": observed_terminal})
                 break
-            parent = self.store.get_checkpoint(rows[live[0]["handle"]])
+            if self.config.combo_search:
+                frontier = pending_frontier
+                next_state = min(frontier, key=lambda row: (row["visits"], row["created"], row["checkpoint_id"]), default=None)
+                parent = self.store.get_checkpoint(next_state["checkpoint_id"] if next_state else rows[live[0]["handle"]])
+                if next_state:
+                    origin_id = next_state["origin_id"]
+            else:
+                parent = self.store.get_checkpoint(rows[live[0]["handle"]])
             self.store.set_meta(f"progress:{job['id']}", {"checkpoint_id": parent["id"],
-                "batches": batches, "simulated_ticks": total_ticks, "published": published,
+                "batches": batches, "simulated_ticks": total_ticks, "published": published, "origin_id": origin_id,
                 "observed_terminal": observed_terminal})
         best_after = next(s["best_score"] for s in self.store.seeds() if s["seed"] == job["seed"])
         allocation = {"operator": "allocation", "budget_seconds": budget_seconds, "horizon": job_horizon}
@@ -416,13 +620,14 @@ class Coordinator:
         count = 0
         with campaign_lock(self.store.root), run_accounting(self.store):
             while time.monotonic() < deadline and (max_jobs is None or count < max_jobs):
+                planning_started = time.monotonic()
                 job = self.store.claim(self.owner, self.config.engine_timeout * 3 + self.config.job_seconds)
                 if not job:
                     next_job(self.store, self.config, self.guide)
                     job = self.store.claim(self.owner, self.config.engine_timeout * 3 + self.config.job_seconds)
                 if not job:
                     break
-                started = time.monotonic()
+                started = planning_started
                 try:
                     self.store.set_attempt_metadata(job["id"], job["token"], {
                         "planner_version": PLANNER_VERSION, "engine_identity": self.identity,

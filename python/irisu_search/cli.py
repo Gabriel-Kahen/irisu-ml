@@ -39,6 +39,7 @@ def parser():
     init.add_argument("--seed-generator", type=int, default=0)
     init.add_argument("--incumbent", type=Path)
     init.add_argument("--stride", type=int, default=4096)
+    init.add_argument("--combo-events", type=Path, help="replay-bound genealogy receipt for combo event roots")
     run = sub.add_parser("run", help="run bounded jobs, resuming existing state")
     run.add_argument("root", type=Path)
     run.add_argument("--seconds", type=float, default=3600.)
@@ -178,7 +179,7 @@ def main(argv=None):
                 if args.command == "init":
                     with campaign_lock(store.root):
                         if args.incumbent:
-                            coordinator.import_replay(args.incumbent, args.stride)
+                            coordinator.import_replay(args.incumbent, args.stride, events_path=args.combo_events)
                     emit(store.report())
                 elif args.command == "run":
                     emit(coordinator.run(seconds=args.seconds, max_jobs=args.jobs, progress=emit))

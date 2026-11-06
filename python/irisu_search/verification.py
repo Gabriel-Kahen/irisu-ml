@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import signal
 import struct
 import subprocess
 import tempfile
@@ -72,7 +73,16 @@ class NativeVerifier:
                                            stderr=subprocess.PIPE, env=environment,
                                            timeout=self.timeout, check=False)
                 if completed.returncode:
-                    raise RuntimeError("native replay verification failed: " + completed.stderr.decode(errors="replace")[-3000:])
+                    reason = f"exit status {completed.returncode}"
+                    if completed.returncode < 0:
+                        try:
+                            name = signal.Signals(-completed.returncode).name
+                        except ValueError:
+                            name = f"signal {-completed.returncode}"
+                        reason = f"{name} (returncode {completed.returncode})"
+                    detail = completed.stderr.decode(errors="replace")[-3000:]
+                    raise RuntimeError("native replay verification failed: " + reason +
+                                       (f": {detail}" if detail else " (empty stderr)"))
                 frames.seek(0, 2)
                 if frames.tell() != 96 * (len(checkpoint["words"]) + 1):
                     raise RuntimeError("native oracle returned an incomplete frame stream")

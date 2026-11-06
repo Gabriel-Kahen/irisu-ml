@@ -36,6 +36,13 @@ class CampaignConfig:
     training_epochs: int = 40
     max_training_examples: int = 4000
     discover_new_seeds: bool = True
+    combo_search: bool = False
+    combo_frontier_width: int = 4
+    combo_terminal_horizon: int = 32768
+    combo_root_limit: int = 64
+    combo_root_lead: int = 48
+    combo_min_chain: int = 3
+    seed_cohort_size: int = 8
     lanes: dict[str, float] = field(default_factory=lambda: {
         "seed": .30, "combo": .45, "probe": .15, "wildcard": .10,
     })
@@ -53,6 +60,8 @@ class CampaignConfig:
             raise ValueError("engine must be a nonempty argument vector")
         if type(self.train_every_jobs) is not int or self.train_every_jobs < 0:
             raise ValueError("train_every_jobs must be a nonnegative integer")
+        if type(self.combo_search) is not bool:
+            raise ValueError("combo_search must be boolean")
         if type(self.discover_new_seeds) is not bool:
             raise ValueError("discover_new_seeds must be boolean")
         if not isinstance(self.cuda_device, str):
@@ -61,12 +70,18 @@ class CampaignConfig:
             raise ValueError("an independent native oracle is required")
         for name in ("initial_seeds", "attempts_per_seed", "bootstrap_ticks", "horizon",
                      "candidates", "survivors", "maximum_ticks", "checkpoint_limit",
-                     "archive_bytes", "per_cell", "promoted_seeds", "finalists", "training_epochs", "max_training_examples"):
+                     "archive_bytes", "per_cell", "promoted_seeds", "finalists", "training_epochs", "max_training_examples",
+                     "combo_frontier_width", "combo_terminal_horizon", "combo_root_limit", "combo_root_lead",
+                     "combo_min_chain", "seed_cohort_size"):
             value = getattr(self, name)
             if type(value) is not int or value < 1:
                 raise ValueError(f"{name} must be a positive integer")
         if self.initial_seeds > 0xffffffff:
             raise ValueError("initial_seeds exceeds the available uint32 seed domain")
+        if self.combo_terminal_horizon > 100000:
+            raise ValueError("combo_terminal_horizon must be <= 100000")
+        if self.combo_search and self.combo_frontier_width > self.survivors:
+            raise ValueError("combo_frontier_width must not exceed survivors")
         if self.horizon > 100000 or self.bootstrap_ticks > 100000:
             raise ValueError("horizon and bootstrap_ticks must be <= 100000")
         if self.training_epochs > 100000:

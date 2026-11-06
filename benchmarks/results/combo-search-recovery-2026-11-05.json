@@ -1,0 +1,197 @@
+{
+  "schema": "irisu-combo-qualification-summary-v1",
+  "fixture_sha256": "bc5cc6dfe622e8aba67da7e52bd6aeeb17dd32f70ab9bbebd56da344d284ec71",
+  "cases": [
+    {
+      "id": "shot-x-95216",
+      "mutation": "x",
+      "prefix_tick": 95216,
+      "damaged_score": 2980646,
+      "reachable_score": 4393101
+    },
+    {
+      "id": "shot-y-95264",
+      "mutation": "y",
+      "prefix_tick": 95264,
+      "damaged_score": 2690394,
+      "reachable_score": 4393101
+    },
+    {
+      "id": "shot-timing-95312",
+      "mutation": "timing",
+      "prefix_tick": 95312,
+      "damaged_score": 2689598,
+      "reachable_score": 4393101
+    }
+  ],
+  "search_seeds": [
+    20261105,
+    20261106
+  ],
+  "candidate_limit_per_arm": 32,
+  "all_in_wall_cap_seconds": 120,
+  "new_record": false,
+  "limitations": [
+    "Finite three-class damaged-reference recovery controls on one game seed, not proof of ability to extend the record combo.",
+    "Both arms receive equal candidate limits and wall caps, but end before those caps; this is not an equal-full-wall-time production optimizer comparison.",
+    "The symmetric neighborhood was improved after pre-catalog failures; post-catalog recovery is a regression qualification, not a blind generalization result."
+  ],
+  "results": [
+    {
+      "case": "shot-x-95216",
+      "algorithm": "current",
+      "search_seed": 20261105,
+      "attempted_candidates": 32,
+      "all_in_seconds": 3.223079287010478,
+      "simulated_ticks": 32195,
+      "verified_novel_gain": 0,
+      "recovery_fraction": 0.0,
+      "baseline_terminal_ties": 1,
+      "censored_results": 0,
+      "new_record": false
+    },
+    {
+      "case": "shot-x-95216",
+      "algorithm": "combo",
+      "search_seed": 20261105,
+      "attempted_candidates": 32,
+      "all_in_seconds": 6.925432856980478,
+      "simulated_ticks": 34662,
+      "verified_novel_gain": 1412455,
+      "recovery_fraction": 1.0,
+      "baseline_terminal_ties": 17,
+      "censored_results": 0,
+      "new_record": false
+    },
+    {
+      "case": "shot-y-95264",
+      "algorithm": "combo",
+      "search_seed": 20261105,
+      "attempted_candidates": 32,
+      "all_in_seconds": 6.880120251007611,
+      "simulated_ticks": 34713,
+      "verified_novel_gain": 1702707,
+      "recovery_fraction": 1.0,
+      "baseline_terminal_ties": 15,
+      "censored_results": 0,
+      "new_record": false
+    },
+    {
+      "case": "shot-y-95264",
+      "algorithm": "current",
+      "search_seed": 20261105,
+      "attempted_candidates": 32,
+      "all_in_seconds": 6.945379045995651,
+      "simulated_ticks": 27785,
+      "verified_novel_gain": 3488,
+      "recovery_fraction": 0.002048502766477145,
+      "baseline_terminal_ties": 1,
+      "censored_results": 0,
+      "new_record": false
+    },
+    {
+      "case": "shot-timing-95312",
+      "algorithm": "current",
+      "search_seed": 20261105,
+      "attempted_candidates": 32,
+      "all_in_seconds": 6.865983896015678,
+      "simulated_ticks": 28657,
+      "verified_novel_gain": 4536,
+      "recovery_fraction": 0.0026627484659551524,
+      "baseline_terminal_ties": 1,
+      "censored_results": 0,
+      "new_record": false
+    },
+    {
+      "case": "shot-timing-95312",
+      "algorithm": "combo",
+      "search_seed": 20261105,
+      "attempted_candidates": 32,
+      "all_in_seconds": 7.085052087990334,
+      "simulated_ticks": 33855,
+      "verified_novel_gain": 1703503,
+      "recovery_fraction": 1.0,
+      "baseline_terminal_ties": 13,
+      "censored_results": 0,
+      "new_record": false
+    },
+    {
+      "case": "shot-x-95216",
+      "algorithm": "current",
+      "search_seed": 20261106,
+      "attempted_candidates": 32,
+      "all_in_seconds": 3.278676150017418,
+      "simulated_ticks": 33122,
+      "verified_novel_gain": 0,
+      "recovery_fraction": 0.0,
+      "baseline_terminal_ties": 1,
+      "censored_results": 0,
+      "new_record": false
+    },
+    {
+      "case": "shot-x-95216",
+      "algorithm": "combo",
+      "search_seed": 20261106,
+      "attempted_candidates": 32,
+      "all_in_seconds": 6.942944734997582,
+      "simulated_ticks": 34546,
+      "verified_novel_gain": 1412455,
+      "recovery_fraction": 1.0,
+      "baseline_terminal_ties": 13,
+      "censored_results": 0,
+      "new_record": false
+    },
+    {
+      "case": "shot-y-95264",
+      "algorithm": "combo",
+      "search_seed": 20261106,
+      "attempted_candidates": 32,
+      "all_in_seconds": 6.994915229995968,
+      "simulated_ticks": 34678,
+      "verified_novel_gain": 1702707,
+      "recovery_fraction": 1.0,
+      "baseline_terminal_ties": 13,
+      "censored_results": 0,
+      "new_record": false
+    },
+    {
+      "case": "shot-y-95264",
+      "algorithm": "current",
+      "search_seed": 20261106,
+      "attempted_candidates": 32,
+      "all_in_seconds": 6.829976470995462,
+      "simulated_ticks": 27036,
+      "verified_novel_gain": 2589,
+      "recovery_fraction": 0.001520519972021023,
+      "baseline_terminal_ties": 1,
+      "censored_results": 0,
+      "new_record": false
+    },
+    {
+      "case": "shot-timing-95312",
+      "algorithm": "current",
+      "search_seed": 20261106,
+      "attempted_candidates": 32,
+      "all_in_seconds": 6.947419254021952,
+      "simulated_ticks": 29259,
+      "verified_novel_gain": 11667,
+      "recovery_fraction": 0.006848828560912425,
+      "baseline_terminal_ties": 1,
+      "censored_results": 0,
+      "new_record": false
+    },
+    {
+      "case": "shot-timing-95312",
+      "algorithm": "combo",
+      "search_seed": 20261106,
+      "attempted_candidates": 32,
+      "all_in_seconds": 7.033257394999964,
+      "simulated_ticks": 34019,
+      "verified_novel_gain": 1703503,
+      "recovery_fraction": 1.0,
+      "baseline_terminal_ties": 12,
+      "censored_results": 0,
+      "new_record": false
+    }
+  ]
+}

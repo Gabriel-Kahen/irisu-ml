@@ -1,0 +1,528 @@
+{
+  "schema": "irisu-oracle-pristine-initialization-v1",
+  "source_base": "2a3661335d8501c13d6298b2c05a495f327b8b2c",
+  "oracle": {
+    "path": "/home/gabe/.codex/worktrees/irisu-oracle-pristine/irisu/build-oracle-pristine/irisu-game-oracle",
+    "sha256": "abfcfbff7cb9b1d2b59641b340a547a68b1538abab2c57962dae878f9c538a38"
+  },
+  "old_oracle": {
+    "path": "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-search-fixed-20261105-120819/runtime/bin/irisu-game-oracle",
+    "sha256": "b94f4fdb998021e4e6a9cc6e57de680e11017f25f243b49053080fcd57481158"
+  },
+  "library": {
+    "path": "/home/gabe/Documents/ChatGPT/irisu/.local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+    "sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5"
+  },
+  "native_diagnostic": {
+    "path": "/home/gabe/.codex/worktrees/irisu-oracle-pristine/irisu/artifacts/oracle-pristine/native-engine-final-digest",
+    "sha256": "36c64025896a4bb57abb65f3a6d7b4f13cebd4e7f6c2e52f4af1ec0af3f122b9",
+    "source_sha256": "6565d9243aa037a7a049f365bf40a388c8965f26719af448011eb4a294230453"
+  },
+  "source_commit": "3088ef16f660522b20a1343a44ef44f6816cd331",
+  "worktree": "/home/gabe/.codex/worktrees/irisu-oracle-pristine/irisu",
+  "build": {
+    "configure": [
+      "cmake",
+      "-S",
+      ".",
+      "-B",
+      "build-oracle-pristine",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DCMAKE_CXX_FLAGS=-m32",
+      "-DIRISU_PHYSICS_BACKEND=exact-msvc",
+      "-DIRISU_EXACT_BOX2D_LIBRARY=/home/gabe/Documents/ChatGPT/irisu/.local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so",
+      "-DIRISU_BUILD_CUDA_EXPERIMENTS=OFF",
+      "-DIRISU_BUILD_CUDA_NATIVE_EXPERIMENTS=OFF"
+    ],
+    "command": [
+      "cmake",
+      "--build",
+      "build-oracle-pristine",
+      "-j2",
+      "--target",
+      "irisu-game-oracle",
+      "irisu-search-engine"
+    ]
+  },
+  "failure_before_fix": {
+    "campaign": "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-search-fixed-20261105-120819",
+    "checkpoint": "36c56943bae7bb4089c4804dd390c842343b9d481b6e16cb63e2a2e505dcd666",
+    "full_replay": {
+      "returncode": -11,
+      "signal": 11,
+      "stderr": "",
+      "frame_bytes": 0,
+      "complete_rows": 0,
+      "expected_rows": 22509,
+      "wall_seconds": 0.07986424802220426
+    },
+    "initialization_probes": [
+      {
+        "name": "full-zero-step",
+        "command": [
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-search-fixed-20261105-120819/runtime/bin/irisu-game-oracle",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/verification-diagnostic-391769539-20261105/failed-candidate.rpy",
+          "0"
+        ],
+        "returncode": -11,
+        "stderr": "",
+        "frame_bytes": 0
+      },
+      {
+        "name": "tiny-zero-step",
+        "command": [
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-search-fixed-20261105-120819/runtime/bin/irisu-game-oracle",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/verification-diagnostic-391769539-20261105/one-word-input.rpy",
+          "0"
+        ],
+        "returncode": 0,
+        "stderr": "{\"backend\":\"native-msvc-cpu-oracle\",\"format\":\"game-digest-v1\",\"rows\":1,\"steps\":0,\"events\":0,\"tick\":0,\"live_score\":0,\"canonical_score\":0,\"latest_final_score\":0,\"level\":1,\"highest_chain\":0,\"config_hash\":17009678407634462320,\"elapsed_seconds\":0.000405752}\n",
+        "frame_bytes": 96
+      },
+      {
+        "name": "full-one-step",
+        "command": [
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-search-fixed-20261105-120819/runtime/bin/irisu-game-oracle",
+          "/home/gabe/Documents/ChatGPT/irisu/artifacts/verification-diagnostic-391769539-20261105/failed-candidate.rpy",
+          "1"
+        ],
+        "returncode": -11,
+        "stderr": "",
+        "frame_bytes": 0
+      }
+    ],
+    "location": "With the archived frozen runtime-library layout: pinned b2PairManager::Commit+145, null result from Find; zero replay steps requested still crashes.",
+    "evidence_directory": "/home/gabe/Documents/ChatGPT/irisu/artifacts/verification-diagnostic-391769539-20261105",
+    "environment": {
+      "LD_LIBRARY_PATH": "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-search-fixed-20261105-120819/runtime/lib",
+      "LD_PRELOAD": "removed"
+    }
+  },
+  "repair": "Read fixed-size header, set x87 control word, construct/reset exact Simulator before allocating variable replay input; same initialization ordering as existing pristine native factory. Native terminal/header, digest stream and verifier acceptance are retained. Nonzero oracle exit reports status or signal even with empty stderr.",
+  "cases": [
+    {
+      "label": "archived22508",
+      "replay": "/home/gabe/Documents/ChatGPT/irisu/artifacts/verification-diagnostic-391769539-20261105/failed-candidate.rpy",
+      "replay_sha256": "2c5703037050f80f04dfbd02243b9ae3618f6e16d631269ea9ce2c1c9f6442e2",
+      "words": 22508,
+      "header": {
+        "canonical_level": 12,
+        "canonical_score": 7752,
+        "canonical_chain": 6
+      },
+      "oracle_returncode": 0,
+      "frame_bytes": 2160864,
+      "frames_sha256": "c6bcc5f1070ba0b091ecbb162340808acf24fa51fa111376e905b42b6bd8a1b6",
+      "native_final_frame": [
+        22508,
+        13690421687101288279,
+        8650897989049806416,
+        7768371137561245045,
+        11,
+        8404880309854009108,
+        190,
+        7842,
+        681,
+        12,
+        6,
+        7752
+      ],
+      "native_final_frame_equal": true,
+      "report": {
+        "backend": "native-msvc-cpu-oracle",
+        "format": "game-digest-v1",
+        "rows": 22509,
+        "steps": 22508,
+        "events": 601622,
+        "tick": 22508,
+        "live_score": 7842,
+        "canonical_score": 7752,
+        "latest_final_score": 7752,
+        "level": 12,
+        "highest_chain": 6,
+        "config_hash": 17009678407634462320,
+        "elapsed_seconds": 4.710005139
+      },
+      "unchanged_authoritative_worker_summary_equal": true,
+      "native_summary": {
+        "seed": 391769539,
+        "tick": 22508,
+        "score": 7842,
+        "gauge": 681,
+        "level": 12,
+        "qualifying": 116,
+        "highest_chain": 6,
+        "terminated": true,
+        "truncated": false,
+        "canonical_score": 7752,
+        "canonical_level": 12,
+        "canonical_chain": 6,
+        "config_hash": "17009678407634462320"
+      },
+      "native_summary_sha256": "61fd3e3d72a6a85c251cc665830f581301fdcadc6f904c5aa6d7e7b57de0e0d3",
+      "native_body_count": 188,
+      "verifier_receipt": {
+        "verified": true,
+        "seed": 391769539,
+        "tick": 22508,
+        "canonical_score": 7752,
+        "level": 12,
+        "highest_chain": 6,
+        "steps": 22508,
+        "canonical_level": 12,
+        "canonical_chain": 6,
+        "replay_sha256": "2c5703037050f80f04dfbd02243b9ae3618f6e16d631269ea9ce2c1c9f6442e2",
+        "runtime": {
+          "oracle": "/home/gabe/.codex/worktrees/irisu-oracle-pristine/irisu/build-oracle-pristine/irisu-game-oracle",
+          "sha256": "abfcfbff7cb9b1d2b59641b340a547a68b1538abab2c57962dae878f9c538a38",
+          "library_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5"
+        }
+      }
+    },
+    {
+      "label": "published4393101",
+      "replay": "/home/gabe/.codex/worktrees/irisu-oracle-pristine/irisu/irisu-high-score-4393101.rpy",
+      "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+      "words": 97219,
+      "header": {
+        "canonical_level": 100,
+        "canonical_score": 4393101,
+        "canonical_chain": 70
+      },
+      "oracle_returncode": 0,
+      "frame_bytes": 9333120,
+      "frames_sha256": "9d972bbf361cfa58de555891ebcf96d2cd7b109839bc00868079d60aa03577ed",
+      "native_final_frame": [
+        97219,
+        6496194714233397976,
+        1342600485989140437,
+        13774512107217517954,
+        11,
+        8309218449399114006,
+        40,
+        4393699,
+        28250,
+        100,
+        70,
+        4393101
+      ],
+      "native_final_frame_equal": true,
+      "report": {
+        "backend": "native-msvc-cpu-oracle",
+        "format": "game-digest-v1",
+        "rows": 97220,
+        "steps": 97219,
+        "events": 308512,
+        "tick": 97219,
+        "live_score": 4393699,
+        "canonical_score": 4393101,
+        "latest_final_score": 4393101,
+        "level": 100,
+        "highest_chain": 70,
+        "config_hash": 17009678407634462320,
+        "elapsed_seconds": 3.624742024
+      },
+      "old_full_frames_equal": true,
+      "old_report": {
+        "backend": "native-msvc-cpu-oracle",
+        "format": "game-digest-v1",
+        "rows": 97220,
+        "steps": 97219,
+        "events": 308512,
+        "tick": 97219,
+        "live_score": 4393699,
+        "canonical_score": 4393101,
+        "latest_final_score": 4393101,
+        "level": 100,
+        "highest_chain": 70,
+        "config_hash": 17009678407634462320,
+        "elapsed_seconds": 3.597796986
+      },
+      "native_summary": {
+        "seed": 1298144938,
+        "tick": 97219,
+        "score": 4393699,
+        "gauge": 28250,
+        "level": 100,
+        "qualifying": 990,
+        "highest_chain": 70,
+        "terminated": true,
+        "truncated": false,
+        "canonical_score": 4393101,
+        "canonical_level": 100,
+        "canonical_chain": 70,
+        "config_hash": "17009678407634462320"
+      },
+      "native_summary_sha256": "5d22f9fbb32d977707639c9eb0fa9f4bddc86e9a00da909393e7b937589764bd",
+      "native_body_count": 38,
+      "verifier_receipt": {
+        "verified": true,
+        "seed": 1298144938,
+        "tick": 97219,
+        "canonical_score": 4393101,
+        "level": 100,
+        "highest_chain": 70,
+        "steps": 97219,
+        "canonical_level": 100,
+        "canonical_chain": 70,
+        "replay_sha256": "81fe723b6b825e62afb471d7517355fef2b8bf0fb1dbe636069c97c70ce2ca79",
+        "runtime": {
+          "oracle": "/home/gabe/.codex/worktrees/irisu-oracle-pristine/irisu/build-oracle-pristine/irisu-game-oracle",
+          "sha256": "abfcfbff7cb9b1d2b59641b340a547a68b1538abab2c57962dae878f9c538a38",
+          "library_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5"
+        }
+      }
+    }
+  ],
+  "startup_matrix": [
+    {
+      "seed": 0,
+      "input_words": 1,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "652aa6045414ccd75c512ba8f1a3ac5d4d139a0ccbe9435da3c4de6c1bb3046a"
+    },
+    {
+      "seed": 0,
+      "input_words": 128,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "652aa6045414ccd75c512ba8f1a3ac5d4d139a0ccbe9435da3c4de6c1bb3046a"
+    },
+    {
+      "seed": 0,
+      "input_words": 2048,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "652aa6045414ccd75c512ba8f1a3ac5d4d139a0ccbe9435da3c4de6c1bb3046a"
+    },
+    {
+      "seed": 0,
+      "input_words": 22508,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "652aa6045414ccd75c512ba8f1a3ac5d4d139a0ccbe9435da3c4de6c1bb3046a"
+    },
+    {
+      "seed": 0,
+      "input_words": 97219,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "652aa6045414ccd75c512ba8f1a3ac5d4d139a0ccbe9435da3c4de6c1bb3046a"
+    },
+    {
+      "seed": 42,
+      "input_words": 1,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "0d4c45caa3da1bfd6e1fd37131cc83634f7b7df3cca4ca0f6fa40574bd552f36"
+    },
+    {
+      "seed": 42,
+      "input_words": 128,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "0d4c45caa3da1bfd6e1fd37131cc83634f7b7df3cca4ca0f6fa40574bd552f36"
+    },
+    {
+      "seed": 42,
+      "input_words": 2048,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "0d4c45caa3da1bfd6e1fd37131cc83634f7b7df3cca4ca0f6fa40574bd552f36"
+    },
+    {
+      "seed": 42,
+      "input_words": 22508,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "0d4c45caa3da1bfd6e1fd37131cc83634f7b7df3cca4ca0f6fa40574bd552f36"
+    },
+    {
+      "seed": 42,
+      "input_words": 97219,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "0d4c45caa3da1bfd6e1fd37131cc83634f7b7df3cca4ca0f6fa40574bd552f36"
+    },
+    {
+      "seed": 391769539,
+      "input_words": 1,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "3ee06d8e66ef441ca2b23ffc21c5b7f401735b2c5ddfebd5ce080e1054299300"
+    },
+    {
+      "seed": 391769539,
+      "input_words": 128,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "3ee06d8e66ef441ca2b23ffc21c5b7f401735b2c5ddfebd5ce080e1054299300"
+    },
+    {
+      "seed": 391769539,
+      "input_words": 2048,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "3ee06d8e66ef441ca2b23ffc21c5b7f401735b2c5ddfebd5ce080e1054299300"
+    },
+    {
+      "seed": 391769539,
+      "input_words": 22508,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "3ee06d8e66ef441ca2b23ffc21c5b7f401735b2c5ddfebd5ce080e1054299300"
+    },
+    {
+      "seed": 391769539,
+      "input_words": 97219,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "3ee06d8e66ef441ca2b23ffc21c5b7f401735b2c5ddfebd5ce080e1054299300"
+    },
+    {
+      "seed": 4294967295,
+      "input_words": 1,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "8e4d9de5a28104d56bbf996f1eaf6fbddb375fda0fd6b097b1a76e22cf599f1b"
+    },
+    {
+      "seed": 4294967295,
+      "input_words": 128,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "8e4d9de5a28104d56bbf996f1eaf6fbddb375fda0fd6b097b1a76e22cf599f1b"
+    },
+    {
+      "seed": 4294967295,
+      "input_words": 2048,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "8e4d9de5a28104d56bbf996f1eaf6fbddb375fda0fd6b097b1a76e22cf599f1b"
+    },
+    {
+      "seed": 4294967295,
+      "input_words": 22508,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "8e4d9de5a28104d56bbf996f1eaf6fbddb375fda0fd6b097b1a76e22cf599f1b"
+    },
+    {
+      "seed": 4294967295,
+      "input_words": 97219,
+      "maximum_steps": 0,
+      "returncode": 0,
+      "bytes": 96,
+      "initial_frame_sha256": "8e4d9de5a28104d56bbf996f1eaf6fbddb375fda0fd6b097b1a76e22cf599f1b"
+    }
+  ],
+  "tests": [
+    {
+      "command": "PYTHONPATH=python IRISU_SEARCH_ORACLE=$PWD/build-oracle-pristine/irisu-game-oracle IRISU_SEARCH_ORACLE_LIBRARY=/home/gabe/Documents/ChatGPT/irisu/.local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so uv run --no-project --with pytest python -m pytest -q tests/test_search_verification.py tests/test_search_oracle_initialization.py",
+      "result": "..................                                                       [100%]\n18 passed in 14.46s",
+      "log_sha256": "273cfea5caf9b35f7398f0c9a33a83b2b48c1c4a70a58db1762425baad4282fc"
+    },
+    {
+      "command": "PYTHONPATH=python IRISU_SEARCH_ENGINE=$PWD/build-oracle-pristine/irisu-search-engine uv run --no-project --with pytest python -m pytest -q tests/test_search_*.py",
+      "result": "...............................................ss....s...............s.. [ 37%]\n......sssss............................................................. [ 74%]\n.............................sss..................                       [100%]\n182 passed, 12 skipped in 6.51s",
+      "log_sha256": "b915a21f8cc3239ae02aeb3d852e65b03fc3ca037229dded24efd28ff0f0d62b"
+    }
+  ],
+  "derived_evidence": {
+    "directory": "/home/gabe/.codex/worktrees/irisu-oracle-pristine/irisu/artifacts/oracle-pristine",
+    "qualification_script_sha256": "a16d49fc0603aa7a438b1f4da2459db64f31598fd13116b248ba5fa1e5a828e3",
+    "full_qualification_json_sha256": "bf5088e8ff3205ff99f31c29c6abd7ec367cd5ce6cf3330eac431a4c9e5eed35",
+    "native_digest_build_command": "/usr/bin/c++ -m32 -O3 -DNDEBUG -std=c++20 -DIRISU_GNU_X87_CONTROL_WORD_ENVIRONMENT=1 -DIRISU_X87_FIDELITY_MODE=1 '-DIRISU_ORCHESTRATOR_BACKEND=\"exact-msvc9-r58-multiworld-forward\"' -I/home/gabe/.codex/worktrees/irisu-oracle-pristine/irisu/clone/include -I/home/gabe/.codex/worktrees/irisu-oracle-pristine/irisu/tools/orchestrator -I/home/gabe/.codex/worktrees/irisu-oracle-pristine/irisu/tools/cuda-exact /home/gabe/.codex/worktrees/irisu-oracle-pristine/irisu/artifacts/oracle-pristine/native_engine_final_digest.cpp -Wl,--no-as-needed -Wl,-rpath,/home/gabe/Documents/ChatGPT/irisu/.local/exact-runtime-20260824/exact-runtime/guest /home/gabe/.codex/worktrees/irisu-oracle-pristine/irisu/build-oracle-pristine/libirisu_core.a /home/gabe/Documents/ChatGPT/irisu/.local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so -ldl -o /home/gabe/.codex/worktrees/irisu-oracle-pristine/irisu/artifacts/oracle-pristine/native-engine-final-digest"
+  },
+  "scope": [
+    "CPU-only; no CUDA binary, physics-library or frozen campaign modifications; service remains stopped.",
+    "Full independent oracle frame streams and terminal/header validation passed on the archived 22508-word candidate and published 97219-word record.",
+    "The resident-worker diagnostic adds only a final-frame field to a derived source copy; compares all 12 final digest words, not every intermediate resident-worker frame. Published old/new independent oracle streams compare every byte.",
+    "Initialization workaround preserves the pinned original library; varied startup cases are finite coverage, not a proof for every allocator/runtime configuration.",
+    "The old initializer is not claimed to crash universally: identical DSO contents under a shorter guest path can pass. The independent frozen-layout old-fail/new-pass gate establishes finite tested-layout coverage; a new frozen successor must preflight the archived candidate and published record in its own exact library environment."
+  ],
+  "layout_sensitive_independent_review": {
+    "reviewer": "/root/parity_fix_review",
+    "evidence_source": "Independent reviewer messages in the parent task; results below are reviewer-reported, not an additional local rerun.",
+    "crashing_environment": {
+      "LD_LIBRARY_PATH": "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-search-fixed-20261105-120819/runtime/lib",
+      "IRISU_SEARCH_ORACLE_LIBRARY": "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-search-fixed-20261105-120819/runtime/lib/libirisu_box2d_msvc_exact_multiworld.so",
+      "replay_path_pattern": "/tmp/irisu-verify-*/candidate.rpy"
+    },
+    "noncrashing_old_environment": {
+      "LD_LIBRARY_PATH": "/home/gabe/Documents/ChatGPT/irisu/.local/exact-runtime-20260824/exact-runtime/guest"
+    },
+    "library_comparison": [
+      {
+        "filename": "libirisu_box2d_msvc_exact_multiworld.so",
+        "frozen_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+        "guest_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5",
+        "identical": true
+      },
+      {
+        "filename": "libstdc++.so.6",
+        "frozen_sha256": "90abf0c6a98625b812132ea9af960ee8b036e3f519e368de1084fb50532ba021",
+        "guest_sha256": "90abf0c6a98625b812132ea9af960ee8b036e3f519e368de1084fb50532ba021",
+        "identical": true
+      }
+    ],
+    "direct_differential": {
+      "same_archived_replay_bytes": true,
+      "old_frozen_maximum_steps_0": {
+        "returncode": -11,
+        "signal": "SIGSEGV",
+        "frame_bytes": 0
+      },
+      "old_frozen_full": {
+        "returncode": -11,
+        "signal": "SIGSEGV",
+        "frame_bytes": 0
+      },
+      "old_guest_maximum_steps_0": {
+        "returncode": 0,
+        "frame_bytes": 96
+      },
+      "old_guest_full": {
+        "returncode": 0,
+        "frame_rows": 22509
+      }
+    },
+    "tests": [
+      {
+        "oracle": "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-search-fixed-20261105-120819/runtime/bin/irisu-game-oracle",
+        "suite": "tests/test_search_oracle_initialization.py",
+        "result": "5 failed; all fail at the 22508-word case with SIGSEGV(-11), including each seed at maximum-steps=0",
+        "command_kind": "reproduction command equivalent to reviewer-reported gate",
+        "command": "PYTHONPATH=python IRISU_SEARCH_ORACLE=/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-search-fixed-20261105-120819/runtime/bin/irisu-game-oracle IRISU_SEARCH_ORACLE_LIBRARY=/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-search-fixed-20261105-120819/runtime/lib/libirisu_box2d_msvc_exact_multiworld.so uv run --no-project --with pytest python -m pytest -q tests/test_search_oracle_initialization.py"
+      },
+      {
+        "oracle": "/home/gabe/.codex/worktrees/irisu-oracle-pristine/irisu/build-oracle-pristine/irisu-game-oracle",
+        "suite": "tests/test_search_verification.py tests/test_search_oracle_initialization.py",
+        "result": "18 passed in 14.43s",
+        "command_kind": "reproduction command equivalent to reviewer-reported gate",
+        "command": "PYTHONPATH=python IRISU_SEARCH_ORACLE=/home/gabe/.codex/worktrees/irisu-oracle-pristine/irisu/build-oracle-pristine/irisu-game-oracle IRISU_SEARCH_ORACLE_LIBRARY=/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-search-fixed-20261105-120819/runtime/lib/libirisu_box2d_msvc_exact_multiworld.so uv run --no-project --with pytest python -m pytest -q tests/test_search_verification.py tests/test_search_oracle_initialization.py"
+      }
+    ],
+    "interpretation": "The old oracle crash is allocator/loader-layout sensitive. Changing LD_LIBRARY_PATH text/layout can alter startup behavior despite byte-identical physics and libstdc++ DSOs. Earlier focused tests using the shorter guest library path passed the repaired oracle but do not alone discriminate the old initializer. The frozen-layout differential is the causal regression gate."
+  }
+}
