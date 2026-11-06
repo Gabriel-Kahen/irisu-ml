@@ -13,7 +13,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "python"))
 
-from irisu_search.config import default_paths  # noqa: E402
 from irisu_search.engine import Engine  # noqa: E402
 from irisu_search.proposals import generate, select_candidates  # noqa: E402
 from irisu_search.verification import NativeVerifier, read_replay, replay_bytes, sha256_file  # noqa: E402
@@ -209,13 +208,12 @@ def run_arm(engine, verifier, seed, words, case, algorithm, candidate_budget, se
 
 
 def main(argv=None):
-    defaults = default_paths()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("mode", choices=("fixture", "eval"))
-    parser.add_argument("--engine", type=Path, default=Path(defaults["engine"]))
-    parser.add_argument("--oracle", type=Path, default=Path(defaults["oracle"]))
-    parser.add_argument("--oracle-library", type=Path, default=Path(defaults["oracle_library"]))
-    parser.add_argument("--replay", type=Path, default=Path(defaults["incumbent"]))
+    parser.add_argument("--engine", type=Path, default=ROOT / "build-project-exact/irisu-search-engine")
+    parser.add_argument("--oracle", type=Path, default=ROOT / "build-project-exact/irisu-game-oracle")
+    parser.add_argument("--oracle-library", type=Path, default=ROOT / ".local/exact-runtime-20260824/exact-runtime/guest/libirisu_box2d_msvc_exact_multiworld.so")
+    parser.add_argument("--replay", type=Path, default=ROOT / "irisu-high-score-4393101.rpy")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--fixture", type=Path, default=ROOT / "tests/fixtures/search/combo-repair.json")
     parser.add_argument("--cases", type=int, default=1)
