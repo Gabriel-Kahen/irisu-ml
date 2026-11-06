@@ -7,6 +7,7 @@ import json
 import os
 import subprocess
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 from . import PLANNER_VERSION
@@ -38,6 +39,8 @@ def parser():
     init.add_argument("--seed-count", type=int, default=128)
     init.add_argument("--seed-generator", type=int, default=0)
     init.add_argument("--incumbent", type=Path)
+    init.add_argument("--champion-only", action="store_true",
+                      help="focus on the verified best seed; requires an imported incumbent before run")
     init.add_argument("--stride", type=int, default=4096)
     init.add_argument("--combo-events", type=Path, help="replay-bound genealogy receipt for combo event roots")
     run = sub.add_parser("run", help="run bounded jobs, resuming existing state")
@@ -137,6 +140,8 @@ def main(argv=None):
                     engine=(args.engine, *args.engine_arg), oracle=args.oracle,
                     oracle_library=args.oracle_library, cuda_device=args.cuda_device, initial_seeds=args.seed_count,
                     seed_generator=args.seed_generator)
+                if args.champion_only:
+                    config = replace(config, champion_only=True)
             else:
                 manifest = store.get_meta("campaign_config")
                 if not manifest:

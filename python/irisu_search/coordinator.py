@@ -23,7 +23,7 @@ from .proposals import (
     select_survivors,
     target_group,
 )
-from .scheduler import next_job
+from .scheduler import champion_seed, next_job
 from .verification import NativeVerifier, read_replay, replay_bytes, sha256_file
 
 
@@ -113,6 +113,9 @@ class Coordinator:
 
     def seed_manifest(self):
         if self.store.get_meta("seed_manifest") is not None:
+            return
+        if self.config.champion_only:
+            self.store.set_meta("seed_manifest", [])
             return
         rng = random.Random(self.config.seed_generator)
         seeds = []
@@ -621,10 +624,11 @@ class Coordinator:
         with campaign_lock(self.store.root), run_accounting(self.store):
             while time.monotonic() < deadline and (max_jobs is None or count < max_jobs):
                 planning_started = time.monotonic()
-                job = self.store.claim(self.owner, self.config.engine_timeout * 3 + self.config.job_seconds)
+                seed = champion_seed(self.store, self.config)
+                job = self.store.claim(self.owner, self.config.engine_timeout * 3 + self.config.job_seconds, seed=seed)
                 if not job:
                     next_job(self.store, self.config, self.guide)
-                    job = self.store.claim(self.owner, self.config.engine_timeout * 3 + self.config.job_seconds)
+                    job = self.store.claim(self.owner, self.config.engine_timeout * 3 + self.config.job_seconds, seed=seed)
                 if not job:
                     break
                 started = planning_started

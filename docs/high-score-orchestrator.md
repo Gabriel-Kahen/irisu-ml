@@ -96,6 +96,29 @@ rerun the same command to continue. Abruptly abandoned leases can be reclaimed
 after their timeout. The ledger distinguishes unknown abandoned work from
 completed, charged work.
 
+## Work only on the current record seed
+
+Initialize with `--champion-only` (or `"champion_only": true` in the JSON config):
+
+```sh
+PYTHONPATH=python python -m irisu_search init artifacts/high-score-champion \
+  --config configs/search/high-score-v1.json --champion-only \
+  --incumbent path/to/current-best.rpy --stride 4096
+PYTHONPATH=python python -m irisu_search run artifacts/high-score-champion --seconds 3600
+```
+
+This frozen option requires an imported, independently verified champion before
+search starts. It creates no random seed manifest, schedules every lane on the
+verified champion's seed, and transfers the seed-discovery share to the combo
+lane. Both ordinary and combo-focused policies support it. Combo event roots,
+frontier continuations and terminal edits remain available within that seed.
+Other seeds' queued jobs remain untouched and cannot be claimed in this mode.
+If there are no usable live checkpoints, bootstrap reconstructs only the same
+champion seed. A higher verified score becomes the new continuation reference;
+changing the search policy requires a fresh campaign and an incumbent import.
+`discover_new_seeds: false` alone still searches other seeds already in the
+manifest, so it does not provide this restriction.
+
 ## What gets searched
 
 A job starts at an immutable checkpoint and evaluates a batch of variable-length

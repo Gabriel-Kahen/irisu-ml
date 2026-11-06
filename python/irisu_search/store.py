@@ -643,12 +643,19 @@ class Store:
                 result[key] = json.loads(result[key])
         return result
 
-    def claim(self, owner: str, lease_seconds: float = 300) -> dict[str, Any] | None:
+    def claim(self, owner: str, lease_seconds: float = 300, *, seed: int | None = None) -> dict[str, Any] | None:
         if not owner or _seconds(lease_seconds) <= 0:
             raise ValueError("owner and positive lease required")
+        if seed is not None:
+            _uint(seed, "seed")
         with self._transaction():
             now = time.time()
-            row = self.db.execute("SELECT * FROM jobs WHERE status='pending' OR (status='running' AND lease_until<=?) ORDER BY priority DESC,created,id LIMIT 1", (now,)).fetchone()
+            query = "SELECT * FROM jobs WHERE (status='pending' OR (status='running' AND lease_until<=?))"
+            args = [now]
+            if seed is not None:
+                query += " AND seed=?"
+                args.append(seed)
+            row = self.db.execute(query + " ORDER BY priority DESC,created,id LIMIT 1", args).fetchone()
             if row is None:
                 return None
             if row["status"] == "running":
