@@ -41,31 +41,47 @@ def rebalance(store, config):
             store.update_seed(seed["seed"], status=status)
 
 
+def champion_seed(store, config):
+    if not config.champion_only:
+        return None
+    champion = store.champion()
+    if not champion:
+        raise ValueError("champion-only search requires an imported, verified champion")
+    return champion["seed"]
+
+
 def choose_lane(store, config):
     spent = {lane: 0. for lane in config.lanes}
     for lane, cost in store.lane_costs().items():
         if lane in spent:
             spent[lane] += cost
+    shares = dict(config.lanes)
+    if config.champion_only:
+        spent["combo"] += spent.pop("seed")
+        shares["combo"] += shares.pop("seed")
     total = sum(spent.values())
-    return max(config.lanes, key=lambda lane: config.lanes[lane] * (total + config.job_seconds) - spent[lane])
+    return max(shares, key=lambda lane: shares[lane] * (total + config.job_seconds) - spent[lane])
 
 
 def next_job(store, config, guide=None):
+    focus = champion_seed(store, config)
     sequence = store.get_meta("schedule_sequence", 0)
     store.set_meta("schedule_sequence", sequence + 1)
     rng = random_for(config.seed_generator, sequence)
     if getattr(config, "combo_search", False):
-        return _combo_next_job(store, config, sequence, rng)
+        return _combo_next_job(store, config, sequence, rng, focus)
     rebalance(store, config)
-    seeds = store.seeds()
+    seeds = [s for s in store.seeds() if focus is None or s["seed"] == focus]
     lane = choose_lane(store, config)
+    if focus is not None and lane == "seed":
+        lane = "combo"
     bootstrap = [s for s in seeds if s.get("attempts", 0) < config.attempts_per_seed]
-    live = [cp for cp in store.checkpoints() if not cp["summary"].get("terminated")
+    live = [cp for cp in store.checkpoints(seed=focus) if not cp["summary"].get("terminated")
             and not cp["summary"].get("truncated") and cp["summary"]["tick"] < config.maximum_ticks]
     if lane == "seed" or not live:
         if bootstrap:
             seed = min(bootstrap, key=lambda s: (s.get("attempts", 0), s.get("search_seconds", 0)))
-        elif not config.discover_new_seeds:
+        elif focus is not None or not config.discover_new_seeds:
             seed = min(seeds, key=lambda s: (s.get("attempts", 0), s.get("search_seconds", 0)))
         else:
             known = {s["seed"] for s in seeds}
@@ -133,13 +149,15 @@ def next_job(store, config, guide=None):
                          }, dedupe_key=f"schedule:{sequence}")
 
 
-def _combo_next_job(store, config, sequence, rng):
+def _combo_next_job(store, config, sequence, rng, focus=None):
     """Give record combos a budget independent of discovery tournament status."""
     from .combos import combo_key
     rebalance(store, config)
     lane = choose_lane(store, config)
-    seeds = store.seeds()
-    live = [row for row in store.checkpoints() if not row["summary"].get("terminated")
+    if focus is not None and lane == "seed":
+        lane = "combo"
+    seeds = [s for s in store.seeds() if focus is None or s["seed"] == focus]
+    live = [row for row in store.checkpoints(seed=focus) if not row["summary"].get("terminated")
             and not row["summary"].get("truncated")
             and row["summary"]["tick"] < config.maximum_ticks]
     champion = store.champion()
@@ -161,7 +179,7 @@ def _combo_next_job(store, config, sequence, rng):
                 break
         if pending:
             seed = min(pending, key=lambda row: (row["attempts"], row["search_seconds"], row["seed"]))
-        elif config.discover_new_seeds:
+        elif focus is None and config.discover_new_seeds:
             known = set(by_seed)
             value = rng.getrandbits(32)
             while value in known:

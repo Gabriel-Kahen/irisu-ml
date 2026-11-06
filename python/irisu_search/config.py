@@ -36,6 +36,7 @@ class CampaignConfig:
     training_epochs: int = 40
     max_training_examples: int = 4000
     discover_new_seeds: bool = True
+    champion_only: bool = False
     combo_search: bool = False
     combo_frontier_width: int = 4
     combo_terminal_horizon: int = 32768
@@ -62,6 +63,8 @@ class CampaignConfig:
             raise ValueError("train_every_jobs must be a nonnegative integer")
         if type(self.combo_search) is not bool:
             raise ValueError("combo_search must be boolean")
+        if type(self.champion_only) is not bool:
+            raise ValueError("champion_only must be boolean")
         if type(self.discover_new_seeds) is not bool:
             raise ValueError("discover_new_seeds must be boolean")
         if not isinstance(self.cuda_device, str):
