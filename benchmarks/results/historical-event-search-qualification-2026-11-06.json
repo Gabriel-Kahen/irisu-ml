@@ -1,0 +1,265 @@
+{
+  "schema": "irisu-historical-event-fallback-qualification-v1",
+  "historical_runner_sha256": "a800d330a3e53c37eff711d60bcf406fe644f956ac3022d0258d05344e90b875",
+  "menu_parity": {
+    "schema": "irisu-historical-planner-device-qualification-v1",
+    "replay_sha256": "db0891da192602080d418a5b80063d93204074246031549c7640e74b420f49d5",
+    "trace_sha256": "c890ff543c051d156d3a519468d61d55f4c303450eeac2f8eb3f28ea4f78ac3d",
+    "native": {
+      "protocol": 1,
+      "backend": "exact-msvc9-r58-multiworld-forward",
+      "checkpoint_mode": "resident-fork-cow-pristine-factory",
+      "max_checkpoints": 512,
+      "max_horizon": 100000,
+      "max_event_horizon": 512,
+      "max_captured_events": 32768,
+      "executable": "/home/gabe/Documents/ChatGPT/irisu/build-project-exact/irisu-search-engine",
+      "binary_sha256": "a8d899db2423f4e364a980eb031b712db3266faa8e2ca6c607d04df483c7a92b",
+      "command": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-project-exact/irisu-search-engine",
+        "--max-checkpoints",
+        "512"
+      ]
+    },
+    "cuda": {
+      "protocol": 1,
+      "backend": "cuda-native-resident",
+      "checkpoint_mode": "resident-device-compact",
+      "promotion_eligible": false,
+      "max_checkpoints": 512,
+      "launch_threads": 0,
+      "partial_batches": true,
+      "max_contacts": 4096,
+      "max_bodies": 512,
+      "adaptive_launch_threads": true,
+      "multiprocessors": 80,
+      "host_prefix": true,
+      "max_horizon": 100000,
+      "max_event_horizon": 512,
+      "max_captured_events": 32768,
+      "checkpoint_bytes": 2265064,
+      "numeric_profile": "bounded",
+      "executable": "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-search-engine",
+      "binary_sha256": "5138eb44b705b9cc85934e3a6e7e3dd69aeae3e9cf447b32a91904eb4d446343",
+      "command": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-search-engine",
+        "--max-checkpoints",
+        "512",
+        "--host-prefix"
+      ]
+    },
+    "seed": 1298144938,
+    "root": 96000,
+    "random_seed": 661003,
+    "candidate_cap": 48,
+    "menu_size": 48,
+    "compared_branches": 49,
+    "accepted_branches": 40,
+    "selected_identifiers": [
+      "2a7139468f4e28869060",
+      "3d280d646447e7a2f5a0",
+      "4f3d23e17aa71b128829",
+      "34b8d77b104df8c97064",
+      "0842815dc77aaa5575da",
+      "2433b61c43e1bba3bf20",
+      "1a6a65f697e2edfae83c",
+      "5eeb3d7d0e4d76c63bae",
+      "0b815eb61107a397e5fc",
+      "c4e38250141419f54d10",
+      "38723a2e5e8a17aa7950",
+      "27262c1b3c3af2ce9400",
+      "bd288130d8782894ad66",
+      "1036a2bd5a63ab63552f",
+      "5247721a21aae69f24ff",
+      "82318d65b599b5b4adc3",
+      "5108369ffd32ec1580bf",
+      "d6e7fcf6674b2b41e40f",
+      "b7243fadbcc55cfbac7c",
+      "092a4496f71d6e471414",
+      "99aa11d47cf2a6a25f9e",
+      "6d157c961c073177c135",
+      "49d61e77c70606e06cbf",
+      "3ba07e62cccb587f406e"
+    ],
+    "exact_actions_observations_history_and_values": true,
+    "simulated_ticks": {
+      "native": 3368,
+      "cuda": 3368
+    },
+    "seconds": 17.58701945003122
+  },
+  "terminal_verification": {
+    "schema": "irisu-historical-terminal-device-qualification-v1",
+    "replay_sha256": "db0891da192602080d418a5b80063d93204074246031549c7640e74b420f49d5",
+    "seed": 1298144938,
+    "root_tick": 96000,
+    "horizon": 24000,
+    "candidate_count": 3,
+    "mutation_labels": [
+      "reference",
+      "delete-first-tail-shot",
+      "last-tail-shot-x+2"
+    ],
+    "verified": [
+      {
+        "candidate_index": 0,
+        "receipt": {
+          "verified": true,
+          "seed": 1298144938,
+          "tick": 97219,
+          "canonical_score": 4393327,
+          "level": 100,
+          "highest_chain": 70,
+          "steps": 97219,
+          "canonical_level": 100,
+          "canonical_chain": 70,
+          "replay_sha256": "db0891da192602080d418a5b80063d93204074246031549c7640e74b420f49d5",
+          "runtime": {
+            "oracle": "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-champion-only-20261106-003851/runtime/bin/irisu-game-oracle",
+            "sha256": "663e8c8859375a48bd623bed7b784baf4b429ce190a4da6b994bbfd15f884027",
+            "library_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5"
+          },
+          "oracle_report": {
+            "backend": "native-msvc-cpu-oracle",
+            "format": "game-digest-v1",
+            "rows": 97220,
+            "steps": 97219,
+            "events": 308508,
+            "tick": 97219,
+            "live_score": 4393925,
+            "canonical_score": 4393327,
+            "latest_final_score": 4393327,
+            "level": 100,
+            "highest_chain": 70,
+            "config_hash": 17009678407634462320,
+            "elapsed_seconds": 3.628731124
+          }
+        }
+      },
+      {
+        "candidate_index": 1,
+        "receipt": {
+          "verified": true,
+          "seed": 1298144938,
+          "tick": 96345,
+          "canonical_score": 3455879,
+          "level": 100,
+          "highest_chain": 61,
+          "steps": 96345,
+          "canonical_level": 100,
+          "canonical_chain": 61,
+          "replay_sha256": "a2f08bc22b3eef833d91f469c680c660fc0ad88aef25372446d8b3bfe808dd81",
+          "runtime": {
+            "oracle": "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-champion-only-20261106-003851/runtime/bin/irisu-game-oracle",
+            "sha256": "663e8c8859375a48bd623bed7b784baf4b429ce190a4da6b994bbfd15f884027",
+            "library_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5"
+          },
+          "oracle_report": {
+            "backend": "native-msvc-cpu-oracle",
+            "format": "game-digest-v1",
+            "rows": 96346,
+            "steps": 96345,
+            "events": 306745,
+            "tick": 96345,
+            "live_score": 3456277,
+            "canonical_score": 3455879,
+            "latest_final_score": 3455879,
+            "level": 100,
+            "highest_chain": 61,
+            "config_hash": 17009678407634462320,
+            "elapsed_seconds": 3.566347396
+          }
+        }
+      },
+      {
+        "candidate_index": 2,
+        "receipt": {
+          "verified": true,
+          "seed": 1298144938,
+          "tick": 97217,
+          "canonical_score": 4393327,
+          "level": 100,
+          "highest_chain": 70,
+          "steps": 97217,
+          "canonical_level": 100,
+          "canonical_chain": 70,
+          "replay_sha256": "a53f9be749ddc0af99c5f6521cfdddbacfebc8671aa134392f8a5281ae4f5bfa",
+          "runtime": {
+            "oracle": "/home/gabe/Documents/ChatGPT/irisu/artifacts/high-score-gpu-champion-only-20261106-003851/runtime/bin/irisu-game-oracle",
+            "sha256": "663e8c8859375a48bd623bed7b784baf4b429ce190a4da6b994bbfd15f884027",
+            "library_sha256": "ce14d1cab9ce4331bf494fe92bf657029487aec9f7435e7479b3c7cb579fafb5"
+          },
+          "oracle_report": {
+            "backend": "native-msvc-cpu-oracle",
+            "format": "game-digest-v1",
+            "rows": 97218,
+            "steps": 97217,
+            "events": 308506,
+            "tick": 97217,
+            "live_score": 4393925,
+            "canonical_score": 4393327,
+            "latest_final_score": 4393327,
+            "level": 100,
+            "highest_chain": 70,
+            "config_hash": 17009678407634462320,
+            "elapsed_seconds": 3.72141415
+          }
+        }
+      }
+    ],
+    "censored": [],
+    "rejected": [],
+    "published": false,
+    "cuda": {
+      "protocol": 1,
+      "backend": "cuda-native-resident",
+      "checkpoint_mode": "resident-device-compact",
+      "promotion_eligible": false,
+      "max_checkpoints": 16,
+      "launch_threads": 0,
+      "partial_batches": true,
+      "max_contacts": 4096,
+      "max_bodies": 512,
+      "adaptive_launch_threads": true,
+      "multiprocessors": 80,
+      "host_prefix": true,
+      "max_horizon": 100000,
+      "max_event_horizon": 512,
+      "max_captured_events": 32768,
+      "checkpoint_bytes": 2265064,
+      "numeric_profile": "bounded",
+      "executable": "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-search-engine",
+      "binary_sha256": "5138eb44b705b9cc85934e3a6e7e3dd69aeae3e9cf447b32a91904eb4d446343",
+      "command": [
+        "/home/gabe/Documents/ChatGPT/irisu/build-cuda-native-efficiency3/clone/cuda_native/irisu-cuda-search-engine",
+        "--max-checkpoints",
+        "16",
+        "--host-prefix"
+      ]
+    },
+    "simulated_ticks": 2781,
+    "passed": true
+  },
+  "resume_acceptance": {
+    "completed_stages": 2,
+    "retained_parents": 24,
+    "search_slices": 2,
+    "branches": 1020,
+    "simulated_ticks": 74524,
+    "rejections": 0,
+    "failed_verifications": 0,
+    "verified_score": 4393327,
+    "note": "Two independently launched slices restored the same beam and advanced from stage1 to stage2. This acceptance used the prior capture worker before the source-only participant repair was retained; final worker separately passes menu and terminal gates."
+  },
+  "python_tests": {
+    "passed": 363,
+    "skipped": 9
+  },
+  "cuda_binary_sha256": "5138eb44b705b9cc85934e3a6e7e3dd69aeae3e9cf447b32a91904eb4d446343",
+  "native_binary_sha256": "a8d899db2423f4e364a980eb031b712db3266faa8e2ca6c607d04df483c7a92b",
+  "limitations": [
+    "No new high score established.",
+    "No claim of a 20x end-to-end campaign speedup.",
+    "Only event planning is restored; retired NRPA/training/MPC and the old campaign installation remain disabled."
+  ]
+}

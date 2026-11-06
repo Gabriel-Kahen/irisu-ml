@@ -1,5 +1,8 @@
 # Persistent high-score search
 
+For the restored October planner on the fast resident simulator, see
+[October event-search fallback](historical-event-search.md).
+
 For the combo-focused policy, event roots, durable frontier and terminal repair
 qualification, see [Combo-focused search](combo-orchestrator.md).
 

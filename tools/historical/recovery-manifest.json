@@ -1,0 +1,607 @@
+{
+  "schema": "irisu-recovered-historical-event-source-v1",
+  "historical_search_sha256": "a800d330a3e53c37eff711d60bcf406fe644f956ac3022d0258d05344e90b875",
+  "recovered_from": "Codex successful FileChange records, September 25 thread and September 29 / October 1 child chats",
+  "files": {
+    "rl_combo_opportunity_value.py": {
+      "sha256": "720c99dd4ebcd350f415f5fe225e07b1a7fd01af6cdab595f577858095cb8e62",
+      "recovery": [
+        {
+          "timestamp": "2026-09-29T14:05:02.727Z",
+          "source": "rollout-2026-09-29T09-56-59-01a0ed74-54a8-7861-9bb7-21806bdc01dc.jsonl.jsonl",
+          "line": 87,
+          "name": "rl_combo_opportunity_value.py"
+        },
+        {
+          "timestamp": "2026-09-29T14:07:53.081Z",
+          "source": "rollout-2026-09-29T09-56-59-01a0ed74-54a8-7861-9bb7-21806bdc01dc.jsonl.jsonl",
+          "line": 127,
+          "name": "rl_combo_opportunity_value.py"
+        },
+        {
+          "timestamp": "2026-09-29T14:08:25.615Z",
+          "source": "rollout-2026-09-29T09-56-59-01a0ed74-54a8-7861-9bb7-21806bdc01dc.jsonl.jsonl",
+          "line": 135,
+          "name": "rl_combo_opportunity_value.py"
+        }
+      ],
+      "historical_plan_sha256": "720c99dd4ebcd350f415f5fe225e07b1a7fd01af6cdab595f577858095cb8e62",
+      "historical_plan_evidence": {
+        "thread_id": "01a1028c-0406-70b1-9220-82263cade0a2",
+        "command_item": "exec-2f074d0f-8b58-4ccc-a0b1-4e46363a5135",
+        "session_line": 67,
+        "recorded_at": "2026-10-03T16:16:52.080Z"
+      }
+    },
+    "rl_combo_growth_proposals.py": {
+      "sha256": "3f9f709c34b0ad194215746ec5a866bef9156ddb8879744acf6675bbcd70a502",
+      "recovery": [
+        {
+          "timestamp": "2026-09-29T14:01:11.433Z",
+          "source": "rollout-2026-09-29T09-58-27-01a0ed75-ae93-7931-bf9b-07af2584b574.jsonl.jsonl",
+          "line": 65,
+          "name": "rl_combo_growth_proposals.py"
+        }
+      ],
+      "historical_plan_sha256": "3f9f709c34b0ad194215746ec5a866bef9156ddb8879744acf6675bbcd70a502",
+      "historical_plan_evidence": {
+        "thread_id": "01a1028c-0406-70b1-9220-82263cade0a2",
+        "command_item": "exec-2f074d0f-8b58-4ccc-a0b1-4e46363a5135",
+        "session_line": 67,
+        "recorded_at": "2026-10-03T16:16:52.080Z"
+      }
+    },
+    "rl_combo_event_options.py": {
+      "sha256": "e69b0484385f7b6915ff55d91c863cbaa040f3200fc2d5706182bf7202cec169",
+      "recovery": [
+        {
+          "timestamp": "2026-10-01T20:45:26.518Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 65,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T20:47:43.757Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 77,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T20:47:51.427Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 85,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T20:50:38.673Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 130,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T20:51:19.240Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 138,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:08:47.265Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 228,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:10:29.449Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 235,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:12:22.307Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 255,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:12:51.113Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 262,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:13:47.419Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 271,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:16:43.082Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 296,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:18:16.289Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 324,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:21:47.055Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 361,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:24:05.800Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 380,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:00:34.161Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 765,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:00:34.168Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 766,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:01:43.875Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 787,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:48:31.464Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 1285,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:52:16.868Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 1328,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:57:17.787Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 1435,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T23:12:20.650Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 1684,
+          "name": "rl_combo_event_options.py"
+        },
+        {
+          "timestamp": "2026-10-01T23:15:01.700Z",
+          "source": "rollout-2026-10-01T16-41-36-01a0f933-7f4a-7b71-acb4-aeb8c43aa93c.jsonl.jsonl",
+          "line": 1719,
+          "name": "rl_combo_event_options.py"
+        }
+      ],
+      "historical_plan_sha256": "e69b0484385f7b6915ff55d91c863cbaa040f3200fc2d5706182bf7202cec169",
+      "historical_plan_evidence": {
+        "thread_id": "01a1028c-0406-70b1-9220-82263cade0a2",
+        "command_item": "exec-2f074d0f-8b58-4ccc-a0b1-4e46363a5135",
+        "session_line": 67,
+        "recorded_at": "2026-10-03T16:16:52.080Z"
+      }
+    },
+    "rl_combo_diverse_value.py": {
+      "sha256": "6550854cfcff5e62bb9add3423f6f2a66490eef2464e0f93dbb4e46a93a167a2",
+      "recovery": [
+        {
+          "timestamp": "2026-10-01T21:45:57.044Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22210,
+          "name": "rl_combo_diverse_value.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:38:42.926Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22944,
+          "name": "rl_combo_diverse_value.py"
+        },
+        {
+          "timestamp": "2026-10-01T23:23:47.577Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 23507,
+          "name": "rl_combo_diverse_value.py"
+        }
+      ],
+      "historical_plan_sha256": "6550854cfcff5e62bb9add3423f6f2a66490eef2464e0f93dbb4e46a93a167a2",
+      "historical_plan_evidence": {
+        "thread_id": "01a1028c-0406-70b1-9220-82263cade0a2",
+        "command_item": "exec-2f074d0f-8b58-4ccc-a0b1-4e46363a5135",
+        "session_line": 67,
+        "recorded_at": "2026-10-03T16:16:52.080Z"
+      }
+    },
+    "rl_combo_diverse_archive.py": {
+      "sha256": "459f65a9ea20a826eb540bd0e19eab5f68e31232ebb4c865175defcee6b65602",
+      "recovery": [
+        {
+          "timestamp": "2026-10-01T20:46:22.263Z",
+          "source": "rollout-2026-10-01T16-41-23-01a0f933-4937-7442-aa2e-3e7a96938226.jsonl.jsonl",
+          "line": 68,
+          "name": "rl_combo_diverse_archive.py"
+        },
+        {
+          "timestamp": "2026-10-01T20:49:00.818Z",
+          "source": "rollout-2026-10-01T16-41-23-01a0f933-4937-7442-aa2e-3e7a96938226.jsonl.jsonl",
+          "line": 84,
+          "name": "rl_combo_diverse_archive.py"
+        },
+        {
+          "timestamp": "2026-10-01T20:50:06.386Z",
+          "source": "rollout-2026-10-01T16-41-23-01a0f933-4937-7442-aa2e-3e7a96938226.jsonl.jsonl",
+          "line": 96,
+          "name": "rl_combo_diverse_archive.py"
+        },
+        {
+          "timestamp": "2026-10-01T20:51:23.348Z",
+          "source": "rollout-2026-10-01T16-41-23-01a0f933-4937-7442-aa2e-3e7a96938226.jsonl.jsonl",
+          "line": 106,
+          "name": "rl_combo_diverse_archive.py"
+        },
+        {
+          "timestamp": "2026-10-01T20:53:00.199Z",
+          "source": "rollout-2026-10-01T16-41-23-01a0f933-4937-7442-aa2e-3e7a96938226.jsonl.jsonl",
+          "line": 130,
+          "name": "rl_combo_diverse_archive.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:07:08.855Z",
+          "source": "rollout-2026-10-01T16-41-23-01a0f933-4937-7442-aa2e-3e7a96938226.jsonl.jsonl",
+          "line": 165,
+          "name": "rl_combo_diverse_archive.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:21:03.695Z",
+          "source": "rollout-2026-10-01T16-41-23-01a0f933-4937-7442-aa2e-3e7a96938226.jsonl.jsonl",
+          "line": 202,
+          "name": "rl_combo_diverse_archive.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:22:37.105Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 21865,
+          "name": "rl_combo_diverse_archive.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:29:40.173Z",
+          "source": "rollout-2026-10-01T16-41-23-01a0f933-4937-7442-aa2e-3e7a96938226.jsonl.jsonl",
+          "line": 249,
+          "name": "rl_combo_diverse_archive.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:36:44.160Z",
+          "source": "rollout-2026-10-01T16-41-23-01a0f933-4937-7442-aa2e-3e7a96938226.jsonl.jsonl",
+          "line": 337,
+          "name": "rl_combo_diverse_archive.py"
+        }
+      ],
+      "historical_plan_sha256": "459f65a9ea20a826eb540bd0e19eab5f68e31232ebb4c865175defcee6b65602",
+      "historical_plan_evidence": {
+        "thread_id": "01a1028c-0406-70b1-9220-82263cade0a2",
+        "command_item": "exec-2f074d0f-8b58-4ccc-a0b1-4e46363a5135",
+        "session_line": 67,
+        "recorded_at": "2026-10-03T16:16:52.080Z"
+      }
+    },
+    "rl_combo_growth_search.py": {
+      "sha256": "36e1400dafb51e895cf84c3d9d396f944061727da15c4f12adba9da0f35d1095",
+      "recovery": [
+        {
+          "timestamp": "2026-09-29T14:05:25.661Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 17400,
+          "name": "rl_combo_growth_search.py"
+        },
+        {
+          "timestamp": "2026-09-29T14:08:13.006Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 17461,
+          "name": "rl_combo_growth_search.py"
+        },
+        {
+          "timestamp": "2026-09-29T14:08:52.446Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 17473,
+          "name": "rl_combo_growth_search.py"
+        },
+        {
+          "timestamp": "2026-09-29T14:10:26.157Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 17505,
+          "name": "rl_combo_growth_search.py"
+        },
+        {
+          "timestamp": "2026-09-29T14:13:32.397Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 17551,
+          "name": "rl_combo_growth_search.py"
+        },
+        {
+          "timestamp": "2026-09-29T14:18:45.250Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 17618,
+          "name": "rl_combo_growth_search.py"
+        }
+      ],
+      "historical_plan_sha256": "36e1400dafb51e895cf84c3d9d396f944061727da15c4f12adba9da0f35d1095",
+      "historical_plan_evidence": {
+        "thread_id": "01a1028c-0406-70b1-9220-82263cade0a2",
+        "command_item": "exec-2f074d0f-8b58-4ccc-a0b1-4e46363a5135",
+        "session_line": 67,
+        "recorded_at": "2026-10-03T16:16:52.080Z"
+      }
+    },
+    "rl_combo_diverse_search.py": {
+      "sha256": "a800d330a3e53c37eff711d60bcf406fe644f956ac3022d0258d05344e90b875",
+      "recovery": [
+        {
+          "timestamp": "2026-10-01T20:47:41.439Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 21459,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T20:49:51.637Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 21503,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T20:50:52.412Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 21517,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T20:59:22.752Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 21634,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:13:02.468Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 21777,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:14:59.631Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 21793,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:28:37.578Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 21956,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:35:58.463Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22080,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:41:31.530Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22158,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:45:57.044Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22210,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:46:40.169Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22218,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:49:58.096Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22270,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:56:08.791Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22339,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:57:31.558Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22356,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:59:10.046Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22377,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T21:59:50.126Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22388,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:04:33.068Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22440,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:08:54.479Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22488,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:19:35.575Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22589,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:24:24.272Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22641,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:32:27.451Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22820,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:33:34.655Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22844,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:34:46.075Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22882,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:35:56.314Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22910,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:42:43.809Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 22998,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:44:38.793Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 23020,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:51:28.386Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 23116,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:52:43.612Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 23145,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:55:31.783Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 23184,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T22:58:58.116Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 23228,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T23:08:10.983Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 23307,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T23:10:27.361Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 23335,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T23:12:35.830Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 23360,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T23:17:30.731Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 23405,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T23:31:41.533Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 23638,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T23:35:19.279Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 23707,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T23:35:48.026Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 23725,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T23:39:03.669Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 23778,
+          "name": "rl_combo_diverse_search.py"
+        },
+        {
+          "timestamp": "2026-10-01T23:42:35.458Z",
+          "source": "rollout-2026-09-25T13-10-30-01a0d98c-0fb0-72c2-a692-c9bfccc33788.jsonl.jsonl",
+          "line": 23823,
+          "name": "rl_combo_diverse_search.py"
+        }
+      ],
+      "historical_plan_sha256": "a800d330a3e53c37eff711d60bcf406fe644f956ac3022d0258d05344e90b875",
+      "historical_plan_evidence": {
+        "thread_id": "01a1028c-0406-70b1-9220-82263cade0a2",
+        "command_item": "exec-9e6ff270-91a8-4123-9f20-79e898058ee4",
+        "session_line": 52,
+        "recorded_at": "2026-10-03T16:16:29.130Z"
+      }
+    }
+  },
+  "adaptation": "Exact proposal, event-option execution, value and diversity function bodies retained. Original CPU IPC decoder and replay loop use the resident engine adapter. Training, MPC, NRPA and campaign entry points omitted.",
+  "adapted_files": {
+    "opportunity_value.py": "720c99dd4ebcd350f415f5fe225e07b1a7fd01af6cdab595f577858095cb8e62",
+    "growth_proposals.py": "3f9f709c34b0ad194215746ec5a866bef9156ddb8879744acf6675bbcd70a502",
+    "event_options.py": "5256a49f3cadbad1d01487a657827645ce132457485e2c0c79a2538152ae9df6",
+    "diverse_value.py": "8382a5a26c424f47fe4397905c039852d9c802793a8374b1c064978054ff2489",
+    "diverse_archive.py": "88375de0ce2a1e3411e1fd2a876e0a0a0606bf53fb0c785ef70ff691e9a19b13",
+    "growth_search.py": "0c7c9a00d938f3eede8e21a34d2de9fab48fae452fb074bc927bd43a2bdde4e1",
+    "diverse_search.py": "fc08a1349ab62f833c40ad718accb946e861aadf7e7ecf53474a1819a9c91142",
+    "common.py": "27261b0d69e424f48c188ae5328cfeba1f6f46cad0bc9f0f66123139ec564770",
+    "__init__.py": "658020bee2a3ab776d4b4c75dbdf90b57d3189be02101baf9b4464523d55b529"
+  }
+}

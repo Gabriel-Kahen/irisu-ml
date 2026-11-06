@@ -17,10 +17,12 @@
 #endif
 namespace orch {
 constexpr unsigned max_bodies=512, max_groups=512, max_horizon=100000;
+constexpr unsigned max_event_horizon=512, max_captured_events=32768;
 struct Body {
  unsigned id{},kind{},chain_id{},hits{},rot_timer{};int color{};
  double x{},y{},vx{},vy{},size{};long long lifetime{};
  bool pending_clear{},pending_delete{},special{},physics_owned{};
+ unsigned shape{},lifecycle{};double angle{},angular_velocity{};std::uint64_t age_ticks{};
 };
 struct Group {unsigned id{},chain{},num{};};
 struct GroupDelta {unsigned id{},chain_before{},num_before{},chain_after{},num_after{},members_after{};};
@@ -41,6 +43,10 @@ inline unsigned number(std::istringstream& in,unsigned long long maximum,const c
 inline void end(std::istringstream& in){std::string extra;if(in>>extra)throw std::runtime_error("unexpected trailing input");}
 inline std::vector<unsigned> words(std::istringstream& in,unsigned count){std::vector<unsigned> out;out.reserve(count);for(unsigned i=0;i<count;++i)out.push_back(number(in,0x1fffffU,"input word"));end(in);return out;}
 inline Candidate candidate(const std::string& line,unsigned horizon){std::istringstream in(line);Candidate c;c.mode=number(in,3,"continuation mode");c.search_seed=number(in,UINT32_MAX,"search seed");const auto n=number(in,horizon,"prefix length");c.words=words(in,n);return c;}
+struct MixedCandidate {unsigned parent{},horizon{};Candidate continuation;};
+inline MixedCandidate mixed_candidate(const std::string& line){
+ std::istringstream in(line);MixedCandidate result;result.parent=number(in,UINT32_MAX,"parent");result.horizon=number(in,max_event_horizon,"horizon");if(!result.parent||!result.horizon)throw std::runtime_error("mixed futures require positive parent and horizon");const auto n=number(in,result.horizon,"word count");result.continuation.words=words(in,n);return result;
+}
 ORCH_HD inline unsigned mix(unsigned x){x^=x>>16;x*=0x7feb352dU;x^=x>>15;x*=0x846ca68bU;return x^(x>>16);}
 ORCH_HD inline double absolute(double x){return x<0?-x:x;}
 // A deterministic, inexpensive proposal controller. Exact search evaluates its
@@ -72,13 +78,20 @@ ORCH_HD inline unsigned policy(const Summary& s,unsigned mode,unsigned random){
  const unsigned kind=mode==2?1U:((random>>11)&1U?1U:2U);
  return kind|(unsigned(x+.5)<<2)|(unsigned(y+.5)<<12);
 }
+inline const char* event_kind(unsigned kind){
+ static constexpr const char* names[]={"invalid_action","spawned","shot_fired","activated","contact","confirmed","chain_joined","cleared","rotten","ejected","destroyed","gauge_changed","score_changed","level_changed","game_over","projectile_hit","projectile_contact","held_input_ignored","level_completed"};
+ if(kind>=std::size(names))throw std::runtime_error("unknown event kind");return names[kind];
+}
+template<class E>inline void emit_events(const E* events,std::size_t count){
+ std::cout<<'[';for(std::size_t i=0;i<count;++i){if(i)std::cout<<',';const auto& e=events[i];std::cout<<"{\"tick\":"<<e.tick<<",\"kind\":"<<std::quoted(event_kind(unsigned(e.kind)))<<",\"a\":"<<e.a<<",\"b\":"<<e.b<<",\"value\":"<<e.value<<",\"sequence\":"<<e.sequence<<'}';}std::cout<<']';
+}
 inline void emit_words(const std::vector<unsigned>& values){std::cout<<'[';for(std::size_t i=0;i<values.size();++i){if(i)std::cout<<',';std::cout<<values[i];}std::cout<<']';}
 inline void emit_summary(const Summary& s){
  if(s.failed)throw std::runtime_error("simulation capacity or numerical failure");
- std::cout<<std::setprecision(17)<<"{\"seed\":"<<s.seed<<",\"tick\":"<<s.tick<<",\"score\":"<<s.score<<",\"gauge\":"<<s.gauge<<",\"level\":"<<s.level<<",\"qualifying\":"<<s.qualifying<<",\"highest_chain\":"<<s.highest_chain<<",\"terminated\":"<<(s.terminated?"true":"false")<<",\"truncated\":"<<(s.truncated?"true":"false")<<",\"canonical_score\":"<<s.canonical_score<<",\"canonical_level\":"<<s.canonical_level<<",\"canonical_chain\":"<<s.canonical_chain<<",\"config_hash\":\""<<s.config_hash<<"\",\"groups\":[";
+ std::cout<<std::setprecision(17)<<"{\"seed\":"<<s.seed<<",\"tick\":"<<s.tick<<",\"score\":"<<s.score<<",\"gauge\":"<<s.gauge<<",\"level\":"<<s.level<<",\"qualifying\":"<<s.qualifying<<",\"qualifying_clear_count\":"<<s.qualifying<<",\"left_held\":"<<(s.left_held?"true":"false")<<",\"right_held\":"<<(s.right_held?"true":"false")<<",\"highest_chain\":"<<s.highest_chain<<",\"terminated\":"<<(s.terminated?"true":"false")<<",\"truncated\":"<<(s.truncated?"true":"false")<<",\"canonical_score\":"<<s.canonical_score<<",\"canonical_level\":"<<s.canonical_level<<",\"canonical_chain\":"<<s.canonical_chain<<",\"config_hash\":\""<<s.config_hash<<"\",\"groups\":[";
  for(unsigned i=0;i<s.group_count;++i){if(i)std::cout<<',';const auto& g=s.groups[i];std::cout<<"{\"id\":"<<g.id<<",\"chain\":"<<g.chain<<",\"num\":"<<g.num<<",\"members\":[";bool comma=false;for(unsigned j=0;j<s.body_count;++j)if(s.bodies[j].chain_id==g.id){if(comma)std::cout<<',';comma=true;std::cout<<s.bodies[j].id;}std::cout<<"]}";}
  std::cout<<"],\"bodies\":[";
- for(unsigned i=0;i<s.body_count;++i){if(i)std::cout<<',';const auto& b=s.bodies[i];std::cout<<"{\"id\":"<<b.id<<",\"kind\":"<<b.kind<<",\"color\":"<<b.color<<",\"x\":"<<b.x<<",\"y\":"<<b.y<<",\"vx\":"<<b.vx<<",\"vy\":"<<b.vy<<",\"size\":"<<b.size<<",\"chain_id\":"<<b.chain_id<<",\"hits\":"<<b.hits<<",\"rot_timer\":"<<b.rot_timer<<",\"lifetime\":"<<b.lifetime<<",\"pending_clear\":"<<(b.pending_clear?"true":"false")<<",\"pending_delete\":"<<(b.pending_delete?"true":"false")<<",\"special\":"<<(b.special?"true":"false")<<",\"physics_owned\":"<<(b.physics_owned?"true":"false")<<'}';}
+ for(unsigned i=0;i<s.body_count;++i){if(i)std::cout<<',';const auto& b=s.bodies[i];std::cout<<"{\"id\":"<<b.id<<",\"kind\":"<<b.kind<<",\"color\":"<<b.color<<",\"x\":"<<b.x<<",\"y\":"<<b.y<<",\"vx\":"<<b.vx<<",\"vy\":"<<b.vy<<",\"size\":"<<b.size<<",\"chain_id\":"<<b.chain_id<<",\"hits\":"<<b.hits<<",\"rot_timer\":"<<b.rot_timer<<",\"lifetime\":"<<b.lifetime<<",\"remaining_lifetime\":"<<b.lifetime<<",\"projectile_hits\":"<<b.hits<<",\"shape\":"<<b.shape<<",\"lifecycle\":"<<b.lifecycle<<",\"angle\":"<<b.angle<<",\"angular_velocity\":"<<b.angular_velocity<<",\"age_ticks\":"<<b.age_ticks<<",\"pending_clear\":"<<(b.pending_clear?"true":"false")<<",\"pending_delete\":"<<(b.pending_delete?"true":"false")<<",\"special\":"<<(b.special?"true":"false")<<",\"physics_owned\":"<<(b.physics_owned?"true":"false")<<'}';}
  std::cout<<"]}";
 }
 inline void emit_metrics(const Metrics& m){

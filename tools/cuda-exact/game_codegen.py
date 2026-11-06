@@ -80,10 +80,16 @@ struct Events {
   std::uint64_t hash{14695981039346656037ULL};
   std::uint64_t sequence_base{};
   bool overflow{};
+#ifdef IRISU_CUDA_GAME_EVENT_CAPTURE
+  Event* capture{};std::uint32_t capture_capacity{};bool capture_overflow{};
+#endif
   GAME_HD std::uint64_t size() const { return count; }
   GAME_HD void push_back(Event event) {
     if (count == UINT64_MAX || sequence_base > UINT64_MAX-count) { overflow=true; return; }
     event.sequence=sequence_base+count++;
+#ifdef IRISU_CUDA_GAME_EVENT_CAPTURE
+    if(capture){if(count<=capture_capacity)capture[count-1]=event;else capture_overflow=true;}
+#endif
     hash=fnv_integer(hash,event.tick);
     hash=fnv_integer(hash,static_cast<std::uint8_t>(event.kind));
     hash=fnv_integer(hash,event.a); hash=fnv_integer(hash,event.b);
@@ -161,7 +167,17 @@ def game() -> str:
   next_event_sequence_ += events.size();
 }
 ''', methods, flags=re.S)
-    methods = methods.replace("  StepResult result;", "  StepResult result;\n  result.events.sequence_base=next_event_sequence_;\n  if(failed()) return result;")
+    methods = methods.replace("StepResult step(const Action& action)", """StepResult step(const Action& action
+#ifdef IRISU_CUDA_GAME_EVENT_CAPTURE
+  , Event* capture=nullptr, std::uint32_t capture_capacity=0
+#endif
+  )""")
+    methods = methods.replace("  StepResult result;", """  StepResult result;
+  result.events.sequence_base=next_event_sequence_;
+#ifdef IRISU_CUDA_GAME_EVENT_CAPTURE
+  result.events.capture=capture;result.events.capture_capacity=capture_capacity;
+#endif
+  if(failed()) return result;""")
     methods = methods.replace("  rng_.seed(", "  failed_=false;\n  rng_.seed(", 1)
     # Per-method exception replacements preserve failure as a non-selectable
     # lane instead of throwing across a GPU kernel.
