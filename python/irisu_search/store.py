@@ -106,6 +106,20 @@ class Store:
               verified INTEGER NOT NULL, receipt TEXT NOT NULL, created REAL NOT NULL);
             CREATE TABLE IF NOT EXISTS examples(id TEXT PRIMARY KEY, payload TEXT NOT NULL, created REAL NOT NULL);
             CREATE TABLE IF NOT EXISTS events(id INTEGER PRIMARY KEY AUTOINCREMENT, kind TEXT NOT NULL, payload TEXT NOT NULL, created REAL NOT NULL);
+            CREATE TABLE IF NOT EXISTS combo_frontier(
+              checkpoint_id TEXT PRIMARY KEY REFERENCES checkpoints(id), seed INTEGER NOT NULL REFERENCES seeds(seed),
+              origin_id TEXT NOT NULL REFERENCES checkpoints(id), visits INTEGER NOT NULL DEFAULT 0,
+              created REAL NOT NULL, last_expanded REAL);
+            CREATE INDEX IF NOT EXISTS combo_frontier_seed ON combo_frontier(seed);
+            CREATE TABLE IF NOT EXISTS combo_observations(key TEXT PRIMARY KEY, payload TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS combo_trials(
+              root_id TEXT NOT NULL REFERENCES checkpoints(id), digest TEXT NOT NULL,
+              PRIMARY KEY(root_id,digest));
+            CREATE TABLE IF NOT EXISTS combo_plans(
+              root_id TEXT NOT NULL REFERENCES checkpoints(id), plan_blob TEXT NOT NULL,
+              score INTEGER NOT NULL, visits INTEGER NOT NULL DEFAULT 0,
+              created REAL NOT NULL, last_expanded REAL,
+              PRIMARY KEY(root_id,plan_blob));
         """)
         version = self.get_meta("schema_version")
         if version not in (None, 1):
@@ -276,6 +290,198 @@ class Store:
         sql = "SELECT * FROM checkpoints" + (" WHERE " + " AND ".join(where) if where else "") + " ORDER BY created,id"
         return [self._checkpoint(row) for row in self.db.execute(sql, args)]
 
+    def checkpoint_summaries(self, checkpoint_ids: list[str]) -> list[dict[str, Any]]:
+        """Fetch immutable metadata without decoding potentially long input recipes."""
+        rows = []
+        for key in dict.fromkeys(checkpoint_ids):
+            row = self.db.execute("SELECT * FROM checkpoints WHERE id=?", (key,)).fetchone()
+            if row is not None:
+                rows.append(self._checkpoint(row))
+        return rows
+
+    def combo_frontier(self, seed: int | None = None) -> list[dict[str, Any]]:
+        sql = """SELECT f.*,c.summary,c.active FROM combo_frontier f
+                 JOIN checkpoints c ON c.id=f.checkpoint_id"""
+        if seed is not None:
+            sql += " WHERE f.seed=?"
+        return [dict(row, summary=json.loads(row["summary"]), active=bool(row["active"]))
+                for row in self.db.execute(sql + " ORDER BY f.created,f.checkpoint_id",
+                                           () if seed is None else (seed,))]
+
+    def _combo_observed(self, key: str | None, payload: dict[str, Any]) -> bool:
+        if key is None:
+            return False
+        encoded = _json(payload)
+        old = self.db.execute("SELECT payload FROM combo_observations WHERE key=?", (key,)).fetchone()
+        if old:
+            if old[0] != encoded:
+                raise ValueError("combo observation key reused for different work")
+            return True
+        self.db.execute("INSERT INTO combo_observations VALUES(?,?)", (key, encoded))
+        return False
+
+    def update_combo_frontier(self, seed: int, checkpoint_ids: list[str], origin_id: str,
+                              width: int, observation_key: str | None = None) -> list[dict[str, Any]]:
+        """Persist a bounded set of live alternatives; unexpanded siblings get a turn."""
+        from .combos import combo_key
+        _uint(seed, "seed")
+        if type(width) is not int or width < 1:
+            raise ValueError("combo frontier width must be positive")
+        incoming = list(dict.fromkeys(checkpoint_ids))
+        origin = self.db.execute("SELECT seed FROM checkpoints WHERE id=?", (origin_id,)).fetchone()
+        if origin is None or origin[0] != seed:
+            raise ValueError("combo origin belongs to another seed or is missing")
+        metadata = self.checkpoint_summaries(incoming)
+        if len(metadata) != len(incoming) or any(row["seed"] != seed for row in metadata):
+            raise ValueError("combo checkpoint belongs to another seed or is missing")
+        if any(row["summary"].get("terminated") or row["summary"].get("truncated") for row in metadata):
+            raise ValueError("combo frontier requires live checkpoints")
+        with self._transaction():
+            payload = {"seed": seed, "checkpoints": incoming, "origin_id": origin_id, "width": width}
+            key = None if observation_key is None else "frontier:" + observation_key
+            if self._combo_observed(key, payload):
+                return self.combo_frontier(seed)
+            old = self.combo_frontier(seed)
+            old_by_id = {row["checkpoint_id"]: row for row in old}
+            candidates = {row["id"]: row for row in self.checkpoint_summaries(list(old_by_id) + incoming)}
+            ranked = sorted(candidates, key=lambda key: (combo_key(candidates[key]["summary"]), key), reverse=True)
+            # Give admitted alternatives one actual expansion before replacing
+            # them with a newer, heuristically stronger sibling. Once a slot
+            # has been explored, preserve the best available combo in its place.
+            order = [row["checkpoint_id"] for row in old if row["visits"] == 0]
+            order += ranked[:1]
+            order += [key for key in incoming if key not in old_by_id]
+            order += ranked
+            kept = list(dict.fromkeys(order))[:width]
+            self.db.execute("DELETE FROM combo_frontier WHERE seed=?", (seed,))
+            for key in kept:
+                previous = old_by_id.get(key)
+                self.db.execute("INSERT INTO combo_frontier VALUES(?,?,?,?,?,?)", (
+                    key, seed, previous["origin_id"] if previous else origin_id,
+                    previous["visits"] if previous else 0,
+                    previous["created"] if previous else time.time(),
+                    previous["last_expanded"] if previous else None))
+                self.db.execute("UPDATE checkpoints SET active=1 WHERE id=?", (key,))
+        return self.combo_frontier(seed)
+
+    def mark_combo_expanded(self, checkpoint_id: str, observation_key: str | None = None) -> bool:
+        with self._transaction():
+            if not self.db.execute("SELECT 1 FROM combo_frontier WHERE checkpoint_id=?", (checkpoint_id,)).fetchone():
+                return False
+            key = None if observation_key is None else "expanded:" + observation_key
+            if self._combo_observed(key, {"checkpoint_id": checkpoint_id}):
+                return False
+            changed = self.db.execute("""UPDATE combo_frontier SET visits=visits+1,last_expanded=?
+                                        WHERE checkpoint_id=?""", (time.time(), checkpoint_id)).rowcount
+            if changed:
+                self.set_meta("combo_frontier_expansions", self.get_meta("combo_frontier_expansions", 0) + 1)
+        return bool(changed)
+
+    @staticmethod
+    def _combo_candidate_digest(candidate: dict[str, Any], horizon: int) -> str:
+        mode = _uint(candidate.get("mode", 0), "mode", 3)
+        _uint(horizon, "horizon", 100000)
+        if horizon < 1:
+            raise ValueError("horizon must be positive")
+        words = [_uint(word, "input word", 0x1fffff) for word in candidate.get("words", [])[:horizon]]
+        identity = {"mode": mode, "horizon": horizon, "words": words}
+        if mode:
+            identity["search_seed"] = _uint(candidate.get("search_seed", 0), "search seed")
+        return hashlib.sha256(_json(identity).encode()).hexdigest()
+
+    def combo_candidate_seen(self, root_id: str, candidate: dict[str, Any], horizon: int) -> bool:
+        digest = self._combo_candidate_digest(candidate, horizon)
+        return self.db.execute("SELECT 1 FROM combo_trials WHERE root_id=? AND digest=?",
+                               (root_id, digest)).fetchone() is not None
+
+    def record_combo_candidates(self, root_id: str, candidates: list[dict[str, Any]], horizon: int) -> int:
+        """Record completed evaluations, never reserve unevaluated candidates."""
+        digests = list(dict.fromkeys(self._combo_candidate_digest(row, horizon) for row in candidates))
+        with self._transaction():
+            before = self.db.total_changes
+            self.db.executemany("INSERT OR IGNORE INTO combo_trials VALUES(?,?)",
+                                ((root_id, digest) for digest in digests))
+            return self.db.total_changes - before
+
+    def combo_plans(self, root_id: str) -> list[dict[str, Any]]:
+        """Exploratory terminal plans, bound to an immutable seed/input root."""
+        return [dict(row) for row in self.db.execute(
+            "SELECT * FROM combo_plans WHERE root_id=? ORDER BY created,plan_blob", (root_id,))]
+
+    def record_combo_plans(self, root_id: str, entries: list[dict[str, Any]], width: int,
+                           observation_key: str | None = None) -> list[dict[str, Any]]:
+        if type(width) is not int or width < 1:
+            raise ValueError("combo plan width must be positive")
+        if not self.db.execute("SELECT 1 FROM checkpoints WHERE id=?", (root_id,)).fetchone():
+            raise ValueError("combo plan root is missing")
+        incoming = {}
+        for row in entries:
+            score = _uint(row["score"], "plan score", (1 << 63) - 1)
+            blob = row["plan_blob"]
+            data = self.get_blob(blob)
+            if not data or len(data) % 4 or len(data) > 400000:
+                raise ValueError("combo plan must contain 1..100000 complete input words")
+            for word, in struct.iter_unpack("<I", data):
+                _uint(word, "plan input word", 0x1fffff)
+            incoming[blob] = max(incoming.get(blob, 0), score)
+        with self._transaction():
+            key = None if observation_key is None else "plans:" + observation_key
+            payload = {"root_id": root_id, "entries": incoming, "width": width}
+            if self._combo_observed(key, payload):
+                return self.combo_plans(root_id)
+            old = {row["plan_blob"]: row for row in self.combo_plans(root_id)}
+            scores = {blob: row["score"] for blob, row in old.items()}
+            scores.update(incoming)
+            ranked = sorted(scores, key=lambda blob: (scores[blob], blob), reverse=True)
+            order = [blob for blob, row in old.items() if row["visits"] == 0]
+            order += ranked[:1]
+            order += [blob for blob in incoming if blob not in old]
+            order += ranked
+            kept = list(dict.fromkeys(order))[:width]
+            self.db.execute("DELETE FROM combo_plans WHERE root_id=?", (root_id,))
+            for blob in kept:
+                previous = old.get(blob)
+                self.db.execute("INSERT INTO combo_plans VALUES(?,?,?,?,?,?)", (
+                    root_id, blob, scores[blob], previous["visits"] if previous else 0,
+                    previous["created"] if previous else time.time(),
+                    previous["last_expanded"] if previous else None))
+        return self.combo_plans(root_id)
+
+    def mark_combo_plan_expanded(self, root_id: str, plan_blob: str,
+                                 observation_key: str | None = None) -> bool:
+        with self._transaction():
+            if not self.db.execute("SELECT 1 FROM combo_plans WHERE root_id=? AND plan_blob=?",
+                                   (root_id, plan_blob)).fetchone():
+                return False
+            key = None if observation_key is None else "plan-expanded:" + observation_key
+            if self._combo_observed(key, {"root_id": root_id, "plan_blob": plan_blob}):
+                return False
+            self.db.execute("UPDATE combo_plans SET visits=visits+1,last_expanded=? WHERE root_id=? AND plan_blob=?",
+                            (time.time(), root_id, plan_blob))
+            self.set_meta("combo_plan_expansions", self.get_meta("combo_plan_expansions", 0) + 1)
+        return True
+
+    def combo_stats(self) -> dict[str, Any]:
+        roots = set()
+        for row in self.db.execute("SELECT value FROM meta WHERE key LIKE 'combo_roots:%'"):
+            roots.update(json.loads(row[0]))
+        used = self.checkpoint_uses()
+        frontier = self.combo_frontier()
+        terminals = self.db.execute("""SELECT COUNT(*),
+            COALESCE(SUM(json_extract(payload,'$.novel_terminals')),0),
+            COALESCE(SUM(json_extract(payload,'$.baseline_ties')),0),
+            COALESCE(SUM(json_extract(payload,'$.gain')>0),0)
+            FROM events WHERE kind='combo_terminal_evaluated'""").fetchone()
+        return {"plan_states": self.db.execute("SELECT COUNT(*) FROM combo_plans").fetchone()[0],
+                "plan_expansions": self.get_meta("combo_plan_expansions", 0),
+                "tried_candidates": self.db.execute("SELECT COUNT(*) FROM combo_trials").fetchone()[0],
+                "roots": len(roots), "roots_scheduled": sum(used.get(key, 0) > 0 for key in roots),
+                "frontier_states": len(frontier),
+                "active_frontier_states": sum(row["active"] for row in frontier),
+                "frontier_expansions": self.get_meta("combo_frontier_expansions", 0),
+                "terminal_batches": terminals[0], "novel_terminals": terminals[1],
+                "baseline_ties": terminals[2], "improving_terminal_batches": terminals[3]}
+
     def prune_archive(self, per_cell: int = 3, max_checkpoints: int = 1024,
                       max_trace_bytes: int = 256 * 1024 * 1024) -> dict[str, Any]:
         for value in (per_cell, max_checkpoints, max_trace_bytes):
@@ -286,8 +492,30 @@ class Store:
         # quota squeeze. Cold search descendants are still evidence only.
         rows += [self._checkpoint(row) for row in self.db.execute(
             "SELECT * FROM checkpoints WHERE active=0 AND operator='import'")]
+        settings = self.get_meta("campaign_config", {})
+        combo_enabled = settings.get("combo_search", False)
+        champion = self.champion()
+        frontier = self.combo_frontier() if combo_enabled else []
+        if combo_enabled and frontier:
+            from .combos import combo_key
+            ranked_seeds = {}
+            for row in frontier:
+                ranked_seeds[row["seed"]] = max(ranked_seeds.get(row["seed"], (0,)),
+                                                combo_key(row["summary"]))
+            protected_seeds = set(sorted(ranked_seeds, key=ranked_seeds.get, reverse=True)
+                                  [:settings.get("promoted_seeds", 16)])
+            if champion:
+                protected_seeds.add(champion["seed"])
+            frontier = [row for row in frontier if row["seed"] in protected_seeds]
+        combo_roots = self.get_meta(f"combo_roots:{champion['seed']}", []) if combo_enabled and champion else []
+        present = {row["id"] for row in rows}
+        rows += self.checkpoint_summaries([key for key in combo_roots
+                                          + [row["checkpoint_id"] for row in frontier] if key not in present])
         def rank(row: dict[str, Any]) -> tuple[Any, ...]:
             s = row["summary"]
+            if combo_enabled:
+                from .combos import combo_key
+                return (not bool(s.get("truncated")), *combo_key(s), row["created"])
             live = [g for g in s.get("groups", []) if g.get("members")]
             value = max((g.get("chain", 0) * (g.get("num", 0) + 1) for g in live), default=0)
             return (not bool(s.get("truncated")), value, s.get("canonical_score", 0) if s.get("terminated") else s.get("score", 0), s.get("gauge", 0), row["created"])
@@ -295,6 +523,7 @@ class Store:
         champion = self.champion()
         if champion:
             protected.add(champion["checkpoint_id"])
+        protected.update(row["checkpoint_id"] for row in frontier)
         by_seed: dict[int, list[dict[str, Any]]] = defaultdict(list)
         for row in rows:
             by_seed[row["seed"]].append(row)
@@ -331,7 +560,7 @@ class Store:
         # of keeping only its highest-potential late states.
         roots = {}
         for seed, values in by_seed.items():
-            ordered = sorted((r for r in values if r["operator"] == "import"
+            ordered = sorted((r for r in values if (r["operator"] == "import" or r["id"] in combo_roots)
                               and not r["summary"].get("terminated")
                               and not r["summary"].get("truncated")),
                              key=lambda r: (r["summary"]["tick"], r["id"]))
@@ -354,6 +583,18 @@ class Store:
         # active and leave the remaining immutable terminal evidence cold.
         pools = {seed: sorted((r for r in values if not r["summary"].get("terminated")),
                               key=rank, reverse=True) for seed, values in by_seed.items()}
+        if combo_enabled and champion:
+            # Record development owns the majority lane; reserve half of the
+            # active capacity before a broad discovery archive can consume it.
+            seed = champion["seed"]
+            count_target = max_checkpoints // 2
+            byte_target = max_trace_bytes // 2
+            for row in pools.get(seed, []):
+                count = sum(by_id[key]["seed"] == seed for key in kept if key in by_id)
+                size = sum(by_id[key]["trace_bytes"] for key in kept if key in by_id and by_id[key]["seed"] == seed)
+                if count >= count_target or size >= byte_target:
+                    break
+                retain(row)
         for depth in range(max((len(v) for v in pools.values()), default=0)):
             for seed in sorted(pools):
                 if depth >= len(pools[seed]):
@@ -632,4 +873,5 @@ class Store:
                 "active_checkpoints": active[0], "active_trace_bytes": active[1],
                 "cold_checkpoints": self.db.execute("SELECT COUNT(*) FROM checkpoints WHERE active=0").fetchone()[0],
                 "recipe_bytes": self.db.execute("SELECT COALESCE(SUM(trace_bytes),0) FROM checkpoints").fetchone()[0],
-                "examples": self.db.execute("SELECT COUNT(*) FROM examples").fetchone()[0]}
+                "examples": self.db.execute("SELECT COUNT(*) FROM examples").fetchone()[0],
+                "combo": self.combo_stats() if self.get_meta("campaign_config", {}).get("combo_search", False) else None}

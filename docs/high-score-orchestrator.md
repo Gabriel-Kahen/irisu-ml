@@ -1,5 +1,8 @@
 # Persistent high-score search
 
+For the combo-focused policy, event roots, durable frontier and terminal repair
+qualification, see [Combo-focused search](combo-orchestrator.md).
+
 `irisu-search` searches normal-mode game seeds, maintains an archive of exact
 input recipes and live combo groups, rebuilds continuations after interventions,
 and independently checks prospective records against the native exact oracle.

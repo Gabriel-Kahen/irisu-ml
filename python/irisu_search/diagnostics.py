@@ -44,6 +44,10 @@ def trace_replay(store, config, replay, output=None):
         if temporary is not None:
             temporary.unlink(missing_ok=True)
     receipt = {"output": str(destination.resolve()), "binary_sha256": binary_hash,
-               "replay_sha256": replay_hash, "identity": identity, "summary": summary}
+               "replay_sha256": replay_hash, "trace_sha256": sha256_file(destination),
+               "identity": identity, "summary": summary}
+    with Path(str(destination) + ".receipt.json").open("x") as stream:
+        json.dump(receipt, stream, indent=2)
+        stream.write("\n")
     store.event("group_trace", receipt)
     return receipt
