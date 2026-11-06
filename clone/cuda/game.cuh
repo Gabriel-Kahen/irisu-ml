@@ -235,9 +235,16 @@ GAME_HD GAME_NOINLINE void reset(std::uint64_t seed_value) {
   return;
 }
 
-GAME_HD GAME_NOINLINE StepResult step(const Action& action) {
+GAME_HD GAME_NOINLINE StepResult step(const Action& action
+#ifdef IRISU_CUDA_GAME_EVENT_CAPTURE
+  , Event* capture=nullptr, std::uint32_t capture_capacity=0
+#endif
+  ) {
   StepResult result;
   result.events.sequence_base=next_event_sequence_;
+#ifdef IRISU_CUDA_GAME_EVENT_CAPTURE
+  result.events.capture=capture;result.events.capture_capacity=capture_capacity;
+#endif
   if(failed()) return result;
   if (terminated_ || truncated_) {
     result.terminated = terminated_;
@@ -897,7 +904,12 @@ GAME_HD GAME_NOINLINE void process_contacts(const vector<Contact>& contacts,
     events.push_back({tick_, EventKind::Confirmed, target.body->id,
                       source.body == nullptr ? 0 : source.body->id,
                       group->num, "normal burst qualified"});
+    const BodyId target_id = target.body->id;
+    const BodyId source_id = source.body == nullptr ? 0 : source.body->id;
     update_level(left_edge, right_edge, cursor_x, cursor_y, events);
+    // Reentrant field updates can append bodies and invalidate both pointers.
+    target.body = find_body(target_id);
+    source.body = source_id == 0 ? nullptr : find_body(source_id);
     if (source.body != nullptr && source.contact_class() == 4 &&
         same_color(target, source) && source.body->grouped &&
         !source.body->successful_clear_pending) {

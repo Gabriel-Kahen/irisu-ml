@@ -186,11 +186,59 @@ class Engine:
 
     def batch(self, handle: int, horizon: int,
               candidates: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+        return self._batch("batch", handle, horizon, candidates)
+
+    def batch_events(self, handle: int, horizon: int,
+                     candidates: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+        """Short exact futures with every ordered game event retained."""
+        if not 1 <= horizon <= 512:
+            raise ValueError("event batches require a horizon in 1..512")
+        reply = self._batch("batch_events", handle, horizon, candidates)
+        self._events(reply)
+        return reply
+
+    @staticmethod
+    def _events(reply):
+        for result in reply["results"]:
+            events = result.get("events")
+            if not isinstance(events, list) or any(
+                not isinstance(e, dict) or not isinstance(e.get("kind"), str)
+                or any(type(e.get(k)) is not int for k in ("tick", "a", "b", "value"))
+                for e in events
+            ):
+                raise EngineError("missing or malformed exact events")
+
+    def multi_batch_events(self, requests: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+        """Independent short futures from different immutable parents."""
+        if not 1 <= len(requests) <= 128:
+            raise ValueError("mixed event batches require 1..128 requests")
+        lines = [f"multi_batch_events {len(requests)}"]
+        for request in requests:
+            parent = _integer(request["handle"], 0xFFFFFFFF, "checkpoint handle")
+            horizon = _integer(request["horizon"], 512, "event horizon")
+            values = _words(request["words"])
+            if not parent or not horizon or len(values) > horizon:
+                raise ValueError("invalid mixed event future")
+            lines.append(f"{parent} {horizon} {len(values)} " + " ".join(map(str, values)))
+        reply = self._batch_reply(self._request("\n".join(lines) + "\n"), 0, 512, requests)
+        self._events(reply)
+        parents = {r["handle"] for r in requests}
+        for result in reply["results"]:
+            request = requests[result["candidate_index"]]
+            if result["handle"] in parents or len(result["words"]) > request["horizon"]:
+                raise EngineError("mixed event future returned an invalid checkpoint")
+            expected = request["words"] + [0] * (request["horizon"] - len(request["words"]))
+            if result["words"] != expected[:len(result["words"])]:
+                raise EngineError("mixed event future changed its fixed inputs")
+        return reply
+
+    def _batch(self, command: str, handle: int, horizon: int,
+               candidates: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         handle = _integer(handle, 0xFFFFFFFF, "checkpoint handle")
         horizon = _integer(horizon, 100000, "horizon")
         if not horizon or not candidates or len(candidates) > 1024:
             raise ValueError("batch requires a positive horizon and 1..1024 candidates")
-        lines = [f"batch {handle} {horizon} {len(candidates)}"]
+        lines = [f"{command} {handle} {horizon} {len(candidates)}"]
         for candidate in candidates:
             mode = _integer(candidate.get("mode", 0), 3, "continuation mode")
             seed = _integer(candidate.get("search_seed", 0), 0xFFFFFFFF, "search seed")
@@ -199,6 +247,9 @@ class Engine:
                 raise ValueError("candidate prefix exceeds rollout horizon")
             lines.append(f"{mode} {seed} {len(values)} " + " ".join(map(str, values)))
         reply = self._request("\n".join(lines) + "\n")
+        return self._batch_reply(reply, handle, horizon, candidates)
+
+    def _batch_reply(self, reply, handle, horizon, candidates):
         results = reply.get("results")
         rejected = reply.get("rejected", [])
         partial = "rejected" in reply

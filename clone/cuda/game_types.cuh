@@ -232,10 +232,16 @@ struct Events {
   std::uint64_t hash{14695981039346656037ULL};
   std::uint64_t sequence_base{};
   bool overflow{};
+#ifdef IRISU_CUDA_GAME_EVENT_CAPTURE
+  Event* capture{};std::uint32_t capture_capacity{};bool capture_overflow{};
+#endif
   GAME_HD std::uint64_t size() const { return count; }
   GAME_HD void push_back(Event event) {
     if (count == UINT64_MAX || sequence_base > UINT64_MAX-count) { overflow=true; return; }
     event.sequence=sequence_base+count++;
+#ifdef IRISU_CUDA_GAME_EVENT_CAPTURE
+    if(capture){if(count<=capture_capacity)capture[count-1]=event;else capture_overflow=true;}
+#endif
     hash=fnv_integer(hash,event.tick);
     hash=fnv_integer(hash,static_cast<std::uint8_t>(event.kind));
     hash=fnv_integer(hash,event.a); hash=fnv_integer(hash,event.b);

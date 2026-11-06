@@ -1,0 +1,19 @@
+{
+  "engine": ["runtime/bin/irisu-cuda-search-engine", "--host-prefix", "--max-checkpoints", "512"],
+  "oracle": "runtime/bin/irisu-game-oracle",
+  "oracle_library": "runtime/lib/libirisu_box2d_msvc_exact_multiworld.so",
+  "trace": "runtime/bin/irisu-search-trace",
+  "roots": [96000, 95680, 96288, 95520, 96384, 96592, 96704],
+  "search_seconds": 1200,
+  "search": {
+    "beam_width": 24,
+    "candidates": 48,
+    "segment": 32,
+    "horizon": 3072,
+    "fixed_option_interval": true,
+    "causal_options": 4,
+    "retirement_options": 6,
+    "co_clear_options": 8,
+    "preparation_options": 6
+  }
+}

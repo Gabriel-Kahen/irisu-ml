@@ -30,7 +30,15 @@ struct NativeGameWorld {
     bind(scene);for(auto& byte:simulator.actor_refs_scratch_.storage)byte=0;
     simulator.physics_.initialize_pointer_storage();simulator.reset(0);if(!failed())simulator.reset(seed);
   }
-  GAME_HD NATIVE_WORLD_STEP_CALL StepResult step(const Action& action){return simulator.step(action);}
+  GAME_HD NATIVE_WORLD_STEP_CALL StepResult step(const Action& action
+#ifdef IRISU_CUDA_GAME_EVENT_CAPTURE
+    , Event* capture=nullptr, std::uint32_t capacity=0
+#endif
+  ){return simulator.step(action
+#ifdef IRISU_CUDA_GAME_EVENT_CAPTURE
+    ,capture,capacity
+#endif
+  );}
   GAME_HD NATIVE_WORLD_CALL game_digest::Frame frame(const StepResult& result={}) const {
     struct Count {std::uint64_t value{};GAME_HD std::uint64_t size() const{return value;}};
     struct Summary {

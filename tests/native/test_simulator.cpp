@@ -646,6 +646,31 @@ void level_crossing_repeats_field_update() {
   }
 }
 
+void level_crossing_reallocation_keeps_both_contact_participants() {
+  auto config = controlled_config();
+  config.spawn_interval_ticks = 100;
+  irisu::Simulator simulator(config);
+  simulator.reset(21);
+  auto pair = burst_pair(simulator, 1, 5, 1'000);
+  pair.scene_frame = 90;
+  simulator.restore_state(pair);
+  // Leave exactly one spare slot: the ordinary cadence fills it, then the
+  // level setter's repeated cadence must reallocate during the burst callback.
+  do {
+    assert(simulator.bodies().size() < 64);
+    simulator.spawn_piece(irisu::Shape::Box, 0, 10.0, {100.0, 100.0});
+  } while (simulator.bodies().size() + 1 != simulator.bodies().capacity());
+  const auto capacity = simulator.bodies().capacity();
+  const auto result = simulator.step({irisu::ActionKind::Wait, 0, 0, 1});
+  const auto state = simulator.clone_state();
+  assert(simulator.bodies().capacity() > capacity);
+  assert(state.level == 2 && state.qualifying_clear_count == 6);
+  assert(event_count(result, irisu::EventKind::Spawned) == 2);
+  for (const auto& participant : pair.bodies) {
+    assert(body(state, participant.id).pending_delete);
+  }
+}
+
 irisu::Snapshot scored_actor_state(irisu::Simulator& simulator,
                                    bool delete_marked) {
   const auto id = simulator.spawn_piece(irisu::Shape::Box, 1, 30.0,
@@ -1399,6 +1424,7 @@ int main() {
   group_burst_scores_each_member();
   level_crossing_draws_cutoff_immediately();
   level_crossing_repeats_field_update();
+  level_crossing_reallocation_keeps_both_contact_participants();
   actor_postlude_order();
   new_state_and_top_gate_postlude();
   activation_predicate_matrix();
