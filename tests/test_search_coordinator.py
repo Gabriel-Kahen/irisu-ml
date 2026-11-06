@@ -189,7 +189,8 @@ def test_exhausted_seed_probes_do_not_block_discovery_of_new_seeds(tmp_path, mon
         cfg = config(initial_seeds=1, attempts_per_seed=1, maximum_ticks=2)
         coordinator = Coordinator(store, engine, cfg, FakeVerifier(engine))
         known = {row["seed"] for row in store.seeds()}
-        coordinator.run(seconds=1, max_jobs=2)
+        # This checks two logical exhausted probes, not host filesystem latency.
+        coordinator.run(seconds=30, max_jobs=2)
         assert len(store.jobs("failed")) == 2
         assert all(row["attempts"] == 1 for row in store.seeds())
         key = scheduler.next_job(store, cfg)
